@@ -1,0 +1,19 @@
+{
+  "protocols": {
+    "mld": {
+      "id": "mld",
+      "title": "Lymphdrainage",
+      "steps": [
+        { "id": "mld_1", "title": "Aktivierung", "duration": 60, "desc": "Sanftes Pumpen." },
+        { "id": "mld_2", "title": "Ausstreichen", "duration": 120, "desc": "Richtung Leiste." }
+      ]
+    },
+    "vagus": {
+      "id": "vagus",
+      "title": "Vagus-Stimulation",
+      "steps": [
+        { "id": "v_1", "title": "Gurgeln", "duration": 30, "desc": "Tiefes Gurgeln." }
+      ]
+    }
+  }
+}

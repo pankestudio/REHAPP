@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://fonts.googleapis.com/css2?family=Google+Sans+Flex:ital,wght@0,100..900;1,100..900&display=swap\")",
+      "Bash(unzip -o files.zip -d extracted/)",
+      "Bash(node --input-type=module)",
+      "Bash(node -e ' *)",
+      "Bash(node --check /Users/timsum/rehapp-v4/src/main.js)",
+      "Bash(node --check /Users/timsum/rehapp-v4/src/modules/home/index.js)",
+      "Bash(node --check /Users/timsum/rehapp-v4/src/core/Store.js)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/src/modules/home/index.js)",
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/)",
+      "Bash(npx vite *)"
+    ]
+  }
+}
