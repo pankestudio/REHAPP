@@ -239,6 +239,18 @@ function TimerCard(state) {
                font-weight:var(--fw-medium);line-height:1;">
         ${display}
       </div>
+      ${!running ? `
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px;">
+          <span style="font-size:0.6rem;color:var(--text-dim);font-weight:var(--fw-black);
+            text-transform:uppercase;letter-spacing:var(--ls-upper);">Bereits</span>
+          <input type="number" id="fast-offset" min="0" max="99" step="1" value="0"
+            style="width:52px;border:1.5px solid var(--border);background:var(--bg);
+                   color:var(--text-main);padding:6px 8px;text-align:center;
+                   font-family:var(--font-mono);font-size:0.9rem;outline:none;
+                   -webkit-appearance:none;appearance:none;">
+          <span style="font-size:0.6rem;color:var(--text-dim);font-weight:var(--fw-black);
+            text-transform:uppercase;letter-spacing:var(--ls-upper);">h gefastet</span>
+        </div>` : ''}
       <button data-action="toggle-fast" class="btn-primary ${running ? 'btn-stop' : ''}"
         style="max-width:280px;">
         ${running ? '■ Stopp' : '▶ Start Fasten'}

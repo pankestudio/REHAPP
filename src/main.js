@@ -64,7 +64,10 @@ function releaseWakeLock() {
   _wakeLock = null;
 }
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && Store.state?.activeExercise?.running) requestWakeLock();
+  if (document.visibilityState === 'visible') {
+    Store.checkDailyReset();
+    if (Store.state?.activeExercise?.running) requestWakeLock();
+  }
 });
 
 // ─── SW ───────────────────────────────────────────────────────────────────────
@@ -282,19 +285,25 @@ document.addEventListener('click', async (e) => {
   }
 
   if (action === 'toggle-fast') {
-    const { running, mode } = Store.state.fasting;
-    if (running && Store.state.fasting.startTime) {
-      const elapsed = Math.floor((Date.now() - Store.state.fasting.startTime) / 1000);
-      GamificationEngine.onFastEnd(elapsed);
-    }
-    Store.state.fasting = { startTime: running ? null : Date.now(), running: !running, mode: mode ?? '16:8' };
-    if (!running) {
+    const { running, mode = '16:8' } = Store.state.fasting;
+    if (running) {
+      if (Store.state.fasting.startTime) {
+        const elapsed = Math.floor((Date.now() - Store.state.fasting.startTime) / 1000);
+        GamificationEngine.onFastEnd(elapsed);
+      }
+      Store.state.fasting = { startTime: null, running: false, mode };
+      TimerService.stopTick();
+    } else {
+      const offsetHours = Math.max(0, parseFloat(document.getElementById('fast-offset')?.value) || 0);
+      const startTime   = Date.now() - Math.round(offsetHours * 3600 * 1000);
+      Store.state.fasting = { startTime, running: true, mode };
       TimerService.startTick();
       _notifiedMilestones.clear();
+      for (const k of Object.keys(FASTING_MILESTONES)) {
+        if (offsetHours >= parseInt(k)) _notifiedMilestones.add(parseInt(k));
+      }
       await requestNotificationPermission();
       GamificationEngine.check();
-    } else {
-      TimerService.stopTick();
     }
   }
 

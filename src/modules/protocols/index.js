@@ -161,6 +161,31 @@ export const protocolsData = {
     ],
   },
 
+  // ── Kurzer Fuß nach Janda ───────────────────────────────────────────────────
+
+  janda_foot: {
+    id: 'janda_foot', title: 'Kurzer Fuß · Janda', xp: 8,
+    description: 'Fußintrinsik · Propriozeption · linker Fuß · 3× täglich',
+    steps: [
+      { title: 'Fuß flach aufsetzen — Zehen entspannen',          duration: 10 },
+      { title: 'Ballen zur Ferse ziehen — Zehen bleiben flach',   duration: 8  },
+      { title: 'Halten — Fußgewölbe aktiviert',                   duration: 6  },
+      { title: 'Lösen',                                           duration: 4  },
+      { title: 'Ballen zur Ferse — Wiederholung 2',               duration: 8  },
+      { title: 'Halten',                                          duration: 6  },
+      { title: 'Lösen',                                           duration: 4  },
+      { title: 'Ballen zur Ferse — Wiederholung 3',               duration: 8  },
+      { title: 'Halten',                                          duration: 6  },
+      { title: 'Lösen',                                           duration: 4  },
+      { title: 'Ballen zur Ferse — Wiederholung 4',               duration: 8  },
+      { title: 'Halten',                                          duration: 6  },
+      { title: 'Lösen',                                           duration: 4  },
+      { title: 'Ballen zur Ferse — letzte Wiederholung',          duration: 8  },
+      { title: 'Halten — maximal aktivieren',                     duration: 8  },
+      { title: 'Fuß entspannen — nachspüren',                     duration: 15 },
+    ],
+  },
+
   // ── Lymphdrainage ───────────────────────────────────────────────────────────
 
   mld: {
@@ -201,7 +226,7 @@ const CATEGORIES = [
   { label: 'Beweglichkeit',  ids: ['morning_routine', 'stretch'] },
   { label: 'Nervensystem',   ids: ['vagus', 'meditation'] },
   { label: 'Kraft',          ids: ['micro_workout', 'back_activation'] },
-  { label: 'Reha / Post-OP', ids: ['mld', 'toes'] },
+  { label: 'Reha / Post-OP', ids: ['mld', 'toes', 'janda_foot'] },
 ];
 
 // ── Bewegungs-Karten (Schritte & Fahrrad) ──────────────────────────────────
