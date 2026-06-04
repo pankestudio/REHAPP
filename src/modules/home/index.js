@@ -3,6 +3,7 @@
 export const HABITS = [
   // ── Morgen ────────────────────────────────────────────────────────────────────
   { id: 'sleep',      block: 'morgen',   label: 'Geschlafen',        sub: 'mind. 6 Stunden',                 xp: 20, type: 'check'    },
+  { id: 'foot_am',    block: 'morgen',   label: 'Fuß-Aktivierung',   sub: '3 Min · vor dem ersten Schritt',   xp: 12, type: 'protocol', protocol: 'foot_morning'    },
   { id: 'morning',    block: 'morgen',   label: 'Morgenroutine',     sub: '8 Min · Körper aufwecken',         xp: 20, type: 'protocol', protocol: 'morning_routine' },
   { id: 'breath',     block: 'morgen',   label: 'Atemübung 4-7-8',   sub: '3 Runden · Nervensystem',          xp: 8,  type: 'protocol', protocol: 'breath'          },
   { id: 'sunlight',   block: 'morgen',   label: 'Draußen',           sub: 'Tageslicht & frische Luft',        xp: 5,  type: 'check'    },
@@ -10,11 +11,13 @@ export const HABITS = [
   { id: 'teeth',      block: 'morgen',   label: 'Zähne',             sub: '2 Min + Zungenreiniger',           xp: 5,  type: 'check'    },
   // ── Tag ───────────────────────────────────────────────────────────────────────
   { id: 'movement',   block: 'tag',      label: 'Bewegungspause',    sub: '2 Min aufstehen · strecken',       xp: 3,  type: 'check'    },
+  { id: 'foot_noon',  block: 'tag',      label: 'Gangschulung',      sub: '4 Min · Muskel & Koordination',    xp: 15, type: 'protocol', protocol: 'foot_midday'     },
   { id: 'box',        block: 'tag',      label: 'Box Breathing',     sub: 'Stress abbauen · 5 Runden',        xp: 10, type: 'protocol', protocol: 'box_breathing'   },
   { id: 'learning',   block: 'tag',      label: 'Input',             sub: '10 Minuten Neues',                 xp: 15, type: 'check'    },
   { id: 'cooking',    block: 'tag',      label: 'Gekocht',           sub: 'Eine Mahlzeit selbst gekocht',     xp: 15, type: 'check'    },
   { id: 'others',     block: 'tag',      label: 'Für andere',        sub: 'Etwas für jemand getan',           xp: 20, type: 'check'    },
   // ── Abend ─────────────────────────────────────────────────────────────────────
+  { id: 'foot_pm',    block: 'abend',    label: 'Fuß-Regeneration',  sub: '3 Min · Entstauung & Mobilisation',xp: 10, type: 'protocol', protocol: 'foot_evening'    },
   { id: 'stretch',    block: 'abend',    label: 'Dehnung',           sub: '10 Min · Faszien & Gelenke',       xp: 10, type: 'protocol', protocol: 'stretch'         },
   { id: 'vagus',      block: 'abend',    label: 'Vagus',             sub: '5 Min · Parasympathikus',          xp: 15, type: 'protocol', protocol: 'vagus'           },
   { id: 'meditation', block: 'abend',    label: 'Meditation',        sub: '10 Minuten',                       xp: 15, type: 'protocol', protocol: 'meditation'      },

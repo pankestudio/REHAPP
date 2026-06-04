@@ -217,16 +217,59 @@ export const protocolsData = {
     ],
   },
 
+  // ── Fußtraining 3× täglich ──────────────────────────────────────────────────
+
+  foot_morning: {
+    id: 'foot_morning', title: 'Fuß-Aktivierung Morgen', xp: 12,
+    description: 'Vor dem ersten Schritt · Durchblutung · Propriozeption',
+    steps: [
+      { title: 'Zehen einzeln spreizen & halten',                  duration: 20 },
+      { title: 'Fußkreise links — 10x jede Richtung',              duration: 30 },
+      { title: 'Ferse heben, Ballen belasten — 10x langsam',       duration: 30 },
+      { title: 'Kurzer Fuß nach Janda — 3 Wdh.',                   duration: 25 },
+      { title: 'Gewichtsverlagerung — Ferse zu Ballen, stehend',   duration: 30 },
+      { title: 'Erste Schritte — Ferse bewusst aufsetzen & abrollen', duration: 35 },
+    ],
+  },
+
+  foot_midday: {
+    id: 'foot_midday', title: 'Gangschulung', xp: 15,
+    description: 'Muskelkräftigung · Koordination · Gangmuster',
+    steps: [
+      { title: 'Einbeinstand links — Augen auf',                   duration: 20 },
+      { title: 'Einbeinstand links — Augen zu',                    duration: 15 },
+      { title: 'Zehenstand — 10x langsam heben & senken',          duration: 35 },
+      { title: 'Ferse-Zehe-Gang — langsam, bewusst',               duration: 30 },
+      { title: 'Seitwärtsschritte — 10x jede Richtung',            duration: 30 },
+      { title: 'Kniebeuge links betont — 8x',                      duration: 35 },
+      { title: 'Bewusstes Gehen — Ferse, Außenkante, Ballen, Abstoß', duration: 35 },
+    ],
+  },
+
+  foot_evening: {
+    id: 'foot_evening', title: 'Fuß-Regeneration Abend', xp: 10,
+    description: 'Entstauung · Mobilisation · Desensibilisierung',
+    steps: [
+      { title: 'Fußsohle ausstreichen — Ferse zu Zehen',           duration: 30 },
+      { title: 'Unterschenkel aufwärts ausstreichen — sanft',       duration: 45 },
+      { title: 'Fußgelenk Kreise — 10x jede Richtung',             duration: 30 },
+      { title: 'Wade dehnen — Wand, linkes Bein',                  duration: 30 },
+      { title: 'Zehen sanft mobilisieren — einzeln bewegen',        duration: 30 },
+      { title: 'Nachspüren — Fuß entspannt ablegen',               duration: 20 },
+    ],
+  },
+
 };
 
 // ── Kategorien für den Reha-Tab ─────────────────────────────────────────────
 
 const CATEGORIES = [
-  { label: 'Atmung',         ids: ['box_breathing', 'physiological_sigh'] },
-  { label: 'Beweglichkeit',  ids: ['morning_routine', 'stretch'] },
-  { label: 'Nervensystem',   ids: ['vagus', 'meditation'] },
-  { label: 'Kraft',          ids: ['micro_workout', 'back_activation'] },
-  { label: 'Reha / Post-OP', ids: ['mld', 'toes', 'janda_foot'] },
+  { label: 'Fußtraining · 3× täglich', ids: ['foot_morning', 'foot_midday', 'foot_evening'] },
+  { label: 'Atmung',                    ids: ['box_breathing', 'physiological_sigh'] },
+  { label: 'Beweglichkeit',             ids: ['morning_routine', 'stretch'] },
+  { label: 'Nervensystem',              ids: ['vagus', 'meditation'] },
+  { label: 'Kraft',                     ids: ['micro_workout', 'back_activation'] },
+  { label: 'Reha / Post-OP',            ids: ['mld', 'toes', 'janda_foot'] },
 ];
 
 // ── Bewegungs-Karten (Schritte & Fahrrad) ──────────────────────────────────
