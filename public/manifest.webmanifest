@@ -1,0 +1,23 @@
+{
+  "name": "REHAPP Regeneration",
+  "short_name": "REHAPP",
+  "description": "Heilungs-Protokoll & Fasten Tracker",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f1012",
+  "theme_color": "#0f1012",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192/ffffff/000000?text=R",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/ffffff/000000?text=REHAPP",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ]
+}

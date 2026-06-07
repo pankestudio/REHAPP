@@ -5,7 +5,7 @@ import { TimerService }   from './core/TimerService.js';
 import { ModuleRegistry } from './core/ModuleRegistry.js';
 import * as T             from './ui/Templates.js';
 
-import { HomeModul, HABITS }                from './modules/home/index.js';
+import { HomeModul, HABITS, expandedBlocks } from './modules/home/index.js';
 import { ProtokollModul, protocolsData }    from './modules/protocols/index.js';
 import { StatsModul }                       from './modules/stats/index.js';
 import { SettingsModul }                    from './modules/settings/index.js';
@@ -254,7 +254,7 @@ function render() {
         display:flex;justify-content:space-between;align-items:baseline;">
         <h2 class="u-mono" style="font-size:0.8rem;font-weight:800;">REHAPP</h2>
         <span style="font-size:0.65rem;color:var(--text-dim);font-weight:800;">
-          ${state.settings.userName || 'SYSTEM-USER'}
+          ${state.settings.userName || ''}
         </span>
       </header>
       ${ModuleRegistry.renderView(state.view, state)}
@@ -272,6 +272,19 @@ document.addEventListener('click', async (e) => {
   if (action === 'set-view') {
     ModuleRegistry.deactivate(Store.state.view);
     Store.state.view = value;
+  }
+
+  if (action === 'toggle-block') {
+    if (expandedBlocks.has(id)) expandedBlocks.delete(id);
+    else expandedBlocks.add(id);
+    Store.notify('view');
+  }
+
+  if (action === 'focus-today') {
+    setTimeout(() => {
+      const el = document.querySelector('[data-action="tap-habit"], [data-action="start-protocol"]');
+      el?.closest('.card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
   }
 
   if (action === 'set-theme') {

@@ -3,17 +3,28 @@
     "mld": {
       "id": "mld",
       "title": "Lymphdrainage",
+      "xpPerStep": 15,
       "steps": [
-        { "id": "mld_1", "title": "Aktivierung", "duration": 60, "desc": "Sanftes Pumpen." },
-        { "id": "mld_2", "title": "Ausstreichen", "duration": 120, "desc": "Richtung Leiste." }
+        { "id": "mld_1", "title": "Leiste aktivieren", "duration": 60, "desc": "Sanftes Pumpen in der Leistengegend." },
+        { "id": "mld_2", "title": "Oberschenkel", "duration": 120, "desc": "Ausstreichen Richtung Herz." }
       ]
     },
     "vagus": {
       "id": "vagus",
       "title": "Vagus-Stimulation",
+      "xpPerSession": 25,
       "steps": [
-        { "id": "v_1", "title": "Gurgeln", "duration": 30, "desc": "Tiefes Gurgeln." }
+        { "id": "v_1", "title": "Tiefes Gurgeln", "duration": 30, "desc": "Aktiviert den Parasympathikus." },
+        { "id": "v_2", "title": "Humming", "duration": 60, "desc": "Vibration im Brustkorb spüren." }
       ]
     }
+  },
+  "crps_tools": {
+    "budapest_criteria": [
+      { "id": "allodynia", "label": "Allodynie", "desc": "Schmerz bei leichter Berührung" },
+      { "id": "temp_diff", "label": "Temperatur-Differenz", "desc": "Fuß wärmer/kälter als Gegenseite" },
+      { "id": "color_change", "label": "Farbänderung", "desc": "Bläulich/Rötliche Verfärbung" },
+      { "id": "swelling", "label": "Ödem", "desc": "Sichtbare Schwellung" }
+    ]
   }
 }

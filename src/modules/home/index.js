@@ -1,5 +1,7 @@
 // src/modules/home/index.js
 
+export const expandedBlocks = new Set();
+
 export const HABITS = [
   // ── Morgen ────────────────────────────────────────────────────────────────────
   { id: 'sleep',      block: 'morgen',   label: 'Geschlafen',        sub: 'mind. 6 Stunden',                 xp: 20, type: 'check'    },
@@ -41,6 +43,47 @@ function formatTime(s) {
   const m   = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
   const sec = (s % 60).toString().padStart(2, '0');
   return `${h}:${m}:${sec}`;
+}
+
+function HeroSection(state) {
+  const doneCount = Object.keys(state.doneHabits ?? {}).length;
+  if (doneCount > 0) return '';
+  return `
+    <div style="margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border);">
+      <div style="font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;
+        margin-bottom:8px;line-height:1.35;">
+        REHAPP begleitet dich<br>bei Reha, Routinen und Regeneration.
+      </div>
+      <div style="font-size:0.7rem;color:var(--text-dim);font-style:italic;margin-bottom:16px;">
+        & I said: no, no, no.
+      </div>
+      <button data-action="focus-today" class="btn-primary" style="width:100%;max-width:260px;">
+        Heute starten →
+      </button>
+    </div>`;
+}
+
+function DayProgress(state) {
+  const doneHabits = state.doneHabits ?? {};
+  const trackable  = HABITS.filter(h => h.block !== 'verzicht');
+  const total      = trackable.length;
+  const done       = trackable.filter(h => h.id in doneHabits).length;
+  if (total === 0) return '';
+  const pct        = Math.round((done / total) * 100);
+  return `
+    <div style="margin-bottom:20px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+        <span style="font-size:0.6rem;font-weight:800;letter-spacing:0.08em;
+          text-transform:uppercase;color:var(--text-dim);">Heute</span>
+        <span class="u-mono" style="font-size:0.6rem;color:${done === total ? 'var(--text-main)' : 'var(--text-dim)'};">
+          ${done} / ${total}${done === total ? ' ✓' : ''}
+        </span>
+      </div>
+      <div style="height:2px;background:var(--border);border-radius:1px;">
+        <div style="height:100%;width:${pct}%;background:var(--text-main);
+          transition:width 0.6s ease;border-radius:1px;"></div>
+      </div>
+    </div>`;
 }
 
 function currentBlock(wakeTime = '07:00') {
@@ -162,15 +205,69 @@ function HabitCard(habit, doneHabits) {
 }
 
 function BlockSection(block, doneHabits, wakeTime) {
-  const habits  = HABITS.filter(h => h.block === block.id);
+  const habits     = HABITS.filter(h => h.block === block.id);
   if (!habits.length) return '';
-  const active  = block.id === currentBlock(wakeTime);
+
+  const isCurrent  = block.id === currentBlock(wakeTime);
+  const isVerzicht = block.id === 'verzicht';
+  const undone     = habits.filter(h => !(h.id in doneHabits));
+  const done       = habits.filter(h => h.id in doneHabits);
+
+  if (!isCurrent && !isVerzicht) {
+    const isOpen = expandedBlocks.has(block.id);
+    return `
+      <div style="margin-bottom:6px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;
+          padding:10px 0;border-bottom:1px solid var(--border);
+          opacity:${isOpen ? '0.85' : '0.4'};">
+          <span style="font-size:0.65rem;font-weight:800;text-transform:uppercase;
+            letter-spacing:0.08em;">${block.label}</span>
+          <button data-action="toggle-block" data-id="${block.id}"
+            style="background:none;border:none;cursor:pointer;padding:2px 0;
+              display:flex;align-items:center;gap:8px;color:var(--text-dim);">
+            <span class="u-mono" style="font-size:0.6rem;">${done.length} / ${habits.length}</span>
+            <span style="font-size:0.7rem;font-weight:800;">${isOpen ? '↑' : '↓'}</span>
+          </button>
+        </div>
+        ${isOpen ? `<div style="padding-top:4px;">${habits.map(h => HabitCard(h, doneHabits)).join('')}</div>` : ''}
+      </div>`;
+  }
+
+  const top        = undone.slice(0, 3);
+  const moreList   = undone.slice(3);
+  const moreKey    = `${block.id}_more`;
+  const doneKey    = `${block.id}_done`;
+  const moreOpen   = expandedBlocks.has(moreKey);
+  const doneOpen   = expandedBlocks.has(doneKey);
+
   return `
     <div style="margin-bottom:16px;">
-      <span class="u-label" style="margin-bottom:8px;${active ? '' : 'opacity:0.45;'}">
-        ${block.label}
-      </span>
-      ${habits.map(h => HabitCard(h, doneHabits)).join('')}
+      <span class="u-label" style="margin-bottom:8px;">${block.label}</span>
+      ${top.map(h => HabitCard(h, doneHabits)).join('')}
+      ${moreList.length ? `
+        <div style="margin-bottom:2px;">
+          <button data-action="toggle-block" data-id="${moreKey}"
+            style="width:100%;background:none;border:1px solid var(--border);cursor:pointer;
+              padding:8px 16px;text-align:left;display:flex;align-items:center;gap:6px;
+              font-size:0.6rem;font-weight:800;letter-spacing:0.08em;
+              text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;">
+            <span>${moreOpen ? '↑' : '↓'}</span>
+            <span>${moreList.length} WEITERE AUFGABEN</span>
+          </button>
+          ${moreOpen ? moreList.map(h => HabitCard(h, doneHabits)).join('') : ''}
+        </div>` : ''}
+      ${done.length ? `
+        <div>
+          <button data-action="toggle-block" data-id="${doneKey}"
+            style="width:100%;background:none;border:none;cursor:pointer;
+              padding:8px 0;text-align:left;display:flex;align-items:center;gap:6px;
+              font-size:0.6rem;font-weight:800;letter-spacing:0.08em;
+              text-transform:uppercase;color:var(--text-dim);opacity:0.4;margin-bottom:2px;">
+            <span>${doneOpen ? '↑' : '↓'}</span>
+            <span>✓ ERLEDIGT · ${done.length}</span>
+          </button>
+          ${doneOpen ? done.map(h => HabitCard(h, doneHabits)).join('') : ''}
+        </div>` : ''}
     </div>`;
 }
 
@@ -185,23 +282,29 @@ const FASTING_SCIENCE = {
 
 function MilestoneBanner(state) {
   if (!state.fasting?.running || !state.fasting?.startTime) return '';
-  const hours      = Math.floor((Date.now() - state.fasting.startTime) / 3_600_000);
+  const elapsed    = (Date.now() - state.fasting.startTime) / 3_600_000;
+  const hours      = Math.floor(elapsed);
   const thresholds = [12, 16, 18, 24];
   const reached    = thresholds.filter(m => hours >= m);
-  const next       = thresholds.find(m => hours < m);
-  if (!reached.length && !next) return '';
+  if (!reached.length) return '';
 
-  const current      = reached[reached.length - 1];
-  const sci          = current ? FASTING_SCIENCE[current] : null;
-  const hoursToNext  = next ? next - hours : null;
+  const next     = thresholds.find(m => hours < m);
+  const current  = reached[reached.length - 1];
+  const sci      = FASTING_SCIENCE[current];
+
+  let timeToNext = null;
+  if (next !== undefined) {
+    const mins = Math.round((next - elapsed) * 60);
+    timeToNext = mins >= 60 ? `${Math.floor(mins / 60)}h` : `${mins}m`;
+  }
 
   return `
     <div class="card" style="margin-bottom:12px;border-left:3px solid var(--text-main);">
       <div style="display:flex;justify-content:space-between;align-items:baseline;
         margin-bottom:${sci ? '6px' : '0'};">
-        <span class="u-label" style="margin:0;">${current ? current + 'h FASTEN' : 'FASTEN'}</span>
-        ${hoursToNext !== null
-          ? `<span class="u-mono" style="font-size:0.62rem;color:var(--text-dim);">nächste: ${next}h in ${hoursToNext}h</span>`
+        <span class="u-label" style="margin:0;">${current}h FASTEN</span>
+        ${timeToNext !== null
+          ? `<span class="u-mono" style="font-size:0.62rem;color:var(--text-dim);">nächste: ${next}h in ${timeToNext}</span>`
           : `<span class="u-mono" style="font-size:0.62rem;color:var(--text-dim);">24h erreicht</span>`}
       </div>
       ${sci ? `<div style="font-size:0.78rem;color:var(--text-dim);line-height:1.4;">${sci}</div>` : ''}
@@ -317,6 +420,8 @@ export const HomeModul = {
     const wakeTime   = state.settings?.wakeTime ?? '07:00';
     return `
       <div>
+        ${HeroSection(state)}
+        ${DayProgress(state)}
         ${XPBar(state)}
         ${TimerCard(state)}
         ${MilestoneBanner(state)}
