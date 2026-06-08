@@ -106,6 +106,36 @@ export const SettingsModul = {
           ${reminderRows}
           <div style="padding-bottom:4px;"></div>
         </div>
+
+        <div class="card" style="padding:0 20px;">
+          <div style="padding:16px 0 4px;">
+            <span class="u-label" style="margin:0;">Aktive Module</span>
+          </div>
+          ${[
+            { id: 'verzicht', label: 'Verzicht-Block',    sub: 'Alkohol, Zucker, Nikotin, Drogen' },
+            { id: 'steps',    label: 'Schritte',          sub: 'Schrittzähler im Reha-Tab'        },
+            { id: 'bike',     label: 'Fahrrad',           sub: 'Kilometer-Tracking im Reha-Tab'   },
+          ].map(({ id, label, sub }, i, arr) => {
+            const on   = s.modules?.[id] ?? true;
+            const last = i === arr.length - 1;
+            return `
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 0;
+                ${last ? '' : 'border-bottom:1px solid var(--border);'}">
+                <div style="flex:1;min-width:0;">
+                  <div style="font-weight:var(--fw-bold);font-size:0.82rem;">${label}</div>
+                  <div style="font-size:0.6rem;color:var(--text-dim);margin-top:2px;">${sub}</div>
+                </div>
+                <button data-action="toggle-module" data-id="${id}"
+                  style="flex-shrink:0;width:42px;height:24px;border-radius:12px;border:none;cursor:pointer;
+                    background:${on ? 'var(--text-main)' : 'var(--border)'};position:relative;">
+                  <span style="position:absolute;top:3px;left:${on ? '21px' : '3px'};
+                    width:18px;height:18px;background:${on ? 'var(--bg)' : 'var(--surface)'};
+                    border-radius:50%;transition:left 0.15s;"></span>
+                </button>
+              </div>`;
+          }).join('')}
+          <div style="padding-bottom:4px;"></div>
+        </div>
       </div>`;
   },
 };

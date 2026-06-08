@@ -368,6 +368,12 @@ document.addEventListener('click', async (e) => {
     GamificationEngine.check();
   }
 
+  if (action === 'toggle-module') {
+    const mods = { steps: true, bike: true, verzicht: true, ...(Store.state.settings.modules ?? {}) };
+    mods[id] = !mods[id];
+    Store.state.settings = { ...Store.state.settings, modules: mods };
+  }
+
   if (action === 'toggle-reminder') {
     if (Notification.permission === 'default') await requestNotificationPermission();
     const current = Store.state.settings.reminders ?? {};

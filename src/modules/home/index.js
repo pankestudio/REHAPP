@@ -4,31 +4,31 @@ export const expandedBlocks = new Set();
 
 export const HABITS = [
   // ── Morgen ────────────────────────────────────────────────────────────────────
-  { id: 'sleep',      block: 'morgen',   label: 'Geschlafen',        sub: 'mind. 6 Stunden',                 xp: 20, type: 'check'    },
-  { id: 'foot_am',    block: 'morgen',   label: 'Fuß-Aktivierung',   sub: '3 Min · vor dem ersten Schritt',   xp: 12, type: 'protocol', protocol: 'foot_morning'    },
-  { id: 'morning',    block: 'morgen',   label: 'Morgenroutine',     sub: '8 Min · Körper aufwecken',         xp: 20, type: 'protocol', protocol: 'morning_routine' },
-  { id: 'breath',     block: 'morgen',   label: 'Atemübung 4-7-8',   sub: '3 Runden · Nervensystem',          xp: 8,  type: 'protocol', protocol: 'breath'          },
-  { id: 'sunlight',   block: 'morgen',   label: 'Draußen',           sub: 'Tageslicht & frische Luft',        xp: 5,  type: 'check'    },
-  { id: 'noscreen_am',block: 'morgen',   label: 'Screen-frei',       sub: 'Erste 30 Min nach dem Aufwachen',  xp: 15, type: 'check'    },
-  { id: 'teeth',      block: 'morgen',   label: 'Zähne',             sub: '2 Min + Zungenreiniger',           xp: 5,  type: 'check'    },
+  { id: 'sleep',       block: 'morgen',   label: 'Geschlafen',        sub: 'mind. 6 Stunden',                  xp: 20, type: 'check',    category: 'regeneration' },
+  { id: 'foot_am',     block: 'morgen',   label: 'Fuß-Aktivierung',   sub: '3 Min · vor dem ersten Schritt',    xp: 12, type: 'protocol', protocol: 'foot_morning',    category: 'bewegung'     },
+  { id: 'morning',     block: 'morgen',   label: 'Morgenroutine',     sub: '8 Min · Körper aufwecken',          xp: 20, type: 'protocol', protocol: 'morning_routine', category: 'bewegung'     },
+  { id: 'breath',      block: 'morgen',   label: 'Atemübung 4-7-8',   sub: '3 Runden · Nervensystem',           xp: 8,  type: 'protocol', protocol: 'breath',          category: 'regeneration' },
+  { id: 'sunlight',    block: 'morgen',   label: 'Draußen',           sub: 'Tageslicht & frische Luft',         xp: 5,  type: 'check',    category: 'fokus'            },
+  { id: 'noscreen_am', block: 'morgen',   label: 'Screen-frei',       sub: 'Erste 30 Min nach dem Aufwachen',   xp: 15, type: 'check',    category: 'fokus'            },
+  { id: 'teeth',       block: 'morgen',   label: 'Zähne',             sub: '2 Min + Zungenreiniger',            xp: 5,  type: 'check',    category: 'fokus'            },
   // ── Tag ───────────────────────────────────────────────────────────────────────
-  { id: 'movement',   block: 'tag',      label: 'Bewegungspause',    sub: '2 Min aufstehen · strecken',       xp: 3,  type: 'check'    },
-  { id: 'foot_noon',  block: 'tag',      label: 'Gangschulung',      sub: '4 Min · Muskel & Koordination',    xp: 15, type: 'protocol', protocol: 'foot_midday'     },
-  { id: 'box',        block: 'tag',      label: 'Box Breathing',     sub: 'Stress abbauen · 5 Runden',        xp: 10, type: 'protocol', protocol: 'box_breathing'   },
-  { id: 'learning',   block: 'tag',      label: 'Input',             sub: '10 Minuten Neues',                 xp: 15, type: 'check'    },
-  { id: 'cooking',    block: 'tag',      label: 'Gekocht',           sub: 'Eine Mahlzeit selbst gekocht',     xp: 15, type: 'check'    },
-  { id: 'others',     block: 'tag',      label: 'Für andere',        sub: 'Etwas für jemand getan',           xp: 20, type: 'check'    },
+  { id: 'movement',    block: 'tag',      label: 'Bewegungspause',    sub: '2 Min aufstehen · strecken',        xp: 3,  type: 'check',    category: 'bewegung'         },
+  { id: 'foot_noon',   block: 'tag',      label: 'Gangschulung',      sub: '4 Min · Muskel & Koordination',     xp: 15, type: 'protocol', protocol: 'foot_midday',     category: 'bewegung'     },
+  { id: 'box',         block: 'tag',      label: 'Box Breathing',     sub: 'Stress abbauen · 5 Runden',         xp: 10, type: 'protocol', protocol: 'box_breathing',   category: 'regeneration' },
+  { id: 'learning',    block: 'tag',      label: 'Input',             sub: '10 Minuten Neues',                  xp: 15, type: 'check',    category: 'fokus'            },
+  { id: 'cooking',     block: 'tag',      label: 'Gekocht',           sub: 'Eine Mahlzeit selbst gekocht',      xp: 15, type: 'check',    category: 'fokus'            },
+  { id: 'others',      block: 'tag',      label: 'Für andere',        sub: 'Etwas für jemand getan',            xp: 20, type: 'check',    category: 'fokus'            },
   // ── Abend ─────────────────────────────────────────────────────────────────────
-  { id: 'foot_pm',    block: 'abend',    label: 'Fuß-Regeneration',  sub: '3 Min · Entstauung & Mobilisation',xp: 10, type: 'protocol', protocol: 'foot_evening'    },
-  { id: 'stretch',    block: 'abend',    label: 'Dehnung',           sub: '10 Min · Faszien & Gelenke',       xp: 10, type: 'protocol', protocol: 'stretch'         },
-  { id: 'vagus',      block: 'abend',    label: 'Vagus',             sub: '5 Min · Parasympathikus',          xp: 15, type: 'protocol', protocol: 'vagus'           },
-  { id: 'meditation', block: 'abend',    label: 'Meditation',        sub: '10 Minuten',                       xp: 15, type: 'protocol', protocol: 'meditation'      },
-  { id: 'gratitude',  block: 'abend',    label: 'Dankbarkeit',       sub: 'Was war dein Up heute?',           xp: 10, type: 'text'     },
+  { id: 'foot_pm',     block: 'abend',    label: 'Fuß-Regeneration',  sub: '3 Min · Entstauung & Mobilisation', xp: 10, type: 'protocol', protocol: 'foot_evening',    category: 'bewegung'     },
+  { id: 'stretch',     block: 'abend',    label: 'Dehnung',           sub: '10 Min · Faszien & Gelenke',        xp: 10, type: 'protocol', protocol: 'stretch',         category: 'regeneration' },
+  { id: 'vagus',       block: 'abend',    label: 'Vagus',             sub: '5 Min · Parasympathikus',           xp: 15, type: 'protocol', protocol: 'vagus',           category: 'regeneration' },
+  { id: 'meditation',  block: 'abend',    label: 'Meditation',        sub: '10 Minuten',                        xp: 15, type: 'protocol', protocol: 'meditation',      category: 'regeneration' },
+  { id: 'gratitude',   block: 'abend',    label: 'Dankbarkeit',       sub: 'Was war dein Up heute?',            xp: 10, type: 'text',     category: 'fokus'            },
   // ── Verzicht ──────────────────────────────────────────────────────────────────
-  { id: 'no_alcohol', block: 'verzicht', label: 'Kein Alkohol',      sub: 'Jeder Tag ohne Alkohol zählt',     xp: 20, type: 'check'    },
-  { id: 'no_sugar',   block: 'verzicht', label: 'Kein Zucker',       sub: 'Zucker entzündet',                 xp: 15, type: 'check'    },
-  { id: 'no_drugs',   block: 'verzicht', label: 'Drogenfrei',        sub: 'Jeder Tag ohne Drogen zählt',      xp: 20, type: 'check'    },
-  { id: 'cigarettes', block: 'verzicht', label: 'Zigaretten',        sub: 'Keine = +20 XP · 1–3 = +10 XP',    xp: 20, type: 'cigs'     },
+  { id: 'no_alcohol',  block: 'verzicht', label: 'Kein Alkohol',      sub: 'Jeder Tag ohne Alkohol zählt',      xp: 20, type: 'check',    category: 'verzicht'         },
+  { id: 'no_sugar',    block: 'verzicht', label: 'Kein Zucker',       sub: 'Zucker entzündet',                  xp: 15, type: 'check',    category: 'verzicht'         },
+  { id: 'no_drugs',    block: 'verzicht', label: 'Drogenfrei',        sub: 'Jeder Tag ohne Drogen zählt',       xp: 20, type: 'check',    category: 'verzicht'         },
+  { id: 'cigarettes',  block: 'verzicht', label: 'Zigaretten',        sub: 'Keine = +20 XP · 1–3 = +10 XP',    xp: 20, type: 'cigs',     category: 'verzicht'         },
 ];
 
 const BLOCKS = [
@@ -36,6 +36,20 @@ const BLOCKS = [
   { id: 'tag',      label: 'Tag'      },
   { id: 'abend',    label: 'Abend'    },
   { id: 'verzicht', label: 'Verzicht' },
+];
+
+const CATEGORY_LABELS = {
+  bewegung:     'Bewegung',
+  regeneration: 'Regeneration',
+  fokus:        'Fokus',
+  verzicht:     'Verzicht',
+};
+
+const DAY_MESSAGES = [
+  [100, '✓ Perfekter Tag — alles erledigt!'],
+  [75,  'Fast geschafft — noch ein paar!'],
+  [50,  'Halbzeit — du schaffst das!'],
+  [1,   'Los geht\'s — viel Kraft heute!'],
 ];
 
 function formatTime(s) {
@@ -65,23 +79,70 @@ function HeroSection(state) {
 
 function DayProgress(state) {
   const doneHabits = state.doneHabits ?? {};
-  const trackable  = HABITS.filter(h => h.block !== 'verzicht');
+  const modules    = state.settings?.modules;
+  const verzichtOn = modules?.verzicht ?? true;
+  const trackable  = HABITS.filter(h => h.block !== 'verzicht' || verzichtOn);
   const total      = trackable.length;
   const done       = trackable.filter(h => h.id in doneHabits).length;
   if (total === 0) return '';
   const pct        = Math.round((done / total) * 100);
+  const streak     = state.streaks?.current ?? 0;
+  const msg        = DAY_MESSAGES.find(([t]) => pct >= t)?.[1] ?? '';
+
   return `
-    <div style="margin-bottom:20px;">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
-        <span style="font-size:0.6rem;font-weight:800;letter-spacing:0.08em;
-          text-transform:uppercase;color:var(--text-dim);">Heute</span>
-        <span class="u-mono" style="font-size:0.6rem;color:${done === total ? 'var(--text-main)' : 'var(--text-dim)'};">
-          ${done} / ${total}${done === total ? ' ✓' : ''}
-        </span>
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div style="display:flex;align-items:baseline;gap:10px;">
+          <span style="font-size:0.6rem;font-weight:800;letter-spacing:0.08em;
+            text-transform:uppercase;color:var(--text-dim);">Heute</span>
+          ${streak > 0 ? `<span style="font-size:0.6rem;color:var(--text-dim);">${streak}d</span>` : ''}
+        </div>
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <span class="u-mono" style="font-size:0.6rem;color:var(--text-dim);">${done} / ${total}</span>
+          <span class="u-mono" style="font-size:0.85rem;font-weight:800;
+            color:${pct === 100 ? 'var(--text-main)' : 'var(--text-dim)'};">${pct}%</span>
+        </div>
       </div>
-      <div style="height:2px;background:var(--border);border-radius:1px;">
+      <div style="height:3px;background:var(--border);border-radius:1px;margin-bottom:${msg ? '6px' : '0'};">
         <div style="height:100%;width:${pct}%;background:var(--text-main);
           transition:width 0.6s ease;border-radius:1px;"></div>
+      </div>
+      ${msg ? `<div style="font-size:0.62rem;color:var(--text-dim);font-style:italic;">${msg}</div>` : ''}
+    </div>`;
+}
+
+function CategoryProgress(state) {
+  const doneHabits = state.doneHabits ?? {};
+  const modules    = state.settings?.modules;
+  const verzichtOn = modules?.verzicht ?? true;
+  const cats       = ['bewegung', 'regeneration', 'fokus', ...(verzichtOn ? ['verzicht'] : [])];
+
+  const rows = cats.map(cat => {
+    const habits = HABITS.filter(h => h.category === cat);
+    const done   = habits.filter(h => h.id in doneHabits).length;
+    const total  = habits.length;
+    const pct    = total > 0 ? Math.round((done / total) * 100) : 0;
+    return `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:0.55rem;font-weight:800;text-transform:uppercase;
+            letter-spacing:0.06em;color:var(--text-dim);">${CATEGORY_LABELS[cat]}</span>
+          <span class="u-mono" style="font-size:0.55rem;
+            color:${done === total && total > 0 ? 'var(--text-main)' : 'var(--text-dim)'};">
+            ${done}/${total}
+          </span>
+        </div>
+        <div style="height:2px;background:var(--border);border-radius:1px;">
+          <div style="height:100%;width:${pct}%;background:var(--text-main);
+            border-radius:1px;transition:width 0.4s ease;"></div>
+        </div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="card" style="padding:12px 16px;margin-bottom:12px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;">
+        ${rows}
       </div>
     </div>`;
 }
@@ -204,7 +265,10 @@ function HabitCard(habit, doneHabits) {
     </div>`;
 }
 
-function BlockSection(block, doneHabits, wakeTime) {
+function BlockSection(block, doneHabits, wakeTime, modules) {
+  const verzichtOn = modules?.verzicht ?? true;
+  if (block.id === 'verzicht' && !verzichtOn) return '';
+
   const habits     = HABITS.filter(h => h.block === block.id);
   if (!habits.length) return '';
 
@@ -233,12 +297,12 @@ function BlockSection(block, doneHabits, wakeTime) {
       </div>`;
   }
 
-  const top        = undone.slice(0, 3);
-  const moreList   = undone.slice(3);
-  const moreKey    = `${block.id}_more`;
-  const doneKey    = `${block.id}_done`;
-  const moreOpen   = expandedBlocks.has(moreKey);
-  const doneOpen   = expandedBlocks.has(doneKey);
+  const top      = undone.slice(0, 3);
+  const moreList = undone.slice(3);
+  const moreKey  = `${block.id}_more`;
+  const doneKey  = `${block.id}_done`;
+  const moreOpen = expandedBlocks.has(moreKey);
+  const doneOpen = expandedBlocks.has(doneKey);
 
   return `
     <div style="margin-bottom:16px;">
@@ -398,16 +462,19 @@ function WaterCard(state) {
 function XPBar(state) {
   const level    = Math.floor(state.xp / 100) + 1;
   const progress = state.xp % 100;
+  const streak   = state.streaks?.current ?? 0;
   return `
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
       <span class="u-mono" style="font-size:0.8rem;font-weight:var(--fw-black);min-width:32px;">L${level}</span>
       <div style="flex:1;height:4px;background:var(--border);border-radius:1px;">
         <div style="height:100%;width:${progress}%;background:var(--text-main);
           transition:width 0.6s cubic-bezier(0.1,0,0,1);border-radius:1px;"></div>
       </div>
-      <span class="u-mono" style="font-size:0.7rem;color:var(--text-dim);min-width:48px;text-align:right;">
+      <span class="u-mono" style="font-size:0.7rem;color:var(--text-dim);min-width:52px;text-align:right;">
         ${state.xp} XP
       </span>
+      ${streak >= 2 ? `<span style="font-size:0.75rem;font-weight:800;color:var(--text-dim);white-space:nowrap;">
+        🔥 ${streak}</span>` : ''}
     </div>`;
 }
 
@@ -418,16 +485,18 @@ export const HomeModul = {
   view(state) {
     const doneHabits = state.doneHabits ?? {};
     const wakeTime   = state.settings?.wakeTime ?? '07:00';
+    const modules    = state.settings?.modules ?? {};
     return `
       <div>
         ${HeroSection(state)}
         ${DayProgress(state)}
+        ${CategoryProgress(state)}
         ${XPBar(state)}
         ${TimerCard(state)}
         ${MilestoneBanner(state)}
         ${WaterCard(state)}
         <div style="margin-top:8px;">
-          ${BLOCKS.map(b => BlockSection(b, doneHabits, wakeTime)).join('')}
+          ${BLOCKS.map(b => BlockSection(b, doneHabits, wakeTime, modules)).join('')}
         </div>
       </div>`;
   },

@@ -5,24 +5,44 @@ import { ACHIEVEMENTS } from '../../core/achievements.js';
 function StreakCard(state) {
   const current = state.streaks.current;
   const longest = state.longestStreak ?? current;
+  const streakMsg = current >= 7  ? 'Woche am Stück — stark!'
+                  : current >= 3  ? 'Am Ball bleiben!'
+                  : current === 1 ? 'Erster Schritt gemacht.'
+                  : current === 0 ? 'Heute loslegen!'
+                  : '';
   return `
     <div class="card">
-      <span class="u-label" style="margin-bottom:12px;">Streaks</span>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-        <div style="text-align:center;padding:16px 10px;border:1px solid var(--border);">
-          <div class="u-mono" style="font-size:2.4rem;font-weight:700;letter-spacing:-0.03em;line-height:1;">${current}</div>
-          <div class="u-label" style="font-size:0.6rem;margin-top:6px;">Aktuell</div>
+      <span class="u-label" style="margin-bottom:12px;">Serie</span>
+      <div style="display:flex;align-items:flex-end;gap:20px;margin-bottom:6px;">
+        <div>
+          <div class="u-mono" style="font-size:3.6rem;font-weight:800;letter-spacing:-0.04em;line-height:1;">
+            ${current}
+          </div>
+          <div style="font-size:0.6rem;color:var(--text-dim);margin-top:4px;font-weight:800;
+            text-transform:uppercase;letter-spacing:0.08em;">Tage aktuell</div>
         </div>
-        <div style="text-align:center;padding:16px 10px;border:1px solid var(--border);">
-          <div class="u-mono" style="font-size:2.4rem;font-weight:700;letter-spacing:-0.03em;line-height:1;">${longest}</div>
-          <div class="u-label" style="font-size:0.6rem;margin-top:6px;">Rekord</div>
+        <div style="padding-bottom:8px;">
+          <div class="u-mono" style="font-size:1.6rem;font-weight:700;letter-spacing:-0.03em;
+            color:var(--text-dim);">${longest}</div>
+          <div style="font-size:0.55rem;color:var(--text-dim);margin-top:2px;font-weight:800;
+            text-transform:uppercase;letter-spacing:0.08em;">Rekord</div>
         </div>
       </div>
-      <span class="u-label" style="margin-bottom:8px;">Letzte 14 Tage</span>
-      <div id="activity-dots" style="display:flex;gap:4px;">
-        ${Array(14).fill(0).map(() =>
-          `<div style="flex:1;height:24px;background:var(--border);border-radius:2px;"></div>`
-        ).join('')}
+      ${streakMsg ? `<div style="font-size:0.7rem;color:var(--text-dim);font-style:italic;
+        margin-bottom:14px;">${streakMsg}</div>` : '<div style="margin-bottom:14px;"></div>'}
+      <span class="u-label" style="margin-bottom:8px;">Letzte 7 Tage</span>
+      <div id="activity-dots" style="display:flex;gap:4px;align-items:flex-end;">
+        ${Array(7).fill(0).map((_, i) => {
+          const d = new Date();
+          d.setDate(d.getDate() - (6 - i));
+          const label = ['Mo','Di','Mi','Do','Fr','Sa','So'][d.getDay() === 0 ? 6 : d.getDay() - 1];
+          return `
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div style="width:100%;height:32px;background:var(--border);border-radius:2px;"
+                data-date="${d.toDateString()}"></div>
+              <span style="font-size:0.5rem;color:var(--text-dim);font-weight:800;">${label}</span>
+            </div>`;
+        }).join('')}
       </div>
     </div>`;
 }
@@ -125,19 +145,14 @@ export const StatsModul = {
   async _enrich() {
     const dotsEl = document.getElementById('activity-dots');
     if (dotsEl) {
-      const log    = await Store.getActivityLog(14);
+      const log    = await Store.getActivityLog(7);
       const byDate = {};
       log.forEach(e => { byDate[e.date] = true; });
-      const days = Array.from({ length: 14 }, (_, i) => {
-        const d = new Date();
-        d.setDate(d.getDate() - (13 - i));
-        return d.toDateString();
+      dotsEl.querySelectorAll('[data-date]').forEach(el => {
+        const active = byDate[el.dataset.date];
+        el.style.background = active ? 'var(--text-main)' : 'var(--border)';
+        el.style.transition  = 'background 0.3s';
       });
-      dotsEl.innerHTML = days.map(d => `
-        <div style="flex:1;height:24px;border-radius:2px;
-          background:${byDate[d] ? 'var(--text-main)' : 'var(--border)'};
-          transition:background 0.3s;">
-        </div>`).join('');
     }
 
     const xpEl = document.getElementById('weekly-xp-val');

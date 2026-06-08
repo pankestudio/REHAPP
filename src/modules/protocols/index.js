@@ -2,11 +2,10 @@
 
 export const protocolsData = {
 
-  // ── Universalprotokolle (Startseite) ────────────────────────────────────────
-
   breath: {
-    id: 'breath', title: 'Atemübung 4-7-8', xp: 8,
+    id: 'breath', title: 'Atemübung 4-7-8', xp: 8, intensity: 'leicht',
     description: 'Beruhigt das Nervensystem in unter 3 Minuten',
+    why: 'Aktiviert den Parasympathikus und senkt Cortisol — funktioniert innerhalb einer Atemrunde.',
     steps: [
       { title: 'Einatmen durch die Nase',     duration: 4 },
       { title: 'Atem anhalten',               duration: 7 },
@@ -21,8 +20,9 @@ export const protocolsData = {
   },
 
   box_breathing: {
-    id: 'box_breathing', title: 'Box Breathing', xp: 10,
+    id: 'box_breathing', title: 'Box Breathing', xp: 10, intensity: 'leicht',
     description: 'Navy SEAL Technik — akuter Stress, maximale Wirkung',
+    why: 'Setzt den Stress-Reset-Knopf: gleichmäßige Phasen regulieren das autonome Nervensystem in Minuten.',
     steps: [
       { title: 'Einatmen',                    duration: 4 },
       { title: 'Oben halten',                 duration: 4 },
@@ -47,8 +47,9 @@ export const protocolsData = {
   },
 
   physiological_sigh: {
-    id: 'physiological_sigh', title: 'Physiologischer Seufzer', xp: 5,
+    id: 'physiological_sigh', title: 'Physiologischer Seufzer', xp: 5, intensity: 'leicht',
     description: 'Schnellste Entspannungsmethode — 60 Sekunden',
+    why: 'Der doppelte Einatem öffnet kollabierte Alveolen; der lange Ausatem aktiviert sofort den Vagusnerv.',
     steps: [
       { title: 'Einatmen (Nase)',             duration: 3 },
       { title: 'Nochmals einatmen (kurz)',    duration: 2 },
@@ -63,8 +64,9 @@ export const protocolsData = {
   },
 
   stretch: {
-    id: 'stretch', title: 'Ganzkörper Dehnung', xp: 10,
+    id: 'stretch', title: 'Ganzkörper Dehnung', xp: 10, intensity: 'leicht',
     description: '5 Minuten · Faszien, Gelenke, Durchblutung',
+    why: 'Erhält die Fasziengleitfähigkeit und Gelenkspielraum — beugt Verklebungen und morgendlicher Steifheit vor.',
     steps: [
       { title: 'Nacken links',                duration: 30 },
       { title: 'Nacken rechts',               duration: 30 },
@@ -79,11 +81,10 @@ export const protocolsData = {
     ],
   },
 
-  // ── Morgenroutine ───────────────────────────────────────────────────────────
-
   morning_routine: {
-    id: 'morning_routine', title: 'Morgenroutine', xp: 20,
+    id: 'morning_routine', title: 'Morgenroutine', xp: 20, intensity: 'leicht',
     description: '8 Minuten · Körper aufwecken, Geist ausrichten',
+    why: 'Bereitet Gelenke, Faszien und Nervensystem auf den Tag vor — reduziert das Verletzungsrisiko und steigert die Energie.',
     steps: [
       { title: 'Katze / Kuh — Wirbelsäule wellen',        duration: 45 },
       { title: 'Kind-Pose — Rücken strecken',             duration: 30 },
@@ -99,11 +100,10 @@ export const protocolsData = {
     ],
   },
 
-  // ── Vagus-Protokoll ─────────────────────────────────────────────────────────
-
   vagus: {
-    id: 'vagus', title: 'Vagus-Stimulation', xp: 15,
+    id: 'vagus', title: 'Vagus-Stimulation', xp: 15, intensity: 'leicht',
     description: 'Parasympathikus aktivieren — Stressabbau, Verdauung, Schlaf',
+    why: 'Direkte Stimulation des Vagusnervs senkt Entzündungsmarker, reguliert die Herzratenvariabilität und verbessert den Schlaf.',
     steps: [
       { title: 'Tiefes Bauchatmen — langsam einatmen',   duration: 30 },
       { title: 'Gurgeln mit Wasser',                     duration: 30 },
@@ -116,11 +116,10 @@ export const protocolsData = {
     ],
   },
 
-  // ── Meditation ──────────────────────────────────────────────────────────────
-
   meditation: {
-    id: 'meditation', title: 'Meditation', xp: 15,
+    id: 'meditation', title: 'Meditation', xp: 15, intensity: 'leicht',
     description: '10 Minuten · Ankommen, Stille, Loslassen',
+    why: 'Verändert nachweislich die Gehirnstruktur: stärkt die Stressresilienz und reduziert die Schmerzwahrnehmung bei chronischen Beschwerden.',
     steps: [
       { title: 'Ankommen & Atem finden',                 duration: 120 },
       { title: 'Stille halten',                          duration: 360 },
@@ -128,11 +127,10 @@ export const protocolsData = {
     ],
   },
 
-  // ── Kraft / Aktivierung ─────────────────────────────────────────────────────
-
   micro_workout: {
-    id: 'micro_workout', title: 'Mikro-Workout', xp: 20,
+    id: 'micro_workout', title: 'Mikro-Workout', xp: 20, intensity: 'intensiv',
     description: '10 Minuten · Gerätefrei · Zwei Runden',
+    why: 'Erhöht BDNF und Testosteron, verbessert Insulinsensitivität — messbare Wirkung schon nach 10 Minuten Intensität.',
     steps: [
       { title: 'Kniebeuge — Runde 1',                    duration: 30 },
       { title: 'Liegestütz — Runde 1',                   duration: 30 },
@@ -149,8 +147,9 @@ export const protocolsData = {
   },
 
   back_activation: {
-    id: 'back_activation', title: 'Rückenaktivierung', xp: 15,
+    id: 'back_activation', title: 'Rückenaktivierung', xp: 15, intensity: 'mittel',
     description: 'Für Büroarbeiter · Tiefe Rückenmuskulatur',
+    why: 'Aktiviert die tiefe Rückenmuskulatur, die im Sitzen einschläft und bei Untätigkeit zu chronischen Beschwerden führt.',
     steps: [
       { title: 'Superman — 10 Wdh. halten je 2s',        duration: 40 },
       { title: 'Bird-Dog links — 10 Wdh.',               duration: 40 },
@@ -161,11 +160,10 @@ export const protocolsData = {
     ],
   },
 
-  // ── Kurzer Fuß nach Janda ───────────────────────────────────────────────────
-
   janda_foot: {
-    id: 'janda_foot', title: 'Kurzer Fuß · Janda', xp: 8,
+    id: 'janda_foot', title: 'Kurzer Fuß · Janda', xp: 8, intensity: 'leicht',
     description: 'Fußintrinsik · Propriozeption · linker Fuß · 3× täglich',
+    why: 'Stärkt die intrinsische Fußmuskulatur — Voraussetzung für normales Gangbild und zentrale Schmerzreduktion bei KMÖ.',
     steps: [
       { title: 'Fuß flach aufsetzen — Zehen entspannen',          duration: 10 },
       { title: 'Ballen zur Ferse ziehen — Zehen bleiben flach',   duration: 8  },
@@ -186,11 +184,10 @@ export const protocolsData = {
     ],
   },
 
-  // ── Lymphdrainage ───────────────────────────────────────────────────────────
-
   mld: {
-    id: 'mld', title: 'Lymphdrainage', xp: 15,
+    id: 'mld', title: 'Lymphdrainage', xp: 15, intensity: 'leicht',
     description: 'Entstauung · Post-OP · Ödem-Prävention',
+    why: 'Reduziert Ödembildung und fördert den Lymphabfluss — verringert Gewebsdruck und damit den KMÖ-typischen Ruheschmerz.',
     steps: [
       { title: 'Tiefatmung — Zwerchfell aktivieren',     duration: 30 },
       { title: 'Halsdrüsen sanft ausstreichen',          duration: 30 },
@@ -203,11 +200,10 @@ export const protocolsData = {
     ],
   },
 
-  // ── Zehenübungen ────────────────────────────────────────────────────────────
-
   toes: {
-    id: 'toes', title: 'Zehenübungen', xp: 8,
+    id: 'toes', title: 'Zehenübungen', xp: 8, intensity: 'leicht',
     description: 'Fußaktivierung · Lymphfluss · Propriozeption',
+    why: 'Verbessert die Propriozeption des Fußes und stärkt die fußstabilisierende Muskulatur — wirkt der KMÖ-bedingten Atrophie entgegen.',
     steps: [
       { title: 'Zehen spreizen & halten',                duration: 30 },
       { title: 'Zehen krallen & lösen',                  duration: 30 },
@@ -217,11 +213,10 @@ export const protocolsData = {
     ],
   },
 
-  // ── Fußtraining 3× täglich ──────────────────────────────────────────────────
-
   foot_morning: {
-    id: 'foot_morning', title: 'Fuß-Aktivierung Morgen', xp: 12,
+    id: 'foot_morning', title: 'Fuß-Aktivierung Morgen', xp: 12, intensity: 'leicht',
     description: 'Vor dem ersten Schritt · Durchblutung · Propriozeption',
+    why: 'Bringt Durchblutung und Propriozeption in den Fuß, bevor das erste Gewicht draufkommt — reduziert Anlaufschmerz und Sturzrisiko.',
     steps: [
       { title: 'Zehen einzeln spreizen & halten',                  duration: 20 },
       { title: 'Fußkreise links — 10x jede Richtung',              duration: 30 },
@@ -233,8 +228,9 @@ export const protocolsData = {
   },
 
   foot_midday: {
-    id: 'foot_midday', title: 'Gangschulung', xp: 15,
+    id: 'foot_midday', title: 'Gangschulung', xp: 15, intensity: 'mittel',
     description: 'Muskelkräftigung · Koordination · Gangmuster',
+    why: 'Trainiert die neuromuskuläre Kontrolle und normalisiert das durch KMÖ veränderte Gangbild — entscheidend für die Langzeit-Rehabilitation.',
     steps: [
       { title: 'Einbeinstand links — Augen auf',                   duration: 20 },
       { title: 'Einbeinstand links — Augen zu',                    duration: 15 },
@@ -247,8 +243,9 @@ export const protocolsData = {
   },
 
   foot_evening: {
-    id: 'foot_evening', title: 'Fuß-Regeneration Abend', xp: 10,
+    id: 'foot_evening', title: 'Fuß-Regeneration Abend', xp: 10, intensity: 'leicht',
     description: 'Entstauung · Mobilisation · Desensibilisierung',
+    why: 'Fördert venösen und lymphatischen Rückfluss über Nacht — reduziert Schwellung, Morgensteifigkeit und den KMÖ-typischen Nachtschmerz.',
     steps: [
       { title: 'Fußsohle ausstreichen — Ferse zu Zehen',           duration: 30 },
       { title: 'Unterschenkel aufwärts ausstreichen — sanft',       duration: 45 },
@@ -368,18 +365,26 @@ function BikeCard(state) {
 
 // ── Protokoll-Karte ─────────────────────────────────────────────────────────
 
+const INTENSITY_COLORS = { leicht: 'var(--text-dim)', mittel: '#d97706', intensiv: '#dc2626' };
+
 function ProtocolCard(p) {
-  const mins = Math.round(p.steps.reduce((a, s) => a + s.duration, 0) / 60);
+  const mins    = Math.round(p.steps.reduce((a, s) => a + s.duration, 0) / 60);
+  const intCol  = INTENSITY_COLORS[p.intensity] ?? 'var(--text-dim)';
   return `
-    <div class="card" style="padding:14px 16px;">
+    <div class="card" style="padding:14px 16px;margin-bottom:8px;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
         <div style="flex:1;padding-right:12px;">
           <div style="font-weight:800;font-size:0.85rem;letter-spacing:-0.01em;">${p.title}</div>
-          <div style="font-size:0.65rem;color:var(--text-dim);margin-top:3px;line-height:1.4;">${p.description}</div>
+          <div style="font-size:0.62rem;color:var(--text-dim);margin-top:3px;line-height:1.4;">${p.description}</div>
+          ${p.why ? `
+          <div style="font-size:0.62rem;color:var(--text-main);opacity:0.6;margin-top:5px;
+            line-height:1.4;font-style:italic;">${p.why}</div>` : ''}
         </div>
-        <div style="text-align:right;flex-shrink:0;">
+        <div style="text-align:right;flex-shrink:0;padding-top:2px;">
           <div class="u-mono" style="font-size:0.7rem;color:var(--text-dim);">+${p.xp} XP</div>
-          <div style="font-size:0.6rem;color:var(--text-dim);margin-top:2px;">${mins} min · ${p.steps.length} Schritte</div>
+          <div style="font-size:0.6rem;color:var(--text-dim);margin-top:2px;">${mins} min</div>
+          ${p.intensity ? `<div style="font-size:0.55rem;font-weight:800;text-transform:uppercase;
+            letter-spacing:0.05em;margin-top:4px;color:${intCol};">${p.intensity}</div>` : ''}
         </div>
       </div>
       <button data-action="start-protocol" data-id="${p.id}"
@@ -396,6 +401,10 @@ export const ProtokollModul = {
   label: 'Reha',
 
   view(state) {
+    const modules   = state.settings?.modules ?? {};
+    const stepsOn   = modules.steps ?? true;
+    const bikeOn    = modules.bike  ?? true;
+
     const protocolSections = CATEGORIES.map(cat => {
       const cards = cat.ids
         .map(id => protocolsData[id])
@@ -409,13 +418,15 @@ export const ProtokollModul = {
         </div>`;
     }).join('');
 
+    const hasMovement = stepsOn || bikeOn;
     return `
       <div style="padding-bottom:100px;">
-        <div style="margin-bottom:8px;">
-          <span class="u-label" style="margin-bottom:8px;">Bewegung</span>
-          ${StepsCard(state)}
-          ${BikeCard(state)}
-        </div>
+        ${hasMovement ? `
+          <div style="margin-bottom:8px;">
+            <span class="u-label" style="margin-bottom:8px;">Bewegung</span>
+            ${stepsOn ? StepsCard(state) : ''}
+            ${bikeOn  ? BikeCard(state)  : ''}
+          </div>` : ''}
         ${protocolSections}
       </div>`;
   },
