@@ -484,15 +484,17 @@ export const HomeModul = {
     const doneHabits = state.doneHabits ?? {};
     const wakeTime   = state.settings?.wakeTime ?? '07:00';
     const settings   = state.settings ?? {};
-    const waterOn    = settings.modules?.water ?? true;
+    const mods       = settings.modules ?? {};
+    const fastingOn  = mods.fasting ?? true;
+    const waterOn    = mods.water   ?? true;
     return `
       <div>
         ${HeroSection(state)}
         ${DayProgress(state)}
         ${CategoryProgress(state)}
         ${XPBar(state)}
-        ${TimerCard(state)}
-        ${MilestoneBanner(state)}
+        ${fastingOn ? TimerCard(state) : ''}
+        ${fastingOn ? MilestoneBanner(state) : ''}
         ${waterOn ? WaterCard(state) : ''}
         <div style="margin-top:8px;">
           ${BLOCKS.map(b => BlockSection(b, doneHabits, wakeTime, settings)).join('')}

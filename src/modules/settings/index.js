@@ -57,9 +57,10 @@ export const SettingsModul = {
     }).join('');
 
     const metrikRows = [
-      { id: 'water', label: 'Wasser',   sub: 'Hydration-Tracking auf der Startseite' },
-      { id: 'steps', label: 'Schritte', sub: 'Schrittzähler im Reha-Tab'             },
-      { id: 'bike',  label: 'Fahrrad',  sub: 'Kilometer-Tracking im Reha-Tab'        },
+      { id: 'fasting', label: 'Fasten-Timer', sub: 'Countdown & Meilensteine auf der Startseite' },
+      { id: 'water',   label: 'Wasser',        sub: 'Hydration-Tracking auf der Startseite'      },
+      { id: 'steps',   label: 'Schritte',      sub: 'Schrittzähler im Reha-Tab'                  },
+      { id: 'bike',    label: 'Fahrrad',        sub: 'Kilometer-Tracking im Reha-Tab'             },
     ].map(({ id, label, sub }, i, arr) => {
       const on   = mods[id] ?? true;
       const last = i === arr.length - 1;
