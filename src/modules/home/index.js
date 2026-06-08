@@ -78,11 +78,10 @@ function HeroSection(state) {
 }
 
 function DayProgress(state) {
-  const doneHabits = state.doneHabits ?? {};
-  const modules    = state.settings?.modules;
-  const verzichtOn = modules?.verzicht ?? true;
-  const trackable  = HABITS.filter(h => h.block !== 'verzicht' || verzichtOn);
-  const total      = trackable.length;
+  const doneHabits   = state.doneHabits ?? {};
+  const hiddenHabits = new Set(state.settings?.hiddenHabits ?? []);
+  const trackable    = HABITS.filter(h => !hiddenHabits.has(h.id));
+  const total        = trackable.length;
   const done       = trackable.filter(h => h.id in doneHabits).length;
   if (total === 0) return '';
   const pct        = Math.round((done / total) * 100);
@@ -112,13 +111,14 @@ function DayProgress(state) {
 }
 
 function CategoryProgress(state) {
-  const doneHabits = state.doneHabits ?? {};
-  const modules    = state.settings?.modules;
-  const verzichtOn = modules?.verzicht ?? true;
-  const cats       = ['bewegung', 'regeneration', 'fokus', ...(verzichtOn ? ['verzicht'] : [])];
+  const doneHabits   = state.doneHabits ?? {};
+  const hiddenHabits = new Set(state.settings?.hiddenHabits ?? []);
+  const cats         = ['bewegung', 'regeneration', 'fokus', 'verzicht'].filter(cat =>
+    HABITS.some(h => h.category === cat && !hiddenHabits.has(h.id))
+  );
 
   const rows = cats.map(cat => {
-    const habits = HABITS.filter(h => h.category === cat);
+    const habits = HABITS.filter(h => h.category === cat && !hiddenHabits.has(h.id));
     const done   = habits.filter(h => h.id in doneHabits).length;
     const total  = habits.length;
     const pct    = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -265,11 +265,9 @@ function HabitCard(habit, doneHabits) {
     </div>`;
 }
 
-function BlockSection(block, doneHabits, wakeTime, modules) {
-  const verzichtOn = modules?.verzicht ?? true;
-  if (block.id === 'verzicht' && !verzichtOn) return '';
-
-  const habits     = HABITS.filter(h => h.block === block.id);
+function BlockSection(block, doneHabits, wakeTime, settings) {
+  const hiddenHabits = new Set(settings?.hiddenHabits ?? []);
+  const habits       = HABITS.filter(h => h.block === block.id && !hiddenHabits.has(h.id));
   if (!habits.length) return '';
 
   const isCurrent  = block.id === currentBlock(wakeTime);
@@ -485,7 +483,8 @@ export const HomeModul = {
   view(state) {
     const doneHabits = state.doneHabits ?? {};
     const wakeTime   = state.settings?.wakeTime ?? '07:00';
-    const modules    = state.settings?.modules ?? {};
+    const settings   = state.settings ?? {};
+    const waterOn    = settings.modules?.water ?? true;
     return `
       <div>
         ${HeroSection(state)}
@@ -494,9 +493,9 @@ export const HomeModul = {
         ${XPBar(state)}
         ${TimerCard(state)}
         ${MilestoneBanner(state)}
-        ${WaterCard(state)}
+        ${waterOn ? WaterCard(state) : ''}
         <div style="margin-top:8px;">
-          ${BLOCKS.map(b => BlockSection(b, doneHabits, wakeTime, modules)).join('')}
+          ${BLOCKS.map(b => BlockSection(b, doneHabits, wakeTime, settings)).join('')}
         </div>
       </div>`;
   },

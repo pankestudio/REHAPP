@@ -369,9 +369,29 @@ document.addEventListener('click', async (e) => {
   }
 
   if (action === 'toggle-module') {
-    const mods = { steps: true, bike: true, verzicht: true, ...(Store.state.settings.modules ?? {}) };
+    const mods = { steps: true, bike: true, water: true, ...(Store.state.settings.modules ?? {}) };
     mods[id] = !mods[id];
     Store.state.settings = { ...Store.state.settings, modules: mods };
+  }
+
+  if (action === 'toggle-habit-visibility') {
+    const hidden = [...(Store.state.settings.hiddenHabits ?? [])];
+    const idx = hidden.indexOf(id);
+    if (idx >= 0) hidden.splice(idx, 1);
+    else hidden.push(id);
+    Store.state.settings = { ...Store.state.settings, hiddenHabits: hidden };
+  }
+
+  if (action === 'toggle-block-habits') {
+    const hidden      = new Set(Store.state.settings.hiddenHabits ?? []);
+    const blockHabits = HABITS.filter(h => h.block === id);
+    if (value === 'off') blockHabits.forEach(h => hidden.add(h.id));
+    else                 blockHabits.forEach(h => hidden.delete(h.id));
+    Store.state.settings = { ...Store.state.settings, hiddenHabits: [...hidden] };
+  }
+
+  if (action === 'reset-habits-visibility') {
+    Store.state.settings = { ...Store.state.settings, hiddenHabits: [] };
   }
 
   if (action === 'toggle-reminder') {

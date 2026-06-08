@@ -4,7 +4,7 @@
 // background sync for activity, periodic sync for daily reset,
 // push notifications for fasting milestones, App Badge for streak.
 
-const CACHE_NAME = 'rehapp-v4.3';
+const CACHE_NAME = 'rehapp-v4.4';
 const SHELL = ['/'];
 
 // ─── BroadcastChannel for SW↔client comms ────────────────────────────────────
