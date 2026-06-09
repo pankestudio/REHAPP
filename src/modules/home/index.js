@@ -1,34 +1,57 @@
 // src/modules/home/index.js
 
-export const expandedBlocks = new Set();
+export const expandedBlocks  = new Set();
+export const expandedDetails = new Set();
 
 export const HABITS = [
   // ── Morgen ────────────────────────────────────────────────────────────────────
-  { id: 'sleep',       block: 'morgen',   label: 'Geschlafen',        sub: 'mind. 6 Stunden',                  xp: 20, type: 'check',    category: 'regeneration' },
-  { id: 'foot_am',     block: 'morgen',   label: 'Fuß-Aktivierung',   sub: '3 Min · vor dem ersten Schritt',    xp: 12, type: 'protocol', protocol: 'foot_morning',    category: 'bewegung'     },
-  { id: 'morning',     block: 'morgen',   label: 'Morgenroutine',     sub: '8 Min · Körper aufwecken',          xp: 20, type: 'protocol', protocol: 'morning_routine', category: 'bewegung'     },
-  { id: 'breath',      block: 'morgen',   label: 'Atemübung 4-7-8',   sub: '3 Runden · Nervensystem',           xp: 8,  type: 'protocol', protocol: 'breath',          category: 'regeneration' },
-  { id: 'sunlight',    block: 'morgen',   label: 'Draußen',           sub: 'Tageslicht & frische Luft',         xp: 5,  type: 'check',    category: 'fokus'            },
-  { id: 'noscreen_am', block: 'morgen',   label: 'Screen-frei',       sub: 'Erste 30 Min nach dem Aufwachen',   xp: 15, type: 'check',    category: 'fokus'            },
-  { id: 'teeth',       block: 'morgen',   label: 'Zähne',             sub: '2 Min + Zungenreiniger',            xp: 5,  type: 'check',    category: 'fokus'            },
+  { id: 'sleep',       block: 'morgen',   label: 'Geschlafen',        sub: 'mind. 6 Stunden',                  xp: 20, type: 'check',    category: 'regeneration',
+    why: 'Schlafentzug erhöht CRPS-Schmerzintensität messbar. 6h+ sind kein Luxus — Zellreparatur, Schmerzgedächtnis-Reset und Cortisolabbau finden nur im Tiefschlaf statt.' },
+  { id: 'foot_am',     block: 'morgen',   label: 'Fuß-Aktivierung',   sub: '3 Min · vor dem ersten Schritt',    xp: 12, type: 'protocol', protocol: 'foot_morning',    category: 'bewegung',
+    why: 'Die erste Gewichtsbelastung nach der Nacht ist kritisch. 3 Min Aktivierung bringt Durchblutung und Propriozeption in den Fuß, bevor er Gewicht trägt — verhindert reflexhafte Schmerzreaktion.' },
+  { id: 'morning',     block: 'morgen',   label: 'Morgenroutine',     sub: '8 Min · Körper aufwecken',          xp: 20, type: 'protocol', protocol: 'morning_routine', category: 'bewegung',
+    why: '8 Min Bewegung direkt nach dem Aufwachen senkt Cortisol, aktiviert Muskelketten und setzt Serotonin frei. Der Ton für den ganzen Tag wird in den ersten 30 Min gesetzt.' },
+  { id: 'breath',      block: 'morgen',   label: 'Atemübung 4-7-8',   sub: '3 Runden · Nervensystem',           xp: 8,  type: 'protocol', protocol: 'breath',          category: 'regeneration',
+    why: '4-7-8 stimuliert den Vagusnerv direkt. Senkt Herzfrequenz und Entzündungsmarker, beruhigt das bei CRPS chronisch überreizte Nervensystem — in unter 3 Minuten.' },
+  { id: 'sunlight',    block: 'morgen',   label: 'Draußen',           sub: 'Tageslicht & frische Luft',         xp: 5,  type: 'check',    category: 'fokus',
+    why: 'Tageslicht in den ersten 30 Min synchronisiert den Cortisol-Rhythmus und triggert Vitamin-D-Synthese. Beides direkt relevant für Schmerzregulation und Stimmung.' },
+  { id: 'noscreen_am', block: 'morgen',   label: 'Screen-frei',       sub: 'Erste 30 Min nach dem Aufwachen',   xp: 15, type: 'check',    category: 'fokus',
+    why: 'Ohne Bildschirm kann das Gehirn beim Aufwachen die Schmerzverarbeitung neu kalibrieren. Displays aktivieren sofort den Sympathikus — der bei CRPS ohnehin überaktiv ist.' },
+  { id: 'teeth',       block: 'morgen',   label: 'Zähne',             sub: '2 Min + Zungenreiniger',            xp: 5,  type: 'check',    category: 'fokus',
+    why: 'Orale Hygiene senkt systemische Entzündungslast. Bei CRPS verstärkt jeder Entzündungsreiz im Körper die Symptome — auch Entzündungen im Mund.' },
   // ── Tag ───────────────────────────────────────────────────────────────────────
-  { id: 'movement',    block: 'tag',      label: 'Bewegungspause',    sub: '2 Min aufstehen · strecken',        xp: 3,  type: 'check',    category: 'bewegung'         },
-  { id: 'foot_noon',   block: 'tag',      label: 'Gangschulung',      sub: '4 Min · Muskel & Koordination',     xp: 15, type: 'protocol', protocol: 'foot_midday',     category: 'bewegung'     },
-  { id: 'box',         block: 'tag',      label: 'Box Breathing',     sub: 'Stress abbauen · 5 Runden',         xp: 10, type: 'protocol', protocol: 'box_breathing',   category: 'regeneration' },
-  { id: 'learning',    block: 'tag',      label: 'Input',             sub: '10 Minuten Neues',                  xp: 15, type: 'check',    category: 'fokus'            },
-  { id: 'cooking',     block: 'tag',      label: 'Gekocht',           sub: 'Eine Mahlzeit selbst gekocht',      xp: 15, type: 'check',    category: 'fokus'            },
-  { id: 'others',      block: 'tag',      label: 'Für andere',        sub: 'Etwas für jemand getan',            xp: 20, type: 'check',    category: 'fokus'            },
+  { id: 'movement',    block: 'tag',      label: 'Bewegungspause',    sub: '2 Min aufstehen · strecken',        xp: 3,  type: 'check',    category: 'bewegung',
+    why: '2 Min aufstehen unterbricht die sympathische Dauerreizung durch langes Sitzen. Der Sympathikus ist bei CRPS chronisch überaktiv — jede Pause hilft.' },
+  { id: 'foot_noon',   block: 'tag',      label: 'Gangschulung',      sub: '4 Min · Muskel & Koordination',     xp: 15, type: 'protocol', protocol: 'foot_midday',     category: 'bewegung',
+    why: 'Mittags ist der Körper warm und bereit. Gangschulung jetzt trainiert neuromuskuläre Kontrolle auf höchstem Level und normalisiert das durch KMÖ veränderte Gangbild.' },
+  { id: 'box',         block: 'tag',      label: 'Box Breathing',     sub: 'Stress abbauen · 5 Runden',         xp: 10, type: 'protocol', protocol: 'box_breathing',   category: 'regeneration',
+    why: 'Box Breathing (4-4-4-4) ist die direkteste nicht-pharmakologische Methode zur Parasympathikus-Aktivierung. Nachweislich bei akutem Stress und Schmerzspitzen wirksam.' },
+  { id: 'learning',    block: 'tag',      label: 'Input',             sub: '10 Minuten Neues',                  xp: 15, type: 'check',    category: 'fokus',
+    why: 'Kognitive Stimulation fördert Neuroplastizität — der zentrale Mechanismus, durch den das Gehirn Schmerzmuster umlernt. Lernen ist buchstäblich Schmerztherapie.' },
+  { id: 'cooking',     block: 'tag',      label: 'Gekocht',           sub: 'Eine Mahlzeit selbst gekocht',      xp: 15, type: 'check',    category: 'fokus',
+    why: 'Selbst kochen = volle Kontrolle über Entzündungstrigger. Zucker, Transfette, Industriesalz — alle drei sind CRPS-Verstärker. Jede selbst gekochte Mahlzeit zählt.' },
+  { id: 'others',      block: 'tag',      label: 'Für andere',        sub: 'Etwas für jemand getan',            xp: 20, type: 'check',    category: 'fokus',
+    why: 'Echtes Geben setzt Oxytocin frei — ein direkter Schmerzdämpfer. Soziale Verbindung ist einer der wenigen kostenlosen Hebel mit nachgewiesenem Effekt auf Schmerztoleranz.' },
   // ── Abend ─────────────────────────────────────────────────────────────────────
-  { id: 'foot_pm',     block: 'abend',    label: 'Fuß-Regeneration',  sub: '3 Min · Entstauung & Mobilisation', xp: 10, type: 'protocol', protocol: 'foot_evening',    category: 'bewegung'     },
-  { id: 'stretch',     block: 'abend',    label: 'Dehnung',           sub: '10 Min · Faszien & Gelenke',        xp: 10, type: 'protocol', protocol: 'stretch',         category: 'regeneration' },
-  { id: 'vagus',       block: 'abend',    label: 'Vagus',             sub: '5 Min · Parasympathikus',           xp: 15, type: 'protocol', protocol: 'vagus',           category: 'regeneration' },
-  { id: 'meditation',  block: 'abend',    label: 'Meditation',        sub: '10 Minuten',                        xp: 15, type: 'protocol', protocol: 'meditation',      category: 'regeneration' },
-  { id: 'gratitude',   block: 'abend',    label: 'Dankbarkeit',       sub: 'Was war dein Up heute?',            xp: 10, type: 'text',     category: 'fokus'            },
+  { id: 'foot_pm',     block: 'abend',    label: 'Fuß-Regeneration',  sub: '3 Min · Entstauung & Mobilisation', xp: 10, type: 'protocol', protocol: 'foot_evening',    category: 'bewegung',
+    why: 'Lymphatischer Rückfluss passiert hauptsächlich im Liegen. Aktiv unterstützen verhindert Ödem-Akkumulation über Nacht — die Hauptursache für Morgensteifigkeit bei KMÖ.' },
+  { id: 'stretch',     block: 'abend',    label: 'Dehnung',           sub: '10 Min · Faszien & Gelenke',        xp: 10, type: 'protocol', protocol: 'stretch',         category: 'regeneration',
+    why: 'Faszienarbeit am Abend löst tagsüber aufgebaute Spannungen und bereitet das Nervensystem auf die Regenerationsphase des Schlafs vor.' },
+  { id: 'vagus',       block: 'abend',    label: 'Vagus',             sub: '5 Min · Parasympathikus',           xp: 15, type: 'protocol', protocol: 'vagus',           category: 'regeneration',
+    why: '5 Min Vagus-Stimulation senkt den Ruhepuls messbar und erhöht die Herzratenvariabilität — beides direkte Marker für Nervensystemgesundheit bei CRPS.' },
+  { id: 'meditation',  block: 'abend',    label: 'Meditation',        sub: '10 Minuten',                        xp: 15, type: 'protocol', protocol: 'meditation',      category: 'regeneration',
+    why: '10 Min Meditation verändert Schmerzperzeption auf neuraler Ebene — nachgewiesen durch veränderte Insula-Aktivität bei chronischen Schmerzpatienten.' },
+  { id: 'gratitude',   block: 'abend',    label: 'Dankbarkeit',       sub: 'Was war dein Up heute?',            xp: 10, type: 'text',     category: 'fokus',
+    why: 'Dankbarkeit aktiviert den präfrontalen Kortex und dämpft die Amygdala — direkte Auswirkung auf Schmerztoleranz und Schlafqualität. 3 Dinge reichen.' },
   // ── Verzicht ──────────────────────────────────────────────────────────────────
-  { id: 'no_alcohol',  block: 'verzicht', label: 'Kein Alkohol',      sub: 'Jeder Tag ohne Alkohol zählt',      xp: 20, type: 'check',    category: 'verzicht'         },
-  { id: 'no_sugar',    block: 'verzicht', label: 'Kein Zucker',       sub: 'Zucker entzündet',                  xp: 15, type: 'check',    category: 'verzicht'         },
-  { id: 'no_drugs',    block: 'verzicht', label: 'Drogenfrei',        sub: 'Jeder Tag ohne Drogen zählt',       xp: 20, type: 'check',    category: 'verzicht'         },
-  { id: 'cigarettes',  block: 'verzicht', label: 'Zigaretten',        sub: 'Keine = +20 XP · 1–3 = +10 XP',    xp: 20, type: 'cigs',     category: 'verzicht'         },
+  { id: 'no_alcohol',  block: 'verzicht', label: 'Kein Alkohol',      sub: 'Jeder Tag ohne Alkohol zählt',      xp: 20, type: 'check',    category: 'verzicht',
+    why: 'Alkohol verstärkt Neuroinflammation und zerstört Tiefschlaf. Beides sind die stärksten bekannten Trigger für CRPS-Verschlechterung — auch in kleinen Mengen.' },
+  { id: 'no_sugar',    block: 'verzicht', label: 'Kein Zucker',       sub: 'Zucker entzündet',                  xp: 15, type: 'check',    category: 'verzicht',
+    why: 'Zucker erhöht CRP und andere Entzündungsmarker direkt. Bei CRPS, wo Entzündung ein Kernmechanismus ist, zählt jeder zuckerfreie Tag — auch kleine Reduktionen wirken.' },
+  { id: 'no_drugs',    block: 'verzicht', label: 'Drogenfrei',        sub: 'Jeder Tag ohne Drogen zählt',       xp: 20, type: 'check',    category: 'verzicht',
+    why: 'Das Nervensystem braucht ungestörte Chemie um sich zu regulieren. Jeder drogenfreie Tag ist ein Tag, an dem Neuroplastizität ungehindert arbeiten kann.' },
+  { id: 'cigarettes',  block: 'verzicht', label: 'Zigaretten',        sub: 'Keine = +20 XP · 1–3 = +10 XP',    xp: 20, type: 'cigs',     category: 'verzicht',
+    why: 'Nikotin verursacht Vasokonstriktion — besonders schädlich bei KMÖ/CRPS, wo die Mikrozirkulation bereits gestört ist. Weniger Zigaretten = bessere Durchblutung.' },
 ];
 
 const BLOCKS = [
@@ -235,33 +258,49 @@ function HabitCard(habit, doneHabits) {
   if (habit.type === 'cigs') return CigsCard(habit, doneHabits);
   if (habit.type === 'text') return GratitudeCard(habit, doneHabits);
 
-  const done = !!doneHabits[habit.id];
+  const done       = !!doneHabits[habit.id];
+  const detailOpen = !done && expandedDetails.has(habit.id);
 
   const action = done
-    ? `<div style="width:32px;height:32px;border:1.5px solid var(--border);
+    ? `<div style="width:44px;height:44px;border:1.5px solid var(--border);
          display:flex;align-items:center;justify-content:center;font-size:0.9rem;opacity:0.4;">✓</div>`
     : habit.type === 'protocol'
       ? `<button data-action="start-protocol" data-id="${habit.protocol}"
-           style="width:32px;height:32px;cursor:pointer;font-weight:var(--fw-black);
-             font-size:0.8rem;border:1.5px solid var(--text-main);
-             background:var(--text-main);color:var(--bg);">▶</button>`
+           style="width:44px;height:44px;cursor:pointer;font-weight:var(--fw-black);
+             font-size:0.9rem;border:1.5px solid var(--text-main);
+             background:var(--text-main);color:var(--bg);touch-action:manipulation;">▶</button>`
       : `<button data-action="tap-habit" data-id="${habit.id}"
-           style="width:32px;height:32px;cursor:pointer;font-weight:var(--fw-black);
-             font-size:0.8rem;border:1.5px solid var(--text-main);
-             background:transparent;color:var(--text-main);">+</button>`;
+           style="width:44px;height:44px;cursor:pointer;font-weight:var(--fw-black);
+             font-size:0.9rem;border:1.5px solid var(--text-main);
+             background:transparent;color:var(--text-main);touch-action:manipulation;">+</button>`;
 
   return `
-    <div class="card" style="display:flex;justify-content:space-between;align-items:center;
-      padding:14px 20px;margin-bottom:8px;${done ? 'opacity:0.4;' : ''}">
-      <div style="flex:1;min-width:0;padding-right:12px;">
-        <div style="font-weight:var(--fw-bold);font-size:0.85rem;
-          ${done ? 'text-decoration:line-through;' : ''}">${habit.label}</div>
-        ${habit.sub ? `<div style="font-size:0.65rem;color:var(--text-dim);margin-top:3px;">${habit.sub}</div>` : ''}
+    <div class="card" data-habit-id="${habit.id}"
+      style="padding:14px 20px;margin-bottom:8px;${done ? 'opacity:0.4;' : ''}">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="flex:1;min-width:0;padding-right:12px;">
+          <div style="font-weight:var(--fw-bold);font-size:0.85rem;
+            ${done ? 'text-decoration:line-through;' : ''}">${habit.label}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:3px;flex-wrap:wrap;">
+            ${habit.sub ? `<span style="font-size:0.65rem;color:var(--text-dim);">${habit.sub}</span>` : ''}
+            ${habit.why && !done ? `
+              <button data-action="toggle-habit-detail" data-id="${habit.id}"
+                style="font-size:0.6rem;color:var(--text-dim);background:none;border:none;
+                  cursor:pointer;padding:0;opacity:0.7;touch-action:manipulation;
+                  text-decoration:underline;text-underline-offset:2px;">
+                ${detailOpen ? '↑ weniger' : '↓ warum'}
+              </button>` : ''}
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+          ${!done ? `<span class="u-mono" style="font-size:0.62rem;color:var(--text-dim);">+${habit.xp}</span>` : ''}
+          ${action}
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-        ${!done ? `<span class="u-mono" style="font-size:0.62rem;color:var(--text-dim);">+${habit.xp}</span>` : ''}
-        ${action}
-      </div>
+      ${detailOpen && habit.why ? `
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+          <div style="font-size:0.73rem;color:var(--text-dim);line-height:1.55;">${habit.why}</div>
+        </div>` : ''}
     </div>`;
 }
 

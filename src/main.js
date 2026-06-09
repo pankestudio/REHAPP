@@ -5,7 +5,7 @@ import { TimerService }   from './core/TimerService.js';
 import { ModuleRegistry } from './core/ModuleRegistry.js';
 import * as T             from './ui/Templates.js';
 
-import { HomeModul, HABITS, expandedBlocks } from './modules/home/index.js';
+import { HomeModul, HABITS, expandedBlocks, expandedDetails } from './modules/home/index.js';
 import { ProtokollModul, protocolsData }    from './modules/protocols/index.js';
 import { StatsModul }                       from './modules/stats/index.js';
 import { SettingsModul }                    from './modules/settings/index.js';
@@ -241,12 +241,81 @@ function showBikeInput() {
   });
 }
 
+// ─── XP helper ───────────────────────────────────────────────────────────────
+function awardXP(amount) {
+  const prevLevel = Math.floor(Store.state.xp / 100);
+  Store.state.xp += amount;
+  Store.logActivity();
+  const newLevel = Math.floor(Store.state.xp / 100);
+  if (newLevel > prevLevel) AnimationEngine.showLevelUp(newLevel + 1);
+  else AnimationEngine.showXPGain(amount);
+}
+
+// ─── Onboarding view ─────────────────────────────────────────────────────────
+function renderOnboarding(state) {
+  const s = state.settings;
+  return `
+    <div class="app-container" style="min-height:100vh;display:flex;flex-direction:column;
+      justify-content:center;padding-top:60px;padding-bottom:60px;">
+      <div style="margin-bottom:36px;">
+        <div class="u-mono" style="font-size:0.7rem;font-weight:800;
+          letter-spacing:0.12em;margin-bottom:28px;opacity:0.5;">REHAPP</div>
+        <div style="font-size:1.5rem;font-weight:800;letter-spacing:-0.03em;
+          line-height:1.2;margin-bottom:10px;">
+          Deine Reha.<br>Deine Regeln.
+        </div>
+        <div style="font-size:0.75rem;color:var(--text-dim);font-style:italic;">
+          & I said: no, no, no.
+        </div>
+      </div>
+
+      <div class="card">
+        <label class="u-label" style="font-size:0.6rem;">Wie heißt du?</label>
+        <input
+          id="onb-name"
+          type="text"
+          placeholder="Dein Name"
+          autocomplete="given-name"
+          value="${s.userName || ''}"
+          style="width:100%;border:1.5px solid var(--border);background:var(--bg);
+                 color:var(--text-main);padding:12px;outline:none;
+                 font-family:inherit;font-size:1rem;margin-bottom:20px;">
+
+        <label class="u-label" style="font-size:0.6rem;">Wann wachst du auf?</label>
+        <input
+          id="onb-wakeup"
+          type="time"
+          value="${s.wakeTime ?? '07:00'}"
+          style="width:100%;border:1.5px solid var(--border);background:var(--bg);
+                 color:var(--text-main);padding:12px;outline:none;
+                 font-family:inherit;font-size:1rem;margin-bottom:24px;">
+
+        <button data-action="complete-onboarding" class="btn-primary">
+          STARTEN →
+        </button>
+      </div>
+
+      <div style="margin-top:20px;font-size:0.62rem;color:var(--text-dim);
+        line-height:1.5;padding:0 4px;">
+        REHAPP begleitet dich bei KMÖ/CRPS-Reha mit täglichen Protokollen,
+        Habits und Fortschritts-Tracking. Alles läuft lokal auf deinem Gerät.
+      </div>
+    </div>`;
+}
+
 // ─── Render ───────────────────────────────────────────────────────────────────
 const app = document.querySelector('#app');
 
 function render() {
   if (!app || !Store.state) return;
   const { state } = Store;
+
+  if (!state.settings.onboardingDone) {
+    app.innerHTML = renderOnboarding(state);
+    document.documentElement.style.fontSize = `${state.settings.fontSize}px`;
+    return;
+  }
+
   ModuleRegistry.activate(state.view);
   app.innerHTML = `
     <div class="app-container">
@@ -355,8 +424,14 @@ document.addEventListener('click', async (e) => {
     const habit = HABITS.find(h => h.id === id);
     if (!habit || Store.state.doneHabits[id]) return;
     Store.state.doneHabits = { ...Store.state.doneHabits, [id]: new Date().toDateString() };
-    if (habit.xp > 0) { Store.state.xp += habit.xp; Store.logActivity(); }
+    if (habit.xp > 0) awardXP(habit.xp);
     GamificationEngine.check();
+  }
+
+  if (action === 'toggle-habit-detail') {
+    if (expandedDetails.has(id)) expandedDetails.delete(id);
+    else expandedDetails.add(id);
+    Store.notify('view');
   }
 
   if (action === 'take-supplement') {
@@ -405,7 +480,7 @@ document.addEventListener('click', async (e) => {
     const text = ta?.value.trim() ?? '';
     const habit = HABITS.find(h => h.id === 'gratitude');
     Store.state.doneHabits = { ...Store.state.doneHabits, gratitude: text };
-    if (habit && habit.xp > 0) { Store.state.xp += habit.xp; Store.logActivity(); }
+    if (habit && habit.xp > 0) awardXP(habit.xp);
     GamificationEngine.check();
   }
 
@@ -413,8 +488,14 @@ document.addEventListener('click', async (e) => {
     const count = parseInt(value);
     const xp    = count === 0 ? 20 : count <= 3 ? 10 : 0;
     Store.state.doneHabits = { ...Store.state.doneHabits, cigarettes: count };
-    if (xp > 0) { Store.state.xp += xp; Store.logActivity(); }
+    if (xp > 0) awardXP(xp);
     GamificationEngine.check();
+  }
+
+  if (action === 'complete-onboarding') {
+    const name   = document.getElementById('onb-name')?.value?.trim() ?? '';
+    const wakeup = document.getElementById('onb-wakeup')?.value ?? '07:00';
+    Store.state.settings = { ...Store.state.settings, userName: name || 'du', wakeTime: wakeup, onboardingDone: true };
   }
 
   if (action === 'start-protocol') {
@@ -515,6 +596,10 @@ async function bootstrap() {
     </div>`;
 
   await Store.init();
+  // Existing users (have XP or userName) skip onboarding
+  if (!Store.state.settings.onboardingDone && (Store.state.xp > 0 || Store.state.settings.userName)) {
+    Store.state.settings = { ...Store.state.settings, onboardingDone: true };
+  }
   applyTheme(Store.state.settings?.theme ?? 'system');
   Store.checkDailyReset();
 

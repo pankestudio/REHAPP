@@ -54,6 +54,8 @@
 
 /* ── Reset ──────────────────────────────────────────────────────────────────── */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+button { touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+.app-container { -webkit-user-select: none; user-select: none; }
 
 /* ── Base ───────────────────────────────────────────────────────────────────── */
 body {

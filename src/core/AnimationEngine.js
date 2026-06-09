@@ -153,6 +153,78 @@ export const AnimationEngine = {
     ring.style.opacity = remaining <= 3 ? '0.4' : '1';
   },
 
+  // ── XP-Gewinn Flash ──────────────────────────────────────────────────────
+  showXPGain(xp) {
+    const existing = document.getElementById('xp-gain-toast');
+    if (existing) {
+      existing.textContent = `+${xp} XP`;
+      clearTimeout(existing._t);
+      existing._t = setTimeout(() => {
+        existing.style.opacity = '0';
+        existing.style.transform = 'translateY(-8px)';
+        setTimeout(() => existing.remove(), 200);
+      }, 1100);
+      return;
+    }
+    const el = document.createElement('div');
+    el.id = 'xp-gain-toast';
+    Object.assign(el.style, {
+      position: 'fixed',
+      top: 'calc(var(--safe-top) + 12px)',
+      right: '16px',
+      color: 'var(--text-main)',
+      fontSize: '0.7rem',
+      fontWeight: '800',
+      fontFamily: 'var(--font-mono)',
+      letterSpacing: '0.06em',
+      zIndex: '2000',
+      pointerEvents: 'none',
+      opacity: '0',
+      transform: 'translateY(-4px)',
+      transition: 'opacity 0.18s ease,transform 0.18s ease',
+    });
+    el.textContent = `+${xp} XP`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    });
+    el._t = setTimeout(() => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(-8px)';
+      setTimeout(() => el.remove(), 200);
+    }, 1100);
+  },
+
+  // ── Level Up ─────────────────────────────────────────────────────────────
+  showLevelUp(level) {
+    document.getElementById('levelup-toast')?.remove();
+    const el = document.createElement('div');
+    el.id = 'levelup-toast';
+    el.innerHTML = `
+      <div id="levelup-inner" style="
+        position:fixed;top:calc(var(--safe-top) + 10px);left:12px;right:12px;
+        background:var(--text-main);color:var(--bg);padding:16px 20px;z-index:3000;
+        opacity:0;transform:translateY(-8px);
+        transition:opacity 0.25s ease,transform 0.25s ease;">
+        <div style="font-size:0.55rem;font-weight:800;letter-spacing:0.12em;
+          text-transform:uppercase;opacity:0.55;margin-bottom:4px;">Level Up</div>
+        <div style="font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;">
+          Level ${level} erreicht.
+        </div>
+      </div>`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      const inner = document.getElementById('levelup-inner');
+      if (inner) { inner.style.opacity = '1'; inner.style.transform = 'translateY(0)'; }
+    });
+    setTimeout(() => {
+      const inner = document.getElementById('levelup-inner');
+      if (inner) { inner.style.opacity = '0'; inner.style.transform = 'translateY(-8px)'; }
+      setTimeout(() => el.remove(), 300);
+    }, 3000);
+  },
+
   // ── Atem-Kreis Phase ─────────────────────────────────────────────────────
   setBreathPhase(phase) {
     const dot   = document.getElementById('breath-dot');
