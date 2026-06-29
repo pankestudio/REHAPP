@@ -9,24 +9,16 @@ const HABIT_BLOCKS = [
   { id: 'verzicht', label: 'Verzicht' },
 ];
 
-function Toggle(on, action, id) {
+function Toggle(on, action, id, sm = false) {
+  const [W, H, R, K, ox, fx, tp] = sm
+    ? [36, 20, 10, 16, 18, 2, 2]
+    : [42, 24, 12, 18, 21, 3, 3];
   return `
     <button data-action="${action}" data-id="${id}"
-      style="flex-shrink:0;width:42px;height:24px;border-radius:12px;border:none;cursor:pointer;
+      style="flex-shrink:0;width:${W}px;height:${H}px;border-radius:${R}px;border:none;cursor:pointer;
         background:${on ? 'var(--text-main)' : 'var(--border)'};position:relative;">
-      <span style="position:absolute;top:3px;left:${on ? '21px' : '3px'};
-        width:18px;height:18px;background:${on ? 'var(--bg)' : 'var(--surface)'};
-        border-radius:50%;transition:left 0.15s;"></span>
-    </button>`;
-}
-
-function HabitToggle(on, habitId) {
-  return `
-    <button data-action="toggle-habit-visibility" data-id="${habitId}"
-      style="flex-shrink:0;width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;
-        background:${on ? 'var(--text-main)' : 'var(--border)'};position:relative;">
-      <span style="position:absolute;top:2px;left:${on ? '18px' : '2px'};
-        width:16px;height:16px;background:${on ? 'var(--bg)' : 'var(--surface)'};
+      <span style="position:absolute;top:${tp}px;left:${on ? ox : fx}px;
+        width:${K}px;height:${K}px;background:${on ? 'var(--bg)' : 'var(--surface)'};
         border-radius:50%;transition:left 0.15s;"></span>
     </button>`;
 }
@@ -89,7 +81,7 @@ export const SettingsModul = {
             <div style="flex:1;font-size:0.78rem;
               font-weight:${on ? 'var(--fw-bold)' : '400'};
               color:${on ? 'var(--text-main)' : 'var(--text-dim)'};">${h.label}</div>
-            ${HabitToggle(on, h.id)}
+            ${Toggle(on, 'toggle-habit-visibility', h.id, true)}
           </div>`;
       }).join('');
 

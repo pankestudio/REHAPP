@@ -13,6 +13,7 @@ import { ReminderService }                  from './core/ReminderService.js';
 import { GamificationEngine }               from './core/GamificationEngine.js';
 import { AnimationEngine }                  from './core/AnimationEngine.js';
 import { NutritionModul }                   from './modules/nutrition/index.js';
+import { renderOnboarding }                 from './modules/onboarding/index.js';
 import { SUPPLEMENTS }                      from './data/supplements/kmoe_crps.js';
 
 ModuleRegistry
@@ -43,8 +44,7 @@ function checkBikeMilestones(km) {
     const d = parseFloat(dist);
     if (km >= d && !_notifiedBikeMilestones.has(d)) {
       _notifiedBikeMilestones.add(d);
-      Store.state.xp += xp;
-      Store.logActivity();
+      awardXP(xp);
     }
   }
 }
@@ -160,84 +160,72 @@ function checkFastingMilestones(s) {
   }
 }
 
-// ─── Steps input overlay ──────────────────────────────────────────────────────
-function showStepsInput() {
-  if (document.getElementById('steps-overlay')) return;
+// ─── Numeric input overlay (shared) ──────────────────────────────────────────
+function showNumericInput({ overlayId, label, inputmode, placeholder, onConfirm }) {
+  if (document.getElementById(overlayId)) return;
+  const inputId = `${overlayId}-input`;
   const el = document.createElement('div');
-  el.id = 'steps-overlay';
+  el.id = overlayId;
   el.innerHTML = `
     <div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1500;
       display:flex;align-items:flex-end;">
       <div style="background:var(--surface);width:100%;padding:24px 20px calc(24px + var(--safe-bot));
         border-top:2px solid var(--text-main);">
-        <span class="u-label">Schritte eingeben</span>
-        <input id="steps-input" type="number" inputmode="numeric"
-          placeholder="z.B. 8500"
+        <span class="u-label">${label}</span>
+        <input id="${inputId}" type="number" inputmode="${inputmode}"
+          placeholder="${placeholder}"
           style="width:100%;border:1.5px solid var(--border);background:var(--bg);
                  color:var(--text-main);padding:12px;font-size:1.2rem;font-family:inherit;
                  margin:12px 0;outline:none;-webkit-appearance:none;">
         <div style="display:flex;gap:10px;margin-top:4px;">
-          <button id="steps-cancel" style="flex:1;border:1.5px solid var(--border);
+          <button id="${overlayId}-cancel" style="flex:1;border:1.5px solid var(--border);
             background:transparent;padding:14px;font-weight:800;font-size:0.75rem;
             text-transform:uppercase;cursor:pointer;">Abbrechen</button>
-          <button id="steps-confirm" class="btn-primary" style="flex:2;">
-            Übernehmen
-          </button>
+          <button id="${overlayId}-confirm" class="btn-primary" style="flex:2;">Übernehmen</button>
         </div>
       </div>
     </div>`;
   document.body.appendChild(el);
-
-  const input = document.getElementById('steps-input');
-  input.focus();
-
-  document.getElementById('steps-cancel').addEventListener('click', () => el.remove());
-  document.getElementById('steps-confirm').addEventListener('click', () => {
-    const val = parseInt(input.value);
-    if (!isNaN(val) && val >= 0) {
-      const prev     = Store.state.steps ?? 0;
-      const added    = Math.max(val - prev, 0);
-      const xpGained = Math.floor(added / 1000) * 10;
-      Store.state.steps = val;
-      if (xpGained > 0) { Store.state.xp += xpGained; Store.logActivity(); }
-      GamificationEngine.onStepsUpdated(val);
-    }
+  document.getElementById(inputId).focus();
+  document.getElementById(`${overlayId}-cancel`).addEventListener('click', () => el.remove());
+  document.getElementById(`${overlayId}-confirm`).addEventListener('click', () => {
+    onConfirm(document.getElementById(inputId).value);
     el.remove();
   });
 }
 
+function showStepsInput() {
+  showNumericInput({
+    overlayId:   'steps-overlay',
+    label:       'Schritte eingeben',
+    inputmode:   'numeric',
+    placeholder: 'z.B. 8500',
+    onConfirm(raw) {
+      const val = parseInt(raw);
+      if (!isNaN(val) && val >= 0) {
+        const prev     = Store.state.steps ?? 0;
+        const xpGained = Math.floor(Math.max(val - prev, 0) / 1000) * 10;
+        Store.state.steps = val;
+        if (xpGained > 0) awardXP(xpGained);
+        GamificationEngine.onStepsUpdated(val);
+      }
+    },
+  });
+}
+
 function showBikeInput() {
-  if (document.getElementById('bike-overlay')) return;
-  const el = document.createElement('div');
-  el.id = 'bike-overlay';
-  el.innerHTML = `
-    <div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1500;
-      display:flex;align-items:flex-end;">
-      <div style="background:var(--surface);width:100%;padding:24px 20px calc(24px + var(--safe-bot));
-        border-top:2px solid var(--text-main);">
-        <span class="u-label">Kilometer eingeben</span>
-        <input id="bike-input" type="number" inputmode="decimal" placeholder="z.B. 12.5"
-          style="width:100%;border:1.5px solid var(--border);background:var(--bg);
-                 color:var(--text-main);padding:12px;font-size:1.2rem;font-family:inherit;
-                 margin:12px 0;outline:none;-webkit-appearance:none;">
-        <div style="display:flex;gap:10px;margin-top:4px;">
-          <button id="bike-cancel" style="flex:1;border:1.5px solid var(--border);
-            background:transparent;padding:14px;font-weight:800;font-size:0.75rem;
-            text-transform:uppercase;cursor:pointer;">Abbrechen</button>
-          <button id="bike-confirm" class="btn-primary" style="flex:2;">Übernehmen</button>
-        </div>
-      </div>
-    </div>`;
-  document.body.appendChild(el);
-  document.getElementById('bike-input').focus();
-  document.getElementById('bike-cancel').addEventListener('click', () => el.remove());
-  document.getElementById('bike-confirm').addEventListener('click', () => {
-    const val = parseFloat(document.getElementById('bike-input').value);
-    if (!isNaN(val) && val >= 0) {
-      Store.state.bikeKm = Math.max(val, Store.state.bikeKm ?? 0);
-      checkBikeMilestones(Store.state.bikeKm);
-    }
-    el.remove();
+  showNumericInput({
+    overlayId:   'bike-overlay',
+    label:       'Kilometer eingeben',
+    inputmode:   'decimal',
+    placeholder: 'z.B. 12.5',
+    onConfirm(raw) {
+      const val = parseFloat(raw);
+      if (!isNaN(val) && val >= 0) {
+        Store.state.bikeKm = Math.max(val, Store.state.bikeKm ?? 0);
+        checkBikeMilestones(Store.state.bikeKm);
+      }
+    },
   });
 }
 
@@ -249,58 +237,6 @@ function awardXP(amount) {
   const newLevel = Math.floor(Store.state.xp / 100);
   if (newLevel > prevLevel) AnimationEngine.showLevelUp(newLevel + 1);
   else AnimationEngine.showXPGain(amount);
-}
-
-// ─── Onboarding view ─────────────────────────────────────────────────────────
-function renderOnboarding(state) {
-  const s = state.settings;
-  return `
-    <div class="app-container" style="min-height:100vh;display:flex;flex-direction:column;
-      justify-content:center;padding-top:60px;padding-bottom:60px;">
-      <div style="margin-bottom:36px;">
-        <div class="u-mono" style="font-size:0.7rem;font-weight:800;
-          letter-spacing:0.12em;margin-bottom:28px;opacity:0.5;">REHAPP</div>
-        <div style="font-size:1.5rem;font-weight:800;letter-spacing:-0.03em;
-          line-height:1.2;margin-bottom:10px;">
-          Deine Reha.<br>Deine Regeln.
-        </div>
-        <div style="font-size:0.75rem;color:var(--text-dim);font-style:italic;">
-          & I said: no, no, no.
-        </div>
-      </div>
-
-      <div class="card">
-        <label class="u-label" style="font-size:0.6rem;">Wie heißt du?</label>
-        <input
-          id="onb-name"
-          type="text"
-          placeholder="Dein Name"
-          autocomplete="given-name"
-          value="${s.userName || ''}"
-          style="width:100%;border:1.5px solid var(--border);background:var(--bg);
-                 color:var(--text-main);padding:12px;outline:none;
-                 font-family:inherit;font-size:1rem;margin-bottom:20px;">
-
-        <label class="u-label" style="font-size:0.6rem;">Wann wachst du auf?</label>
-        <input
-          id="onb-wakeup"
-          type="time"
-          value="${s.wakeTime ?? '07:00'}"
-          style="width:100%;border:1.5px solid var(--border);background:var(--bg);
-                 color:var(--text-main);padding:12px;outline:none;
-                 font-family:inherit;font-size:1rem;margin-bottom:24px;">
-
-        <button data-action="complete-onboarding" class="btn-primary">
-          STARTEN →
-        </button>
-      </div>
-
-      <div style="margin-top:20px;font-size:0.62rem;color:var(--text-dim);
-        line-height:1.5;padding:0 4px;">
-        REHAPP begleitet dich bei KMÖ/CRPS-Reha mit täglichen Protokollen,
-        Habits und Fortschritts-Tracking. Alles läuft lokal auf deinem Gerät.
-      </div>
-    </div>`;
 }
 
 // ─── Render ───────────────────────────────────────────────────────────────────
@@ -393,8 +329,7 @@ document.addEventListener('click', async (e) => {
     const waterGoal = Store.state.settings?.waterGoal ?? 8;
     if (Store.state.water.length < waterGoal) {
       Store.state.water = [...Store.state.water, Date.now()];
-      Store.state.xp   += 5;
-      Store.logActivity();
+      awardXP(5);
       navigator.vibrate?.(10);
       GamificationEngine.onWaterAdded();
       if (Store.state.water.length === waterGoal) GamificationEngine.onWaterGoalReached();
@@ -403,11 +338,10 @@ document.addEventListener('click', async (e) => {
 
   if (action === 'add-steps') {
     const add      = parseInt(value);
-    const prev     = Store.state.steps ?? 0;
-    const next     = prev + add;
+    const next     = (Store.state.steps ?? 0) + add;
     const xpGained = Math.floor(add / 1000) * 10;
     Store.state.steps = next;
-    if (xpGained > 0) { Store.state.xp += xpGained; Store.logActivity(); }
+    if (xpGained > 0) awardXP(xpGained);
     GamificationEngine.onStepsUpdated(next);
   }
 
@@ -438,13 +372,12 @@ document.addEventListener('click', async (e) => {
     const supp = SUPPLEMENTS.find(s => s.id === id);
     if (!supp || Store.state.doneSupplements?.[id]) return;
     Store.state.doneSupplements = { ...(Store.state.doneSupplements ?? {}), [id]: new Date().toDateString() };
-    Store.state.xp += supp.xp;
-    Store.logActivity();
+    awardXP(supp.xp);
     GamificationEngine.check();
   }
 
   if (action === 'toggle-module') {
-    const mods = { steps: true, bike: true, water: true, ...(Store.state.settings.modules ?? {}) };
+    const mods = { fasting: true, steps: true, bike: true, water: true, ...(Store.state.settings.modules ?? {}) };
     mods[id] = !mods[id];
     Store.state.settings = { ...Store.state.settings, modules: mods };
   }
@@ -562,10 +495,8 @@ function nextExerciseStep(protocol) {
     }
     TimerService.startExerciseCountdown(protocol.steps[next].duration, () => nextExerciseStep(protocol));
   } else {
-    // Protocol complete — award XP, mark habit done
     const xp = protocol.xp ?? 15;
-    Store.state.xp += xp;
-    Store.logActivity();
+    awardXP(xp);
     GamificationEngine.onProtocolComplete(protocol.id);
 
     // Mark habit as done for today

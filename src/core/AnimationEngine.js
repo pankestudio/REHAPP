@@ -2,6 +2,14 @@
 // Rams-Prinzip: Bewegung kommuniziert Funktion — keine Dekoration.
 // Kein externes Framework. Web Animations API + CSS transitions.
 
+function _scheduleFadeOut(el, delay) {
+  el._t = setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-8px)';
+    setTimeout(() => el.remove(), 200);
+  }, delay);
+}
+
 export const AnimationEngine = {
 
   // ── XP-Bar smooth updaten ─────────────────────────────────────────────────
@@ -159,11 +167,7 @@ export const AnimationEngine = {
     if (existing) {
       existing.textContent = `+${xp} XP`;
       clearTimeout(existing._t);
-      existing._t = setTimeout(() => {
-        existing.style.opacity = '0';
-        existing.style.transform = 'translateY(-8px)';
-        setTimeout(() => existing.remove(), 200);
-      }, 1100);
+      _scheduleFadeOut(existing, 1100);
       return;
     }
     const el = document.createElement('div');
@@ -189,11 +193,7 @@ export const AnimationEngine = {
       el.style.opacity = '1';
       el.style.transform = 'translateY(0)';
     });
-    el._t = setTimeout(() => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(-8px)';
-      setTimeout(() => el.remove(), 200);
-    }, 1100);
+    _scheduleFadeOut(el, 1100);
   },
 
   // ── Level Up ─────────────────────────────────────────────────────────────
