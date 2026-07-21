@@ -32,6 +32,10 @@ export const HABITS = [
     why: 'Selbst kochen = volle Kontrolle über Entzündungstrigger. Zucker, Transfette, Industriesalz — alle drei sind CRPS-Verstärker. Jede selbst gekochte Mahlzeit zählt.' },
   { id: 'others',      block: 'tag',      label: 'Für andere',        sub: 'Etwas für jemand getan',            xp: 20, type: 'check',    category: 'fokus',
     why: 'Echtes Geben setzt Oxytocin frei — ein direkter Schmerzdämpfer. Soziale Verbindung ist einer der wenigen kostenlosen Hebel mit nachgewiesenem Effekt auf Schmerztoleranz.' },
+  { id: 'protein',     block: 'tag',      label: 'Protein pro Mahlzeit', sub: 'Jede Mahlzeit eine Proteinquelle', xp: 10, type: 'check',    category: 'fokus',
+    why: 'Protein ist Baustoff für Muskel, Nerven und Neurotransmitter. Bei CRPS ist ausreichend Protein pro Mahlzeit essenziell — Muskelschwund verschlechtert die Schmerzlast.' },
+  { id: 'social',      block: 'tag',      label: 'Sozialer Kontakt',  sub: 'Echtes Gespräch oder Zeit mit jemandem', xp: 10, type: 'check', category: 'fokus',
+    why: 'Echte soziale Verbindung reguliert das Nervensystem über Oxytocin und Vagusnerv. Isolation verstärkt chronische Schmerzen messbar — ein Gespräch am Tag wirkt.' },
   // ── Abend ─────────────────────────────────────────────────────────────────────
   { id: 'foot_pm',     block: 'abend',    label: 'Fuß-Regeneration',  sub: '3 Min · Entstauung & Mobilisation', xp: 10, type: 'protocol', protocol: 'foot_evening',    category: 'bewegung',
     why: 'Lymphatischer Rückfluss passiert hauptsächlich im Liegen. Aktiv unterstützen verhindert Ödem-Akkumulation über Nacht — die Hauptursache für Morgensteifigkeit bei KMÖ.' },
@@ -52,6 +56,12 @@ export const HABITS = [
     why: 'Das Nervensystem braucht ungestörte Chemie um sich zu regulieren. Jeder drogenfreie Tag ist ein Tag, an dem Neuroplastizität ungehindert arbeiten kann.' },
   { id: 'cigarettes',  block: 'verzicht', label: 'Zigaretten',        sub: 'Keine = +20 XP · 1–3 = +10 XP',    xp: 20, type: 'cigs',     category: 'verzicht',
     why: 'Nikotin verursacht Vasokonstriktion — besonders schädlich bei KMÖ/CRPS, wo die Mikrozirkulation bereits gestört ist. Weniger Zigaretten = bessere Durchblutung.' },
+  { id: 'no_meat',    block: 'verzicht', label: 'Kein Fleisch',      sub: 'Pflanzlich ist entzündungsärmer',   xp: 15, type: 'check',    category: 'verzicht',
+    why: 'Rotes und verarbeitetes Fleisch erhöht Arachidonsäure und Pro-Entzündungs-Eicosanoide. Pflanzliche Tage senken die systemische Entzündungslast messbar.' },
+  { id: 'no_carbs',   block: 'verzicht', label: 'Keine Kohlenhydrate', sub: 'Low-Carb / ketogen',              xp: 15, type: 'check',    category: 'verzicht',
+    why: 'Ketose senkt Insulinspiegel und Entzündungsmarker. Für CRPS-Betroffene kann die Reduktion von Blutzuckerspitzen die Schmerzintensität und Nervosität deutlich verringern.' },
+  { id: 'gluten_free', block: 'verzicht', label: 'Glutenfrei',        sub: 'Ohne Weizen, Roggen, Gerste',      xp: 10, type: 'check',    category: 'verzicht',
+    why: 'Auch ohne Zöliakie kann Gluten bei sensiblen Personen intestinale Entzündung und Neuroinflammation fördern. Ein glutenfreier Tag gibt dem Darm — und dem Nervensystem — Ruhe.' },
 ];
 
 const BLOCKS = [

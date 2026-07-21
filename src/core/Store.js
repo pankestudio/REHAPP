@@ -115,9 +115,20 @@ export const Store = {
   logActivity() {
     const today = new Date().toDateString();
     if (this.state.streaks.lastActivity === today) return;
+
+    let newCurrent;
+    if (!this.state.streaks.lastActivity) {
+      newCurrent = 1;
+    } else {
+      const todayMs = new Date(today).setHours(0, 0, 0, 0);
+      const lastMs  = new Date(this.state.streaks.lastActivity).setHours(0, 0, 0, 0);
+      const diffDays = Math.round((todayMs - lastMs) / 86_400_000);
+      newCurrent = diffDays === 1 ? this.state.streaks.current + 1 : 1;
+    }
+
     const newStreak = {
       ...this.state.streaks,
-      current:      this.state.streaks.current + 1,
+      current:      newCurrent,
       lastActivity: today,
     };
     this.state.streaks = newStreak;
@@ -135,6 +146,16 @@ export const Store = {
     navigator.serviceWorker?.controller?.postMessage({
       type: 'SET_BADGE', payload: { count: newStreak.current },
     });
+  },
+
+  async resetAll() {
+    const durableKeys = Object.keys(DEFAULT_STATE).filter(k => !EPHEMERAL.has(k));
+    const tx = this._db.transaction('state', 'readwrite');
+    await Promise.all(durableKeys.map(k => tx.store.delete(k)));
+    // Reset in-memory state back to defaults (lastReset = today so daily reset won't re-fire)
+    durableKeys.forEach(k => { this._memory[k] = DEFAULT_STATE[k]; });
+    this._memory.lastReset = new Date().toDateString();
+    this._notify('settings', this._memory.settings);
   },
 
   async getActivityLog(days = 30) {
