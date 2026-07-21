@@ -34,6 +34,7 @@ const DEFAULT_STATE = {
   lastPerfectDay:       null,
   longestStreak:        0,
   gripStrengthLog:      [],
+  sleepQuality:         {},
 };
 
 export const Store = {

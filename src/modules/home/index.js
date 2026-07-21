@@ -5,7 +5,7 @@ export const expandedDetails = new Set();
 
 export const HABITS = [
   // ── Morgen ────────────────────────────────────────────────────────────────────
-  { id: 'sleep',       block: 'morgen',   label: 'Geschlafen',        sub: 'mind. 6 Stunden',                  xp: 20, type: 'check',    category: 'regeneration',
+  { id: 'sleep',       block: 'morgen',   label: 'Geschlafen',        sub: 'mind. 6 Stunden',                  xp: 20, type: 'sleep',    category: 'regeneration',
     why: 'Schlafentzug erhöht CRPS-Schmerzintensität messbar. 6h+ sind kein Luxus — Zellreparatur, Schmerzgedächtnis-Reset und Cortisolabbau finden nur im Tiefschlaf statt.' },
   { id: 'foot_am',     block: 'morgen',   label: 'Fuß-Aktivierung',   sub: '3 Min · vor dem ersten Schritt',    xp: 12, type: 'protocol', protocol: 'foot_morning',    category: 'bewegung',
     why: 'Die erste Gewichtsbelastung nach der Nacht ist kritisch. 3 Min Aktivierung bringt Durchblutung und Propriozeption in den Fuß, bevor er Gewicht trägt — verhindert reflexhafte Schmerzreaktion.' },
@@ -264,9 +264,60 @@ function GratitudeCard(habit, doneHabits) {
     </div>`;
 }
 
-function HabitCard(habit, doneHabits) {
+function SleepCard(habit, doneHabits, sleepQuality) {
+  const done    = habit.id in doneHabits;
+  const today   = new Date().toISOString().slice(0, 10);
+  const quality = sleepQuality?.[today];
+
+  if (done) {
+    const stars = quality
+      ? Array.from({ length: 5 }, (_, i) =>
+          `<span style="font-size:1rem;opacity:${i < quality ? '1' : '0.2'};">★</span>`
+        ).join('')
+      : '';
+    return `
+      <div class="card" style="padding:14px 20px;margin-bottom:8px;opacity:0.4;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-weight:var(--fw-bold);font-size:0.85rem;text-decoration:line-through;">${habit.label}</div>
+            ${stars ? `<div style="margin-top:4px;letter-spacing:2px;">${stars}</div>` : ''}
+          </div>
+          <div style="width:44px;height:44px;border:1.5px solid var(--border);
+            display:flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</div>
+        </div>
+      </div>`;
+  }
+
+  const starBtns = Array.from({ length: 5 }, (_, i) => `
+    <button data-action="rate-sleep" data-value="${i + 1}"
+      style="flex:1;padding:10px 0;font-size:1.1rem;border:1.5px solid var(--border);
+        background:transparent;cursor:pointer;touch-action:manipulation;">
+      ${i < (quality ?? 0) ? '★' : '☆'}
+    </button>`).join('');
+
+  return `
+    <div class="card" style="padding:14px 20px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div>
+          <div style="font-weight:var(--fw-bold);font-size:0.85rem;">${habit.label}</div>
+          <div style="font-size:0.6rem;color:var(--text-dim);margin-top:2px;">${habit.sub}</div>
+        </div>
+        <span class="u-mono" style="font-size:0.62rem;color:var(--text-dim);">+${habit.xp}</span>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:6px;">${starBtns}</div>
+      <button data-action="tap-habit" data-id="sleep"
+        style="width:100%;padding:10px;border:1.5px solid var(--border);background:transparent;
+          font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;
+          cursor:pointer;color:var(--text-dim);">
+        Ohne Wertung
+      </button>
+    </div>`;
+}
+
+function HabitCard(habit, doneHabits, sleepQuality) {
   if (habit.type === 'cigs') return CigsCard(habit, doneHabits);
   if (habit.type === 'text') return GratitudeCard(habit, doneHabits);
+  if (habit.type === 'sleep') return SleepCard(habit, doneHabits, sleepQuality);
 
   const done       = !!doneHabits[habit.id];
   const detailOpen = !done && expandedDetails.has(habit.id);
@@ -314,7 +365,7 @@ function HabitCard(habit, doneHabits) {
     </div>`;
 }
 
-function BlockSection(block, doneHabits, activeBlock, settings, hiddenHabits) {
+function BlockSection(block, doneHabits, activeBlock, settings, hiddenHabits, sleepQuality) {
   const habits = HABITS.filter(h => h.block === block.id && !hiddenHabits.has(h.id));
   if (!habits.length) return '';
 
@@ -339,7 +390,7 @@ function BlockSection(block, doneHabits, activeBlock, settings, hiddenHabits) {
             <span style="font-size:0.7rem;font-weight:800;">${isOpen ? '↑' : '↓'}</span>
           </button>
         </div>
-        ${isOpen ? `<div style="padding-top:4px;">${habits.map(h => HabitCard(h, doneHabits)).join('')}</div>` : ''}
+        ${isOpen ? `<div style="padding-top:4px;">${habits.map(h => HabitCard(h, doneHabits, sleepQuality)).join('')}</div>` : ''}
       </div>`;
   }
 
@@ -353,7 +404,7 @@ function BlockSection(block, doneHabits, activeBlock, settings, hiddenHabits) {
   return `
     <div style="margin-bottom:16px;">
       <span class="u-label" style="margin-bottom:8px;">${block.label}</span>
-      ${top.map(h => HabitCard(h, doneHabits)).join('')}
+      ${top.map(h => HabitCard(h, doneHabits, sleepQuality)).join('')}
       ${moreList.length ? `
         <div style="margin-bottom:2px;">
           <button data-action="toggle-block" data-id="${moreKey}"
@@ -364,7 +415,7 @@ function BlockSection(block, doneHabits, activeBlock, settings, hiddenHabits) {
             <span>${moreOpen ? '↑' : '↓'}</span>
             <span>${moreList.length} WEITERE AUFGABEN</span>
           </button>
-          ${moreOpen ? moreList.map(h => HabitCard(h, doneHabits)).join('') : ''}
+          ${moreOpen ? moreList.map(h => HabitCard(h, doneHabits, sleepQuality)).join('') : ''}
         </div>` : ''}
       ${done.length ? `
         <div>
@@ -376,7 +427,7 @@ function BlockSection(block, doneHabits, activeBlock, settings, hiddenHabits) {
             <span>${doneOpen ? '↑' : '↓'}</span>
             <span>✓ ERLEDIGT · ${done.length}</span>
           </button>
-          ${doneOpen ? done.map(h => HabitCard(h, doneHabits)).join('') : ''}
+          ${doneOpen ? done.map(h => HabitCard(h, doneHabits, sleepQuality)).join('') : ''}
         </div>` : ''}
     </div>`;
 }
@@ -530,6 +581,7 @@ export const HomeModul = {
 
   view(state) {
     const doneHabits   = state.doneHabits ?? {};
+    const sleepQuality = state.sleepQuality ?? {};
     const wakeTime     = state.settings?.wakeTime ?? '07:00';
     const settings     = state.settings ?? {};
     const mods         = settings.modules ?? {};
@@ -547,7 +599,7 @@ export const HomeModul = {
         ${fastingOn ? MilestoneBanner(state) : ''}
         ${waterOn ? WaterCard(state) : ''}
         <div style="margin-top:8px;">
-          ${BLOCKS.map(b => BlockSection(b, doneHabits, activeBlock, settings, hiddenHabits)).join('')}
+          ${BLOCKS.map(b => BlockSection(b, doneHabits, activeBlock, settings, hiddenHabits, sleepQuality)).join('')}
         </div>
       </div>`;
   },

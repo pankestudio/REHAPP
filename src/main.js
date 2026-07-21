@@ -426,6 +426,21 @@ document.addEventListener('click', async (e) => {
     GamificationEngine.check();
   }
 
+  if (action === 'rate-sleep') {
+    const score = parseInt(value);
+    if (score >= 1 && score <= 5) {
+      const today = new Date().toISOString().slice(0, 10);
+      Store.state.sleepQuality = { ...Store.state.sleepQuality, [today]: score };
+      if (!Store.state.doneHabits['sleep']) {
+        const habit = HABITS.find(h => h.id === 'sleep');
+        Store.state.doneHabits = { ...Store.state.doneHabits, sleep: new Date().toDateString() };
+        if (habit?.xp > 0) awardXP(habit.xp);
+        GamificationEngine.check();
+      }
+    }
+    return;
+  }
+
   if (action === 'save-grip-strength') {
     const input = document.getElementById('grip-kg-input');
     const val   = parseFloat(input?.value);
@@ -579,6 +594,7 @@ async function bootstrap() {
   Store.subscribe('unlockedAchievements', render);
   Store.subscribe('doneSupplements',      render);
   Store.subscribe('gripStrengthLog',      render);
+  Store.subscribe('sleepQuality',         render);
 
   Store.subscribe('timerTick', (s) => {
     const mode      = Store.state.fasting?.mode ?? '16:8';
