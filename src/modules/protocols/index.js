@@ -256,6 +256,19 @@ export const protocolsData = {
     ],
   },
 
+  strength: {
+    id: 'strength', title: 'Kräftigung', xp: 20, intensity: 'mittel',
+    description: '5 Übungen · Kraft, Stabilität, Gelenkschutz',
+    why: 'Starke Muskulatur entlastet Gelenke, normalisiert Schutzspannung und baut dem CRPS-typischen Muskelabbau aktiv entgegen.',
+    steps: [
+      { title: 'Kniebeugen — langsam, kontrolliert',        duration: 30 },
+      { title: 'Ausfallschritt links — Oberkörper aufrecht', duration: 30 },
+      { title: 'Ausfallschritt rechts',                     duration: 30 },
+      { title: 'Unterarmstütz — Körper gerade',             duration: 30 },
+      { title: 'Wandsitzen — Oberschenkel parallel',        duration: 45 },
+    ],
+  },
+
 };
 
 // ── Kategorien für den Reha-Tab ─────────────────────────────────────────────

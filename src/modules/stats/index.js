@@ -94,6 +94,45 @@ function HydrationCard() {
     </div>`;
 }
 
+function GripStrengthCard(state) {
+  const log    = state.gripStrengthLog ?? [];
+  const recent = log.slice(-14);
+  const max    = recent.length ? Math.max(...recent.map(e => e.kg), 1) : 1;
+
+  const bars = recent.map(({ kg }) => {
+    const pct = Math.max(Math.round((kg / max) * 100), 8);
+    return `
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+        <span style="font-size:0.45rem;color:var(--text-dim);line-height:1;">${kg}</span>
+        <div style="flex:1;width:100%;display:flex;align-items:flex-end;">
+          <div style="width:100%;height:${pct}%;background:var(--text-main);
+            border-radius:1px;min-height:3px;transition:height 0.4s ease;"></div>
+        </div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="card">
+      <span class="u-label" style="margin-bottom:12px;">Griffkraft // kg</span>
+      ${recent.length
+        ? `<div style="display:flex;align-items:flex-end;gap:3px;height:52px;margin-bottom:12px;">
+            ${bars}
+           </div>`
+        : `<div style="font-size:0.7rem;color:var(--text-dim);font-style:italic;margin-bottom:12px;">
+            Noch keine Messungen — trag deine erste ein!
+           </div>`}
+      <div style="display:flex;gap:10px;align-items:stretch;">
+        <input id="grip-kg-input" type="number" inputmode="decimal" placeholder="kg"
+          style="flex:1;border:1.5px solid var(--border);background:var(--bg);
+                 color:var(--text-main);padding:10px;font-size:1rem;font-family:inherit;
+                 outline:none;-webkit-appearance:none;min-width:0;">
+        <button data-action="save-grip-strength" class="btn-primary" style="flex:1;padding:10px;">
+          Speichern
+        </button>
+      </div>
+    </div>`;
+}
+
 function AchievementsCard(state) {
   const unlocked = new Set(state.unlockedAchievements ?? []);
   const count    = unlocked.size;
@@ -138,6 +177,7 @@ export const StatsModul = {
         ${StreakCard(state)}
         ${XPCard(state)}
         ${HydrationCard()}
+        ${GripStrengthCard(state)}
         ${AchievementsCard(state)}
       </div>`;
   },

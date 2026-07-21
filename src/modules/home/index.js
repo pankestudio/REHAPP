@@ -32,6 +32,8 @@ export const HABITS = [
     why: 'Selbst kochen = volle Kontrolle über Entzündungstrigger. Zucker, Transfette, Industriesalz — alle drei sind CRPS-Verstärker. Jede selbst gekochte Mahlzeit zählt.' },
   { id: 'others',      block: 'tag',      label: 'Für andere',        sub: 'Etwas für jemand getan',            xp: 20, type: 'check',    category: 'fokus',
     why: 'Echtes Geben setzt Oxytocin frei — ein direkter Schmerzdämpfer. Soziale Verbindung ist einer der wenigen kostenlosen Hebel mit nachgewiesenem Effekt auf Schmerztoleranz.' },
+  { id: 'strength',    block: 'tag',      label: 'Kräftigung',          sub: '5 Übungen · Kraft & Stabilität',    xp: 20, type: 'protocol', protocol: 'strength', category: 'bewegung',
+    why: 'Starke Muskulatur entlastet Gelenke und normalisiert die CRPS-typische Schutzspannung. Jede Trainingseinheit baut dem Muskelabbau aktiv entgegen.' },
   { id: 'protein',     block: 'tag',      label: 'Protein pro Mahlzeit', sub: 'Jede Mahlzeit eine Proteinquelle', xp: 10, type: 'check',    category: 'fokus',
     why: 'Protein ist Baustoff für Muskel, Nerven und Neurotransmitter. Bei CRPS ist ausreichend Protein pro Mahlzeit essenziell — Muskelschwund verschlechtert die Schmerzlast.' },
   { id: 'social',      block: 'tag',      label: 'Sozialer Kontakt',  sub: 'Echtes Gespräch oder Zeit mit jemandem', xp: 10, type: 'check', category: 'fokus',

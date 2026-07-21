@@ -101,8 +101,9 @@ function showUpdateBanner(newSW) {
       JETZT LADEN</button></div>`;
   document.body.appendChild(b);
   document.getElementById('apply-update').addEventListener('click', () => {
-    newSW.postMessage({ type: 'SKIP_WAITING' });
+    // Listener first — postMessage can trigger controllerchange synchronously.
     navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload(), { once: true });
+    newSW.postMessage({ type: 'SKIP_WAITING' });
   });
 }
 
@@ -425,6 +426,23 @@ document.addEventListener('click', async (e) => {
     GamificationEngine.check();
   }
 
+  if (action === 'save-grip-strength') {
+    const input = document.getElementById('grip-kg-input');
+    const val   = parseFloat(input?.value);
+    if (!isNaN(val) && val > 0) {
+      const entry = { date: new Date().toISOString().slice(0, 10), kg: val };
+      Store.state.gripStrengthLog = [...(Store.state.gripStrengthLog ?? []), entry];
+      if (input) input.value = '';
+    }
+    return;
+  }
+
+  if (action === 'reset-all-data') {
+    if (!confirm('Alle Daten löschen und neu starten? Das kann nicht rückgängig gemacht werden.')) return;
+    await Store.resetAll();
+    return;
+  }
+
   if (action === 'complete-onboarding') {
     const name   = document.getElementById('onb-name')?.value?.trim() ?? '';
     const wakeup = document.getElementById('onb-wakeup')?.value ?? '07:00';
@@ -560,6 +578,7 @@ async function bootstrap() {
   Store.subscribe('streaks',              render);
   Store.subscribe('unlockedAchievements', render);
   Store.subscribe('doneSupplements',      render);
+  Store.subscribe('gripStrengthLog',      render);
 
   Store.subscribe('timerTick', (s) => {
     const mode      = Store.state.fasting?.mode ?? '16:8';

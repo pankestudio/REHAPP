@@ -33,6 +33,7 @@ const DEFAULT_STATE = {
   perfectDays:          0,
   lastPerfectDay:       null,
   longestStreak:        0,
+  gripStrengthLog:      [],
 };
 
 export const Store = {
