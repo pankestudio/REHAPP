@@ -36,6 +36,7 @@ const DEFAULT_STATE = {
   gripStrengthLog:      [],
   sleepQuality:         {},
   vorsorgeLog:          {},
+  painLog:              [],
 };
 
 export const Store = {

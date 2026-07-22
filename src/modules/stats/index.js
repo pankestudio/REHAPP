@@ -1,6 +1,7 @@
 // src/modules/stats/index.js
 import { Store }        from '../../core/Store.js';
 import { ACHIEVEMENTS } from '../../core/achievements.js';
+import { HABITS }       from '../home/index.js';
 
 function StreakCard(state) {
   const current = state.streaks.current;
@@ -133,6 +134,115 @@ function GripStrengthCard(state) {
     </div>`;
 }
 
+const BUDAPEST = [
+  { id: 'allodynia',    label: 'Allodynie',            desc: 'Schmerz bei leichter Berührung' },
+  { id: 'temp_diff',   label: 'Temperatur-Differenz', desc: 'Fuß wärmer/kälter als Gegenseite' },
+  { id: 'color_change',label: 'Farbänderung',          desc: 'Bläulich/Rötliche Verfärbung' },
+  { id: 'swelling',    label: 'Ödem',                  desc: 'Sichtbare Schwellung' },
+];
+
+function PainCard(state) {
+  const log   = state.painLog ?? [];
+  const today = new Date().toISOString().slice(0, 10);
+  const todayEntry = log.find(e => e.date === today);
+
+  // Last 14 days chart data
+  const recent14 = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (13 - i));
+    const iso = d.toISOString().slice(0, 10);
+    return log.find(e => e.date === iso) ?? null;
+  });
+
+  const chartMax = Math.max(...recent14.map(e => e?.score ?? 0), 1);
+
+  const bars = recent14.map((entry, i) => {
+    const hasData = entry !== null;
+    const score   = entry?.score ?? 0;
+    const pct     = hasData ? Math.max(Math.round((score / chartMax) * 100), score > 0 ? 8 : 0) : 0;
+    const color   = score >= 7 ? 'var(--text-main)' : score >= 4 ? 'var(--text-dim)' : 'var(--border)';
+    return `
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+        ${hasData && score > 0 ? `<span style="font-size:0.42rem;color:var(--text-dim);">${score}</span>` : '<span style="font-size:0.42rem;"></span>'}
+        <div style="flex:1;width:100%;display:flex;align-items:flex-end;">
+          <div style="width:100%;height:${pct}%;background:${color};
+            border-radius:1px;min-height:${hasData ? '2px' : '0'};
+            transition:height 0.4s ease;"></div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Habit correlation: check days with high habit completion vs lower pain
+  const correlationMsg = (() => {
+    if (log.length < 5) return '';
+    const withHighHabits = log.filter(e => (e.habitPct ?? 0) >= 70);
+    const withLowHabits  = log.filter(e => (e.habitPct ?? 0) < 70);
+    if (!withHighHabits.length || !withLowHabits.length) return '';
+    const avgHigh = withHighHabits.reduce((s, e) => s + e.score, 0) / withHighHabits.length;
+    const avgLow  = withLowHabits.reduce((s, e) => s + e.score, 0) / withLowHabits.length;
+    const diff = avgLow - avgHigh;
+    if (diff >= 1) return `An Tagen mit ≥70% Habits: ⌀ ${avgHigh.toFixed(1)} Schmerz — ${diff.toFixed(1)} Punkte weniger als ohne.`;
+    return '';
+  })();
+
+  const criteriaCheckboxes = BUDAPEST.map(c => {
+    const checked = todayEntry?.criteria?.includes(c.id);
+    return `
+      <label style="display:flex;align-items:center;gap:10px;padding:6px 0;cursor:pointer;
+        border-bottom:1px solid var(--border);">
+        <input type="checkbox" id="pain-crit-${c.id}" ${checked ? 'checked' : ''}
+          style="width:16px;height:16px;cursor:pointer;accent-color:var(--text-main);">
+        <div>
+          <div style="font-size:0.72rem;font-weight:var(--fw-bold);">${c.label}</div>
+          <div style="font-size:0.58rem;color:var(--text-dim);">${c.desc}</div>
+        </div>
+      </label>`;
+  }).join('');
+
+  return `
+    <div class="card">
+      <span class="u-label" style="margin-bottom:12px;">Schmerz-Tagebuch</span>
+
+      ${log.length >= 2 ? `
+        <div style="display:flex;align-items:flex-end;gap:3px;height:52px;margin-bottom:12px;">
+          ${bars}
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+          <span style="font-size:0.55rem;color:var(--text-dim);">vor 14 Tagen</span>
+          <span style="font-size:0.55rem;color:var(--text-dim);">heute</span>
+        </div>` : ''}
+
+      ${correlationMsg ? `
+        <div style="font-size:0.68rem;color:var(--text-dim);font-style:italic;
+          margin-bottom:12px;padding:10px;border:1px solid var(--border);line-height:1.5;">
+          ${correlationMsg}
+        </div>` : ''}
+
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.6rem;font-weight:800;text-transform:uppercase;
+          letter-spacing:0.08em;margin-bottom:8px;">Heute · Schmerz 0–10</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+          ${Array.from({ length: 11 }, (_, i) => `
+            <button data-action="set-pain-score" data-value="${i}"
+              style="width:40px;height:40px;border:1.5px solid ${todayEntry?.score === i ? 'var(--text-main)' : 'var(--border)'};
+                background:${todayEntry?.score === i ? 'var(--text-main)' : 'transparent'};
+                color:${todayEntry?.score === i ? 'var(--bg)' : 'var(--text-main)'};
+                font-weight:800;font-size:0.85rem;cursor:pointer;touch-action:manipulation;">
+              ${i}
+            </button>`).join('')}
+        </div>
+
+        <div style="font-size:0.6rem;font-weight:800;text-transform:uppercase;
+          letter-spacing:0.08em;margin-bottom:6px;">Budapest-Kriterien (heute)</div>
+        <div style="margin-bottom:12px;">${criteriaCheckboxes}</div>
+
+        <button data-action="save-pain-entry" class="btn-primary" style="width:100%;padding:10px;">
+          ${todayEntry ? 'Eintrag aktualisieren' : 'Heute speichern'}
+        </button>
+      </div>
+    </div>`;
+}
+
 function AchievementsCard(state) {
   const unlocked = new Set(state.unlockedAchievements ?? []);
   const count    = unlocked.size;
@@ -178,6 +288,7 @@ export const StatsModul = {
         ${XPCard(state)}
         ${HydrationCard()}
         ${GripStrengthCard(state)}
+        ${PainCard(state)}
         ${AchievementsCard(state)}
       </div>`;
   },

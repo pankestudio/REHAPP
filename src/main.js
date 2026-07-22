@@ -17,6 +17,8 @@ import { VorsorgeModul }                    from './modules/vorsorge/index.js';
 import { renderOnboarding }                 from './modules/onboarding/index.js';
 import { SUPPLEMENTS }                      from './data/supplements/kmoe_crps.js';
 
+const BUDAPEST_IDS = ['allodynia', 'temp_diff', 'color_change', 'swelling'];
+
 ModuleRegistry
   .register(HomeModul)
   .register(ProtokollModul)
@@ -428,6 +430,33 @@ document.addEventListener('click', async (e) => {
     GamificationEngine.check();
   }
 
+  if (action === 'set-pain-score') {
+    // Highlight selected score without a full re-render
+    document.querySelectorAll('[data-action="set-pain-score"]').forEach(b => {
+      const selected = b.dataset.value === value;
+      b.style.background = selected ? 'var(--text-main)' : 'transparent';
+      b.style.color      = selected ? 'var(--bg)' : 'var(--text-main)';
+      b.style.borderColor = selected ? 'var(--text-main)' : 'var(--border)';
+    });
+    return;
+  }
+
+  if (action === 'save-pain-entry') {
+    const scoreBtn = document.querySelector('[data-action="set-pain-score"][style*="var(--bg)"]');
+    const score = scoreBtn ? parseInt(scoreBtn.dataset.value) : null;
+    if (score === null) return;
+    const criteria = BUDAPEST_IDS.filter(c => document.getElementById(`pain-crit-${c}`)?.checked);
+    const today    = new Date().toISOString().slice(0, 10);
+    const doneHabits  = Store.state.doneHabits ?? {};
+    const hiddenHabits = new Set(Store.state.settings?.hiddenHabits ?? []);
+    const totalHabits  = HABITS.filter(h => !hiddenHabits.has(h.id)).length;
+    const doneCount    = HABITS.filter(h => !hiddenHabits.has(h.id) && h.id in doneHabits).length;
+    const habitPct     = totalHabits > 0 ? Math.round((doneCount / totalHabits) * 100) : 0;
+    const log     = (Store.state.painLog ?? []).filter(e => e.date !== today);
+    Store.state.painLog = [...log, { date: today, score, criteria, habitPct }];
+    return;
+  }
+
   if (action === 'log-screening') {
     const today = new Date().toISOString().slice(0, 10);
     Store.state.vorsorgeLog = { ...Store.state.vorsorgeLog, [id]: today };
@@ -622,6 +651,7 @@ async function bootstrap() {
   Store.subscribe('gripStrengthLog',      render);
   Store.subscribe('sleepQuality',         render);
   Store.subscribe('vorsorgeLog',          render);
+  Store.subscribe('painLog',              render);
 
   Store.subscribe('timerTick', (s) => {
     const mode      = Store.state.fasting?.mode ?? '16:8';
