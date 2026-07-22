@@ -16,7 +16,7 @@ const DEFAULT_STATE = {
   activeExercise: { protocolId: null, stepIndex: 0, running: false },
   view:           'home',
   streaks:        { current: 0, lastActivity: null },
-  settings:       { userName: '', fontSize: '16', theme: 'dark', reminders: {}, wakeTime: '07:00', eatStart: '12:00' },
+  settings:       { userName: '', fontSize: '16', theme: 'dark', reminders: {}, wakeTime: '07:00', eatStart: '12:00', birthYear: null, gender: null },
   lastReset:            new Date().toDateString(),
   // ── Gamification ──────────────────────────────────────────────────────────
   unlockedAchievements: [],
@@ -35,6 +35,7 @@ const DEFAULT_STATE = {
   longestStreak:        0,
   gripStrengthLog:      [],
   sleepQuality:         {},
+  vorsorgeLog:          {},
 };
 
 export const Store = {

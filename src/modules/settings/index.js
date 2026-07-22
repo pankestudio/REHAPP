@@ -164,7 +164,7 @@ export const SettingsModul = {
             </div>
 
             <label class="u-label" style="font-size:0.6rem;">Theme</label>
-            <div style="display:flex;gap:8px;">
+            <div style="display:flex;gap:8px;margin-bottom:24px;">
               ${['light','dark','system'].map(t => `
                 <button data-action="set-theme" data-value="${t}"
                   style="flex:1;padding:12px;border:1.5px solid var(--border);cursor:pointer;
@@ -174,6 +174,38 @@ export const SettingsModul = {
                   ${t === 'light' ? 'Hell' : t === 'dark' ? 'Dunkel' : 'Auto'}
                 </button>`).join('')}
             </div>
+
+            <label class="u-label" style="font-size:0.6rem;">Geburtsjahr</label>
+            <input
+              type="number"
+              id="set-birthyear"
+              inputmode="numeric"
+              placeholder="z.B. 1985"
+              value="${s.birthYear ?? ''}"
+              style="width:100%;border:1.5px solid var(--border);background:var(--bg);
+                     color:var(--text-main);padding:10px;outline:none;
+                     font-family:inherit;font-size:1rem;margin-bottom:20px;
+                     -webkit-appearance:none;">
+
+            <label class="u-label" style="font-size:0.6rem;">Geschlecht (für Vorsorge)</label>
+            <div style="display:flex;gap:8px;margin-bottom:24px;">
+              ${['female','male','other'].map(g => `
+                <button data-action="set-gender" data-value="${g}"
+                  style="flex:1;padding:10px;border:1.5px solid var(--border);cursor:pointer;
+                    font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;
+                    background:${(s.gender ?? '') === g ? 'var(--text-main)' : 'transparent'};
+                    color:${(s.gender ?? '') === g ? 'var(--bg)' : 'var(--text-dim)'};">
+                  ${{ female: 'Weiblich', male: 'Männlich', other: 'Divers' }[g]}
+                </button>`).join('')}
+            </div>
+
+            <label class="u-label" style="font-size:0.6rem;">Zurücksetzen</label>
+            <button data-action="reset-all-data"
+              style="width:100%;border:1.5px solid var(--border);background:transparent;
+                padding:12px;font-weight:800;font-size:0.65rem;text-transform:uppercase;
+                letter-spacing:0.08em;cursor:pointer;color:var(--text-dim);">
+              NEU STARTEN
+            </button>
           </div>
         </div>
 
@@ -205,6 +237,7 @@ export const SettingsModul = {
           </div>
           ${habitSections}
         </div>
+
       </div>`;
   },
 };

@@ -35,7 +35,31 @@ export function renderOnboarding(state) {
           value="${s.wakeTime ?? '07:00'}"
           style="width:100%;border:1.5px solid var(--border);background:var(--bg);
                  color:var(--text-main);padding:12px;outline:none;
-                 font-family:inherit;font-size:1rem;margin-bottom:24px;">
+                 font-family:inherit;font-size:1rem;margin-bottom:20px;">
+
+        <label class="u-label" style="font-size:0.6rem;">Geburtsjahr (für Vorsorge)</label>
+        <input
+          id="onb-birthyear"
+          type="number"
+          inputmode="numeric"
+          placeholder="z.B. 1985"
+          value="${s.birthYear ?? ''}"
+          style="width:100%;border:1.5px solid var(--border);background:var(--bg);
+                 color:var(--text-main);padding:12px;outline:none;
+                 font-family:inherit;font-size:1rem;margin-bottom:20px;
+                 -webkit-appearance:none;">
+
+        <label class="u-label" style="font-size:0.6rem;">Geschlecht</label>
+        <div style="display:flex;gap:8px;margin-bottom:24px;">
+          ${['female','male','other'].map(g => `
+            <button data-action="onb-select-gender" data-value="${g}"
+              style="flex:1;padding:12px;border:1.5px solid var(--border);cursor:pointer;
+                font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;
+                background:${(s.gender ?? '') === g ? 'var(--text-main)' : 'transparent'};
+                color:${(s.gender ?? '') === g ? 'var(--bg)' : 'var(--text-dim)'};">
+              ${{ female: 'Weiblich', male: 'Männlich', other: 'Divers' }[g]}
+            </button>`).join('')}
+        </div>
 
         <button data-action="complete-onboarding" class="btn-primary">
           STARTEN →

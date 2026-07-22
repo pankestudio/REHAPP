@@ -13,6 +13,7 @@ import { ReminderService }                  from './core/ReminderService.js';
 import { GamificationEngine }               from './core/GamificationEngine.js';
 import { AnimationEngine }                  from './core/AnimationEngine.js';
 import { NutritionModul }                   from './modules/nutrition/index.js';
+import { VorsorgeModul }                    from './modules/vorsorge/index.js';
 import { renderOnboarding }                 from './modules/onboarding/index.js';
 import { SUPPLEMENTS }                      from './data/supplements/kmoe_crps.js';
 
@@ -21,6 +22,7 @@ ModuleRegistry
   .register(ProtokollModul)
   .register(NutritionModul)
   .register(StatsModul)
+  .register(VorsorgeModul)
   .register(SettingsModul);
 
 // ─── Theme ───────────────────────────────────────────────────────────────────
@@ -426,6 +428,17 @@ document.addEventListener('click', async (e) => {
     GamificationEngine.check();
   }
 
+  if (action === 'log-screening') {
+    const today = new Date().toISOString().slice(0, 10);
+    Store.state.vorsorgeLog = { ...Store.state.vorsorgeLog, [id]: today };
+    return;
+  }
+
+  if (action === 'onb-select-gender' || action === 'set-gender') {
+    Store.state.settings = { ...Store.state.settings, gender: value };
+    return;
+  }
+
   if (action === 'rate-sleep') {
     const score = parseInt(value);
     if (score >= 1 && score <= 5) {
@@ -459,9 +472,16 @@ document.addEventListener('click', async (e) => {
   }
 
   if (action === 'complete-onboarding') {
-    const name   = document.getElementById('onb-name')?.value?.trim() ?? '';
-    const wakeup = document.getElementById('onb-wakeup')?.value ?? '07:00';
-    Store.state.settings = { ...Store.state.settings, userName: name || 'du', wakeTime: wakeup, onboardingDone: true };
+    const name      = document.getElementById('onb-name')?.value?.trim() ?? '';
+    const wakeup    = document.getElementById('onb-wakeup')?.value ?? '07:00';
+    const birthYear = document.getElementById('onb-birthyear')?.value?.trim() ?? '';
+    Store.state.settings = {
+      ...Store.state.settings,
+      userName:    name || 'du',
+      wakeTime:    wakeup,
+      birthYear:   birthYear ? parseInt(birthYear) : Store.state.settings.birthYear,
+      onboardingDone: true,
+    };
   }
 
   if (action === 'start-protocol') {
@@ -500,7 +520,13 @@ document.addEventListener('click', async (e) => {
 
 // Name: nur bei blur — kein Re-render beim Tippen
 document.addEventListener('blur', (e) => {
-  if (e.target.id === 'set-name') Store.state.settings = { ...Store.state.settings, userName: e.target.value };
+  if (e.target.id === 'set-name')      Store.state.settings = { ...Store.state.settings, userName:  e.target.value };
+  if (e.target.id === 'set-birthyear') {
+    const y = parseInt(e.target.value);
+    if (!isNaN(y) && y > 1900 && y <= new Date().getFullYear()) {
+      Store.state.settings = { ...Store.state.settings, birthYear: y };
+    }
+  }
 }, true);
 
 // Größe: DOM sofort, Store erst beim Loslassen
@@ -595,6 +621,7 @@ async function bootstrap() {
   Store.subscribe('doneSupplements',      render);
   Store.subscribe('gripStrengthLog',      render);
   Store.subscribe('sleepQuality',         render);
+  Store.subscribe('vorsorgeLog',          render);
 
   Store.subscribe('timerTick', (s) => {
     const mode      = Store.state.fasting?.mode ?? '16:8';
