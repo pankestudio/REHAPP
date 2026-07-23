@@ -199,13 +199,6 @@ export const SettingsModul = {
                 </button>`).join('')}
             </div>
 
-            <label class="u-label" style="font-size:0.6rem;">Zurücksetzen</label>
-            <button data-action="reset-all-data"
-              style="width:100%;border:1.5px solid var(--border);background:transparent;
-                padding:12px;font-weight:800;font-size:0.65rem;text-transform:uppercase;
-                letter-spacing:0.08em;cursor:pointer;color:var(--text-dim);">
-              NEU STARTEN
-            </button>
           </div>
         </div>
 
@@ -236,6 +229,20 @@ export const SettingsModul = {
             </button>
           </div>
           ${habitSections}
+        </div>
+
+        <div class="card" style="padding:20px;border:1.5px solid var(--border);">
+          <span class="u-label" style="margin-bottom:6px;">Zurücksetzen</span>
+          <div style="font-size:0.68rem;color:var(--text-dim);line-height:1.5;margin-bottom:16px;">
+            Löscht alle Daten — XP, Habits, Protokolle, Tracking, Einstellungen.
+            Die App startet neu wie beim ersten Mal.
+          </div>
+          <button data-action="reset-all-data"
+            style="width:100%;border:2px solid var(--action-orange);background:transparent;
+              padding:14px;font-weight:800;font-size:0.72rem;text-transform:uppercase;
+              letter-spacing:0.1em;cursor:pointer;color:var(--action-orange);">
+            NEU STARTEN
+          </button>
         </div>
 
       </div>`;

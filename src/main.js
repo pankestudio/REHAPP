@@ -495,8 +495,9 @@ document.addEventListener('click', async (e) => {
   }
 
   if (action === 'reset-all-data') {
-    if (!confirm('Alle Daten löschen und neu starten? Das kann nicht rückgängig gemacht werden.')) return;
+    if (!confirm('Alle Daten löschen und neu starten?\nDas kann nicht rückgängig gemacht werden.')) return;
     await Store.resetAll();
+    window.location.reload();
     return;
   }
 
