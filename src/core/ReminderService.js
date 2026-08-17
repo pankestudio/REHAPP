@@ -33,6 +33,12 @@ export const REMINDERS = [
     times:      ['09:30', '15:30'],
     protocolId: 'mld',
   },
+  {
+    id:    'post_meal_walk',
+    label: 'Nach dem Essen bewegen',
+    sub:   '10 Min. Gehen — Blutzuckerspitze kappen',
+    type:  'post-meal',
+  },
 ];
 
 const _intervals  = {};
@@ -66,12 +72,28 @@ export const ReminderService = {
       const hhmm  = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       const enabled = Store.state.settings?.reminders ?? {};
       for (const r of REMINDERS) {
-        if (!enabled[r.id] || r.type !== 'times') continue;
-        if (!r.times.includes(hhmm)) continue;
-        const key = `${r.id}-${hhmm}-${today}`;
-        if (_firedToday[key]) continue;
-        _firedToday[key] = true;
-        this._fire(r);
+        if (!enabled[r.id]) continue;
+
+        if (r.type === 'times') {
+          if (!r.times.includes(hhmm)) continue;
+          const key = `${r.id}-${hhmm}-${today}`;
+          if (_firedToday[key]) continue;
+          _firedToday[key] = true;
+          this._fire(r);
+        }
+
+        if (r.type === 'post-meal') {
+          const eatStart = Store.state.settings?.eatStart ?? '12:00';
+          const [eh, em] = eatStart.split(':').map(Number);
+          const fireMin  = eh * 60 + em + 30;
+          const fH = String(Math.floor(fireMin / 60) % 24).padStart(2, '0');
+          const fM = String(fireMin % 60).padStart(2, '0');
+          if (hhmm !== `${fH}:${fM}`) continue;
+          const key = `${r.id}-${hhmm}-${today}`;
+          if (_firedToday[key]) continue;
+          _firedToday[key] = true;
+          this._fire(r);
+        }
       }
     }, 60_000);
   },
