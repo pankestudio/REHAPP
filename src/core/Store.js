@@ -37,6 +37,13 @@ const DEFAULT_STATE = {
   sleepQuality:         {},
   vorsorgeLog:          {},
   painLog:              [],
+  // ── Ernährung / Woche ────────────────────────────────────────────────────
+  plantDiversityLog:    [],
+  lastWeeklyReset:      '',
+  // ── Habit-Zähler für Achievements ────────────────────────────────────────
+  mealOrderDays:        0,
+  postMealWalkDays:     0,
+  socialDays:           0,
 };
 
 export const Store = {
@@ -114,6 +121,26 @@ export const Store = {
       return true;
     }
     return false;
+  },
+
+  checkWeeklyReset() {
+    const week = this._isoWeek();
+    if (this.state.lastWeeklyReset !== week) {
+      this.state.plantDiversityLog = [];
+      this.state.lastWeeklyReset   = week;
+      return true;
+    }
+    return false;
+  },
+
+  // Returns "YYYY-Www" for the current ISO calendar week.
+  _isoWeek() {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7); // nearest Thursday
+    const yearStart = new Date(d.getFullYear(), 0, 4);
+    const week = 1 + Math.round(((d - yearStart) / 86400000 - 3 + (yearStart.getDay() + 6) % 7) / 7);
+    return `${d.getFullYear()}-W${String(week).padStart(2, '0')}`;
   },
 
   logActivity() {

@@ -141,6 +141,47 @@ function ProgressBar(done, total) {
     </div>`;
 }
 
+function PlantDiversityCard(state) {
+  const plants = state.plantDiversityLog ?? [];
+  const unique  = [...new Set(plants.map(p => p.toLowerCase()))];
+  const count   = unique.length;
+  const goal    = 30;
+
+  const boxes = Array.from({ length: goal }, (_, i) => `
+    <div style="aspect-ratio:1;
+      background:${i < count ? 'var(--text-main)' : 'var(--border)'};
+      border-radius:2px;transition:background 0.2s ease;"></div>`).join('');
+
+  return `
+    <div class="card" style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;">
+        <span class="u-label" style="margin:0;">Pflanzenvielfalt // diese Woche</span>
+        <span class="u-mono" style="font-size:1rem;font-weight:800;">${count} / ${goal}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:10px;">
+        ${boxes}
+      </div>
+      <div style="font-size:0.6rem;color:var(--text-dim);margin-bottom:12px;">
+        ${count >= goal
+          ? 'Wochenziel erreicht — starkes Mikrobiom!'
+          : `${goal - count} verschiedene Pflanzen noch bis zum Ziel.`}
+      </div>
+      <div style="display:flex;gap:8px;">
+        <input id="plant-input" type="text" placeholder="Pflanze hinzufügen …"
+          style="flex:1;border:1.5px solid var(--border);background:var(--bg);
+                 color:var(--text-main);padding:10px;font-family:inherit;font-size:0.9rem;
+                 outline:none;min-width:0;">
+        <button data-action="add-plant" class="btn-primary" style="flex-shrink:0;padding:10px 14px;">
+          + Pflanze
+        </button>
+      </div>
+      ${plants.length ? `
+        <div style="margin-top:10px;font-size:0.58rem;color:var(--text-dim);line-height:1.8;">
+          ${[...new Set(plants)].map(p => `<span style="margin-right:6px;">${p}</span>`).join('')}
+        </div>` : ''}
+    </div>`;
+}
+
 export const NutritionModul = {
   id:    'nutrition',
   label: 'Ernährung',
@@ -171,6 +212,7 @@ export const NutritionModul = {
           <div style="font-size:0.75rem;font-weight:800;color:var(--text-dim);">${PERSONA_LABEL}</div>
         </div>
 
+        ${PlantDiversityCard(state)}
         ${ProgressBar(doneCount, totalCount)}
         ${EatingWindowCard(state)}
         ${sections}

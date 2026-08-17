@@ -70,6 +70,7 @@ function releaseWakeLock() {
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
     Store.checkDailyReset();
+    Store.checkWeeklyReset();
     if (Store.state?.activeExercise?.running) requestWakeLock();
   }
 });
@@ -359,10 +360,27 @@ document.addEventListener('click', async (e) => {
 
   if (action === 'set-bike') showBikeInput();
 
+  if (action === 'add-plant') {
+    const input = document.getElementById('plant-input');
+    const plant = input?.value.trim();
+    if (!plant) return;
+    const existing = Store.state.plantDiversityLog ?? [];
+    const alreadyIn = existing.some(p => p.toLowerCase() === plant.toLowerCase());
+    if (!alreadyIn) {
+      Store.state.plantDiversityLog = [...existing, plant];
+      GamificationEngine.check();
+    }
+    if (input) input.value = '';
+    return;
+  }
+
   if (action === 'tap-habit') {
     const habit = HABITS.find(h => h.id === id);
     if (!habit || Store.state.doneHabits[id]) return;
     Store.state.doneHabits = { ...Store.state.doneHabits, [id]: new Date().toDateString() };
+    if (id === 'meal_order')     Store.state.mealOrderDays   = (Store.state.mealOrderDays   ?? 0) + 1;
+    if (id === 'post_meal_walk') Store.state.postMealWalkDays = (Store.state.postMealWalkDays ?? 0) + 1;
+    if (id === 'social')         Store.state.socialDays       = (Store.state.socialDays       ?? 0) + 1;
     if (habit.xp > 0) awardXP(habit.xp);
     GamificationEngine.check();
   }
@@ -622,6 +640,7 @@ async function bootstrap() {
   }
   applyTheme(Store.state.settings?.theme ?? 'system');
   Store.checkDailyReset();
+  Store.checkWeeklyReset();
 
   if (Store.state.fasting.running) {
     TimerService.startTick();
@@ -653,6 +672,7 @@ async function bootstrap() {
   Store.subscribe('sleepQuality',         render);
   Store.subscribe('vorsorgeLog',          render);
   Store.subscribe('painLog',              render);
+  Store.subscribe('plantDiversityLog',    render);
 
   Store.subscribe('timerTick', (s) => {
     const mode      = Store.state.fasting?.mode ?? '16:8';
@@ -678,7 +698,7 @@ async function bootstrap() {
   ReminderService.start();
   render();
   window.addEventListener('load', registerSW);
-  setInterval(() => Store.checkDailyReset(), 60_000);
+  setInterval(() => { Store.checkDailyReset(); Store.checkWeeklyReset(); }, 60_000);
 }
 
 bootstrap();
