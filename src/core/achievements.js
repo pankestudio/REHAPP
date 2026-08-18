@@ -190,6 +190,78 @@ export const ACHIEVEMENTS = [
     check: (s) => Math.floor(s.xp / 100) + 1 >= 20,
   },
 
+  // ── Ernährung ─────────────────────────────────────────────────────────────
+  {
+    id:    'plant_diversity_30',
+    title: 'Mikrobiomsturm',
+    desc:  '30 verschiedene Pflanzenlebensmittel in einer Woche',
+    icon:  '🥗',
+    xp:    200,
+    check: (s) => new Set((s.plantDiversityLog ?? []).map(p => p.toLowerCase())).size >= 30,
+  },
+  {
+    id:    'meal_order_streak_7',
+    title: 'Reihenfolge-Profi',
+    desc:  'Gemüse/Protein-zuerst-Habit 7× erledigt',
+    icon:  '🥦',
+    xp:    70,
+    check: (s) => (s.mealOrderDays ?? 0) >= 7,
+  },
+  {
+    id:    'post_meal_walk_streak_14',
+    title: 'Mahlzeiten-Walk',
+    desc:  'Nach-dem-Essen-Bewegung 14× erledigt',
+    icon:  '🚶',
+    xp:    120,
+    check: (s) => (s.postMealWalkDays ?? 0) >= 14,
+  },
+
+  // ── Kraft & Griffstärke ───────────────────────────────────────────────────
+  {
+    id:    'strength_10',
+    title: 'Zehn Kräftigung',
+    desc:  'Kräftigung-Protokoll 10× abgeschlossen',
+    icon:  '💪',
+    xp:    100,
+    check: (s) => (s.protocolCounts?.strength ?? 0) >= 10,
+  },
+  {
+    id:    'grip_first_test',
+    title: 'Griffkraft gemessen',
+    desc:  'Erste Griffkraft-Messung eingetragen',
+    icon:  '✊',
+    xp:    20,
+    check: (s) => (s.gripStrengthLog?.length ?? 0) >= 1,
+  },
+
+  // ── Soziales & Schlaf ──────────────────────────────────────────────────────
+  {
+    id:    'social_streak_7',
+    title: 'Verbunden',
+    desc:  'Sozialer Kontakt 7× erledigt',
+    icon:  '🤝',
+    xp:    70,
+    check: (s) => (s.socialDays ?? 0) >= 7,
+  },
+
+  // ── Vorsorge & Schmerz ────────────────────────────────────────────────────
+  {
+    id:    'vorsorge_first_logged',
+    title: 'Erste Vorsorge',
+    desc:  'Erste Vorsorgeuntersuchung erfasst',
+    icon:  '🏥',
+    xp:    30,
+    check: (s) => Object.keys(s.vorsorgeLog ?? {}).length >= 1,
+  },
+  {
+    id:    'pain_tracked_30_days',
+    title: 'Schmerztagebuch',
+    desc:  '30 Tage Schmerz-Score eingetragen',
+    icon:  '📊',
+    xp:    150,
+    check: (s) => (s.painLog?.length ?? 0) >= 30,
+  },
+
   // ── Kombination ───────────────────────────────────────────────────────────
   {
     id: 'perfect_day',
