@@ -440,6 +440,50 @@ function BlockSection(block, doneHabits, activeBlock, settings, hiddenHabits, sl
     </div>`;
 }
 
+// ── Wetter / Flare-up Banner ──────────────────────────────────────────────────
+
+function WeatherBanner(state) {
+  const weatherLog = state.weatherLog ?? [];
+  const painLog    = state.painLog    ?? [];
+  if (weatherLog.length < 2) return '';
+
+  const sorted = [...weatherLog].sort((a, b) => a.date.localeCompare(b.date));
+  const last   = sorted[sorted.length - 1];
+  const prev   = sorted[sorted.length - 2];
+  const drop   = (prev?.pressure ?? 0) - (last?.pressure ?? 0);
+  if (drop < 5) return '';
+
+  // Personalised correlation if ≥30 overlapping entries
+  const overlap = weatherLog.filter(w => painLog.find(p => p.date === w.date));
+  let personalNote = '';
+  if (overlap.length >= 30) {
+    const dropDays = sorted.filter((w, idx) => idx > 0 && (sorted[idx - 1].pressure - w.pressure) >= 5);
+    const calmDays = sorted.filter((w, idx) => !(idx > 0 && (sorted[idx - 1].pressure - w.pressure) >= 5));
+    const avgPain = (wDays) => {
+      const sc = wDays.map(w => painLog.find(p => p.date === w.date)?.score ?? null).filter(s => s !== null);
+      return sc.length ? sc.reduce((a, b) => a + b, 0) / sc.length : null;
+    };
+    const avgDrop = avgPain(dropDays);
+    const avgCalm = avgPain(calmDays);
+    if (avgDrop !== null && avgCalm !== null && avgDrop > avgCalm) {
+      personalNote = ` An ähnlichen Tagen: ⌀ ${avgDrop.toFixed(1)} vs. ${avgCalm.toFixed(1)} Schmerz.`;
+    }
+  }
+
+  return `
+    <div style="margin-bottom:12px;padding:12px 16px;
+      background:var(--surface);border-left:3px solid var(--action-orange);">
+      <div style="font-size:0.62rem;font-weight:800;text-transform:uppercase;
+        letter-spacing:0.08em;color:var(--action-orange);margin-bottom:4px;">
+        Wetterumschwung
+      </div>
+      <div style="font-size:0.68rem;color:var(--text-dim);line-height:1.5;">
+        Luftdruckabfall −${drop.toFixed(1)} hPa erkannt.${personalNote}
+        Programm ggf. anpassen.
+      </div>
+    </div>`;
+}
+
 // ── Fasting milestone banner ──────────────────────────────────────────────────
 
 const FASTING_SCIENCE = {
@@ -599,6 +643,7 @@ export const HomeModul = {
     const activeBlock  = currentBlock(wakeTime);
     return `
       <div>
+        ${WeatherBanner(state)}
         ${HeroSection(state)}
         ${DayProgress(state, hiddenHabits)}
         ${CategoryProgress(state, hiddenHabits)}

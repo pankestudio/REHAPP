@@ -199,6 +199,21 @@ export const SettingsModul = {
                 </button>`).join('')}
             </div>
 
+            <label class="u-label" style="font-size:0.6rem;">Standort (Wetterwarnung)</label>
+            ${s.locationLat && s.locationLng
+              ? `<div style="font-size:0.62rem;color:var(--text-dim);margin-bottom:8px;">
+                  ${s.locationLat.toFixed(2)}° N · ${s.locationLng.toFixed(2)}° E · gesetzt
+                 </div>`
+              : `<div style="font-size:0.62rem;color:var(--text-dim);margin-bottom:8px;">
+                  Nicht gesetzt — Flare-up-Wetterwarnung ist inaktiv.
+                 </div>`}
+            <button data-action="request-location"
+              style="width:100%;border:1.5px solid var(--border);background:transparent;
+                padding:10px;font-size:0.65rem;font-weight:800;text-transform:uppercase;
+                letter-spacing:0.06em;cursor:pointer;margin-bottom:24px;">
+              Standort erfassen
+            </button>
+
           </div>
         </div>
 

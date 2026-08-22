@@ -71,6 +71,7 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
     Store.checkDailyReset();
     Store.checkWeeklyReset();
+    fetchWeather();
     if (Store.state?.activeExercise?.running) requestWakeLock();
   }
 });
@@ -243,6 +244,33 @@ function awardXP(amount) {
   const newLevel = Math.floor(Store.state.xp / 100);
   if (newLevel > prevLevel) AnimationEngine.showLevelUp(newLevel + 1);
   else AnimationEngine.showXPGain(amount);
+}
+
+// ─── Weather fetch (Open-Meteo, no API key) ───────────────────────────────────
+async function fetchWeather() {
+  const { locationLat: lat, locationLng: lng } = Store.state.settings ?? {};
+  if (!lat || !lng) return;
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lng.toFixed(4)}&hourly=surface_pressure&timezone=auto&past_days=2&forecast_days=0`;
+    const res  = await fetch(url);
+    if (!res.ok) return;
+    const data = await res.json();
+    const times = data.hourly?.time ?? [];
+    const pvals = data.hourly?.surface_pressure ?? [];
+    const byDate = {};
+    times.forEach((t, i) => {
+      const date = t.slice(0, 10);
+      if (!byDate[date]) byDate[date] = [];
+      if (pvals[i] !== null) byDate[date].push(pvals[i]);
+    });
+    const newEntries = Object.entries(byDate).map(([date, vals]) => ({
+      date,
+      pressure: vals.reduce((a, b) => a + b, 0) / vals.length,
+    }));
+    const existing = (Store.state.weatherLog ?? []).filter(e => !newEntries.find(n => n.date === e.date));
+    const merged   = [...existing, ...newEntries].sort((a, b) => a.date.localeCompare(b.date)).slice(-90);
+    Store.state.weatherLog = merged;
+  } catch { /* network error, silently ignore */ }
 }
 
 // ─── Render ───────────────────────────────────────────────────────────────────
@@ -512,6 +540,22 @@ document.addEventListener('click', async (e) => {
     return;
   }
 
+  if (action === 'request-location') {
+    if (!('geolocation' in navigator)) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        Store.state.settings = {
+          ...Store.state.settings,
+          locationLat: pos.coords.latitude,
+          locationLng: pos.coords.longitude,
+        };
+        fetchWeather();
+      },
+      () => { /* permission denied */ }
+    );
+    return;
+  }
+
   if (action === 'create-experiment') {
     const title   = document.getElementById('exp-title')?.value.trim();
     const habit   = document.getElementById('exp-habit')?.value.trim();
@@ -684,6 +728,7 @@ async function bootstrap() {
   applyTheme(Store.state.settings?.theme ?? 'system');
   Store.checkDailyReset();
   Store.checkWeeklyReset();
+  fetchWeather();
 
   if (Store.state.fasting.running) {
     TimerService.startTick();
