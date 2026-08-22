@@ -536,7 +536,8 @@ document.addEventListener('click', async (e) => {
     const protocol = protocolsData[id];
     if (!protocol) return;
 
-    Store.state.activeExercise = { protocolId: protocol.id, stepIndex: 0, running: true };
+    const habitId = btn.dataset.habitId ?? null;
+    Store.state.activeExercise = { protocolId: protocol.id, stepIndex: 0, running: true, habitId };
     await requestWakeLock();
 
     const tpl = document.createElement('template');
@@ -606,12 +607,22 @@ function nextExerciseStep(protocol) {
     awardXP(xp);
     GamificationEngine.onProtocolComplete(protocol.id);
 
-    // Mark habit as done for today
-    const habitIds = HABITS.map(h => h.protocol);
-    if (habitIds.includes(protocol.id)) {
-      const doneHabits = { ...(Store.state.doneHabits ?? {}) };
-      const habit = HABITS.find(h => h.protocol === protocol.id);
-      if (habit) doneHabits[habit.id] = new Date().toDateString();
+    // Track estim unique days
+    if (protocol.id === 'estim') {
+      const today = new Date().toISOString().slice(0, 10);
+      if (Store.state.lastEstimDate !== today) {
+        Store.state.lastEstimDate = today;
+        Store.state.estimDays = (Store.state.estimDays ?? 0) + 1;
+      }
+    }
+
+    // Mark habit as done — use habitId from activeExercise if available (handles shared protocols)
+    const triggeredHabitId = Store.state.activeExercise.habitId;
+    const habitToMark = triggeredHabitId
+      ? HABITS.find(h => h.id === triggeredHabitId)
+      : HABITS.find(h => h.protocol === protocol.id);
+    if (habitToMark) {
+      const doneHabits = { ...(Store.state.doneHabits ?? {}), [habitToMark.id]: new Date().toDateString() };
       Store.state.doneHabits = doneHabits;
     }
 
@@ -673,6 +684,9 @@ async function bootstrap() {
   Store.subscribe('vorsorgeLog',          render);
   Store.subscribe('painLog',              render);
   Store.subscribe('plantDiversityLog',    render);
+  Store.subscribe('experiments',          render);
+  Store.subscribe('weatherLog',           render);
+  Store.subscribe('estimDays',            render);
 
   Store.subscribe('timerTick', (s) => {
     const mode      = Store.state.fasting?.mode ?? '16:8';

@@ -39,6 +39,22 @@ export const REMINDERS = [
     sub:   '10 Min. Gehen — Blutzuckerspitze kappen',
     type:  'post-meal',
   },
+  {
+    id:         'estim_noon',
+    label:      'Elektrostimulation',
+    sub:        '13:00 · Fuß + Knie — TENS/EMS',
+    type:       'times',
+    times:      ['13:00'],
+    protocolId: 'estim',
+  },
+  {
+    id:         'estim_evening',
+    label:      'Elektrostimulation',
+    sub:        '19:30 · Fuß + Knie — TENS/EMS',
+    type:       'times',
+    times:      ['19:30'],
+    protocolId: 'estim',
+  },
 ];
 
 const _intervals  = {};

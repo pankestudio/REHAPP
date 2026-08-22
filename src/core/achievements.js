@@ -262,6 +262,32 @@ export const ACHIEVEMENTS = [
     check: (s) => (s.painLog?.length ?? 0) >= 30,
   },
 
+  // ── Elektrostimulation ────────────────────────────────────────────────────
+  {
+    id:    'estim_first',
+    title: 'Erste Stim',
+    desc:  'Erste E-Stim-Session abgeschlossen',
+    icon:  '⚡',
+    xp:    20,
+    check: (s) => (s.protocolCounts?.estim ?? 0) >= 1,
+  },
+  {
+    id:    'estim_50',
+    title: '50 Sessionen',
+    desc:  '50 E-Stim-Sessions insgesamt',
+    icon:  '🔋',
+    xp:    150,
+    check: (s) => (s.protocolCounts?.estim ?? 0) >= 50,
+  },
+  {
+    id:    'estim_streak_14',
+    title: '14 Tage E-Stim',
+    desc:  'An 14 Tagen mindestens eine Stimulation',
+    icon:  '⚡',
+    xp:    100,
+    check: (s) => (s.estimDays ?? 0) >= 14,
+  },
+
   // ── Kombination ───────────────────────────────────────────────────────────
   {
     id: 'perfect_day',

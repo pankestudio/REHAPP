@@ -269,6 +269,19 @@ export const protocolsData = {
     ],
   },
 
+  estim: {
+    id: 'estim', title: 'Elektrostimulation', xp: 20, intensity: 'leicht',
+    description: 'TENS/EMS · Fuß + Knie · ~45 Min.',
+    why: 'TENS moduliert die Schmerzweiterleitung (Gate-Control). EMS erhält Muskelaktivität in der geschonten Extremität und beugt Muskelabbau vor. ⚠ Geräte-Parameter nach Vorgaben der Physiotherapie; nicht über offene Hautstellen oder nahe implantierter Elektronik.',
+    steps: [
+      { title: 'Vorbereitung — Haut prüfen, Elektroden am Fuß anlegen',          duration: 60   },
+      { title: 'Stimulation Fuß — Gerät starten (Empfehlung 15–20 Min.)',         duration: 1200 },
+      { title: 'Umsetzen — Elektroden Fuß lösen, Haut prüfen, ans Knie anlegen', duration: 60   },
+      { title: 'Stimulation Knie — Gerät starten (Empfehlung 15–20 Min.)',        duration: 1200 },
+      { title: 'Abschluss — Gerät aus, Haut auf Rötung/Reizung kontrollieren',   duration: 60   },
+    ],
+  },
+
 };
 
 // ── Kategorien für den Reha-Tab ─────────────────────────────────────────────
@@ -280,6 +293,7 @@ const CATEGORIES = [
   { label: 'Nervensystem',              ids: ['vagus', 'meditation'] },
   { label: 'Kraft',                     ids: ['micro_workout', 'back_activation'] },
   { label: 'Reha / Post-OP',            ids: ['mld', 'toes', 'janda_foot'] },
+  { label: 'Elektrotherapie',           ids: ['estim'] },
 ];
 
 // ── Bewegungs-Karten (Schritte & Fahrrad) ──────────────────────────────────

@@ -42,7 +42,11 @@ export const HABITS = [
     why: 'Die Reihenfolge allein senkt den Blutzuckeranstieg um 20–40 %: Ballaststoffe und Protein verlangsamen die Magenentleerung und triggern GLP-1 — unabhängig vom Inhalt der Mahlzeit.' },
   { id: 'post_meal_walk',block: 'tag', label: 'Nach dem Essen bewegen', sub: '10 Min. leichtes Gehen',                 xp: 10, type: 'check', category: 'bewegung',
     why: '10 Minuten Gehen direkt nach dem Essen senken die Blutzuckerspitze um 17–24 % (Meta-Review 2022). Die Intensität ist dabei zweitrangig — Hauptsache in Bewegung.' },
+  { id: 'estim_noon',    block: 'tag',   label: 'Elektrostimulation',   sub: 'Fuß + Knie · TENS/EMS · Mittag',  xp: 20, type: 'protocol', protocol: 'estim', category: 'bewegung',
+    why: 'TENS moduliert die Schmerzweiterleitung (Gate-Control-Theorie) und kann bei neuropathischem CRPS-Schmerz lindernd wirken. EMS erhält Muskelaktivität in der geschonten Extremität und beugt dem Muskelabbau vor. ⚠ Elektrodenplatzierung und Parameter nach Vorgaben der Physiotherapie/des Geräteherstellers.' },
   // ── Abend ─────────────────────────────────────────────────────────────────────
+  { id: 'estim_evening', block: 'abend', label: 'Elektrostimulation',  sub: 'Fuß + Knie · TENS/EMS · Abend',   xp: 20, type: 'protocol', protocol: 'estim', category: 'bewegung',
+    why: 'Die zweite Session am Abend hält den analgetischen Effekt aufrecht. EMS-Arbeit gegen Ende des Tages reduziert die nächtliche Ödemneigung. ⚠ Gleiche Sicherheitshinweise wie mittags.' },
   { id: 'foot_pm',     block: 'abend',    label: 'Fuß-Regeneration',  sub: '3 Min · Entstauung & Mobilisation', xp: 10, type: 'protocol', protocol: 'foot_evening',    category: 'bewegung',
     why: 'Lymphatischer Rückfluss passiert hauptsächlich im Liegen. Aktiv unterstützen verhindert Ödem-Akkumulation über Nacht — die Hauptursache für Morgensteifigkeit bei KMÖ.' },
   { id: 'stretch',     block: 'abend',    label: 'Dehnung',           sub: '10 Min · Faszien & Gelenke',        xp: 10, type: 'protocol', protocol: 'stretch',         category: 'regeneration',
@@ -330,7 +334,7 @@ function HabitCard(habit, doneHabits, sleepQuality) {
     ? `<div style="width:44px;height:44px;border:1.5px solid var(--border);
          display:flex;align-items:center;justify-content:center;font-size:0.9rem;opacity:0.4;">✓</div>`
     : habit.type === 'protocol'
-      ? `<button data-action="start-protocol" data-id="${habit.protocol}"
+      ? `<button data-action="start-protocol" data-id="${habit.protocol}" data-habit-id="${habit.id}"
            style="width:44px;height:44px;cursor:pointer;font-weight:var(--fw-black);
              font-size:0.9rem;border:1.5px solid var(--text-main);
              background:var(--text-main);color:var(--bg);touch-action:manipulation;">▶</button>`

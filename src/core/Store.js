@@ -16,7 +16,7 @@ const DEFAULT_STATE = {
   activeExercise: { protocolId: null, stepIndex: 0, running: false },
   view:           'home',
   streaks:        { current: 0, lastActivity: null },
-  settings:       { userName: '', fontSize: '16', theme: 'dark', reminders: {}, wakeTime: '07:00', eatStart: '12:00', birthYear: null, gender: null },
+  settings:       { userName: '', fontSize: '16', theme: 'dark', reminders: {}, wakeTime: '07:00', eatStart: '12:00', birthYear: null, gender: null, locationLat: null, locationLng: null },
   lastReset:            new Date().toDateString(),
   // ── Gamification ──────────────────────────────────────────────────────────
   unlockedAchievements: [],
@@ -44,6 +44,13 @@ const DEFAULT_STATE = {
   mealOrderDays:        0,
   postMealWalkDays:     0,
   socialDays:           0,
+  // ── Elektrostimulation ────────────────────────────────────────────────────
+  estimDays:            0,
+  lastEstimDate:        '',
+  // ── Experimente (Task 9) ──────────────────────────────────────────────────
+  experiments:          [],
+  // ── Wetter-Log (Task 10) ─────────────────────────────────────────────────
+  weatherLog:           [],
 };
 
 export const Store = {
