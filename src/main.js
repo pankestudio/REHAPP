@@ -540,6 +540,17 @@ document.addEventListener('click', async (e) => {
     return;
   }
 
+  if (action === 'show-print-report') {
+    const { buildPrintReport } = await import('./modules/stats/index.js');
+    const existing = document.getElementById('print-overlay');
+    if (existing) existing.remove();
+    const div = document.createElement('div');
+    div.innerHTML = buildPrintReport(Store.state);
+    const overlay = div.firstElementChild;
+    document.body.appendChild(overlay);
+    return;
+  }
+
   if (action === 'request-location') {
     if (!('geolocation' in navigator)) return;
     navigator.geolocation.getCurrentPosition(

@@ -2,6 +2,7 @@
 import { Store }        from '../../core/Store.js';
 import { ACHIEVEMENTS } from '../../core/achievements.js';
 import { HABITS }       from '../home/index.js';
+import { SCREENINGS }   from '../../data/screenings.js';
 
 function StreakCard(state) {
   const current = state.streaks.current;
@@ -394,6 +395,196 @@ function AchievementsCard(state) {
     </div>`;
 }
 
+function PrintReportCard() {
+  return `
+    <div class="card" style="text-align:center;">
+      <span class="u-label" style="margin-bottom:8px;">Arztbericht</span>
+      <div style="font-size:0.65rem;color:var(--text-dim);margin-bottom:14px;line-height:1.5;">
+        Kompakte Zusammenfassung für den nächsten Arzttermin —
+        Schmerz, Compliance, Griffkraft, Vorsorge.
+      </div>
+      <button data-action="show-print-report" class="btn-primary" style="max-width:260px;">
+        Bericht erstellen &amp; drucken
+      </button>
+    </div>`;
+}
+
+// Generates the full print-overlay HTML injected into body
+export function buildPrintReport(state) {
+  const today      = new Date().toISOString().slice(0, 10);
+  const painLog    = (state.painLog ?? []).slice(-30);
+  const gripLog    = state.gripStrengthLog ?? [];
+  const vorsorgeLog = state.vorsorgeLog ?? {};
+  const streak     = state.streaks?.current ?? 0;
+  const birthYear  = state.settings?.birthYear ?? null;
+  const gender     = state.settings?.gender ?? null;
+  const name       = state.settings?.userName ?? '';
+
+  // Pain stats
+  const avgPain = painLog.length
+    ? (painLog.reduce((s, e) => s + e.score, 0) / painLog.length).toFixed(1)
+    : '—';
+  const painTrend = (() => {
+    if (painLog.length < 6) return '';
+    const first = painLog.slice(0, 3).reduce((s, e) => s + e.score, 0) / 3;
+    const last  = painLog.slice(-3).reduce((s, e) => s + e.score, 0) / 3;
+    return last < first - 0.5 ? '↓ besser' : last > first + 0.5 ? '↑ schlechter' : '→ stabil';
+  })();
+  const budapestDays = painLog.filter(e => e.criteria?.length > 0).length;
+
+  // Mini pain bar chart (inline SVG, 30 cols)
+  const painMax = Math.max(...painLog.map(e => e.score), 1);
+  const barW = 8; const barH = 40; const gap = 2;
+  const painBars = painLog.map((e, i) => {
+    const h = Math.max(Math.round((e.score / painMax) * barH), e.score > 0 ? 2 : 0);
+    const fill = e.score >= 7 ? '#cc0000' : e.score >= 4 ? '#888' : '#ccc';
+    return `<rect x="${i * (barW + gap)}" y="${barH - h}" width="${barW}" height="${h}" fill="${fill}"/>`;
+  }).join('');
+  const painSvgW = painLog.length * (barW + gap);
+  const painChart = painLog.length
+    ? `<svg width="${painSvgW}" height="${barH}" style="display:block;margin:6pt 0;">${painBars}</svg>`
+    : '<em style="color:#888">Keine Daten</em>';
+
+  // Core habit compliance from painLog habitPct (proxy)
+  const avgHabitPct = painLog.filter(e => e.habitPct != null).length
+    ? Math.round(painLog.filter(e => e.habitPct != null).reduce((s, e) => s + e.habitPct, 0) / painLog.filter(e => e.habitPct != null).length)
+    : null;
+
+  // Grip strength
+  const gripRows = gripLog.slice(-10).map(e =>
+    `<tr><td>${e.date}</td><td>${e.kg} kg</td></tr>`).join('');
+  const gripFirst = gripLog[0];
+  const gripLast  = gripLog[gripLog.length - 1];
+  const gripTrend = gripFirst && gripLast && gripFirst !== gripLast
+    ? (gripLast.kg > gripFirst.kg ? `↑ ${(gripLast.kg - gripFirst.kg).toFixed(1)} kg gewonnen` : `↓ ${(gripFirst.kg - gripLast.kg).toFixed(1)} kg`)
+    : '';
+
+  // Vorsorge status
+  const age = birthYear ? new Date().getFullYear() - birthYear : null;
+  const relevantScreenings = SCREENINGS.filter(sc => {
+    if (age !== null && sc.fromAge > age) return false;
+    if (sc.toAge !== undefined && age !== null && age > sc.toAge) return false;
+    if (sc.gender !== 'all') {
+      if (sc.gender === 'female' && gender !== 'female') return false;
+      if (sc.gender === 'male'   && gender !== 'male')   return false;
+    }
+    return true;
+  });
+
+  const vorsorgeRows = relevantScreenings.map(sc => {
+    const lastDone = vorsorgeLog[sc.id];
+    let status = 'Nie erfasst';
+    if (lastDone) {
+      const doneDate  = new Date(lastDone);
+      const nextDue   = new Date(doneDate);
+      nextDue.setMonth(nextDue.getMonth() + sc.intervalMonths);
+      const daysLeft  = Math.ceil((nextDue - new Date()) / 86_400_000);
+      status = daysLeft < 0
+        ? `FÄLLIG (seit ${-daysLeft}d)`
+        : daysLeft < 30
+          ? `bald fällig (in ${daysLeft}d)`
+          : `aktuell (fällig ${nextDue.toLocaleDateString('de-DE')})`;
+    }
+    return `<tr><td>${sc.label}</td><td>${lastDone ?? '—'}</td><td>${status}</td></tr>`;
+  }).join('');
+
+  return `
+    <div class="print-overlay" id="print-overlay" style="
+      position:fixed;inset:0;background:var(--bg);z-index:2000;overflow-y:auto;
+      padding:24px 20px calc(24px + var(--safe-bot));">
+
+      <!-- Controls — hidden on print -->
+      <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <span style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;">
+          Arztbericht
+        </span>
+        <div style="display:flex;gap:10px;">
+          <button onclick="window.print()"
+            style="background:var(--text-main);color:var(--bg);border:none;padding:10px 16px;
+              font-weight:800;font-size:0.65rem;text-transform:uppercase;cursor:pointer;">
+            Drucken / PDF
+          </button>
+          <button onclick="document.getElementById('print-overlay').remove()"
+            style="background:transparent;border:1.5px solid var(--border);padding:10px 16px;
+              font-weight:800;font-size:0.65rem;text-transform:uppercase;cursor:pointer;">
+            Schließen
+          </button>
+        </div>
+      </div>
+
+      <!-- Report content -->
+      <div style="max-width:640px;margin:0 auto;">
+
+        <div class="print-section" style="margin-bottom:20px;border-bottom:2px solid var(--text-main);padding-bottom:12px;">
+          <div style="font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;">REHAPP — Arztbericht</div>
+          <div style="font-size:0.65rem;color:var(--text-dim);margin-top:4px;">
+            ${name ? name + ' · ' : ''}Erstellt: ${today} · Zeitraum: letzte 30 Tage
+          </div>
+          <div style="font-size:0.65rem;margin-top:4px;">
+            Aktuelle Serie: <strong>${streak}</strong> Tage · XP gesamt: <strong>${state.xp ?? 0}</strong>
+          </div>
+        </div>
+
+        <div class="print-section">
+          <div style="font-size:0.6rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">
+            Schmerz-Verlauf (letzte 30 Tage)
+          </div>
+          ${painChart}
+          <div style="font-size:0.72rem;line-height:1.8;">
+            Ø Score: <strong>${avgPain} / 10</strong>
+            ${painTrend ? ` · Trend: <strong>${painTrend}</strong>` : ''}
+            · Budapest-Kriterien notiert: <strong>${budapestDays}×</strong>
+            ${avgHabitPct !== null ? ` · Ø Habit-Compliance: <strong>${avgHabitPct}%</strong>` : ''}
+          </div>
+          ${painLog.length >= 3 ? `
+            <div style="margin-top:10px;overflow-x:auto;">
+              <table class="print-table">
+                <thead><tr><th>Datum</th><th>Score</th><th>Budapest</th><th>Habits</th></tr></thead>
+                <tbody>
+                  ${painLog.slice(-14).map(e => `<tr>
+                    <td>${e.date}</td>
+                    <td>${e.score}</td>
+                    <td>${e.criteria?.length ? e.criteria.join(', ') : '—'}</td>
+                    <td>${e.habitPct != null ? e.habitPct + '%' : '—'}</td>
+                  </tr>`).join('')}
+                </tbody>
+              </table>
+            </div>` : ''}
+        </div>
+
+        ${gripLog.length ? `
+        <div class="print-section" style="margin-top:16px;">
+          <div style="font-size:0.6rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">
+            Griffkraft-Verlauf
+          </div>
+          ${gripTrend ? `<div style="font-size:0.72rem;margin-bottom:8px;">${gripTrend}</div>` : ''}
+          <table class="print-table">
+            <thead><tr><th>Datum</th><th>Griffkraft</th></tr></thead>
+            <tbody>${gripRows}</tbody>
+          </table>
+        </div>` : ''}
+
+        ${relevantScreenings.length ? `
+        <div class="print-section" style="margin-top:16px;">
+          <div style="font-size:0.6rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">
+            Vorsorge-Status
+          </div>
+          <table class="print-table">
+            <thead><tr><th>Untersuchung</th><th>Zuletzt</th><th>Status</th></tr></thead>
+            <tbody>${vorsorgeRows}</tbody>
+          </table>
+        </div>` : ''}
+
+        <div class="print-section" style="margin-top:20px;font-size:0.58rem;color:var(--text-dim);
+          line-height:1.6;border-top:1px solid var(--border);padding-top:12px;">
+          Dieser Bericht wurde automatisch von REHAPP generiert und ersetzt keine ärztliche Beurteilung.
+          Schmerzdaten beruhen auf Selbsteinschätzung. Budapest-Kriterien wurden nicht durch einen Arzt bewertet.
+        </div>
+
+      </div>
+    </div>`;
+}
+
 export const StatsModul = {
   id:    'stats',
   label: 'Stats',
@@ -409,6 +600,7 @@ export const StatsModul = {
         ${PainCard(state)}
         ${ExperimentsCard(state)}
         ${AchievementsCard(state)}
+        ${PrintReportCard()}
       </div>`;
   },
 

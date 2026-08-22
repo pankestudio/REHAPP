@@ -200,3 +200,18 @@ body {
   .app-container { padding-left: 32px; padding-right: 32px; }
   .bottom-nav { max-width: 460px; left: 50%; transform: translateX(-50%); border: 1px solid var(--border); }
 }
+
+/* ── Arztbericht Druck ──────────────────────────────────────────────────────── */
+@media print {
+  body { background: #fff !important; color: #000 !important; font-size: 11pt; }
+  .bottom-nav, .no-print, [data-action], button { display: none !important; }
+  .print-overlay {
+    position: static !important;
+    background: #fff !important;
+    padding: 0 !important;
+  }
+  .print-section { page-break-inside: avoid; margin-bottom: 16pt; }
+  .print-table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+  .print-table th, .print-table td { border: 1px solid #ccc; padding: 4pt 6pt; text-align: left; }
+  .print-table th { background: #f0f0f0; font-weight: bold; }
+}
