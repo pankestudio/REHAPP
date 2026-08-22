@@ -512,6 +512,38 @@ document.addEventListener('click', async (e) => {
     return;
   }
 
+  if (action === 'create-experiment') {
+    const title   = document.getElementById('exp-title')?.value.trim();
+    const habit   = document.getElementById('exp-habit')?.value.trim();
+    const varA    = document.getElementById('exp-variant-a')?.value.trim();
+    const varB    = document.getElementById('exp-variant-b')?.value.trim();
+    const days    = parseInt(document.getElementById('exp-days')?.value) || 14;
+    if (!title || !habit || !varA || !varB) return;
+    const exp = {
+      id:                 `exp_${Date.now()}`,
+      title,
+      habitOrProtocolId:  habit,
+      variantA:           varA,
+      variantB:           varB,
+      startDate:          new Date().toISOString().slice(0, 10),
+      durationDays:       days,
+      dailyLog:           [],
+    };
+    Store.state.experiments = [...(Store.state.experiments ?? []), exp];
+    return;
+  }
+
+  if (action === 'log-experiment-variant') {
+    const experiments = Store.state.experiments ?? [];
+    const today = new Date().toISOString().slice(0, 10);
+    Store.state.experiments = experiments.map(ex => {
+      if (ex.id !== id) return ex;
+      const filtered = (ex.dailyLog ?? []).filter(d => d.date !== today);
+      return { ...ex, dailyLog: [...filtered, { date: today, variant: value }] };
+    });
+    return;
+  }
+
   if (action === 'reset-all-data') {
     if (!confirm('Alle Daten löschen und neu starten?\nDas kann nicht rückgängig gemacht werden.')) return;
     await Store.resetAll();

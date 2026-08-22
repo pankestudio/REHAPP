@@ -243,6 +243,124 @@ function PainCard(state) {
     </div>`;
 }
 
+function ExperimentsCard(state) {
+  const experiments = state.experiments ?? [];
+  const today       = new Date().toISOString().slice(0, 10);
+  const painLog     = state.painLog ?? [];
+
+  const getEndDate = (ex) => {
+    const d = new Date(ex.startDate);
+    d.setDate(d.getDate() + ex.durationDays);
+    return d.toISOString().slice(0, 10);
+  };
+
+  const active    = experiments.find(ex => getEndDate(ex) > today);
+  const completed = experiments.filter(ex => getEndDate(ex) <= today);
+
+  // Auswertung: Schmerzscore des Folgetags nach Varianten-Log
+  function evalExperiment(ex) {
+    const variantADays = ex.dailyLog?.filter(d => d.variant === 'A') ?? [];
+    const variantBDays = ex.dailyLog?.filter(d => d.variant === 'B') ?? [];
+
+    function avgNextMorningPain(days) {
+      const scores = days.map(d => {
+        const nextDay = new Date(d.date);
+        nextDay.setDate(nextDay.getDate() + 1);
+        const iso = nextDay.toISOString().slice(0, 10);
+        return painLog.find(p => p.date === iso)?.score ?? null;
+      }).filter(s => s !== null);
+      if (!scores.length) return null;
+      return scores.reduce((a, b) => a + b, 0) / scores.length;
+    }
+
+    return { avgA: avgNextMorningPain(variantADays), avgB: avgNextMorningPain(variantBDays),
+             nA: variantADays.length, nB: variantBDays.length };
+  }
+
+  // Aktives Experiment — heutige Variante already logged?
+  const todayLogged = active?.dailyLog?.find(d => d.date === today);
+
+  const activeSection = active ? `
+    <div style="margin-bottom:14px;padding:12px;border:1.5px solid var(--border);">
+      <div style="font-size:0.7rem;font-weight:800;margin-bottom:4px;">${active.title}</div>
+      <div style="font-size:0.6rem;color:var(--text-dim);margin-bottom:10px;">
+        ${active.habitOrProtocolId} · A: ${active.variantA} / B: ${active.variantB} ·
+        Tag ${active.dailyLog?.length ?? 0} / ${active.durationDays}
+      </div>
+      ${todayLogged
+        ? `<div style="font-size:0.65rem;color:var(--text-dim);font-style:italic;">Heute: Variante ${todayLogged.variant} ✓</div>`
+        : `<div style="display:flex;gap:8px;">
+            <button data-action="log-experiment-variant" data-id="${active.id}" data-value="A"
+              style="flex:1;border:1.5px solid var(--border);background:transparent;padding:10px;
+                font-size:0.7rem;font-weight:800;cursor:pointer;">Variante A</button>
+            <button data-action="log-experiment-variant" data-id="${active.id}" data-value="B"
+              style="flex:1;border:1.5px solid var(--border);background:transparent;padding:10px;
+                font-size:0.7rem;font-weight:800;cursor:pointer;">Variante B</button>
+          </div>`}
+    </div>` : '';
+
+  const completedSection = completed.map(ex => {
+    const { avgA, avgB, nA, nB } = evalExperiment(ex);
+    const winner = avgA !== null && avgB !== null
+      ? (avgA < avgB ? `A (⌀ ${avgA.toFixed(1)} vs. ${avgB.toFixed(1)})` : `B (⌀ ${avgB.toFixed(1)} vs. ${avgA.toFixed(1)})`)
+      : 'Zu wenig Daten';
+    return `
+      <div style="padding:10px;border:1px solid var(--border);margin-bottom:8px;opacity:0.7;">
+        <div style="font-size:0.65rem;font-weight:800;margin-bottom:4px;">${ex.title} ✓</div>
+        <div style="font-size:0.58rem;color:var(--text-dim);">
+          ${nA}× A · ${nB}× B · Schmerzscore Folgetag: ${winner}
+        </div>
+      </div>`;
+  }).join('');
+
+  const createForm = !active ? `
+    <div style="margin-bottom:8px;">
+      <div style="font-size:0.6rem;color:var(--text-dim);margin-bottom:10px;">
+        Teste 2–4 Wochen lang, ob Variante A oder B deinen nächsten Morgen-Schmerzscore senkt.
+      </div>
+      <input id="exp-title" placeholder="Titel des Experiments"
+        style="width:100%;border:1.5px solid var(--border);background:var(--bg);
+               color:var(--text-main);padding:9px;font-size:0.85rem;font-family:inherit;
+               outline:none;margin-bottom:6px;box-sizing:border-box;">
+      <input id="exp-habit" placeholder="Habit / Protokoll (z. B. vagus)"
+        style="width:100%;border:1.5px solid var(--border);background:var(--bg);
+               color:var(--text-main);padding:9px;font-size:0.85rem;font-family:inherit;
+               outline:none;margin-bottom:6px;box-sizing:border-box;">
+      <div style="display:flex;gap:6px;margin-bottom:6px;">
+        <input id="exp-variant-a" placeholder="Variante A"
+          style="flex:1;border:1.5px solid var(--border);background:var(--bg);
+                 color:var(--text-main);padding:9px;font-size:0.85rem;font-family:inherit;
+                 outline:none;min-width:0;box-sizing:border-box;">
+        <input id="exp-variant-b" placeholder="Variante B"
+          style="flex:1;border:1.5px solid var(--border);background:var(--bg);
+                 color:var(--text-main);padding:9px;font-size:0.85rem;font-family:inherit;
+                 outline:none;min-width:0;box-sizing:border-box;">
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;">
+        <span style="font-size:0.62rem;color:var(--text-dim);white-space:nowrap;">Dauer:</span>
+        <input id="exp-days" type="number" min="7" max="90" value="14" inputmode="numeric"
+          style="width:64px;border:1.5px solid var(--border);background:var(--bg);
+                 color:var(--text-main);padding:9px;font-size:0.85rem;font-family:inherit;
+                 outline:none;-webkit-appearance:none;">
+        <span style="font-size:0.62rem;color:var(--text-dim);">Tage</span>
+      </div>
+      <button data-action="create-experiment" class="btn-primary" style="width:100%;padding:10px;">
+        Experiment starten
+      </button>
+    </div>` : '';
+
+  return `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;">
+        <span class="u-label" style="margin:0;">N-of-1 Experimente</span>
+        ${active ? `<span style="font-size:0.6rem;color:var(--text-dim);">läuft</span>` : ''}
+      </div>
+      ${activeSection}
+      ${completedSection}
+      ${createForm}
+    </div>`;
+}
+
 function AchievementsCard(state) {
   const unlocked = new Set(state.unlockedAchievements ?? []);
   const count    = unlocked.size;
@@ -289,6 +407,7 @@ export const StatsModul = {
         ${HydrationCard()}
         ${GripStrengthCard(state)}
         ${PainCard(state)}
+        ${ExperimentsCard(state)}
         ${AchievementsCard(state)}
       </div>`;
   },
