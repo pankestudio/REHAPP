@@ -5,72 +5,72 @@ export const expandedDetails = new Set();
 
 export const HABITS = [
   // ── Morgen ────────────────────────────────────────────────────────────────────
-  { id: 'sleep',       block: 'morgen',   label: 'Geschlafen',        sub: 'mind. 6 Stunden',                  xp: 20, type: 'sleep',    category: 'regeneration',
+  { id: 'sleep',       block: 'morgen',   label: 'Geschlafen',        sub: 'mind. 6 Stunden',                  xp: 20, type: 'sleep',    category: 'regeneration', core: true,
     why: 'Schlafentzug erhöht CRPS-Schmerzintensität messbar. 6h+ sind kein Luxus — Zellreparatur, Schmerzgedächtnis-Reset und Cortisolabbau finden nur im Tiefschlaf statt.' },
-  { id: 'foot_am',     block: 'morgen',   label: 'Fuß-Aktivierung',   sub: '3 Min · vor dem ersten Schritt',    xp: 12, type: 'protocol', protocol: 'foot_morning',    category: 'bewegung',
+  { id: 'foot_am',     block: 'morgen',   label: 'Fuß-Aktivierung',   sub: '3 Min · vor dem ersten Schritt',    xp: 12, type: 'protocol', protocol: 'foot_morning',    category: 'bewegung', core: true,
     why: 'Die erste Gewichtsbelastung nach der Nacht ist kritisch. 3 Min Aktivierung bringt Durchblutung und Propriozeption in den Fuß, bevor er Gewicht trägt — verhindert reflexhafte Schmerzreaktion.' },
-  { id: 'morning',     block: 'morgen',   label: 'Morgenroutine',     sub: '8 Min · Körper aufwecken',          xp: 20, type: 'protocol', protocol: 'morning_routine', category: 'bewegung',
+  { id: 'morning',     block: 'morgen',   label: 'Morgenroutine',     sub: '8 Min · Körper aufwecken',          xp: 20, type: 'protocol', protocol: 'morning_routine', category: 'bewegung', core: true,
     why: '8 Min Bewegung direkt nach dem Aufwachen senkt Cortisol, aktiviert Muskelketten und setzt Serotonin frei. Der Ton für den ganzen Tag wird in den ersten 30 Min gesetzt.' },
-  { id: 'breath',      block: 'morgen',   label: 'Atemübung 4-7-8',   sub: '3 Runden · Nervensystem',           xp: 8,  type: 'protocol', protocol: 'breath',          category: 'regeneration',
+  { id: 'breath',      block: 'morgen',   label: 'Atemübung 4-7-8',   sub: '3 Runden · Nervensystem',           xp: 8,  type: 'protocol', protocol: 'breath',          category: 'regeneration', core: true,
     why: '4-7-8 stimuliert den Vagusnerv direkt. Senkt Herzfrequenz und Entzündungsmarker, beruhigt das bei CRPS chronisch überreizte Nervensystem — in unter 3 Minuten.' },
-  { id: 'sunlight',    block: 'morgen',   label: 'Draußen',           sub: 'Tageslicht & frische Luft',         xp: 5,  type: 'check',    category: 'fokus',
+  { id: 'sunlight',    block: 'morgen',   label: 'Draußen',           sub: 'Tageslicht & frische Luft',         xp: 5,  type: 'check',    category: 'fokus', core: false,
     why: 'Tageslicht in den ersten 30 Min synchronisiert den Cortisol-Rhythmus und triggert Vitamin-D-Synthese. Beides direkt relevant für Schmerzregulation und Stimmung.' },
-  { id: 'noscreen_am', block: 'morgen',   label: 'Screen-frei',       sub: 'Erste 30 Min nach dem Aufwachen',   xp: 15, type: 'check',    category: 'fokus',
+  { id: 'noscreen_am', block: 'morgen',   label: 'Screen-frei',       sub: 'Erste 30 Min nach dem Aufwachen',   xp: 15, type: 'check',    category: 'fokus', core: false,
     why: 'Ohne Bildschirm kann das Gehirn beim Aufwachen die Schmerzverarbeitung neu kalibrieren. Displays aktivieren sofort den Sympathikus — der bei CRPS ohnehin überaktiv ist.' },
-  { id: 'teeth',       block: 'morgen',   label: 'Zähne',             sub: '2 Min + Zungenreiniger',            xp: 5,  type: 'check',    category: 'fokus',
+  { id: 'teeth',       block: 'morgen',   label: 'Zähne',             sub: '2 Min + Zungenreiniger',            xp: 5,  type: 'check',    category: 'fokus', core: false,
     why: 'Orale Hygiene senkt systemische Entzündungslast. Bei CRPS verstärkt jeder Entzündungsreiz im Körper die Symptome — auch Entzündungen im Mund.' },
   // ── Tag ───────────────────────────────────────────────────────────────────────
-  { id: 'movement',    block: 'tag',      label: 'Bewegungspause',    sub: '2 Min aufstehen · strecken',        xp: 3,  type: 'check',    category: 'bewegung',
+  { id: 'movement',    block: 'tag',      label: 'Bewegungspause',    sub: '2 Min aufstehen · strecken',        xp: 3,  type: 'check',    category: 'bewegung', core: false,
     why: '2 Min aufstehen unterbricht die sympathische Dauerreizung durch langes Sitzen. Der Sympathikus ist bei CRPS chronisch überaktiv — jede Pause hilft.' },
-  { id: 'foot_noon',   block: 'tag',      label: 'Gangschulung',      sub: '4 Min · Muskel & Koordination',     xp: 15, type: 'protocol', protocol: 'foot_midday',     category: 'bewegung',
+  { id: 'foot_noon',   block: 'tag',      label: 'Gangschulung',      sub: '4 Min · Muskel & Koordination',     xp: 15, type: 'protocol', protocol: 'foot_midday',     category: 'bewegung', core: true,
     why: 'Mittags ist der Körper warm und bereit. Gangschulung jetzt trainiert neuromuskuläre Kontrolle auf höchstem Level und normalisiert das durch KMÖ veränderte Gangbild.' },
-  { id: 'box',         block: 'tag',      label: 'Box Breathing',     sub: 'Stress abbauen · 5 Runden',         xp: 10, type: 'protocol', protocol: 'box_breathing',   category: 'regeneration',
+  { id: 'box',         block: 'tag',      label: 'Box Breathing',     sub: 'Stress abbauen · 5 Runden',         xp: 10, type: 'protocol', protocol: 'box_breathing',   category: 'regeneration', core: true,
     why: 'Box Breathing (4-4-4-4) ist die direkteste nicht-pharmakologische Methode zur Parasympathikus-Aktivierung. Nachweislich bei akutem Stress und Schmerzspitzen wirksam.' },
-  { id: 'learning',    block: 'tag',      label: 'Input',             sub: '10 Minuten Neues',                  xp: 15, type: 'check',    category: 'fokus',
+  { id: 'learning',    block: 'tag',      label: 'Input',             sub: '10 Minuten Neues',                  xp: 15, type: 'check',    category: 'fokus', core: false,
     why: 'Kognitive Stimulation fördert Neuroplastizität — der zentrale Mechanismus, durch den das Gehirn Schmerzmuster umlernt. Lernen ist buchstäblich Schmerztherapie.' },
-  { id: 'cooking',     block: 'tag',      label: 'Gekocht',           sub: 'Eine Mahlzeit selbst gekocht',      xp: 15, type: 'check',    category: 'fokus',
+  { id: 'cooking',     block: 'tag',      label: 'Gekocht',           sub: 'Eine Mahlzeit selbst gekocht',      xp: 15, type: 'check',    category: 'fokus', core: false,
     why: 'Selbst kochen senkt den Anteil ultra-verarbeiteter Lebensmittel direkt. Eine 8-Länder-Studie (2025): jede 10 % mehr Fertigkost am Gesamtkonsum erhöhen das Sterberisiko um ~3 % — der Ø-Konsum liegt bereits bei 60 %.' },
-  { id: 'others',      block: 'tag',      label: 'Für andere',        sub: 'Etwas für jemand getan',            xp: 20, type: 'check',    category: 'fokus',
+  { id: 'others',      block: 'tag',      label: 'Für andere',        sub: 'Etwas für jemand getan',            xp: 20, type: 'check',    category: 'fokus', core: false,
     why: 'Echtes Geben setzt Oxytocin frei — ein direkter Schmerzdämpfer. Soziale Verbindung ist einer der wenigen kostenlosen Hebel mit nachgewiesenem Effekt auf Schmerztoleranz.' },
-  { id: 'strength',    block: 'tag',      label: 'Kräftigung',          sub: '5 Übungen · Kraft & Stabilität',    xp: 20, type: 'protocol', protocol: 'strength', category: 'bewegung',
+  { id: 'strength',    block: 'tag',      label: 'Kräftigung',          sub: '5 Übungen · Kraft & Stabilität',    xp: 20, type: 'protocol', protocol: 'strength', category: 'bewegung', core: true,
     why: 'Starke Muskulatur entlastet Gelenke und normalisiert die CRPS-typische Schutzspannung. Jede Trainingseinheit baut dem Muskelabbau aktiv entgegen.' },
-  { id: 'protein',     block: 'tag',      label: 'Protein pro Mahlzeit', sub: 'Jede Mahlzeit eine Proteinquelle', xp: 10, type: 'check',    category: 'fokus',
+  { id: 'protein',     block: 'tag',      label: 'Protein pro Mahlzeit', sub: 'Jede Mahlzeit eine Proteinquelle', xp: 10, type: 'check',    category: 'fokus', core: false,
     why: '~1,5 g Protein/kg Körpergewicht/Tag verteilt auf mehrere Mahlzeiten fördert Muskelproteinsynthese wirksamer als eine große Portion — besonders in Kombination mit Krafttraining.' },
-  { id: 'social',         block: 'tag', label: 'Sozialer Kontakt',    sub: 'Echtes Gespräch oder Zeit mit jemandem',  xp: 10, type: 'check', category: 'fokus',
+  { id: 'social',         block: 'tag', label: 'Sozialer Kontakt',    sub: 'Echtes Gespräch oder Zeit mit jemandem',  xp: 10, type: 'check', category: 'fokus', core: false,
     why: 'Soziale Isolation erhöht vorzeitige Sterblichkeit um bis zu 30 % — vergleichbar mit Rauchen. Echte Verbindung senkt Cortisol und Schmerzintensität messbar.' },
-  { id: 'meal_order',    block: 'tag', label: 'Gemüse/Protein zuerst', sub: 'Kohlenhydrate zuletzt essen',             xp: 10, type: 'check', category: 'fokus',
+  { id: 'meal_order',    block: 'tag', label: 'Gemüse/Protein zuerst', sub: 'Kohlenhydrate zuletzt essen',             xp: 10, type: 'check', category: 'fokus', core: false,
     why: 'Die Reihenfolge allein senkt den Blutzuckeranstieg um 20–40 %: Ballaststoffe und Protein verlangsamen die Magenentleerung und triggern GLP-1 — unabhängig vom Inhalt der Mahlzeit.' },
-  { id: 'post_meal_walk',block: 'tag', label: 'Nach dem Essen bewegen', sub: '10 Min. leichtes Gehen',                 xp: 10, type: 'check', category: 'bewegung',
+  { id: 'post_meal_walk',block: 'tag', label: 'Nach dem Essen bewegen', sub: '10 Min. leichtes Gehen',                 xp: 10, type: 'check', category: 'bewegung', core: false,
     why: '10 Minuten Gehen direkt nach dem Essen senken die Blutzuckerspitze um 17–24 % (Meta-Review 2022). Die Intensität ist dabei zweitrangig — Hauptsache in Bewegung.' },
-  { id: 'estim_noon',    block: 'tag',   label: 'Elektrostimulation',   sub: 'Fuß + Knie · TENS/EMS · Mittag',  xp: 20, type: 'protocol', protocol: 'estim', category: 'bewegung',
+  { id: 'estim_noon',    block: 'tag',   label: 'Elektrostimulation',   sub: 'Fuß + Knie · TENS/EMS · Mittag',  xp: 20, type: 'protocol', protocol: 'estim', category: 'bewegung', core: true,
     why: 'TENS moduliert die Schmerzweiterleitung (Gate-Control-Theorie) und kann bei neuropathischem CRPS-Schmerz lindernd wirken. EMS erhält Muskelaktivität in der geschonten Extremität und beugt dem Muskelabbau vor. ⚠ Elektrodenplatzierung und Parameter nach Vorgaben der Physiotherapie/des Geräteherstellers.' },
   // ── Abend ─────────────────────────────────────────────────────────────────────
-  { id: 'estim_evening', block: 'abend', label: 'Elektrostimulation',  sub: 'Fuß + Knie · TENS/EMS · Abend',   xp: 20, type: 'protocol', protocol: 'estim', category: 'bewegung',
+  { id: 'estim_evening', block: 'abend', label: 'Elektrostimulation',  sub: 'Fuß + Knie · TENS/EMS · Abend',   xp: 20, type: 'protocol', protocol: 'estim', category: 'bewegung', core: true,
     why: 'Die zweite Session am Abend hält den analgetischen Effekt aufrecht. EMS-Arbeit gegen Ende des Tages reduziert die nächtliche Ödemneigung. ⚠ Gleiche Sicherheitshinweise wie mittags.' },
-  { id: 'foot_pm',     block: 'abend',    label: 'Fuß-Regeneration',  sub: '3 Min · Entstauung & Mobilisation', xp: 10, type: 'protocol', protocol: 'foot_evening',    category: 'bewegung',
+  { id: 'foot_pm',     block: 'abend',    label: 'Fuß-Regeneration',  sub: '3 Min · Entstauung & Mobilisation', xp: 10, type: 'protocol', protocol: 'foot_evening',    category: 'bewegung', core: true,
     why: 'Lymphatischer Rückfluss passiert hauptsächlich im Liegen. Aktiv unterstützen verhindert Ödem-Akkumulation über Nacht — die Hauptursache für Morgensteifigkeit bei KMÖ.' },
-  { id: 'stretch',     block: 'abend',    label: 'Dehnung',           sub: '10 Min · Faszien & Gelenke',        xp: 10, type: 'protocol', protocol: 'stretch',         category: 'regeneration',
+  { id: 'stretch',     block: 'abend',    label: 'Dehnung',           sub: '10 Min · Faszien & Gelenke',        xp: 10, type: 'protocol', protocol: 'stretch',         category: 'regeneration', core: true,
     why: 'Faszienarbeit am Abend löst tagsüber aufgebaute Spannungen und bereitet das Nervensystem auf die Regenerationsphase des Schlafs vor.' },
-  { id: 'vagus',       block: 'abend',    label: 'Vagus',             sub: '5 Min · Parasympathikus',           xp: 15, type: 'protocol', protocol: 'vagus',           category: 'regeneration',
+  { id: 'vagus',       block: 'abend',    label: 'Vagus',             sub: '5 Min · Parasympathikus',           xp: 15, type: 'protocol', protocol: 'vagus',           category: 'regeneration', core: true,
     why: '5 Min Vagus-Stimulation senkt den Ruhepuls messbar und erhöht die Herzratenvariabilität — beides direkte Marker für Nervensystemgesundheit bei CRPS.' },
-  { id: 'meditation',  block: 'abend',    label: 'Meditation',        sub: '10 Minuten',                        xp: 15, type: 'protocol', protocol: 'meditation',      category: 'regeneration',
+  { id: 'meditation',  block: 'abend',    label: 'Meditation',        sub: '10 Minuten',                        xp: 15, type: 'protocol', protocol: 'meditation',      category: 'regeneration', core: true,
     why: '10 Min Meditation verändert Schmerzperzeption auf neuraler Ebene — nachgewiesen durch veränderte Insula-Aktivität bei chronischen Schmerzpatienten.' },
-  { id: 'gratitude',   block: 'abend',    label: 'Dankbarkeit',       sub: 'Was war dein Up heute?',            xp: 10, type: 'text',     category: 'fokus',
+  { id: 'gratitude',   block: 'abend',    label: 'Dankbarkeit',       sub: 'Was war dein Up heute?',            xp: 10, type: 'text',     category: 'fokus', core: false,
     why: 'Dankbarkeit aktiviert den präfrontalen Kortex und dämpft die Amygdala — direkte Auswirkung auf Schmerztoleranz und Schlafqualität. 3 Dinge reichen.' },
   // ── Verzicht ──────────────────────────────────────────────────────────────────
-  { id: 'no_alcohol',  block: 'verzicht', label: 'Kein Alkohol',      sub: 'Jeder Tag ohne Alkohol zählt',      xp: 20, type: 'check',    category: 'verzicht',
+  { id: 'no_alcohol',  block: 'verzicht', label: 'Kein Alkohol',      sub: 'Jeder Tag ohne Alkohol zählt',      xp: 20, type: 'check',    category: 'verzicht', core: true,
     why: 'Alkohol verstärkt Neuroinflammation und zerstört Tiefschlaf. Beides sind die stärksten bekannten Trigger für CRPS-Verschlechterung — auch in kleinen Mengen.' },
-  { id: 'no_sugar',    block: 'verzicht', label: 'Kein Zucker',       sub: 'Zucker entzündet',                  xp: 15, type: 'check',    category: 'verzicht',
+  { id: 'no_sugar',    block: 'verzicht', label: 'Kein Zucker',       sub: 'Zucker entzündet',                  xp: 15, type: 'check',    category: 'verzicht', core: false,
     why: 'Zucker erhöht CRP und andere Entzündungsmarker direkt. Bei CRPS, wo Entzündung ein Kernmechanismus ist, zählt jeder zuckerfreie Tag — auch kleine Reduktionen wirken.' },
-  { id: 'no_drugs',    block: 'verzicht', label: 'Drogenfrei',        sub: 'Jeder Tag ohne Drogen zählt',       xp: 20, type: 'check',    category: 'verzicht',
+  { id: 'no_drugs',    block: 'verzicht', label: 'Drogenfrei',        sub: 'Jeder Tag ohne Drogen zählt',       xp: 20, type: 'check',    category: 'verzicht', core: true,
     why: 'Das Nervensystem braucht ungestörte Chemie um sich zu regulieren. Jeder drogenfreie Tag ist ein Tag, an dem Neuroplastizität ungehindert arbeiten kann.' },
-  { id: 'cigarettes',  block: 'verzicht', label: 'Zigaretten',        sub: 'Keine = +20 XP · 1–3 = +10 XP',    xp: 20, type: 'cigs',     category: 'verzicht',
+  { id: 'cigarettes',  block: 'verzicht', label: 'Zigaretten',        sub: 'Keine = +20 XP · 1–3 = +10 XP',    xp: 20, type: 'cigs',     category: 'verzicht', core: true,
     why: 'Nikotin verursacht Vasokonstriktion — besonders schädlich bei KMÖ/CRPS, wo die Mikrozirkulation bereits gestört ist. Weniger Zigaretten = bessere Durchblutung.' },
-  { id: 'no_meat',    block: 'verzicht', label: 'Kein Fleisch',      sub: 'Pflanzlich ist entzündungsärmer',   xp: 15, type: 'check',    category: 'verzicht',
+  { id: 'no_meat',    block: 'verzicht', label: 'Kein Fleisch',      sub: 'Pflanzlich ist entzündungsärmer',   xp: 15, type: 'check',    category: 'verzicht', core: false,
     why: 'Rotes und verarbeitetes Fleisch erhöht Arachidonsäure und Pro-Entzündungs-Eicosanoide. Pflanzliche Tage senken die systemische Entzündungslast messbar.' },
-  { id: 'no_carbs',   block: 'verzicht', label: 'Keine Kohlenhydrate', sub: 'Low-Carb / ketogen',              xp: 15, type: 'check',    category: 'verzicht',
+  { id: 'no_carbs',   block: 'verzicht', label: 'Keine Kohlenhydrate', sub: 'Low-Carb / ketogen',              xp: 15, type: 'check',    category: 'verzicht', core: false,
     why: 'Ketose senkt Insulinspiegel und Entzündungsmarker. Für CRPS-Betroffene kann die Reduktion von Blutzuckerspitzen die Schmerzintensität und Nervosität deutlich verringern.' },
-  { id: 'gluten_free', block: 'verzicht', label: 'Glutenfrei',        sub: 'Ohne Weizen, Roggen, Gerste',      xp: 10, type: 'check',    category: 'verzicht',
+  { id: 'gluten_free', block: 'verzicht', label: 'Glutenfrei',        sub: 'Ohne Weizen, Roggen, Gerste',      xp: 10, type: 'check',    category: 'verzicht', core: false,
     why: 'Auch ohne Zöliakie kann Gluten bei sensiblen Personen intestinale Entzündung und Neuroinflammation fördern. Ein glutenfreier Tag gibt dem Darm — und dem Nervensystem — Ruhe.' },
 ];
 
@@ -322,13 +322,14 @@ function SleepCard(habit, doneHabits, sleepQuality) {
     </div>`;
 }
 
-function HabitCard(habit, doneHabits, sleepQuality) {
+function HabitCard(habit, doneHabits, sleepQuality, highPainDay = false) {
   if (habit.type === 'cigs') return CigsCard(habit, doneHabits);
   if (habit.type === 'text') return GratitudeCard(habit, doneHabits);
   if (habit.type === 'sleep') return SleepCard(habit, doneHabits, sleepQuality);
 
   const done       = !!doneHabits[habit.id];
   const detailOpen = !done && expandedDetails.has(habit.id);
+  const isOptional = highPainDay && !habit.core && !done;
 
   const action = done
     ? `<div style="width:44px;height:44px;border:1.5px solid var(--border);
@@ -345,11 +346,16 @@ function HabitCard(habit, doneHabits, sleepQuality) {
 
   return `
     <div class="card" data-habit-id="${habit.id}"
-      style="padding:14px 20px;margin-bottom:8px;${done ? 'opacity:0.4;' : ''}">
+      style="padding:14px 20px;margin-bottom:8px;${done ? 'opacity:0.4;' : isOptional ? 'opacity:0.55;' : ''}">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div style="flex:1;min-width:0;padding-right:12px;">
-          <div style="font-weight:var(--fw-bold);font-size:0.85rem;
-            ${done ? 'text-decoration:line-through;' : ''}">${habit.label}</div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span style="font-weight:var(--fw-bold);font-size:0.85rem;
+              ${done ? 'text-decoration:line-through;' : ''}">${habit.label}</span>
+            ${isOptional ? `<span style="font-size:0.5rem;font-weight:800;text-transform:uppercase;
+              letter-spacing:0.06em;color:var(--action-orange);border:1px solid var(--action-orange);
+              padding:1px 5px;">heute optional</span>` : ''}
+          </div>
           <div style="display:flex;align-items:center;gap:8px;margin-top:3px;flex-wrap:wrap;">
             ${habit.sub ? `<span style="font-size:0.65rem;color:var(--text-dim);">${habit.sub}</span>` : ''}
             ${habit.why && !done ? `
@@ -373,7 +379,7 @@ function HabitCard(habit, doneHabits, sleepQuality) {
     </div>`;
 }
 
-function BlockSection(block, doneHabits, activeBlock, settings, hiddenHabits, sleepQuality) {
+function BlockSection(block, doneHabits, activeBlock, settings, hiddenHabits, sleepQuality, highPainDay) {
   const habits = HABITS.filter(h => h.block === block.id && !hiddenHabits.has(h.id));
   if (!habits.length) return '';
 
@@ -398,7 +404,7 @@ function BlockSection(block, doneHabits, activeBlock, settings, hiddenHabits, sl
             <span style="font-size:0.7rem;font-weight:800;">${isOpen ? '↑' : '↓'}</span>
           </button>
         </div>
-        ${isOpen ? `<div style="padding-top:4px;">${habits.map(h => HabitCard(h, doneHabits, sleepQuality)).join('')}</div>` : ''}
+        ${isOpen ? `<div style="padding-top:4px;">${habits.map(h => HabitCard(h, doneHabits, sleepQuality, highPainDay)).join('')}</div>` : ''}
       </div>`;
   }
 
@@ -412,7 +418,7 @@ function BlockSection(block, doneHabits, activeBlock, settings, hiddenHabits, sl
   return `
     <div style="margin-bottom:16px;">
       <span class="u-label" style="margin-bottom:8px;">${block.label}</span>
-      ${top.map(h => HabitCard(h, doneHabits, sleepQuality)).join('')}
+      ${top.map(h => HabitCard(h, doneHabits, sleepQuality, highPainDay)).join('')}
       ${moreList.length ? `
         <div style="margin-bottom:2px;">
           <button data-action="toggle-block" data-id="${moreKey}"
@@ -423,7 +429,7 @@ function BlockSection(block, doneHabits, activeBlock, settings, hiddenHabits, sl
             <span>${moreOpen ? '↑' : '↓'}</span>
             <span>${moreList.length} WEITERE AUFGABEN</span>
           </button>
-          ${moreOpen ? moreList.map(h => HabitCard(h, doneHabits, sleepQuality)).join('') : ''}
+          ${moreOpen ? moreList.map(h => HabitCard(h, doneHabits, sleepQuality, highPainDay)).join('') : ''}
         </div>` : ''}
       ${done.length ? `
         <div>
@@ -435,7 +441,7 @@ function BlockSection(block, doneHabits, activeBlock, settings, hiddenHabits, sl
             <span>${doneOpen ? '↑' : '↓'}</span>
             <span>✓ ERLEDIGT · ${done.length}</span>
           </button>
-          ${doneOpen ? done.map(h => HabitCard(h, doneHabits, sleepQuality)).join('') : ''}
+          ${doneOpen ? done.map(h => HabitCard(h, doneHabits, sleepQuality, highPainDay)).join('') : ''}
         </div>` : ''}
     </div>`;
 }
@@ -641,10 +647,32 @@ export const HomeModul = {
     const waterOn      = mods.water   ?? true;
     const hiddenHabits = new Set(settings.hiddenHabits ?? []);
     const activeBlock  = currentBlock(wakeTime);
+
+    // Adaptive planning: flag high-pain day if recent 3-day avg > 30-day avg + 2
+    const painLog = state.painLog ?? [];
+    let highPainDay = false;
+    if (painLog.length >= 5) {
+      const sorted30 = painLog.slice(-30).map(e => e.score);
+      const avg30 = sorted30.reduce((a, b) => a + b, 0) / sorted30.length;
+      const recent3 = painLog.slice(-3).map(e => e.score);
+      const avgRecent = recent3.reduce((a, b) => a + b, 0) / recent3.length;
+      highPainDay = avgRecent > avg30 + 2;
+    }
+
     return `
       <div>
         ${WeatherBanner(state)}
         ${HeroSection(state)}
+        ${highPainDay ? `
+          <div style="margin-bottom:12px;padding:10px 14px;border-left:3px solid var(--text-dim);
+            background:var(--surface);">
+            <div style="font-size:0.62rem;font-weight:800;text-transform:uppercase;
+              letter-spacing:0.08em;margin-bottom:3px;">Schmerz-Pacing aktiv</div>
+            <div style="font-size:0.65rem;color:var(--text-dim);line-height:1.5;">
+              Dein Schmerzscore war die letzten Tage erhöht — optionale Habits sind heute
+              gedimmt. Du entscheidest selbst.
+            </div>
+          </div>` : ''}
         ${DayProgress(state, hiddenHabits)}
         ${CategoryProgress(state, hiddenHabits)}
         ${XPBar(state)}
@@ -652,7 +680,7 @@ export const HomeModul = {
         ${fastingOn ? MilestoneBanner(state) : ''}
         ${waterOn ? WaterCard(state) : ''}
         <div style="margin-top:8px;">
-          ${BLOCKS.map(b => BlockSection(b, doneHabits, activeBlock, settings, hiddenHabits, sleepQuality)).join('')}
+          ${BLOCKS.map(b => BlockSection(b, doneHabits, activeBlock, settings, hiddenHabits, sleepQuality, highPainDay)).join('')}
         </div>
       </div>`;
   },
