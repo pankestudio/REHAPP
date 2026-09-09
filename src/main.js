@@ -237,6 +237,25 @@ function showBikeInput() {
 }
 
 // ─── XP helper ───────────────────────────────────────────────────────────────
+// ─── Audio feedback (Web Audio API, no library) ───────────────────────────────
+let _audioCtx = null;
+function playBeep(freq = 660, duration = 0.12, gain = 0.25) {
+  try {
+    if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (_audioCtx.state === 'suspended') _audioCtx.resume();
+    const osc = _audioCtx.createOscillator();
+    const g   = _audioCtx.createGain();
+    osc.connect(g);
+    g.connect(_audioCtx.destination);
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(gain, _audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, _audioCtx.currentTime + duration);
+    osc.start(_audioCtx.currentTime);
+    osc.stop(_audioCtx.currentTime + duration);
+  } catch {}
+}
+
 function awardXP(amount) {
   const prevLevel = Math.floor(Store.state.xp / 100);
   Store.state.xp += amount;
@@ -360,7 +379,7 @@ document.addEventListener('click', async (e) => {
   }
 
   if (action === 'add-water') {
-    const waterGoal = Store.state.settings?.waterGoal ?? 8;
+    const waterGoal = Store.state.settings?.waterGoal ?? 15;
     if (Store.state.water.length < waterGoal) {
       Store.state.water = [...Store.state.water, Date.now()];
       awardXP(5);
@@ -688,8 +707,11 @@ function nextExerciseStep(protocol) {
       tpl.innerHTML = T.ExerciseOverlayTemplate(protocol, next, protocol.steps[next].duration);
       existing.replaceWith(tpl.content.firstElementChild);
     }
+    playBeep(550, 0.1);
     TimerService.startExerciseCountdown(protocol.steps[next].duration, () => nextExerciseStep(protocol));
   } else {
+    playBeep(660, 0.12);
+    setTimeout(() => playBeep(880, 0.2, 0.2), 160);
     const xp = protocol.xp ?? 15;
     awardXP(xp);
     GamificationEngine.onProtocolComplete(protocol.id);
@@ -796,6 +818,13 @@ async function bootstrap() {
       if (step?.phase) AnimationEngine.setBreathPhase(step.phase);
     }
   });
+
+  // Award daily return XP (10 XP per day on first open)
+  const todayStr = new Date().toDateString();
+  if (Store.state.lastDailyXP !== todayStr) {
+    Store.state.lastDailyXP = todayStr;
+    setTimeout(() => awardXP(10), 800);
+  }
 
   ReminderService.start();
   render();

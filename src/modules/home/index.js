@@ -585,18 +585,18 @@ function TimerCard(state) {
 
 function WaterCard(state) {
   const count = state.water.length;
-  const max   = 8;
+  const max   = 15;
   const pct   = Math.round((count / max) * 100);
   const dots  = Array.from({ length: max }, (_, i) => {
     const filled = i < count;
     return `
-      <button data-action="add-water" aria-label="0.5L Wasser"
-        style="width:11%;aspect-ratio:1;cursor:pointer;border-radius:var(--radius-sm);
+      <button data-action="add-water" aria-label="0.2L Wasser"
+        style="width:5.8%;aspect-ratio:1;cursor:pointer;border-radius:var(--radius-sm);
                transition:background 0.15s,border-color 0.15s;
                border:1.5px ${filled ? 'solid var(--text-main)' : 'dashed var(--border)'};
                background:${filled ? 'var(--text-main)' : 'transparent'};
                color:${filled ? 'var(--bg)' : 'transparent'};
-               font-size:0.55rem;font-weight:var(--fw-black);">✓
+               font-size:0.45rem;font-weight:var(--fw-black);">✓
       </button>`;
   }).join('');
   return `
@@ -604,10 +604,10 @@ function WaterCard(state) {
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
         <span class="u-label" style="margin:0;">Wasser</span>
         <span class="u-mono" style="font-size:0.75rem;color:var(--text-dim);">
-          ${(count * 0.5).toFixed(1)} / 4.0 L · +5 XP
+          ${(count * 0.2).toFixed(1)} / 3.0 L · +5 XP
         </span>
       </div>
-      <div style="display:flex;justify-content:space-between;gap:3px;">${dots}</div>
+      <div style="display:flex;justify-content:space-between;gap:2px;">${dots}</div>
       <div style="margin-top:8px;height:3px;background:var(--border);border-radius:1px;">
         <div style="height:100%;width:${pct}%;background:var(--text-main);transition:width 0.4s ease;"></div>
       </div>

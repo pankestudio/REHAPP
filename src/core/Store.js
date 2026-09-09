@@ -51,6 +51,8 @@ const DEFAULT_STATE = {
   experiments:          [],
   // ── Wetter-Log (Task 10) ─────────────────────────────────────────────────
   weatherLog:           [],
+  // ── Tägliches Wiederkehr-XP ───────────────────────────────────────────────
+  lastDailyXP:          '',
 };
 
 export const Store = {

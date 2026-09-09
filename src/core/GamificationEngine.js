@@ -86,7 +86,7 @@ export const GamificationEngine = {
     const state      = Store.state;
     const doneHabits = state.doneHabits ?? {};
     const habitCount = Object.keys(doneHabits).length;
-    const waterDone  = state.water.length >= (state.settings?.waterGoal ?? 8);
+    const waterDone  = state.water.length >= (state.settings?.waterGoal ?? 15);
     const stepsDone  = (state.steps ?? 0) >= (state.settings?.stepsGoal ?? 10000);
 
     if (habitCount >= 3 && waterDone && stepsDone) {
