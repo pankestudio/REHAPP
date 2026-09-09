@@ -4,7 +4,7 @@
 // background sync for activity, periodic sync for daily reset,
 // push notifications for fasting milestones, App Badge for streak.
 
-const CACHE_NAME = 'rehapp-v4.7';
+const CACHE_NAME = 'rehapp-v4.9';
 const SHELL = ['/'];
 
 // ─── BroadcastChannel for SW↔client comms ────────────────────────────────────
@@ -13,10 +13,9 @@ const bc = new BroadcastChannel('rehapp');
 // ─── Install: cache app shell ─────────────────────────────────────────────────
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(SHELL))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL))
   );
+  self.skipWaiting();
 });
 
 // ─── Activate: prune old caches, claim clients, register periodic sync ────────
