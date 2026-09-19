@@ -1102,11 +1102,19 @@ input[type="range"] { accent-color: #f0f0f0; }
 
 /* ── REFINED SCALE (16px base) ── */
 :root {
-  --fs-xs:   0.80rem;   /* 12.8px – mono labels min */
-  --fs-sm:   0.88rem;   /* 14px   – secondary text  */
-  --fs-base: 0.96rem;   /* 15.4px – body, labels    */
-  --fs-lg:   1.05rem;   /* 16.8px – row titles      */
-  --fs-xl:   1.15rem;   /* 18.4px – page titles     */
+  --fs-xs:   0.72rem;   /* 11.5px – Mono-Labels, Meta     */
+  --fs-sm:   0.875rem;  /* 14px   – Sekundärtext          */
+  --fs-base: 1rem;      /* 16px   – Body, Labels          */
+  --fs-lg:   1.125rem;  /* 18px   – Abschnittstitel       */
+  --fs-xl:   1.5rem;    /* 24px   – Seitentitel           */
+  --space-2: 8px;
+  --space-3: 20px;
+  --space-4: 32px;
+  --space-5: 48px;
+  --radius-xl: 24px;
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
   --shadow-sm:  0 2px 8px rgba(0,0,0,0.28), 0 1px 2px rgba(0,0,0,0.2);
   --shadow-md:  0 8px 24px rgba(0,0,0,0.32), 0 2px 6px rgba(0,0,0,0.22);
   --shadow-lg:  0 16px 40px rgba(0,0,0,0.40), 0 4px 12px rgba(0,0,0,0.28);
@@ -1125,6 +1133,24 @@ input[type="range"] { accent-color: #f0f0f0; }
 .hero-mode  { font-size: var(--fs-xs); color: var(--text2); margin-bottom: 10px; }
 .nav-label  { font-size: 0.62rem; }
 .tag, .system-pill { font-size: 0.68rem; }
+
+/* ── TYPOGRAFIE-KONTRAST ── */
+.page-title          { font-weight: 700; color: var(--text); letter-spacing: -0.015em; }
+.panel-label         { color: var(--text2); }
+.panel-collapse-title{ color: var(--text2); }
+.quote-text          { font-size: var(--fs-base); color: var(--text); line-height: 1.75; }
+.hero-mode           { font-size: var(--fs-sm); letter-spacing: 0.12em; }
+.row-title, .check-label { color: var(--text); font-weight: 500; }
+.row-sub, .check-sub     { color: var(--text3); }
+
+/* ── WHITESPACE (8pt Grid) ── */
+.hero               { padding: var(--space-4) var(--space-3); }
+.panel              { margin-bottom: var(--space-3); }
+.row,
+.check-row,
+.system-item        { padding: var(--space-3) var(--space-3); }
+.panel-collapse-header { padding: var(--space-3) var(--space-3); }
+.panel-label        { padding: var(--space-2) var(--space-3) 6px; }
 
 /* ── TIMER ── */
 .timer-display { font-size: clamp(2.1rem, 9vw, 2.9rem); }
