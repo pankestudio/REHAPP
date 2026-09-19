@@ -1936,6 +1936,7 @@ input[type="range"] { accent-color: #f0f0f0; }
     </div>
   </div>
 
+  <div id="habit-section" style="padding-bottom:4px"></div>
   <div class="spacer"></div>
 </div>
 
@@ -2592,6 +2593,15 @@ input[type="range"] { accent-color: #f0f0f0; }
   </div>
 </div>
 
+<!-- ══ EINSTELLUNGEN ══ -->
+<div id="pg-settings" class="page scroll-page">
+  <div class="page-header">
+    <div class="page-title">Einstellungen</div>
+    <div class="page-sub">Habits · Protokoll · Daten</div>
+  </div>
+  <div id="settings-content" style="padding:0 0 24px"></div>
+</div>
+
 <!-- ══ BOTTOM NAV ══ -->
 <nav class="bottom-nav">
   <div class="nav-item active" onclick="showPage('pg-home')" id="nav-home">
@@ -2613,6 +2623,10 @@ input[type="range"] { accent-color: #f0f0f0; }
   <div class="nav-item" onclick="showPage('pg-xp')" id="nav-xp">
     <div class="nav-icon"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div>
     <div class="nav-label">XP</div>
+  </div>
+  <div class="nav-item" onclick="showPage('pg-settings')" id="nav-settings">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+    <div class="nav-label">Settings</div>
   </div>
 </nav>
 
@@ -2926,6 +2940,254 @@ const BUDAPEST_ITEMS = [
 ];
 
 const SEARCH_INDEX = []; // populated at runtime
+
+// ══════════════════════════════════════════════════════════════════════
+// HABIT SYSTEM — portiert aus src/modules/home + src/modules/settings
+// ══════════════════════════════════════════════════════════════════════
+
+const HABITS = [
+  // ── Morgen ──────────────────────────────────────────────────────────
+  { id:'sleep',          block:'morgen',   label:'Geschlafen',             sub:'mind. 6 Stunden',                     xp:20, core:true,
+    why:'Schlafentzug erhöht CRPS-Schmerzintensität messbar. 6h+ sind kein Luxus — Zellreparatur, Schmerzgedächtnis-Reset und Cortisolabbau finden nur im Tiefschlaf statt.' },
+  { id:'foot_am',        block:'morgen',   label:'Fuß-Aktivierung',        sub:'3 Min · vor dem ersten Schritt',      xp:12, core:true,
+    why:'Die erste Gewichtsbelastung nach der Nacht ist kritisch. 3 Min Aktivierung bringt Durchblutung und Propriozeption in den Fuß, bevor er Gewicht trägt.' },
+  { id:'morning',        block:'morgen',   label:'Morgenroutine',          sub:'8 Min · Körper aufwecken',            xp:20, core:true,
+    why:'8 Min Bewegung direkt nach dem Aufwachen senkt Cortisol, aktiviert Muskelketten und setzt Serotonin frei. Der Ton für den ganzen Tag wird in den ersten 30 Min gesetzt.' },
+  { id:'breath',         block:'morgen',   label:'Atemübung 4-7-8',        sub:'3 Runden · Nervensystem',             xp:8,  core:true,
+    why:'4-7-8 stimuliert den Vagusnerv direkt. Senkt Herzfrequenz und Entzündungsmarker, beruhigt das bei CRPS chronisch überreizte Nervensystem — in unter 3 Minuten.' },
+  { id:'sunlight',       block:'morgen',   label:'Draußen',                sub:'Tageslicht & frische Luft',           xp:5,  core:false,
+    why:'Tageslicht in den ersten 30 Min synchronisiert den Cortisol-Rhythmus und triggert Vitamin-D-Synthese. Beides direkt relevant für Schmerzregulation und Stimmung.' },
+  { id:'noscreen_am',    block:'morgen',   label:'Screen-frei',            sub:'Erste 30 Min nach dem Aufwachen',     xp:15, core:false,
+    why:'Ohne Bildschirm kann das Gehirn beim Aufwachen die Schmerzverarbeitung neu kalibrieren. Displays aktivieren sofort den Sympathikus — der bei CRPS ohnehin überaktiv ist.' },
+  { id:'teeth',          block:'morgen',   label:'Zähne',                  sub:'2 Min + Zungenreiniger',              xp:5,  core:false,
+    why:'Orale Hygiene senkt systemische Entzündungslast. Bei CRPS verstärkt jeder Entzündungsreiz im Körper die Symptome — auch Entzündungen im Mund.' },
+  // ── Tag ─────────────────────────────────────────────────────────────
+  { id:'movement',       block:'tag',      label:'Bewegungspause',         sub:'2 Min aufstehen · strecken',          xp:3,  core:false,
+    why:'2 Min aufstehen unterbricht die sympathische Dauerreizung durch langes Sitzen. Der Sympathikus ist bei CRPS chronisch überaktiv — jede Pause hilft.' },
+  { id:'foot_noon',      block:'tag',      label:'Gangschulung',           sub:'4 Min · Muskel & Koordination',       xp:15, core:true,
+    why:'Mittags ist der Körper warm und bereit. Gangschulung jetzt trainiert neuromuskuläre Kontrolle auf höchstem Level und normalisiert das durch KMÖ veränderte Gangbild.' },
+  { id:'box',            block:'tag',      label:'Box Breathing',          sub:'Stress abbauen · 5 Runden',           xp:10, core:true,
+    why:'Box Breathing (4-4-4-4) ist die direkteste nicht-pharmakologische Methode zur Parasympathikus-Aktivierung. Nachweislich bei akutem Stress und Schmerzspitzen wirksam.' },
+  { id:'learning',       block:'tag',      label:'Input',                  sub:'10 Minuten Neues',                    xp:15, core:false,
+    why:'Kognitive Stimulation fördert Neuroplastizität — der zentrale Mechanismus, durch den das Gehirn Schmerzmuster umlernt. Lernen ist buchstäblich Schmerztherapie.' },
+  { id:'cooking',        block:'tag',      label:'Gekocht',                sub:'Eine Mahlzeit selbst gekocht',        xp:15, core:false,
+    why:'Selbst kochen senkt den Anteil ultra-verarbeiteter Lebensmittel direkt. Fertigkost erhöht systemische Entzündungslast messbar.' },
+  { id:'others',         block:'tag',      label:'Für andere',             sub:'Etwas für jemand getan',              xp:20, core:false,
+    why:'Echtes Geben setzt Oxytocin frei — ein direkter Schmerzdämpfer. Soziale Verbindung ist einer der wenigen kostenlosen Hebel mit nachgewiesenem Effekt auf Schmerztoleranz.' },
+  { id:'strength',       block:'tag',      label:'Kräftigung',             sub:'5 Übungen · Kraft & Stabilität',      xp:20, core:true,
+    why:'Starke Muskulatur entlastet Gelenke und normalisiert die CRPS-typische Schutzspannung. Jede Trainingseinheit baut dem Muskelabbau aktiv entgegen.' },
+  { id:'protein',        block:'tag',      label:'Protein pro Mahlzeit',   sub:'Jede Mahlzeit eine Proteinquelle',    xp:10, core:false,
+    why:'~1,5 g Protein/kg Körpergewicht/Tag verteilt auf mehrere Mahlzeiten fördert Muskelproteinsynthese wirksamer als eine große Portion.' },
+  { id:'social',         block:'tag',      label:'Sozialer Kontakt',       sub:'Echtes Gespräch oder Zeit mit jemandem', xp:10, core:false,
+    why:'Soziale Isolation erhöht vorzeitige Sterblichkeit um bis zu 30 %. Echte Verbindung senkt Cortisol und Schmerzintensität messbar.' },
+  { id:'meal_order',     block:'tag',      label:'Gemüse/Protein zuerst',  sub:'Kohlenhydrate zuletzt essen',         xp:10, core:false,
+    why:'Die Reihenfolge allein senkt den Blutzuckeranstieg um 20–40 %: Ballaststoffe und Protein verlangsamen die Magenentleerung und triggern GLP-1.' },
+  { id:'post_meal_walk', block:'tag',      label:'Nach dem Essen bewegen', sub:'10 Min. leichtes Gehen',              xp:10, core:false,
+    why:'10 Minuten Gehen direkt nach dem Essen senken die Blutzuckerspitze um 17–24 % (Meta-Review 2022).' },
+  { id:'estim_noon',     block:'tag',      label:'Elektrostimulation',     sub:'Fuß + Knie · TENS/EMS · Mittag',      xp:20, core:true,
+    why:'TENS moduliert die Schmerzweiterleitung (Gate-Control-Theorie) und kann bei neuropathischem CRPS-Schmerz lindernd wirken. EMS erhält Muskelaktivität in der geschonten Extremität.' },
+  // ── Abend ───────────────────────────────────────────────────────────
+  { id:'estim_evening',  block:'abend',    label:'Elektrostimulation',     sub:'Fuß + Knie · TENS/EMS · Abend',       xp:20, core:true,
+    why:'Die zweite Session am Abend hält den analgetischen Effekt aufrecht. EMS-Arbeit gegen Ende des Tages reduziert die nächtliche Ödemneigung.' },
+  { id:'foot_pm',        block:'abend',    label:'Fuß-Regeneration',       sub:'3 Min · Entstauung & Mobilisation',   xp:10, core:true,
+    why:'Lymphatischer Rückfluss passiert hauptsächlich im Liegen. Aktiv unterstützen verhindert Ödem-Akkumulation über Nacht — die Hauptursache für Morgensteifigkeit bei KMÖ.' },
+  { id:'stretch',        block:'abend',    label:'Dehnung',                sub:'10 Min · Faszien & Gelenke',          xp:10, core:true,
+    why:'Faszienarbeit am Abend löst tagsüber aufgebaute Spannungen und bereitet das Nervensystem auf die Regenerationsphase des Schlafs vor.' },
+  { id:'vagus_eve',      block:'abend',    label:'Vagus',                  sub:'5 Min · Parasympathikus',             xp:15, core:true,
+    why:'5 Min Vagus-Stimulation senkt den Ruhepuls messbar und erhöht die Herzratenvariabilität — beides direkte Marker für Nervensystemgesundheit bei CRPS.' },
+  { id:'meditation',     block:'abend',    label:'Meditation',             sub:'10 Minuten',                          xp:15, core:true,
+    why:'10 Min Meditation verändert Schmerzperzeption auf neuraler Ebene — nachgewiesen durch veränderte Insula-Aktivität bei chronischen Schmerzpatienten.' },
+  { id:'gratitude',      block:'abend',    label:'Dankbarkeit',            sub:'Was war dein Up heute?',              xp:10, core:false,
+    why:'Dankbarkeit aktiviert den präfrontalen Kortex und dämpft die Amygdala — direkte Auswirkung auf Schmerztoleranz und Schlafqualität. 3 Dinge reichen.' },
+  // ── Verzicht ────────────────────────────────────────────────────────
+  { id:'no_alcohol',     block:'verzicht', label:'Kein Alkohol',           sub:'Jeder Tag ohne Alkohol zählt',        xp:20, core:true,
+    why:'Alkohol verstärkt Neuroinflammation und zerstört Tiefschlaf. Beides sind die stärksten bekannten Trigger für CRPS-Verschlechterung — auch in kleinen Mengen.' },
+  { id:'no_sugar',       block:'verzicht', label:'Kein Zucker',            sub:'Zucker entzündet',                    xp:15, core:false,
+    why:'Zucker erhöht CRP und andere Entzündungsmarker direkt. Bei CRPS, wo Entzündung ein Kernmechanismus ist, zählt jeder zuckerfreie Tag.' },
+  { id:'no_drugs',       block:'verzicht', label:'Drogenfrei',             sub:'Jeder Tag ohne Drogen zählt',         xp:20, core:true,
+    why:'Das Nervensystem braucht ungestörte Chemie um sich zu regulieren. Jeder drogenfreie Tag ist ein Tag, an dem Neuroplastizität ungehindert arbeiten kann.' },
+  { id:'no_meat',        block:'verzicht', label:'Kein Fleisch',           sub:'Pflanzlich ist entzündungsärmer',     xp:15, core:false,
+    why:'Rotes und verarbeitetes Fleisch erhöht Arachidonsäure und Pro-Entzündungs-Eicosanoide. Pflanzliche Tage senken die systemische Entzündungslast messbar.' },
+  { id:'no_carbs',       block:'verzicht', label:'Keine Kohlenhydrate',    sub:'Low-Carb / ketogen',                  xp:15, core:false,
+    why:'Ketose senkt Insulinspiegel und Entzündungsmarker. Für CRPS-Betroffene kann die Reduktion von Blutzuckerspitzen die Schmerzintensität deutlich verringern.' },
+  { id:'gluten_free',    block:'verzicht', label:'Glutenfrei',             sub:'Ohne Weizen, Roggen, Gerste',         xp:10, core:false,
+    why:'Auch ohne Zöliakie kann Gluten bei sensiblen Personen intestinale Entzündung und Neuroinflammation fördern.' },
+];
+
+const HABIT_BLOCKS = [
+  { id:'morgen',   label:'Morgen'   },
+  { id:'tag',      label:'Tag'      },
+  { id:'abend',    label:'Abend'    },
+  { id:'verzicht', label:'Verzicht' },
+];
+
+function getHabitsDoneToday() {
+  return new Set(JSON.parse(storageGet('habit_done_' + getLocalDateKey()) || '[]'));
+}
+
+function getHiddenHabits() {
+  return new Set(JSON.parse(storageGet('hidden_habits') || '[]'));
+}
+
+function toggleHabit(id) {
+  const dateKey = getLocalDateKey();
+  const done    = getHabitsDoneToday();
+  const habit   = HABITS.find(h => h.id === id);
+  if (!habit) return;
+  if (done.has(id)) {
+    done.delete(id);
+  } else {
+    done.add(id);
+    awardXP('habit_' + id + '_' + dateKey, habit.xp, habit.label, { scope: 'day' });
+    playTone(523, 0.08);
+    setTimeout(() => playTone(659, 0.1), 100);
+  }
+  storageSet('habit_done_' + dateKey, JSON.stringify([...done]));
+  buildHabitsSection();
+}
+
+function toggleHabitWhy(id, e) {
+  e.stopPropagation();
+  const el = document.getElementById('why-' + id);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function buildHabitsSection() {
+  const container = document.getElementById('habit-section');
+  if (!container) return;
+  const done   = getHabitsDoneToday();
+  const hidden = getHiddenHabits();
+  const today  = new Date().toLocaleDateString('de-DE', { weekday:'long', day:'numeric', month:'long' }).toUpperCase();
+
+  const visibleHabits = HABITS.filter(h => !hidden.has(h.id));
+  const total     = visibleHabits.length;
+  const completed = visibleHabits.filter(h => done.has(h.id)).length;
+  const pct       = total ? Math.round((completed / total) * 100) : 0;
+
+  container.innerHTML = `
+    <div style="padding:0 14px 8px;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.16em;text-transform:uppercase;color:var(--text3)">
+        ▪ Tagesplan · ${completed}/${total}
+      </span>
+      <span style="font-family:var(--mono);font-size:var(--fs-xs);color:${pct===100?'var(--cx)':'var(--text3)'}">
+        ${pct}%
+      </span>
+    </div>
+    <div style="margin:0 14px 14px;height:3px;background:var(--bg3)">
+      <div style="height:100%;width:${pct}%;background:var(--cx);transition:width .4s"></div>
+    </div>
+    ${HABIT_BLOCKS.map(block => {
+      const blockHabits = HABITS.filter(h => h.block === block.id && !hidden.has(h.id));
+      if (!blockHabits.length) return '';
+      const blockDone = blockHabits.filter(h => done.has(h.id)).length;
+      return `
+        <div class="panel" style="margin:0 14px 12px">
+          <div class="panel-label">${block.label} · ${blockDone}/${blockHabits.length}</div>
+          ${blockHabits.map(h => {
+            const isDone = done.has(h.id);
+            return `
+              <div class="check-row" onclick="toggleHabit('${h.id}')" style="${isDone?'opacity:.55':''}">
+                <div class="chkbox${isDone?' done':''}"></div>
+                <div style="flex:1;min-width:0">
+                  <div class="check-label${isDone?' done':''}">${h.label}</div>
+                  <div class="row-sub">${h.sub}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                  <span style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3)">+${h.xp}</span>
+                  ${h.why ? `<button onclick="toggleHabitWhy('${h.id}',event)"
+                    style="font-family:var(--mono);font-size:0.6rem;padding:2px 6px;
+                           background:transparent;border:1px solid var(--border);color:var(--text3)">?</button>` : ''}
+                </div>
+              </div>
+              ${h.why ? `<div id="why-${h.id}" style="display:none;padding:8px 16px 12px;
+                font-size:var(--fs-xs);color:var(--text3);line-height:1.6;
+                border-top:1px solid var(--border)">${h.why}</div>` : ''}
+            `;
+          }).join('')}
+        </div>
+      `;
+    }).join('')}
+  `;
+}
+
+function buildSettings() {
+  const container = document.getElementById('settings-content');
+  if (!container) return;
+  const hidden = getHiddenHabits();
+
+  container.innerHTML = `
+    <div class="panel" style="margin:0 14px 12px">
+      <div class="panel-label">Habits konfigurieren</div>
+      ${HABIT_BLOCKS.map(block => {
+        const blockHabits = HABITS.filter(h => h.block === block.id);
+        return `
+          <div style="padding:10px 16px 4px">
+            <div style="font-family:var(--mono);font-size:0.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:6px">${block.label}</div>
+            ${blockHabits.map((h, i, arr) => {
+              const isHidden = hidden.has(h.id);
+              const last     = i === arr.length - 1;
+              return `
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 0;
+                  ${last ? '' : 'border-bottom:1px solid var(--border)'}">
+                  <div style="flex:1;min-width:0">
+                    <div class="check-label" style="${isHidden?'color:var(--text3)':''}">${h.label}</div>
+                    <div class="row-sub">${h.sub} · +${h.xp} XP</div>
+                  </div>
+                  <button onclick="toggleHiddenHabit('${h.id}')"
+                    style="font-family:var(--mono);font-size:0.62rem;padding:5px 10px;flex-shrink:0;
+                           background:${isHidden?'transparent':'rgba(255,255,255,0.08)'};
+                           border:1px solid ${isHidden?'var(--border)':'var(--text3)'};
+                           color:${isHidden?'var(--text3)':'var(--text)'};letter-spacing:.1em">
+                    ${isHidden ? 'AUS' : 'AN'}
+                  </button>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }).join('')}
+    </div>
+    <div class="panel" style="margin:0 14px 12px">
+      <div class="panel-label">Daten</div>
+      <div class="check-row" onclick="exportAppData()">
+        <div style="flex:1"><div class="check-label">Backup exportieren</div><div class="row-sub">JSON-Datei mit allen Daten</div></div>
+        <span style="color:var(--text3);font-size:1rem">↗</span>
+      </div>
+      <div class="check-row" style="border-bottom:none">
+        <label style="flex:1;cursor:pointer">
+          <div class="check-label">Backup importieren</div>
+          <div class="row-sub">JSON-Datei wiederherstellen</div>
+          <input type="file" accept="application/json" onchange="importBackupFromSettings(event)" style="display:none">
+        </label>
+        <span style="color:var(--text3);font-size:1rem">↙</span>
+      </div>
+    </div>
+  `;
+}
+
+function toggleHiddenHabit(id) {
+  const hidden = getHiddenHabits();
+  if (hidden.has(id)) hidden.delete(id); else hidden.add(id);
+  storageSet('hidden_habits', JSON.stringify([...hidden]));
+  buildSettings();
+  buildHabitsSection();
+}
+
+function importBackupFromSettings(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      Object.entries(data).forEach(([k,v]) => localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)));
+      showToast('Backup importiert — App wird neu geladen');
+      setTimeout(() => location.reload(), 1200);
+    } catch { showToast('Fehler beim Import'); }
+  };
+  reader.readAsText(file);
+}
 
 // ══════════════ TIMELESS QUOTES (Home, tägl. rotierend) ══════════════
 
@@ -3783,6 +4045,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   buildWater(); buildSupplements(); buildRecipes(); buildMLD();
+  buildHabitsSection();
   buildVagus(); buildBFR(); buildMasterplan();
   buildCRPSCalendar(); buildBudapestFilter(); renderOedemTrend();
   buildSearchIndex();
@@ -3835,10 +4098,11 @@ function showPage(id) {
   if (id === 'pg-mld') { showMLD(); return; }
   if (id === 'pg-emergency') { showEmergency(); return; }
   if (id === 'pg-bfr') { showBFR(); return; }
-  ['pg-home','pg-fast','pg-move','pg-supp','pg-xp'].forEach(p => { const e = document.getElementById(p); if(e) e.classList.remove('active'); });
+  ['pg-home','pg-fast','pg-move','pg-supp','pg-xp','pg-settings'].forEach(p => { const e = document.getElementById(p); if(e) e.classList.remove('active'); });
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   const t = document.getElementById(id); if (t) t.classList.add('active');
-  const nm = {'pg-home':'nav-home','pg-fast':'nav-fast','pg-move':'nav-move','pg-supp':'nav-supp','pg-xp':'nav-xp'};
+  if (id === 'pg-settings') buildSettings();
+  const nm = {'pg-home':'nav-home','pg-fast':'nav-fast','pg-move':'nav-move','pg-supp':'nav-supp','pg-xp':'nav-xp','pg-settings':'nav-settings'};
   const ne = document.getElementById(nm[id]); if (ne) ne.classList.add('active');
   currentPage = id;
   window.scrollTo(0, 0);
