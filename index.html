@@ -1542,17 +1542,16 @@ input[type="range"] { accent-color: #f0f0f0; }
 }
 
 .nav-item.active {
-  background: rgba(255,255,255,0.14);
-  border-radius: 14px;
+  background: rgba(232,232,236,0.18);
 }
 .nav-item.active::after {
-  background: rgba(255,255,255,0.9);
+  background: var(--cx);
 }
 .nav-item.active .nav-icon svg {
-  stroke: #f0f0f2;
+  stroke: var(--cx);
 }
 .nav-item.active .nav-label {
-  color: #f0f0f2;
+  color: var(--cx);
   font-weight: 700;
 }
 
@@ -1829,11 +1828,11 @@ input[type="range"] { accent-color: #f0f0f0; }
   <div class="panel">
     <div class="panel-label" style="display:flex;justify-content:space-between;align-items:center">
       <span>Wasser // 3L Ziel</span>
-      <span style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text2);letter-spacing:.08em">+2 XP / 0.2L</span>
+      <span style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text2);letter-spacing:.08em">+3 XP / 0.4L</span>
     </div>
     <div class="water-stats">
       <div><div class="water-ml" id="water-ml-home">0 ml</div><div class="water-remain" id="water-remain-home">noch 3000ml</div></div>
-      <div style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3);text-align:right">15 × 0.2L</div>
+      <div style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3);text-align:right">8 × 0.4L</div>
     </div>
     <div style="display:flex;gap:8px;padding:0 14px 14px;justify-content:center;flex-wrap:wrap" id="water-track"></div>
   </div>
@@ -3723,27 +3722,27 @@ function confirm168Modal() {
   toast(`16:8 AKTIV — ${start} bis ${end} UHR`);
 }
 
-// ══════════════ WATER (15×0.2L = 3L) ══════════════
+// ══════════════ WATER (8×0.4L = 3.2L) ══════════════
 
 function buildWater() {
   const t = document.getElementById('water-track'); if (!t) return; t.innerHTML = '';
   const today = new Date().toDateString();
   const saved = JSON.parse(storageGet('water6_'+today) || '[]');
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 8; i++) {
     const d = document.createElement('div');
     d.className = 'water-drop' + (saved.includes(i) ? ' filled' : '');
-    d.textContent = saved.includes(i) ? '✓' : '0,2L';
+    d.textContent = saved.includes(i) ? '✓' : '0,4L';
     d.onclick = () => {
       const sv = JSON.parse(storageGet('water6_'+today) || '[]');
       const p = sv.indexOf(i);
       if (p === -1) sv.push(i); else sv.splice(p,1);
       storageSet('water6_'+today, JSON.stringify(sv));
-      if (p === -1) awardXP('water6_' + i + '_' + today, 2, 'Wasser erfasst', { scope: 'day', silent: true });
+      if (p === -1) awardXP('water6_' + i + '_' + today, 3, 'Wasser erfasst', { scope: 'day', silent: true });
       buildWater();
       updateWaterHome();
       if (navigator.vibrate) navigator.vibrate(25);
       playTone(220, 0.06);
-      const ml = sv.length * 200;
+      const ml = sv.length * 400;
       toast(`H₂O — ${ml} ML`);
     };
     t.appendChild(d);
@@ -3754,8 +3753,8 @@ function buildWater() {
 function updateWaterHome() {
   const today = new Date().toDateString();
   const saved = JSON.parse(storageGet('water6_'+today) || '[]');
-  const ml = saved.length * 200;
-  const remain = Math.max(0, 3000 - ml);
+  const ml = saved.length * 400;
+  const remain = Math.max(0, 3200 - ml);
   const mlEl = document.getElementById('water-ml-home');
   const remEl = document.getElementById('water-remain-home');
   if (mlEl) mlEl.textContent = `${ml} ml`;
