@@ -853,7 +853,7 @@ body::before {
   overflow: hidden;
   background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025));
   border: 1px solid rgba(255,255,255,0.09);
-  box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.6);
 }
 .hero,
 .panel,
@@ -967,7 +967,7 @@ body::before {
   background: rgba(19,20,23,0.88);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 26px;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.28);
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.6);
 }
 input,
 textarea,
@@ -1015,7 +1015,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   border-radius: 24px;
   background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
   border: 1px solid rgba(255,255,255,0.11);
-  box-shadow: 0 18px 42px rgba(0,0,0,0.24);
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.6);
 }
 .xp-meta,
 .xp-foot {
@@ -1067,7 +1067,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   background: rgba(20,21,24,0.82);
   border: 1px solid rgba(255,255,255,0.10);
   backdrop-filter: blur(18px);
-  box-shadow: 0 16px 36px rgba(0,0,0,0.24);
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
 }
 .xp-hud-level { font-size: 0.56rem; color: var(--text2); }
 .xp-hud-score { font-size: 0.82rem; font-weight: 800; margin-top: 3px; }
@@ -1111,14 +1111,16 @@ input[type="range"] { accent-color: #f0f0f0; }
   --space-3: 20px;
   --space-4: 32px;
   --space-5: 48px;
-  --radius-xl: 24px;
-  --radius-lg: 16px;
-  --radius-md: 10px;
-  --radius-sm: 6px;
-  --shadow-sm:  0 2px 8px rgba(0,0,0,0.28), 0 1px 2px rgba(0,0,0,0.2);
-  --shadow-md:  0 8px 24px rgba(0,0,0,0.32), 0 2px 6px rgba(0,0,0,0.22);
-  --shadow-lg:  0 16px 40px rgba(0,0,0,0.40), 0 4px 12px rgba(0,0,0,0.28);
-  --inset-glow: inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.15);
+  --radius-xl: 0;
+  --radius-lg: 0;
+  --radius-md: 0;
+  --radius-sm: 0;
+  --shadow-sm:  3px 3px 0 rgba(0,0,0,0.5);
+  --shadow-md:  4px 4px 0 rgba(0,0,0,0.6);
+  --shadow-lg:  6px 6px 0 rgba(0,0,0,0.8);
+  --inset-glow: 0 0 0 rgba(0,0,0,0);
+  --accent:     #c4855a;
+  --accent-dim: rgba(196,133,90,0.12);
 }
 
 /* Apply scale corrections */
@@ -1173,23 +1175,23 @@ input[type="range"] { accent-color: #f0f0f0; }
 /* ── IMMERSIVE BUTTONS ── */
 .btn {
   transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25), var(--inset-glow);
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
 }
 .btn:active {
   transform: scale(0.97) translateY(1px);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.4);
 }
 .btn-cx {
   background: linear-gradient(160deg, #f8f8fa 0%, #d4d4da 100%);
   color: #0f1012;
-  box-shadow: 0 3px 12px rgba(255,255,255,0.12), var(--inset-glow);
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
   border: none;
 }
 .btn-cx:active { background: #c8c8ce; }
 
 /* ── IMMERSIVE NAV ── */
 .bottom-nav {
-  box-shadow: 0 -8px 32px rgba(0,0,0,0.36), 0 -2px 8px rgba(0,0,0,0.2), var(--inset-glow);
+  box-shadow: 0 -1px 0 rgba(255,255,255,0.12);
   background: rgba(16,17,19,0.92);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
@@ -1218,7 +1220,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   background: linear-gradient(160deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%);
   border-color: rgba(255,255,255,0.32);
   color: var(--text);
-  box-shadow: 0 0 12px rgba(255,255,255,0.08), var(--shadow-sm);
+  box-shadow: var(--shadow-sm);
 }
 .water-drop:active { transform: scale(0.88); }
 
@@ -1262,7 +1264,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   background: rgba(255,255,255,0.88);
   color: #101012;
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
 }
 
 /* ── COLLAPSIBLE PANEL ── */
@@ -1300,7 +1302,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   border: 1px solid rgba(255,255,255,0.14);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.6);
   pointer-events: auto; cursor: pointer;
 }
 .xp-persist-level { font-family: var(--mono); font-size: 0.72rem; color: var(--text3); letter-spacing: 0.1em; }
@@ -1626,7 +1628,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   text-align: center;
 }
 .bottom-nav {
-  box-shadow: 0 -10px 30px rgba(0,0,0,0.28);
+  box-shadow: 0 -1px 0 rgba(255,255,255,0.12);
 }
 
 @media (max-width: 380px) {
@@ -1661,6 +1663,65 @@ input[type="range"] { accent-color: #f0f0f0; }
   border-color: transparent !important;
   font-weight: 700 !important;
 }
+
+/* ══════════════════════════════════════════════
+   DESIGN RESET — Hister-Referenz (dark-inverted)
+   ══════════════════════════════════════════════ */
+
+/* SCHRITT 2 — Zero Radius universell */
+*, *::before, *::after { border-radius: 0 !important; }
+.xp-progress-bar,
+.xp-progress-bar > *,
+.water-fill,
+.chkbox,
+.chkbox::after { border-radius: 2px !important; }
+
+/* SCHRITT 3 — Typografische Hierarchie */
+.panel-label,
+.panel-collapse-title {
+  font-size: 0.62rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.22em !important;
+  text-transform: uppercase !important;
+  color: var(--text3) !important;
+}
+.panel-label::before,
+.panel-collapse-title::before {
+  content: '▪ ';
+  color: #c4855a;
+}
+
+.page-title {
+  font-size: 2rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.05 !important;
+  text-transform: uppercase !important;
+}
+
+.timer-display {
+  font-size: clamp(3.2rem, 16vw, 4.2rem) !important;
+  font-weight: 200 !important;
+  letter-spacing: 0.06em !important;
+}
+
+.hero-mode {
+  font-size: 0.62rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.22em !important;
+  text-transform: uppercase !important;
+  color: var(--text3) !important;
+}
+.hero-mode::before { content: '▪ '; color: #c4855a; }
+
+/* SCHRITT 4 — Akzent sparsam */
+.btn-cx {
+  background: var(--accent) !important;
+  color: #fff !important;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.5) !important;
+}
+.ms.reached { border-color: var(--accent) !important; }
+.xp-float   { color: var(--accent) !important; }
 </style>
 </head>
 <body>
