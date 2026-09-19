@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "validate": "node validate.js"
+    "validate": "node validate.js",
+    "deploy": "mkdir -p dist && cp index.html sw.js manifest.webmanifest dist/ && npx netlify deploy --prod --dir dist"
   }
 }

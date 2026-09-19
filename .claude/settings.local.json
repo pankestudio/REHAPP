@@ -45,7 +45,14 @@
       "Bash(mkdir -p /Users/timsum/portfolio/.claude)",
       "mcp__Claude_Preview__preview_start",
       "Bash(mkdir -p \"/Users/timsum/Library/Mobile Documents/com~apple~CloudDocs/+PROJEKTE/+Garbicz25/+ProductionBook2025/.claude\")",
-      "Bash(find /var/folders -name \"*.png\" -newer /Users/timsum/GFProductionBook26/index.html 2>/dev/null | head -10 *)"
+      "Bash(find /var/folders -name \"*.png\" -newer /Users/timsum/GFProductionBook26/index.html 2>/dev/null | head -10 *)",
+      "Bash(netlify deploy *)",
+      "Skill(simplify)",
+      "Skill(simplify:*)",
+      "Bash(rm /Users/timsum/rehapp-v4/.git/index.lock && git add src/core/Store.js src/modules/home/index.js && git diff --cached --stat)"
+    ],
+    "additionalDirectories": [
+      "/Users/timsum/rehapp-v4/.git"
     ]
   }
 }
