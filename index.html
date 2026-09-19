@@ -88,7 +88,7 @@ body::before {
   -webkit-backdrop-filter: blur(24px);
   border-top: 1px solid var(--border2);
   display: grid;
-  grid-template-columns: repeat(5,1fr);
+  grid-template-columns: repeat(6,1fr);
   padding-bottom: var(--safe-bot);
   z-index: 100;
 }
@@ -3111,48 +3111,122 @@ function buildHabitsSection() {
   `;
 }
 
+function applyTheme(theme) {
+  if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+  else if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  else document.documentElement.removeAttribute('data-theme');
+  storageSet('settings_theme', theme);
+}
+
+function applyFontSize(px) {
+  document.documentElement.style.setProperty('--fs-base', px + 'px');
+  storageSet('settings_fontsize', String(px));
+}
+
 function buildSettings() {
   const container = document.getElementById('settings-content');
   if (!container) return;
-  const hidden = getHiddenHabits();
+  const hidden   = getHiddenHabits();
+  const theme    = storageGet('settings_theme') || 'dark';
+  const fontSize = parseInt(storageGet('settings_fontsize') || '16', 10);
+  const name     = storageGet('settings_username') || '';
+  const wakeup   = storageGet('settings_wakeup')   || '07:00';
+
+  const themeBtn = (t, label) => {
+    const active = theme === t;
+    return `<button onclick="applyTheme('${t}');buildSettings()"
+      style="flex:1;padding:10px 4px;border:1px solid ${active?'var(--text)':'var(--border)'};cursor:pointer;
+             font-family:var(--mono);font-size:0.6rem;letter-spacing:.1em;text-transform:uppercase;
+             background:${active?'var(--text)':'transparent'};color:${active?'var(--bg)':'var(--text3)'}">${label}</button>`;
+  };
+
+  const habitSections = HABIT_BLOCKS.map(block => {
+    const blockHabits  = HABITS.filter(h => h.block === block.id);
+    const activeCount  = blockHabits.filter(h => !hidden.has(h.id)).length;
+    const allActive    = activeCount === blockHabits.length;
+    const rows = blockHabits.map((h, i, arr) => {
+      const on   = !hidden.has(h.id);
+      const last = i === arr.length - 1;
+      return `
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 0;${last?'':'border-bottom:1px solid var(--border)'}">
+          <div style="flex:1;min-width:0;font-size:var(--fs-sm);
+            color:${on?'var(--text)':'var(--text3)'};">${h.label}
+            <div class="row-sub">${h.sub} · +${h.xp} XP</div>
+          </div>
+          <button onclick="toggleHiddenHabit('${h.id}')"
+            style="flex-shrink:0;width:40px;height:22px;border:none;cursor:pointer;position:relative;
+                   background:${on?'var(--cx)':'var(--border)'};transition:background .15s">
+            <span style="position:absolute;top:3px;left:${on?'21':'3'}px;width:16px;height:16px;
+              background:var(--bg);transition:left .15s"></span>
+          </button>
+        </div>`;
+    }).join('');
+    return `
+      <div style="padding:12px 16px 4px">
+        <div style="display:flex;justify-content:space-between;align-items:center;
+          padding-bottom:8px;border-bottom:1px solid var(--border)">
+          <span style="font-family:var(--mono);font-size:0.6rem;letter-spacing:.15em;
+            text-transform:uppercase;color:var(--accent)">${block.label} · ${activeCount}/${blockHabits.length}</span>
+          <button onclick="toggleBlockHabits('${block.id}','${allActive?'off':'on'}')"
+            style="font-family:var(--mono);font-size:0.55rem;padding:3px 8px;
+                   background:transparent;border:1px solid var(--border);color:var(--text3);letter-spacing:.1em">
+            ${allActive ? 'ALLE AUS' : 'ALLE AN'}
+          </button>
+        </div>
+        <div>${rows}</div>
+      </div>`;
+  }).join('');
 
   container.innerHTML = `
     <div class="panel" style="margin:0 14px 12px">
-      <div class="panel-label">Habits konfigurieren</div>
-      ${HABIT_BLOCKS.map(block => {
-        const blockHabits = HABITS.filter(h => h.block === block.id);
-        return `
-          <div style="padding:10px 16px 4px">
-            <div style="font-family:var(--mono);font-size:0.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:6px">${block.label}</div>
-            ${blockHabits.map((h, i, arr) => {
-              const isHidden = hidden.has(h.id);
-              const last     = i === arr.length - 1;
-              return `
-                <div style="display:flex;align-items:center;gap:12px;padding:10px 0;
-                  ${last ? '' : 'border-bottom:1px solid var(--border)'}">
-                  <div style="flex:1;min-width:0">
-                    <div class="check-label" style="${isHidden?'color:var(--text3)':''}">${h.label}</div>
-                    <div class="row-sub">${h.sub} · +${h.xp} XP</div>
-                  </div>
-                  <button onclick="toggleHiddenHabit('${h.id}')"
-                    style="font-family:var(--mono);font-size:0.62rem;padding:5px 10px;flex-shrink:0;
-                           background:${isHidden?'transparent':'rgba(255,255,255,0.08)'};
-                           border:1px solid ${isHidden?'var(--border)':'var(--text3)'};
-                           color:${isHidden?'var(--text3)':'var(--text)'};letter-spacing:.1em">
-                    ${isHidden ? 'AUS' : 'AN'}
-                  </button>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        `;
-      }).join('')}
+      <div class="panel-label">Konfiguration</div>
+      <div style="padding:12px 16px">
+
+        <div class="row-sub" style="margin-bottom:4px">Nutzername</div>
+        <input type="text" value="${name.replace(/"/g,'&quot;')}"
+          oninput="storageSet('settings_username',this.value)"
+          style="width:100%;background:transparent;border:1px solid var(--border);
+                 color:var(--text);padding:8px 10px;font-family:inherit;font-size:var(--fs-sm);
+                 box-sizing:border-box;margin-bottom:14px">
+
+        <div class="row-sub" style="margin-bottom:4px">Aufwachzeit</div>
+        <input type="time" value="${wakeup}"
+          oninput="storageSet('settings_wakeup',this.value)"
+          style="width:100%;background:transparent;border:1px solid var(--border);
+                 color:var(--text);padding:8px 10px;font-family:inherit;font-size:var(--fs-sm);
+                 box-sizing:border-box;margin-bottom:14px">
+
+        <div class="row-sub" style="margin-bottom:6px">Schriftgröße · <span id="fs-val">${fontSize}</span> px</div>
+        <input type="range" min="13" max="20" value="${fontSize}"
+          oninput="applyFontSize(+this.value);document.getElementById('fs-val').textContent=this.value"
+          style="width:100%;margin-bottom:14px;accent-color:var(--cx)">
+
+        <div class="row-sub" style="margin-bottom:6px">Theme</div>
+        <div style="display:flex;gap:6px;margin-bottom:4px">
+          ${themeBtn('dark','Dunkel')}
+          ${themeBtn('light','Hell')}
+          ${themeBtn('system','Auto')}
+        </div>
+      </div>
     </div>
+
+    <div class="panel" style="margin:0 14px 12px">
+      <div class="panel-label" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Habits</span>
+        <button onclick="resetAllHabitsVisible()"
+          style="font-family:var(--mono);font-size:0.55rem;padding:3px 8px;
+                 background:transparent;border:1px solid var(--border);color:var(--text3);letter-spacing:.1em">
+          ALLE AN
+        </button>
+      </div>
+      ${habitSections}
+    </div>
+
     <div class="panel" style="margin:0 14px 12px">
       <div class="panel-label">Daten</div>
       <div class="check-row" onclick="exportAppData()">
         <div style="flex:1"><div class="check-label">Backup exportieren</div><div class="row-sub">JSON-Datei mit allen Daten</div></div>
-        <span style="color:var(--text3);font-size:1rem">↗</span>
+        <span style="color:var(--text3)">↗</span>
       </div>
       <div class="check-row" style="border-bottom:none">
         <label style="flex:1;cursor:pointer">
@@ -3160,10 +3234,44 @@ function buildSettings() {
           <div class="row-sub">JSON-Datei wiederherstellen</div>
           <input type="file" accept="application/json" onchange="importBackupFromSettings(event)" style="display:none">
         </label>
-        <span style="color:var(--text3);font-size:1rem">↙</span>
+        <span style="color:var(--text3)">↙</span>
+      </div>
+    </div>
+
+    <div class="panel" style="margin:0 14px 24px;border:1px solid rgba(180,60,60,0.3)">
+      <div class="panel-label" style="color:rgba(220,80,80,0.9)">Zurücksetzen</div>
+      <div style="padding:8px 16px 12px">
+        <div class="row-sub" style="margin-bottom:12px">Löscht alle Daten — XP, Habits, Protokolle, Einstellungen. Nicht rückgängig machbar.</div>
+        <button onclick="confirmResetAll()"
+          style="width:100%;border:1px solid rgba(180,60,60,0.6);background:transparent;
+                 padding:12px;font-family:var(--mono);font-size:0.65rem;letter-spacing:.12em;
+                 text-transform:uppercase;cursor:pointer;color:rgba(220,80,80,0.9)">
+          NEU STARTEN
+        </button>
       </div>
     </div>
   `;
+}
+
+function toggleBlockHabits(blockId, onOff) {
+  const hidden    = getHiddenHabits();
+  const blockHabits = HABITS.filter(h => h.block === blockId);
+  blockHabits.forEach(h => onOff === 'off' ? hidden.add(h.id) : hidden.delete(h.id));
+  storageSet('hidden_habits', JSON.stringify([...hidden]));
+  buildSettings();
+  buildHabitsSection();
+}
+
+function resetAllHabitsVisible() {
+  storageSet('hidden_habits', '[]');
+  buildSettings();
+  buildHabitsSection();
+}
+
+function confirmResetAll() {
+  if (!confirm('Alle Daten löschen? Nicht rückgängig.')) return;
+  localStorage.clear();
+  location.reload();
 }
 
 function toggleHiddenHabit(id) {
@@ -4029,6 +4137,12 @@ function enhanceAccessibility() {
 // ══════════════ INIT ══════════════
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Gespeicherte Einstellungen sofort anwenden
+  const savedTheme = storageGet('settings_theme');
+  if (savedTheme) applyTheme(savedTheme);
+  const savedFs = storageGet('settings_fontsize');
+  if (savedFs) applyFontSize(parseInt(savedFs, 10));
+
   const h = new Date().getHours();
   document.getElementById('today-date').textContent = new Date().toLocaleDateString('de-DE', { weekday:'long', day:'numeric', month:'long' }).toUpperCase();
   const greet = document.getElementById('greeting-title');
