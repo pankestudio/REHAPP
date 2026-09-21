@@ -328,16 +328,6 @@ body::before {
   display: flex; gap: 7px; flex-wrap: wrap;
   padding: 12px 14px;
 }
-.wdrop {
-  width: 30px; height: 30px;
-  border: 1px solid var(--border2);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: all .15s;
-  background: var(--bg3);
-  font-family: var(--mono); font-size: 10px; color: var(--text3);
-}
-.wdrop.filled { background: var(--cx-dim); border-color: var(--cx); color: var(--cx); }
-.wdrop:active { transform: scale(.88); }
 
 /* ── CHECKS ── */
 .check-row {
@@ -877,8 +867,7 @@ body::before {
 .tag,
 .status-title,
 .xp-kicker,
-.xp-level-badge,
-.xp-hud-level {
+.xp-level-badge {
   font-family: var(--mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -917,7 +906,6 @@ body::before {
 .ext-link { font-size: 0.76rem; }
 .row-icon,
 .chkbox,
-.wdrop,
 .mld-num { border-radius: 14px; }
 .btn,
 .file-btn,
@@ -940,7 +928,6 @@ body::before {
 .nav-item.active,
 .phase-seg.active,
 .chkbox.done,
-.wdrop.filled,
 .ms.reached,
 .mld-num.current {
   background: linear-gradient(180deg, #f5f5f5 0%, #d9d9df 100%) !important;
@@ -950,14 +937,10 @@ body::before {
 .mood-btn.selected,
 .mode-btn.active,
 .fpill.active { border-color: transparent !important; }
-.nav-item.active .nav-label,
-.nav-item.active .nav-icon svg,
-.page-title a,
 .recipe-toggle,
 .ext-link,
 .hero-mode,
-.xp-total,
-.xp-hud-score { color: var(--text) !important; }
+.xp-total { color: var(--text) !important; }
 .nav-item::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent); }
 .nav-label { font-size: 0.58rem; }
 .nav-icon svg { stroke: var(--text3); }
@@ -1058,22 +1041,6 @@ input[type="range"] { accent-color: #f0f0f0; }
   font-size: 0.72rem;
   color: var(--text2);
 }
-.xp-hud {
-  position: fixed;
-  top: calc(var(--safe-top) + 14px);
-  right: max(14px, calc((100vw - 430px)/2 + 14px));
-  z-index: 110;
-  padding: 10px 12px;
-  min-width: 92px;
-  border-radius: 18px;
-  background: rgba(20,21,24,0.82);
-  border: 1px solid rgba(255,255,255,0.10);
-  backdrop-filter: blur(18px);
-  box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
-}
-.xp-hud-level { font-size: 0.56rem; color: var(--text2); }
-.xp-hud-score { font-size: 0.82rem; font-weight: 800; margin-top: 3px; }
-.xp-hud.pulse { transform: scale(1.03); }
 .xp-float {
   position: fixed;
   top: calc(var(--safe-top) + 52px);
@@ -1113,7 +1080,6 @@ input[type="range"] { accent-color: #f0f0f0; }
   --s1: 4px;  --s2: 8px;  --s3: 16px;  --s4: 24px;  --s5: 40px;
   /* Legacy aliases — nicht neu verwenden */
   --space-2: 8px;  --space-3: 16px;  --space-4: 24px;  --space-5: 40px;
-  --radius-xl: 0;  --radius-lg: 0;  --radius-md: 0;  --radius-sm: 0;
   /* Harte Schatten — kein blur */
   --shadow-sm:    2px 2px 0 rgba(0,0,0,0.45);
   --shadow-md:    3px 3px 0 rgba(0,0,0,0.50);
@@ -1121,7 +1087,6 @@ input[type="range"] { accent-color: #f0f0f0; }
   --shadow-panel: 4px 4px 0 rgba(0,0,0,0.55);
   --shadow-btn:   2px 2px 0 rgba(0,0,0,0.45);
   --shadow-modal: 8px 8px 0 rgba(0,0,0,0.70);
-  --inset-glow:   0 0 0 rgba(0,0,0,0);
 }
 
 /* Apply scale corrections */
@@ -1158,20 +1123,10 @@ input[type="range"] { accent-color: #f0f0f0; }
 /* ── TIMER ── */
 .timer-display { font-size: clamp(2.1rem, 9vw, 2.9rem); }
 
-/* ── IMMERSIVE CARDS ── */
-.hero {
-  background: linear-gradient(160deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.025) 100%);
-  box-shadow: var(--shadow-lg), var(--inset-glow);
-  border-color: rgba(255,255,255,0.12);
-}
-.panel {
-  box-shadow: var(--shadow-md), var(--inset-glow);
-  background: linear-gradient(160deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.025) 100%);
-}
-.xp-card {
-  box-shadow: var(--shadow-lg), var(--inset-glow);
-  background: linear-gradient(150deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.03) 100%);
-}
+/* ── CARDS — superseded by final authority !important block ── */
+.hero  { box-shadow: var(--shadow-lg); }
+.panel { box-shadow: var(--shadow-md); }
+.xp-card { box-shadow: var(--shadow-lg); }
 
 /* ── IMMERSIVE BUTTONS ── */
 .btn {
@@ -1493,7 +1448,6 @@ input[type="range"] { accent-color: #f0f0f0; }
   cursor: pointer; transition: background 0.15s;
 }
 .header-search-btn:active { background: rgba(255,255,255,0.12); }
-.page-header { position: relative; }
 .btn, .file-btn, .mode-btn, .fpill, .mood-btn, .cal-btn, .quick-action { min-height: 50px; font-size: var(--fs-sm); }
 .timer-display { font-size: clamp(2.1rem, 9vw, 2.9rem); }
 .xp-secondary-stats { margin-top: 14px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -1519,7 +1473,7 @@ input[type="range"] { accent-color: #f0f0f0; }
 .backup-inline { padding: 0 16px 16px; }
 .backup-inline .file-btn { width: 100%; justify-content: center; }
 #timer-start-btn, #timer-reset-btn { min-height: 54px; }
-#daily-checks .check-row, #supp-morning .check-row, #supp-midday .check-row, #supp-evening .check-row { padding-top: 16px; padding-bottom: 16px; }
+#supp-morning .check-row, #supp-midday .check-row, #supp-evening .check-row { padding-top: 16px; padding-bottom: 16px; }
 
 
 /* ── ENHANCEMENTS V3 ── */
@@ -1708,7 +1662,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   color: var(--text) !important;
   line-height: 1.3 !important;
 }
-.row-sub, .check-sub {
+.row-sub {
   font-size: var(--fs-sm) !important;
   color: var(--text2) !important;
   margin-top: 2px !important;
@@ -1726,6 +1680,16 @@ input[type="range"] { accent-color: #f0f0f0; }
   letter-spacing: 0.12em !important;
   color: var(--text3) !important;
   margin-top: 8px !important;
+}
+
+/* ── XP Strip ── */
+.xp-strip {
+  margin: 8px 12px 4px;
+  padding: 14px 16px 12px;
+  display: flex; align-items: center; gap: 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  box-shadow: var(--shadow-panel);
 }
 
 /* ── S3: Surfaces — flat, hard border, hard shadow ── */
@@ -1852,7 +1816,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   </div>
 
   <!-- XP / LEVEL STRIP -->
-  <div style="margin:8px 14px 4px;padding:14px 16px 12px;border-radius:22px;background:linear-gradient(150deg,rgba(255,255,255,0.07),rgba(255,255,255,0.025));border:1px solid rgba(255,255,255,0.10);box-shadow:var(--shadow-md),var(--inset-glow);display:flex;align-items:center;gap:14px">
+  <div class="xp-strip">
     <div style="flex:1">
       <div style="display:flex;justify-content:space-between;margin-bottom:6px">
         <span style="font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.14em;text-transform:uppercase;color:var(--text3)" id="xp-level-badge-home">LV 1</span>
@@ -1955,17 +1919,6 @@ input[type="range"] { accent-color: #f0f0f0; }
       <div style="padding:4px 16px 10px">
         <button class="btn btn-sm" onclick="showPage('pg-supp')" style="width:100%">Vollständiger Stack →</button>
       </div>
-    </div>
-  </div>
-
-  <!-- DAILY CHECKS -->
-  <div class="panel">
-    <div class="panel-collapse-header" data-collapse-id="checks" onclick="toggleCollapse('checks')">
-      <div class="panel-collapse-title">Tagesprotokoll</div>
-      <div class="panel-collapse-arrow open" id="collapse-arrow-checks">▲</div>
-    </div>
-    <div id="collapse-body-checks">
-      <div id="daily-checks"></div>
     </div>
   </div>
 
@@ -2730,7 +2683,6 @@ input[type="range"] { accent-color: #f0f0f0; }
 </nav>
 
 <div class="footer-version">REHAPP // V3</div>
-<input type="file" id="backup-import-shadow" class="sr-only" aria-hidden="true">
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
 
@@ -2929,8 +2881,7 @@ function getXPStreak() {
 }
 
 function pulseXPHud() {
-  // Pulse the home XP strip
-  const strip = document.querySelector('#pg-home [style*="border-radius:22px"]');
+  const strip = document.querySelector('.xp-strip');
   if (!strip) return;
   strip.style.transition = 'transform 0.18s ease, box-shadow 0.18s ease';
   strip.style.transform = 'scale(1.02)';
@@ -3551,44 +3502,6 @@ function completeScrubbingSession() {
   refreshXPUI();
 }
 
-// Laterality game
-let latSession = { correct: 0, total: 0, running: false };
-const latFeet = [
-  { emoji: '🦶', mirror: false, answer: 'right', label: 'rechter Fuß' },
-  { emoji: '🦶', mirror: true,  answer: 'left',  label: 'linker Fuß (gespiegelt)' },
-];
-
-function showLateralityQuestion() {
-  const isLeft = Math.random() > 0.5;
-  const q = document.getElementById('lat-question');
-  const foot = document.getElementById('lat-foot-display');
-  const lBtn = document.getElementById('lat-btn-left');
-  const rBtn = document.getElementById('lat-btn-right');
-  if (!q || !foot) return;
-  // Store answer
-  foot.dataset.answer = isLeft ? 'left' : 'right';
-  foot.style.transform = isLeft ? 'scaleX(-1)' : 'scaleX(1)';
-  q.textContent = 'Links oder rechts?';
-  if (lBtn) lBtn.disabled = false;
-  if (rBtn) rBtn.disabled = false;
-}
-
-function answerLaterality(answer) {
-  const foot = document.getElementById('lat-foot-display');
-  const q = document.getElementById('lat-question');
-  const score = document.getElementById('lat-score');
-  const lBtn = document.getElementById('lat-btn-left');
-  const rBtn = document.getElementById('lat-btn-right');
-  if (!foot) return;
-  latSession.total++;
-  const correct = foot.dataset.answer === answer;
-  if (correct) latSession.correct++;
-  if (q) { q.textContent = correct ? '✓ Richtig!' : `✗ War ${foot.dataset.answer === 'left' ? 'Links' : 'Rechts'}`; }
-  if (score) score.textContent = `Richtig: ${latSession.correct} / ${latSession.total}`;
-  if (lBtn) lBtn.disabled = true;
-  if (rBtn) rBtn.disabled = true;
-  if (latSession.running) setTimeout(showLateralityQuestion, 800);
-}
 
 // ══════════════ BUDAPEST FILTER ══════════════
 
@@ -4087,7 +4000,7 @@ function awardXP(actionKey, amount, label, options = {}) {
 }
 
 function trackMicroInteraction(event) {
-  const el = event.target.closest('button, .nav-item, .row, .cal-btn, .mode-btn, .fpill, .wdrop, .mood-btn, .recipe-toggle, .file-btn, .check-row, .safety-item');
+  const el = event.target.closest('button, .nav-item, .row, .cal-btn, .mode-btn, .fpill, .mood-btn, .recipe-toggle, .file-btn, .check-row, .safety-item');
   if (!el || el.dataset.xpSkip === '1' || event.target.closest('#toast')) return;
   if (event.target.closest('input[type="file"]')) return;
   const seed = (el.id || el.getAttribute('aria-label') || el.textContent || el.className || 'tap')
@@ -4278,7 +4191,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', trackMicroInteraction, true);
 
   // Midnight day-change watcher — rebuilds daily UI when date rolls over
-  let _watchedDate = new Date().toDateString();
+  _watchedDate = new Date().toDateString();
   setInterval(() => {
     const nowDate = new Date().toDateString();
     if (nowDate !== _watchedDate) {
@@ -4426,8 +4339,6 @@ function updateTimer() {
   document.getElementById('ps1').classList.toggle('active', totalH >= 18 && totalH < 48);
   document.getElementById('ps2').classList.toggle('active', totalH >= 48 && totalH < 72);
   document.getElementById('ps3').classList.toggle('active', totalH >= 72);
-  updatePhaseBenefit();
-
   let mode, sub;
   if (totalH < 18) { mode = '// GLYKOGEN-ABBAU'; sub = `Noch ${Math.ceil(18-totalH)}h bis Ketose`; }
   else if (totalH < 48) { mode = '// KETOSE AKTIV'; sub = `Noch ${Math.ceil(48-totalH)}h bis Autophagie-Peak`; }
@@ -4436,8 +4347,6 @@ function updateTimer() {
 
   const modeEl = document.getElementById('timer-mode-label');
   if (modeEl && modeEl.textContent !== mode) modeEl.textContent = mode;
-  if (subEl && subEl.textContent !== sub) subEl.textContent = sub;
-
   const phases = ['Glykogen wird abgebaut. Ketose setzt bei ~18h ein. Hunger am stärksten — nach 18h deutlich reduziert.',
     'Ketose aktiv. Beta-Hydroxybutyrat (BHB) hemmt direkt das Entzündungsgeschehen im Knochenmark. Hunger stark reduziert.',
     'Autophagie-Peak. Beschädigte Zellen in der Knochenmatrix werden aufgeräumt. Entzündungsmediatoren auf Tiefstand.',
@@ -4915,7 +4824,7 @@ window.addEventListener('visibilitychange', () => {
   // Check for day rollover when phone wakes
   if (document.visibilityState === 'visible') {
     const nowDate = new Date().toDateString();
-    if (typeof _watchedDate !== 'undefined' && nowDate !== _watchedDate) {
+    if (_watchedDate && nowDate !== _watchedDate) {
       _watchedDate = nowDate;
       buildWater();
       buildSupplements();
@@ -5231,6 +5140,7 @@ function toast(msg) {
 
 // ══════════════ ENHANCEMENTS V3 ══════════════
 let refeedInterval = null;
+let _watchedDate = '';
 const REFEED_WINDOW_MS = 6 * 3600000;
 
 let _audioCtx = null;
@@ -5252,11 +5162,7 @@ function playTone(freq = 440, duration = 0.12, type = 'sine') {
 }
 
 function safeVibrate(pattern) {
-  try {
-    if (navigator.vibrate) navigator.vibrate(pattern);
-  } catch (err) {
-    console.warn('Vibration failed', err);
-  }
+  try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {}
 }
 
 function popElement(el) {
@@ -5392,7 +5298,7 @@ function exportAppDataText() {
     exportedAt: new Date().toISOString(),
     xp: storageGet('xp_total') || '0',
     mood: storageGet('mood_' + today) || 'nicht gesetzt',
-    waterMl: JSON.parse(storageGet('water6_' + today) || '[]').length * 500,
+    waterMl: JSON.parse(storageGet('water6_' + today) || '[]').length * 400,
     checksDone: DAILY_CHECKS.filter(item => storageGet('check_' + today + '_' + item.id) === '1').map(item => item.label),
     progress: JSON.parse(storageGet('progress_log') || '[]').slice(-14)
   };
@@ -5465,8 +5371,8 @@ function beginFastingAtElapsed(elapsedMs, xpKey = 'fast_start_manual', label = '
   const block16 = document.getElementById('timer-16-8-block');
   const milestones = document.getElementById('timer-milestone');
   if (startBtn) {
-    startBtn.textContent = 'Pause';
-    startBtn.onclick = timerAction;
+    startBtn.textContent = 'Fasten läuft';
+    startBtn.disabled = true;
   }
   if (resetBtn) resetBtn.style.display = '';
   if (block16) block16.style.display = 'none';
