@@ -17,11 +17,11 @@
 <style>
 :root {
   /* ── Grayscale Theme ── */
-  --bg:      #0f1012;
-  --bg2:     #16171a;
-  --bg3:     #1d1f23;
-  --bg4:     #25272c;
-  --bg5:     #2f3238;
+  --bg:      #0d0d0f;
+  --bg2:     #141416;
+  --bg3:     #1c1c1f;
+  --bg4:     #242428;
+  --bg5:     #2e2e33;
   --cx:      #f4f4f5;
   --cx-dim:  rgba(255,255,255,0.06);
   --cx-mid:  rgba(255,255,255,0.12);
@@ -34,10 +34,12 @@
   --green:   #70c090;
   --grn-dim: rgba(112,192,144,0.10);
   --text:    #f0f0f2;
-  --text2:   #c0c0c8;
-  --text3:   #8a8a96;
+  --text2:   #b8b8c0;
+  --text3:   #6a6a76;
   --border:  rgba(255,255,255,0.10);
   --border2: rgba(255,255,255,0.18);
+  --accent:  #c4855a;
+  --accent-dim: rgba(196,133,90,0.10);
   --mono:    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   --ui:      Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
   --safe-top: env(safe-area-inset-top, 0px);
@@ -1102,25 +1104,24 @@ input[type="range"] { accent-color: #f0f0f0; }
 
 /* ── REFINED SCALE (16px base) ── */
 :root {
-  --fs-xs:   0.72rem;   /* 11.5px – Mono-Labels, Meta     */
+  --fs-xs:   0.65rem;   /* 10.4px – Labels, Meta          */
   --fs-sm:   0.875rem;  /* 14px   – Sekundärtext          */
-  --fs-base: 1rem;      /* 16px   – Body, Labels          */
-  --fs-lg:   1.125rem;  /* 18px   – Abschnittstitel       */
-  --fs-xl:   1.5rem;    /* 24px   – Seitentitel           */
-  --space-2: 8px;
-  --space-3: 20px;
-  --space-4: 32px;
-  --space-5: 48px;
-  --radius-xl: 0;
-  --radius-lg: 0;
-  --radius-md: 0;
-  --radius-sm: 0;
-  --shadow-sm:  3px 3px 0 rgba(0,0,0,0.5);
-  --shadow-md:  4px 4px 0 rgba(0,0,0,0.6);
-  --shadow-lg:  6px 6px 0 rgba(0,0,0,0.8);
-  --inset-glow: 0 0 0 rgba(0,0,0,0);
-  --accent:     #c4855a;
-  --accent-dim: rgba(196,133,90,0.12);
+  --fs-base: 1rem;      /* 16px   – Body                  */
+  --fs-lg:   1.25rem;   /* 20px   – Abschnittstitel       */
+  --fs-xl:   2rem;      /* 32px   – Seitentitel           */
+  /* 8pt Grid */
+  --s1: 4px;  --s2: 8px;  --s3: 16px;  --s4: 24px;  --s5: 40px;
+  /* Legacy aliases — nicht neu verwenden */
+  --space-2: 8px;  --space-3: 16px;  --space-4: 24px;  --space-5: 40px;
+  --radius-xl: 0;  --radius-lg: 0;  --radius-md: 0;  --radius-sm: 0;
+  /* Harte Schatten — kein blur */
+  --shadow-sm:    2px 2px 0 rgba(0,0,0,0.45);
+  --shadow-md:    3px 3px 0 rgba(0,0,0,0.50);
+  --shadow-lg:    4px 4px 0 rgba(0,0,0,0.55);
+  --shadow-panel: 4px 4px 0 rgba(0,0,0,0.55);
+  --shadow-btn:   2px 2px 0 rgba(0,0,0,0.45);
+  --shadow-modal: 8px 8px 0 rgba(0,0,0,0.70);
+  --inset-glow:   0 0 0 rgba(0,0,0,0);
 }
 
 /* Apply scale corrections */
@@ -1651,76 +1652,175 @@ input[type="range"] { accent-color: #f0f0f0; }
   .page { padding-bottom: 100px; }
 }
 
-/* ── ACTIVE TAB CONTRAST (final authority) ── */
+/* ══════════════════════════════════════════════════════
+   DESIGN SYSTEM — Rams × Things 3 × Hister (final authority)
+   ══════════════════════════════════════════════════════ */
+
+/* ── S1: Zero Radius ── */
+*, *::before, *::after { border-radius: 0 !important; }
+.xp-progress-bar, .xp-progress-bar > * { border-radius: 1px !important; }
+.water-fill  { border-radius: 0 !important; }
+.chkbox, .chkbox::after { border-radius: 2px !important; }
+
+/* ── S2: Typografie ── */
+.page-title {
+  font-size: var(--fs-xl) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.0 !important;
+  text-transform: uppercase !important;
+  color: var(--text) !important;
+}
+.page-sub {
+  font-size: var(--fs-xs) !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: var(--text3) !important;
+}
+.panel-label,
+.panel-collapse-title {
+  font-size: var(--fs-xs) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.20em !important;
+  text-transform: uppercase !important;
+  color: var(--text3) !important;
+  padding: 12px 16px 8px !important;
+}
+.panel-label::before,
+.panel-collapse-title::before { content: '▪ '; color: var(--accent); }
+.timer-display {
+  font-size: clamp(3.2rem, 15vw, 4.4rem) !important;
+  font-weight: 200 !important;
+  letter-spacing: 0.05em !important;
+  color: var(--text) !important;
+}
+.hero-mode {
+  font-size: var(--fs-xs) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.20em !important;
+  text-transform: uppercase !important;
+  color: var(--text3) !important;
+}
+.hero-mode::before { content: '▪ '; color: var(--accent); }
+.row-title, .check-label {
+  font-size: var(--fs-base) !important;
+  font-weight: 500 !important;
+  color: var(--text) !important;
+  line-height: 1.3 !important;
+}
+.row-sub, .check-sub {
+  font-size: var(--fs-sm) !important;
+  color: var(--text2) !important;
+  margin-top: 2px !important;
+}
+.quote-text {
+  font-size: var(--fs-base) !important;
+  font-weight: 300 !important;
+  font-style: italic !important;
+  color: var(--text2) !important;
+  line-height: 1.75 !important;
+}
+.quote-author {
+  font-family: var(--mono) !important;
+  font-size: var(--fs-xs) !important;
+  letter-spacing: 0.12em !important;
+  color: var(--text3) !important;
+  margin-top: 8px !important;
+}
+
+/* ── S3: Surfaces — flat, hard border, hard shadow ── */
+.hero {
+  background: var(--bg2) !important;
+  border: 1px solid var(--border2) !important;
+  box-shadow: var(--shadow-panel) !important;
+  margin: 8px 12px 12px !important;
+  padding: 24px 20px 20px !important;
+}
+.panel {
+  background: var(--bg2) !important;
+  border: 1px solid var(--border2) !important;
+  box-shadow: var(--shadow-panel) !important;
+  margin: 0 12px 16px !important;
+}
+.xp-card {
+  background: var(--bg2) !important;
+  border: 1px solid var(--border2) !important;
+  box-shadow: var(--shadow-panel) !important;
+}
+.modal-card {
+  background: var(--bg2) !important;
+  border: 1px solid var(--border2) !important;
+  box-shadow: var(--shadow-modal) !important;
+}
+
+/* ── S5: Progressive Disclosure — Rows ── */
+.check-row, .row {
+  padding: 12px 16px !important;
+  min-height: 48px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+.check-row:last-child, .row:last-child { border-bottom: none !important; }
+.row-sub:empty, .check-sub:empty { display: none !important; }
+.panel-collapse-header {
+  padding: 14px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  cursor: pointer !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+}
+
+/* ── S6: Akzent — nur diese zwei Stellen ── */
+.btn-cx {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: var(--shadow-btn) !important;
+}
+.ms.reached {
+  border-color: var(--accent) !important;
+  background: var(--accent-dim) !important;
+}
+.xp-float { color: var(--accent) !important; }
+
+/* ── S4: Aktive States — hell auf dunkel ── */
 .mode-btn.active,
 .fpill.active,
 .mood-btn.selected,
 .phase-badge.active,
 .timer-mode-btn.active {
   background: #e8e8ec !important;
-  color: #0f1012 !important;
+  color: #0d0d0f !important;
   border-color: transparent !important;
   font-weight: 700 !important;
 }
 
-/* ══════════════════════════════════════════════
-   DESIGN RESET — Hister-Referenz (dark-inverted)
-   ══════════════════════════════════════════════ */
+/* Verbleibende dekorative Gradients entfernen */
+.panel::before, .panel::after,
+.hero::before, .hero::after { display: none !important; }
+.panel-lite { background: var(--bg2) !important; }
 
-/* SCHRITT 2 — Zero Radius universell */
-*, *::before, *::after { border-radius: 0 !important; }
-.xp-progress-bar,
-.xp-progress-bar > *,
-.water-fill,
-.chkbox,
-.chkbox::after { border-radius: 2px !important; }
-
-/* SCHRITT 3 — Typografische Hierarchie */
-.panel-label,
-.panel-collapse-title {
-  font-size: 0.62rem !important;
+/* ── S7: Nav — eine einzige Wahrheit ── */
+.bottom-nav {
+  background: rgba(13,13,15,0.97) !important;
+  border-top: 1px solid var(--border2) !important;
+  box-shadow: 0 -4px 0 rgba(0,0,0,0.3) !important;
+}
+.nav-item.active {
+  background: rgba(255,255,255,0.07) !important;
+}
+.nav-item.active .nav-icon svg {
+  stroke: var(--text) !important;
+}
+.nav-item.active .nav-label {
+  color: var(--text) !important;
   font-weight: 700 !important;
-  letter-spacing: 0.22em !important;
-  text-transform: uppercase !important;
-  color: var(--text3) !important;
 }
-.panel-label::before,
-.panel-collapse-title::before {
-  content: '▪ ';
-  color: #c4855a;
-}
-
-.page-title {
-  font-size: 2rem !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.02em !important;
-  line-height: 1.05 !important;
-  text-transform: uppercase !important;
-}
-
-.timer-display {
-  font-size: clamp(3.2rem, 16vw, 4.2rem) !important;
-  font-weight: 200 !important;
-  letter-spacing: 0.06em !important;
-}
-
-.hero-mode {
-  font-size: 0.62rem !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.22em !important;
-  text-transform: uppercase !important;
-  color: var(--text3) !important;
-}
-.hero-mode::before { content: '▪ '; color: #c4855a; }
-
-/* SCHRITT 4 — Akzent sparsam */
-.btn-cx {
-  background: var(--accent) !important;
-  color: #fff !important;
-  box-shadow: 3px 3px 0 rgba(0,0,0,0.5) !important;
-}
-.ms.reached { border-color: var(--accent) !important; }
-.xp-float   { color: var(--accent) !important; }
+.nav-item:not(.active) .nav-icon svg { stroke: var(--text3) !important; }
+.nav-item:not(.active) .nav-label   { color: var(--text3) !important; }
 </style>
 </head>
 <body>
