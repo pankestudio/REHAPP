@@ -93,7 +93,8 @@ Collapsibles:
 ## Deployment-Checklist
 Upload-Ordner für Netlify Drop:
   index.html, sw.js, manifest.webmanifest, icons/icon-192.png,
-  icons/icon-512.png, icons/apple-touch-icon.png
+  icons/icon-512.png, icons/apple-touch-icon.png,
+  fonts/PlusJakartaSans-latin.woff2, fonts/PlusJakartaSans-latin-ext.woff2
 
 iPhone: Safari → URL öffnen → Teilen (□↑) → "Zum Home-Bildschirm"
 NICHT iCloud — öffnet als Quick Look, JavaScript blockiert.

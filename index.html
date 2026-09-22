@@ -15,6 +15,22 @@
 <meta name="color-scheme" content="dark">
 <title>REHAPP // Regenerationsprotokoll</title>
 <style>
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('./fonts/PlusJakartaSans-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('./fonts/PlusJakartaSans-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
 :root {
   /* ── Grayscale Theme ── */
   --bg:      #0d0d0f;
@@ -41,7 +57,7 @@
   --accent:  #c4855a;
   --accent-dim: rgba(196,133,90,0.10);
   --mono:    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
-  --ui:      Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --ui:      'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bot: env(safe-area-inset-bottom, 0px);
 }
@@ -112,7 +128,7 @@ body::before {
 .nav-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
 .nav-icon svg { width: 18px; height: 18px; stroke: var(--text3); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke .15s; }
 .nav-item.active .nav-icon svg { stroke: var(--cx); }
-.nav-label { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); font-weight: 500; transition: color .15s; }
+.nav-label { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); font-weight: 500; transition: color .15s; }
 .nav-item.active .nav-label { color: var(--cx); }
 
 /* ── PAGES ── */
@@ -139,7 +155,7 @@ body::before {
   line-height: 1;
 }
 .page-sub {
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: .08em;
   color: var(--text2);
   margin-top: 3px;
@@ -161,7 +177,7 @@ body::before {
 }
 .panel-label {
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: .2em;
   text-transform: uppercase;
   color: var(--text3);
@@ -187,15 +203,15 @@ body::before {
 .row-icon svg { width: 14px; height: 14px; stroke: var(--cx); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .row-body { flex: 1; min-width: 0; }
 .row-title { font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: .03em; }
-.row-sub { font-size: 11px; color: var(--text2); margin-top: 2px; letter-spacing: .02em; }
-.row-right { font-size: 11px; color: var(--text3); flex-shrink: 0; font-family: var(--mono); }
+.row-sub { font-size: 12px; color: var(--text2); margin-top: 2px; letter-spacing: .02em; }
+.row-right { font-size: 12px; color: var(--text3); flex-shrink: 0; font-family: var(--mono); }
 
 /* ── TAG / BADGE ── */
 .tag {
   display: inline-block;
   padding: 1px 6px;
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: .12em;
   text-transform: uppercase;
   border: 1px solid;
@@ -228,7 +244,7 @@ body::before {
 }
 .hero-mode {
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: .25em;
   text-transform: uppercase;
   color: var(--cx);
@@ -247,7 +263,7 @@ body::before {
   text-shadow: 0 0 20px var(--cx-glow);
 }
 .timer-sub {
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: .08em;
   color: var(--text2);
   margin-top: 5px;
@@ -278,7 +294,7 @@ body::before {
 }
 .ms.reached .ms-h { color: var(--cx); }
 .ms-n {
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--text3);
@@ -307,14 +323,14 @@ body::before {
   color: var(--cx);
 }
 .btn-cx:active { background: var(--cx-mid); }
-.btn-sm { padding: 7px 12px; font-size: 11px; }
+.btn-sm { padding: 7px 12px; font-size: 12px; }
 .btn-red { border-color: var(--red); color: var(--red); background: var(--red-dim); }
 
 /* ── 16:8 status ── */
 #timer-16-8-block {
   display: none;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: .1em;
   text-transform: uppercase;
   margin-bottom: 14px;
@@ -373,9 +389,9 @@ body::before {
 }
 .phase-seg:last-child { border-right: none; }
 .phase-seg.active { background: var(--cx-dim); border-right-color: var(--cx); }
-.ps-name { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text2); }
+.ps-name { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text2); }
 .phase-seg.active .ps-name { color: var(--cx); }
-.ps-h { font-family: var(--mono); font-size: 9px; color: var(--text3); margin-top: 2px; }
+.ps-h { font-family: var(--mono); font-size: 12px; color: var(--text3); margin-top: 2px; }
 .phase-seg.active .ps-h { color: rgba(255,255,255,0.35); }
 
 /* ── BREATHING ── */
@@ -387,7 +403,7 @@ body::before {
   background: var(--bg3);
   color: var(--text2);
   font-family: var(--ui);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -409,8 +425,8 @@ body::before {
 }
 .breath-ring.active { border-color: var(--cx); box-shadow: 0 0 20px var(--cx-glow), inset 0 0 20px var(--cx-dim); }
 .breath-ring-text { font-family: var(--mono); font-size: 18px; color: var(--cx); letter-spacing: .1em; }
-.breath-ring-count { font-family: var(--mono); font-size: 10px; color: var(--text2); margin-top: 3px; }
-.breath-instr { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text2); margin-bottom: 16px; min-height: 18px; }
+.breath-ring-count { font-family: var(--mono); font-size: 12px; color: var(--text2); margin-top: 3px; }
+.breath-instr { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text2); margin-bottom: 16px; min-height: 18px; }
 
 /* ── MEDITATION TEXT ── */
 .med-text { padding: 14px 16px; font-size: var(--fs-sm); color: var(--text2); line-height: 1.85; border-top: 1px solid var(--border); }
@@ -430,7 +446,7 @@ body::before {
   background: var(--bg2);
   color: var(--text2);
   font-family: var(--ui);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: .1em;
   text-transform: uppercase;
@@ -444,12 +460,12 @@ body::before {
 .recipe-panel { margin: 8px 12px 10px; border: 1px solid var(--border); background: var(--bg2); overflow: hidden; cursor: pointer; }
 .recipe-top { padding: 14px; border-bottom: 1px solid var(--border); }
 .recipe-name { font-size: 14px; font-weight: 600; letter-spacing: .04em; }
-.recipe-meta { font-family: var(--mono); font-size: 10px; color: var(--text2); margin-top: 4px; letter-spacing: .05em; }
+.recipe-meta { font-family: var(--mono); font-size: 12px; color: var(--text2); margin-top: 4px; letter-spacing: .05em; }
 .recipe-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
 .recipe-body { padding: 12px 14px; font-size: 12px; color: var(--text2); line-height: 1.75; display: none; border-top: 1px solid var(--border); }
 .recipe-body.open { display: block; }
 .recipe-body strong { color: var(--text); font-weight: 600; }
-.recipe-toggle { padding: 8px 14px; font-family: var(--mono); font-size: 9px; letter-spacing: .15em; text-transform: uppercase; color: var(--text3); border-top: 1px solid var(--border); }
+.recipe-toggle { padding: 8px 14px; font-family: var(--mono); font-size: 12px; letter-spacing: .15em; text-transform: uppercase; color: var(--text3); border-top: 1px solid var(--border); }
 
 /* ── SUPPLEMENTS ── */
 .supp-time {
@@ -459,7 +475,7 @@ body::before {
 .supp-dot { width: 6px; height: 6px; background: var(--cx); flex-shrink: 0; }
 .supp-dot.amber { background: var(--amber); }
 .supp-dot.purple { background: #9b59ff; }
-.supp-time-lbl { font-family: var(--mono); font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--text2); }
+.supp-time-lbl { font-family: var(--mono); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--text2); }
 
 /* ── MLD STEPS ── */
 .mld-step { padding: 12px 14px; border-bottom: 1px solid var(--border); }
@@ -469,19 +485,19 @@ body::before {
   width: 22px; height: 22px;
   border: 1px solid var(--text3);
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: 10px; color: var(--text3);
+  font-family: var(--mono); font-size: 12px; color: var(--text3);
   flex-shrink: 0; transition: all .2s;
 }
 .mld-num.current { border-color: var(--cx); color: var(--cx); background: var(--cx-dim); }
 .mld-step-title { font-size: 13px; font-weight: 600; letter-spacing: .03em; }
-.mld-step-sec { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-left: auto; }
-.mld-step-desc { font-size: 11px; color: var(--text2); line-height: 1.65; padding-left: 32px; margin-bottom: 8px; }
+.mld-step-sec { font-family: var(--mono); font-size: 12px; color: var(--text3); margin-left: auto; }
+.mld-step-desc { font-size: 12px; color: var(--text2); line-height: 1.65; padding-left: 32px; margin-bottom: 8px; }
 .mld-step-ctrl { padding-left: 32px; display: flex; align-items: center; gap: 10px; }
 .mld-timer-disp { font-family: var(--mono); font-size: 12px; color: var(--cx); }
 
 /* ── PROGRESS ── */
 .sliders { padding: 12px 14px; }
-.slider-lbl { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text2); margin-bottom: 7px; }
+.slider-lbl { display: flex; justify-content: space-between; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text2); margin-bottom: 7px; }
 .slider-lbl span { font-family: var(--mono); color: var(--cx); }
 input[type=range] {
   width: 100%;
@@ -501,11 +517,11 @@ input[type=range]::-webkit-slider-thumb {
   box-shadow: 0 0 8px var(--cx-glow);
 }
 .chart-wrap { padding: 4px 14px 14px; }
-.chart-lbl { font-family: var(--mono); font-size: 9px; letter-spacing: .15em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
+.chart-lbl { font-family: var(--mono); font-size: 12px; letter-spacing: .15em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
 .chart-bars { display: flex; gap: 5px; align-items: flex-end; height: 60px; }
 .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .bar { width: 100%; background: var(--cx-dim); border-top: 1px solid var(--border2); min-height: 3px; transition: height .4s; }
-.bar-d { font-family: var(--mono); font-size: 8px; color: var(--text3); }
+.bar-d { font-family: var(--mono); font-size: 12px; color: var(--text3); }
 
 /* ── MOOD ── */
 .mood-row { display: flex; gap: 6px; padding: 10px 14px; flex-wrap: wrap; }
@@ -514,7 +530,7 @@ input[type=range]::-webkit-slider-thumb {
   border: 1px solid var(--border2);
   background: var(--bg3);
   font-family: var(--ui);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -528,12 +544,12 @@ input[type=range]::-webkit-slider-thumb {
 /* ── EMERGENCY ── */
 .emg-panel { margin: 12px 12px 10px; border: 1px solid rgba(255,61,61,.3); background: rgba(255,61,61,.04); }
 .emg-head { padding: 12px 14px; border-bottom: 1px solid rgba(255,61,61,.15); }
-.emg-label { font-family: var(--mono); font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--red); }
+.emg-label { font-family: var(--mono); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--red); }
 .emg-title { font-size: 14px; font-weight: 600; margin-top: 3px; letter-spacing: .03em; }
-.emg-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.emg-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
 .emg-row { padding: 9px 14px; border-bottom: 1px solid rgba(255,61,61,.1); font-size: 12px; color: rgba(255,61,61,.8); line-height: 1.5; display: flex; gap: 8px; }
 .emg-row:last-child { border-bottom: none; }
-.emg-row-lbl { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--red); flex-shrink: 0; padding-top: 2px; min-width: 55px; }
+.emg-row-lbl { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--red); flex-shrink: 0; padding-top: 2px; min-width: 55px; }
 .call-btn {
   display: block;
   margin: 0 12px 10px;
@@ -557,13 +573,13 @@ input[type=range]::-webkit-slider-thumb {
 .cal-btn { padding: 12px; border: 1px solid var(--border2); background: var(--bg3); cursor: pointer; text-align: left; transition: all .15s; }
 .cal-btn:active { background: var(--cx-dim); border-color: var(--cx); }
 .cal-btn-lbl { font-size: 12px; font-weight: 600; letter-spacing: .06em; color: var(--text); }
-.cal-btn-sub { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--text2); margin-top: 4px; }
+.cal-btn-sub { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text2); margin-top: 4px; }
 
 /* ── LINK ── */
 .ext-link {
   display: inline-block;
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: .15em;
   text-transform: uppercase;
   color: var(--cx);
@@ -598,7 +614,7 @@ input[type=time]:focus { border-color: var(--cx); }
   border: 1px solid var(--cx);
   padding: 8px 16px;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--cx);
@@ -617,7 +633,7 @@ input[type=time]:focus { border-color: var(--cx); }
   background: var(--amb-dim);
   border: 1px solid rgba(255,179,0,.2);
   border-left: 2px solid var(--amber);
-  font-size: 11px;
+  font-size: 12px;
   color: rgba(255,179,0,.8);
   line-height: 1.65;
   letter-spacing: .02em;
@@ -661,7 +677,7 @@ a { color: inherit; text-decoration: none; }
 }
 .status-title {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--amber);
@@ -692,7 +708,7 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: .03em;
 }
 .system-sub {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text2);
   margin-top: 3px;
   line-height: 1.6;
@@ -700,7 +716,7 @@ a { color: inherit; text-decoration: none; }
 .system-pill {
   flex-shrink: 0;
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: .12em;
   text-transform: uppercase;
   padding: 4px 7px;
@@ -751,7 +767,7 @@ a { color: inherit; text-decoration: none; }
 }
 .safety-copy span {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text2);
   margin-top: 3px;
   line-height: 1.6;
@@ -764,7 +780,7 @@ a { color: inherit; text-decoration: none; }
   border-color: rgba(255,179,0,.22);
 }
 .safety-status {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.7;
   color: var(--text2);
 }
@@ -789,7 +805,7 @@ a { color: inherit; text-decoration: none; }
 .micro-note {
   padding: 0 14px 12px;
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--text3);
@@ -798,7 +814,7 @@ a { color: inherit; text-decoration: none; }
   text-align: center;
   padding: 0 12px 110px;
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--text3);
@@ -831,7 +847,7 @@ body::before {
   color: var(--text);
 }
 .page-sub {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   letter-spacing: 0.06em;
   margin-top: 6px;
 }
@@ -872,21 +888,21 @@ body::before {
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
-.panel-label { font-size: 0.62rem; color: var(--text3); padding: 12px 16px 8px; }
+.panel-label { font-size: 0.8rem; color: var(--text3); padding: 12px 16px 8px; }
 .status-banner { margin: 0 14px 14px; padding: 16px 18px; }
-.status-title { font-size: 0.66rem; color: var(--text); margin-bottom: 6px; }
+.status-title { font-size: 0.8rem; color: var(--text); margin-bottom: 6px; }
 .status-copy,
 #phase-description,
 .safety-status,
-.safety-copy span { font-size: 0.78rem !important; line-height: 1.75 !important; }
-.hero-mode { font-size: 0.64rem; color: var(--text2); margin-bottom: 10px; }
+.safety-copy span { font-size: 0.8rem !important; line-height: 1.75 !important; }
+.hero-mode { font-size: 0.8rem; color: var(--text2); margin-bottom: 10px; }
 .timer-display {
   font-size: clamp(2.5rem, 10vw, 3.6rem);
   font-weight: 700;
   color: var(--text);
   text-shadow: none;
 }
-.timer-sub { font-size: 0.78rem; margin-top: 10px; color: var(--text2); }
+.timer-sub { font-size: 0.8rem; margin-top: 10px; color: var(--text2); }
 .row,
 .check-row,
 .system-item,
@@ -903,7 +919,7 @@ body::before {
 .recipe-body,
 .mld-step-desc,
 .safety-copy strong,
-.ext-link { font-size: 0.76rem; }
+.ext-link { font-size: 0.8rem; }
 .row-icon,
 .chkbox,
 .mld-num { border-radius: 14px; }
@@ -942,7 +958,7 @@ body::before {
 .hero-mode,
 .xp-total { color: var(--text) !important; }
 .nav-item::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent); }
-.nav-label { font-size: 0.58rem; }
+.nav-label { font-size: 0.8rem; }
 .nav-icon svg { stroke: var(--text3); }
 .bottom-nav {
   width: calc(100% - 20px);
@@ -985,7 +1001,7 @@ input[type="range"] { accent-color: #f0f0f0; }
 .safety-status.stop { border-left-color: rgba(255,255,255,0.35) !important; }
 .bar,
 .bar::before { background: linear-gradient(180deg, #f2f2f2, #94949c) !important; }
-.recipe-toggle { font-size: 0.76rem; }
+.recipe-toggle { font-size: 0.8rem; }
 .toast {
   border-radius: 999px;
   background: rgba(246,246,247,0.94);
@@ -1020,7 +1036,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   border-radius: 999px;
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.1);
-  font-size: 0.62rem;
+  font-size: 0.8rem;
   color: var(--text2);
 }
 .xp-progress {
@@ -1038,7 +1054,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   transition: width .35s ease;
 }
 .xp-foot {
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   color: var(--text2);
 }
 .xp-float {
@@ -1071,7 +1087,7 @@ input[type="range"] { accent-color: #f0f0f0; }
 
 /* ── REFINED SCALE (16px base) ── */
 :root {
-  --fs-xs:   0.65rem;   /* 10.4px – Labels, Meta          */
+  --fs-xs:   0.8rem;    /* 12px min – Labels, Meta        */
   --fs-sm:   0.875rem;  /* 14px   – Sekundärtext          */
   --fs-base: 1rem;      /* 16px   – Body                  */
   --fs-lg:   1.25rem;   /* 20px   – Abschnittstitel       */
@@ -1099,8 +1115,8 @@ input[type="range"] { accent-color: #f0f0f0; }
 .slider-lbl { font-size: var(--fs-sm); }
 .panel-label { font-size: var(--fs-xs); color: var(--text3); padding: 12px 16px 8px; letter-spacing: 0.16em; }
 .hero-mode  { font-size: var(--fs-xs); color: var(--text2); margin-bottom: 10px; }
-.nav-label  { font-size: 0.62rem; }
-.tag, .system-pill { font-size: 0.68rem; }
+.nav-label  { font-size: 0.8rem; }
+.tag, .system-pill { font-size: 0.8rem; }
 
 /* ── TYPOGRAFIE-KONTRAST ── */
 .page-title          { font-weight: 700; color: var(--text); letter-spacing: -0.015em; }
@@ -1170,7 +1186,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   transition: all 0.2s ease;
   position: relative;
   box-shadow: var(--shadow-sm);
-  font-family: var(--mono); font-size: 0.65rem; color: var(--text3);
+  font-family: var(--mono); font-size: 0.8rem; color: var(--text3);
 }
 .water-drop.filled {
   background: linear-gradient(160deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%);
@@ -1235,7 +1251,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   letter-spacing: 0.14em; text-transform: uppercase; color: var(--text2);
 }
 .panel-collapse-arrow {
-  font-size: 0.75rem; color: var(--text3); transition: none; flex-shrink: 0;
+  font-size: 0.8rem; color: var(--text3); transition: none; flex-shrink: 0;
 }
 [id^="collapse-body-"] { overflow: hidden; }
 [id^="collapse-body-"].closed { display: none; }
@@ -1261,7 +1277,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   box-shadow: 3px 3px 0 rgba(0,0,0,0.6);
   pointer-events: auto; cursor: pointer;
 }
-.xp-persist-level { font-family: var(--mono); font-size: 0.72rem; color: var(--text3); letter-spacing: 0.1em; }
+.xp-persist-level { font-family: var(--mono); font-size: 0.8rem; color: var(--text3); letter-spacing: 0.1em; }
 .xp-persist-score { font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: var(--text); }
 
 /* ── PHASE BENEFIT CARD ── */
@@ -1312,7 +1328,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   margin-bottom: 8px; cursor: pointer; transition: background 0.15s;
 }
 .search-result-item:active { background: rgba(255,255,255,0.09); }
-.sr-section { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); margin-bottom: 3px; }
+.sr-section { font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); margin-bottom: 3px; }
 .sr-title { font-size: var(--fs-base); color: var(--text); font-weight: 600; }
 .sr-snippet { font-size: var(--fs-xs); color: var(--text2); margin-top: 3px; line-height: 1.5; }
 .sr-highlight { color: var(--text); background: rgba(255,255,255,0.1); padding: 0 2px; border-radius: 3px; }
@@ -1360,7 +1376,7 @@ input[type="range"] { accent-color: #f0f0f0; }
 .gmi-title-wrap { flex: 1; }
 .gmi-title { font-size: var(--fs-base); font-weight: 600; }
 .gmi-subtitle { font-size: var(--fs-xs); color: var(--text3); margin-top: 2px; font-family: var(--mono); letter-spacing: 0.1em; text-transform: uppercase; }
-.gmi-xp-badge { font-family: var(--mono); font-size: 0.66rem; color: var(--text2); }
+.gmi-xp-badge { font-family: var(--mono); font-size: 0.8rem; color: var(--text2); }
 .gmi-body { display: none; padding: 0 16px 16px; border-top: 1px solid rgba(255,255,255,0.06); }
 .gmi-body.open { display: block; }
 .gmi-desc { font-size: var(--fs-sm); color: var(--text2); line-height: 1.75; margin: 12px 0; }
@@ -1406,7 +1422,7 @@ input[type="range"] { accent-color: #f0f0f0; }
 .oedem-bar { width: 100%; min-height: 4px; border-radius: 4px 4px 0 0;
   background: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
   transition: height 0.4s ease; }
-.oedem-date { font-family: var(--mono); font-size: 0.6rem; color: var(--text3); }
+.oedem-date { font-family: var(--mono); font-size: 0.8rem; color: var(--text3); }
 
 /* ── QUOTE CARD ── */
 .quote-card {
@@ -1425,7 +1441,7 @@ input[type="range"] { accent-color: #f0f0f0; }
 }
 .quote-text { font-size: var(--fs-base); color: var(--text); line-height: 1.75; font-style: italic; }
 .quote-author { font-family: var(--mono); font-size: var(--fs-xs); color: var(--text3); margin-top: 8px; letter-spacing: 0.1em; text-transform: uppercase; }
-.quote-day { font-family: var(--mono); font-size: 0.62rem; color: var(--text3); margin-bottom: 6px; letter-spacing: 0.1em; text-transform: uppercase; }
+.quote-day { font-family: var(--mono); font-size: 0.8rem; color: var(--text3); margin-bottom: 6px; letter-spacing: 0.1em; text-transform: uppercase; }
 
 /* ── FONT TRANSITION ── */
 .page-title, .timer-display, .timer-sub, .hero-mode, .xp-total {
@@ -1460,15 +1476,15 @@ input[type="range"] { accent-color: #f0f0f0; }
 .mission-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.04); }
 .mission-item.done .mission-dot { background: linear-gradient(180deg, #f5f5f6, #c9c9cf); border-color: transparent; }
 .mission-copy strong, .trophy-name { font-size: 0.84rem; display: block; }
-.mission-copy span, .trophy-meta { font-size: 0.74rem; color: var(--text2); display: block; margin-top: 4px; }
-.mission-xp { font-family: var(--mono); font-size: 0.68rem; color: var(--text2); }
+.mission-copy span, .trophy-meta { font-size: 0.8rem; color: var(--text2); display: block; margin-top: 4px; }
+.mission-xp { font-family: var(--mono); font-size: 0.8rem; color: var(--text2); }
 .trophy-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 16px 16px; }
 .trophy-item { padding: 14px; border-radius: 18px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); min-height: 96px; }
 .trophy-item.unlocked { background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06)); border-color: rgba(255,255,255,0.16); }
 .trophy-emoji { font-size: 1.1rem; display: inline-flex; width: 34px; height: 34px; align-items: center; justify-content: center; border-radius: 12px; background: rgba(255,255,255,0.05); margin-bottom: 10px; }
 .compact-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 16px 16px; }
 .quick-action { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 14px; border-radius: 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); }
-.quick-action span { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.14em; font-family: var(--mono); color: var(--text3); }
+.quick-action span { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.14em; font-family: var(--mono); color: var(--text3); }
 .quick-action strong { margin-top: 6px; font-size: 0.92rem; color: var(--text); }
 .backup-inline { padding: 0 16px 16px; }
 .backup-inline .file-btn { width: 100%; justify-content: center; }
@@ -1530,7 +1546,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.04);
   border-radius: 14px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.65;
   color: var(--text2);
 }
@@ -1560,7 +1576,7 @@ input[type="range"] { accent-color: #f0f0f0; }
 }
 .input-mini:focus { border-color: var(--cx); }
 .mini-note {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.7;
   color: var(--text2);
   letter-spacing: .02em;
@@ -2027,17 +2043,17 @@ input[type="range"] { accent-color: #f0f0f0; }
 
   <div class="panel">
     <div class="panel-label">Erlaubt</div>
-    <div class="check-row"><div style="font-family:var(--mono);font-size:9px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">H2O</div><div class="check-label">Wasser 2,5-3L täglich + Prise Meersalz</div></div>
-    <div class="check-row"><div style="font-family:var(--mono);font-size:9px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">KFEE</div><div class="check-label">Schwarzer Kaffee max. 2 Tassen — foerdert Autophagie</div></div>
-    <div class="check-row"><div style="font-family:var(--mono);font-size:9px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">ELK</div><div class="check-label">Elektrolyte: Mg, K, Na — kein Einfluss auf Ketose</div></div>
-    <div class="check-row"><div style="font-family:var(--mono);font-size:9px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">VIT C</div><div class="check-label">Vitamin C 500mg + Heparin-Injektion</div></div>
+    <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">H2O</div><div class="check-label">Wasser 2,5-3L täglich + Prise Meersalz</div></div>
+    <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">KFEE</div><div class="check-label">Schwarzer Kaffee max. 2 Tassen — foerdert Autophagie</div></div>
+    <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">ELK</div><div class="check-label">Elektrolyte: Mg, K, Na — kein Einfluss auf Ketose</div></div>
+    <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">VIT C</div><div class="check-label">Vitamin C 500mg + Heparin-Injektion</div></div>
   </div>
 
   <div class="panel">
     <div class="panel-label">Stoppt Autophagie</div>
-    <div class="check-row"><div style="font-family:var(--mono);font-size:9px;color:var(--red);width:40px;flex-shrink:0;letter-spacing:.1em">PROT</div><div class="check-label" style="color:var(--text2)">Kollagen / Protein — aktiviert mTOR sofort</div></div>
-    <div class="check-row"><div style="font-family:var(--mono);font-size:9px;color:var(--red);width:40px;flex-shrink:0;letter-spacing:.1em">KAL</div><div class="check-label" style="color:var(--text2)">Alles Kalorische inkl. Säfte, Milch, Brühe mit Fett</div></div>
-    <div class="check-row"><div style="font-family:var(--mono);font-size:9px;color:var(--red);width:40px;flex-shrink:0;letter-spacing:.1em">SUPP</div><div class="check-label" style="color:var(--text2)">Alle Supplements ausser Vit C + Elektrolyte</div></div>
+    <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--red);width:40px;flex-shrink:0;letter-spacing:.1em">PROT</div><div class="check-label" style="color:var(--text2)">Kollagen / Protein — aktiviert mTOR sofort</div></div>
+    <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--red);width:40px;flex-shrink:0;letter-spacing:.1em">KAL</div><div class="check-label" style="color:var(--text2)">Alles Kalorische inkl. Säfte, Milch, Brühe mit Fett</div></div>
+    <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--red);width:40px;flex-shrink:0;letter-spacing:.1em">SUPP</div><div class="check-label" style="color:var(--text2)">Alle Supplements ausser Vit C + Elektrolyte</div></div>
   </div>
 
   <div class="panel">
@@ -2057,11 +2073,11 @@ input[type="range"] { accent-color: #f0f0f0; }
     </div>
     <div style="padding:0 14px 14px;display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap">
       <div>
-        <div style="font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Essfenster Start</div>
+        <div style="font-family:var(--mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Essfenster Start</div>
         <input type="time" id="eat-start" value="12:00" aria-label="Essfenster Start">
       </div>
       <div>
-        <div style="font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Essfenster Ende</div>
+        <div style="font-family:var(--mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Essfenster Ende</div>
         <input type="time" id="eat-end" value="20:00" aria-label="Essfenster Ende">
       </div>
       <button class="btn btn-sm btn-cx" onclick="save16_8()">Aktivieren</button>
@@ -2071,7 +2087,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   <!-- CALENDAR -->
   <div class="panel">
     <div class="panel-label">Erinnerungen exportieren</div>
-    <div style="padding:10px 14px;font-size:11px;color:var(--text2);letter-spacing:.03em">
+    <div style="padding:10px 14px;font-size:12px;color:var(--text2);letter-spacing:.03em">
       Generiert täglich wiederkehrende Einträge für alle Massnahmen.
     </div>
     <div class="cal-grid">
@@ -2155,8 +2171,8 @@ input[type="range"] { accent-color: #f0f0f0; }
       </div>
       <!-- Breath mode info cards -->
       <div style="margin-bottom:16px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07)" id="breath-mode-info">
-        <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:6px" id="breath-mode-title">4–6 LYMPH-ATEM</div>
-        <div style="font-size:0.76rem;color:var(--text2);line-height:1.75" id="breath-mode-desc">Einatmen 4 Sek · Ausatmen 6 Sek. Das verlängerte Ausatmen aktiviert den Parasympathikus und erzeugt eine Unterdruckpumpe im Brustkorb, die Lymphfluss aus dem Bein Richtung Herz beschleunigt. Ideal 10 Min täglich, besonders nach MLD.</div>
+        <div style="font-family:var(--mono);font-size:0.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:6px" id="breath-mode-title">4–6 LYMPH-ATEM</div>
+        <div style="font-size:0.8rem;color:var(--text2);line-height:1.75" id="breath-mode-desc">Einatmen 4 Sek · Ausatmen 6 Sek. Das verlängerte Ausatmen aktiviert den Parasympathikus und erzeugt eine Unterdruckpumpe im Brustkorb, die Lymphfluss aus dem Bein Richtung Herz beschleunigt. Ideal 10 Min täglich, besonders nach MLD.</div>
       </div>
       <div class="breath-ring" id="breath-ring">
         <div class="breath-ring-text" id="breath-phase-text">BEREIT</div>
@@ -2166,7 +2182,7 @@ input[type="range"] { accent-color: #f0f0f0; }
       <div style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap">
         <button class="btn btn-cx" id="breath-btn" onclick="toggleBreath()">Start</button>
         <button class="btn" onclick="startQuickBoxBreath()">2 Min Box</button>
-        <span style="font-family:var(--mono);font-size:10px;color:var(--text3)" id="breath-cycles-display"></span>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--text3)" id="breath-cycles-display"></span>
       </div>
     </div>
   </div>
@@ -2500,7 +2516,7 @@ input[type="range"] { accent-color: #f0f0f0; }
 <div id="pg-mld" class="page scroll-page" style="display:none">
   <div class="page-header">
     <div style="display:flex;align-items:center;gap:10px">
-      <div onclick="hideMLD()" style="cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--cx);letter-spacing:.12em;padding-right:8px">&larr; ZURUECK</div>
+      <div onclick="hideMLD()" style="cursor:pointer;font-family:var(--mono);font-size:12px;color:var(--cx);letter-spacing:.12em;padding-right:8px">&larr; ZURUECK</div>
       <div>
         <div class="page-title">Lymphdrainage</div>
         <div class="page-sub">Selbstanwendung // 25 Min</div>
@@ -2521,7 +2537,7 @@ input[type="range"] { accent-color: #f0f0f0; }
 <div id="pg-bfr" class="page scroll-page" style="display:none">
   <div class="page-header">
     <div style="display:flex;align-items:center;gap:10px">
-      <div onclick="hideBFR()" style="cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--cx);letter-spacing:.12em;padding-right:8px">&larr; ZURUECK</div>
+      <div onclick="hideBFR()" style="cursor:pointer;font-family:var(--mono);font-size:12px;color:var(--cx);letter-spacing:.12em;padding-right:8px">&larr; ZURUECK</div>
       <div>
         <div class="page-title">BFR-Training</div>
         <div class="page-sub">Blutflussrestriktion // 5 Schritte</div>
@@ -2542,7 +2558,7 @@ input[type="range"] { accent-color: #f0f0f0; }
 <div id="pg-emergency" class="page scroll-page" style="display:none">
   <div class="page-header">
     <div style="display:flex;align-items:center;gap:10px">
-      <div onclick="hideEmergency()" style="cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--cx);letter-spacing:.12em;padding-right:8px">&larr; ZURUECK</div>
+      <div onclick="hideEmergency()" style="cursor:pointer;font-family:var(--mono);font-size:12px;color:var(--cx);letter-spacing:.12em;padding-right:8px">&larr; ZURUECK</div>
       <div>
         <div class="page-title" style="color:var(--red)">Notfall-Check</div>
         <div class="page-sub">Thrombose-Warnzeichen</div>
@@ -3146,7 +3162,7 @@ function buildHabitsSection() {
                 <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
                   <span style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3)">+${h.xp}</span>
                   ${h.why ? `<button onclick="toggleHabitWhy('${h.id}',event)"
-                    style="font-family:var(--mono);font-size:0.6rem;padding:2px 6px;
+                    style="font-family:var(--mono);font-size:0.8rem;padding:2px 6px;
                            background:transparent;border:1px solid var(--border);color:var(--text3)">?</button>` : ''}
                 </div>
               </div>
@@ -3186,7 +3202,7 @@ function buildSettings() {
     const active = theme === t;
     return `<button onclick="applyTheme('${t}');buildSettings()"
       style="flex:1;padding:10px 4px;border:1px solid ${active?'var(--text)':'var(--border)'};cursor:pointer;
-             font-family:var(--mono);font-size:0.6rem;letter-spacing:.1em;text-transform:uppercase;
+             font-family:var(--mono);font-size:0.8rem;letter-spacing:.1em;text-transform:uppercase;
              background:${active?'var(--text)':'transparent'};color:${active?'var(--bg)':'var(--text3)'}">${label}</button>`;
   };
 
@@ -3215,10 +3231,10 @@ function buildSettings() {
       <div style="padding:12px 16px 4px">
         <div style="display:flex;justify-content:space-between;align-items:center;
           padding-bottom:8px;border-bottom:1px solid var(--border)">
-          <span style="font-family:var(--mono);font-size:0.6rem;letter-spacing:.15em;
+          <span style="font-family:var(--mono);font-size:0.8rem;letter-spacing:.15em;
             text-transform:uppercase;color:var(--accent)">${block.label} · ${activeCount}/${blockHabits.length}</span>
           <button onclick="toggleBlockHabits('${block.id}','${allActive?'off':'on'}')"
-            style="font-family:var(--mono);font-size:0.55rem;padding:3px 8px;
+            style="font-family:var(--mono);font-size:0.8rem;padding:3px 8px;
                    background:transparent;border:1px solid var(--border);color:var(--text3);letter-spacing:.1em">
             ${allActive ? 'ALLE AUS' : 'ALLE AN'}
           </button>
@@ -3264,7 +3280,7 @@ function buildSettings() {
       <div class="panel-label" style="display:flex;justify-content:space-between;align-items:center">
         <span>Habits</span>
         <button onclick="resetAllHabitsVisible()"
-          style="font-family:var(--mono);font-size:0.55rem;padding:3px 8px;
+          style="font-family:var(--mono);font-size:0.8rem;padding:3px 8px;
                  background:transparent;border:1px solid var(--border);color:var(--text3);letter-spacing:.1em">
           ALLE AN
         </button>
@@ -3294,7 +3310,7 @@ function buildSettings() {
         <div class="row-sub" style="margin-bottom:12px">Löscht alle Daten — XP, Habits, Protokolle, Einstellungen. Nicht rückgängig machbar.</div>
         <button onclick="confirmResetAll()"
           style="width:100%;border:1px solid rgba(180,60,60,0.6);background:transparent;
-                 padding:12px;font-family:var(--mono);font-size:0.65rem;letter-spacing:.12em;
+                 padding:12px;font-family:var(--mono);font-size:0.8rem;letter-spacing:.12em;
                  text-transform:uppercase;cursor:pointer;color:rgba(220,80,80,0.9)">
           NEU STARTEN
         </button>
@@ -3415,14 +3431,14 @@ function buildCRPSCalendar() {
     const isToday = d.day === currentDay;
     return `<div style="border-bottom:1px solid var(--border);overflow:hidden">
       <div style="padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer${isToday ? ';background:rgba(255,255,255,0.04)' : ''}" onclick="toggleCRPSDay(${i})">
-        <div style="width:28px;height:28px;border-radius:50%;border:1px solid ${done?'rgba(255,255,255,0.4)':'rgba(255,255,255,0.12)'};background:${done?'rgba(255,255,255,0.12)':'rgba(255,255,255,0.03)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--mono);font-size:0.68rem;color:${isToday?'var(--text)':'var(--text3)'}">
+        <div style="width:28px;height:28px;border-radius:50%;border:1px solid ${done?'rgba(255,255,255,0.4)':'rgba(255,255,255,0.12)'};background:${done?'rgba(255,255,255,0.12)':'rgba(255,255,255,0.03)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--mono);font-size:0.8rem;color:${isToday?'var(--text)':'var(--text3)'}">
           ${done ? '✓' : d.day}
         </div>
         <div style="flex:1">
           <div style="font-size:var(--fs-base);font-weight:600;color:${isToday?'var(--text)':'var(--text2)'}">${d.title}</div>
           <div style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3);margin-top:2px">${d.phase.toUpperCase()}</div>
         </div>
-        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text3)" id="crps-toggle-${i}">▼</div>
+        <div style="font-family:var(--mono);font-size:0.8rem;color:var(--text3)" id="crps-toggle-${i}">▼</div>
       </div>
       <div id="crps-day-${i}" style="display:none;padding:0 16px 14px;border-top:1px solid var(--border)">
         <div style="margin:10px 0 6px;font-size:var(--fs-sm);color:var(--text2);line-height:1.7;font-style:italic">${d.focus}</div>
@@ -4853,13 +4869,13 @@ function buildMasterplan() {
       </div>
       <div class="mld-step-desc">${p.goal}</div>
       <div style="padding:4px 0 4px 32px">
-        <div style="font-size:0.72rem;color:var(--text2);line-height:1.7;margin-bottom:6px">
+        <div style="font-size:0.8rem;color:var(--text2);line-height:1.7;margin-bottom:6px">
           <strong style="color:var(--text);display:block;margin-bottom:2px">Ernährung</strong>${p.nutrition}
         </div>
-        <div style="font-size:0.72rem;color:var(--text2);line-height:1.7;margin-bottom:6px">
+        <div style="font-size:0.8rem;color:var(--text2);line-height:1.7;margin-bottom:6px">
           <strong style="color:var(--text);display:block;margin-bottom:2px">Supplements</strong>${p.supps}
         </div>
-        <div style="font-size:0.72rem;color:var(--text2);line-height:1.7;margin-bottom:8px">
+        <div style="font-size:0.8rem;color:var(--text2);line-height:1.7;margin-bottom:8px">
           <strong style="color:var(--text);display:block;margin-bottom:2px">Neuro / Bewegung</strong>${p.neuro}
         </div>
         <span class="tag ${done ? 'tg' : 'tc'}">${done ? 'Abgeschlossen' : `+${p.xp} XP`}</span>

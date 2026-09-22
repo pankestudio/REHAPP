@@ -4,6 +4,6 @@
   "private": true,
   "scripts": {
     "validate": "node validate.js",
-    "deploy": "mkdir -p dist && cp index.html sw.js manifest.webmanifest dist/ && npx netlify deploy --prod --dir dist"
+    "deploy": "mkdir -p dist/fonts && cp index.html sw.js manifest.webmanifest dist/ && cp fonts/*.woff2 dist/fonts/ && npx netlify deploy --prod --dir dist"
   }
 }

@@ -1,9 +1,11 @@
-const CACHE_NAME = 'rehapp-2026-09-19b'; // Bump bei jedem Deploy
+const CACHE_NAME = 'rehapp-2026-09-22a'; // Bump bei jedem Deploy
 const ASSETS_REQUIRED = ['./', './index.html', './manifest.webmanifest'];
 const ASSETS_OPTIONAL = [
   './icons/icon-192.png',
   './icons/icon-512.png',
-  './icons/apple-touch-icon.png'
+  './icons/apple-touch-icon.png',
+  './fonts/PlusJakartaSans-latin.woff2',
+  './fonts/PlusJakartaSans-latin-ext.woff2'
 ];
 
 self.addEventListener('install', event => {
