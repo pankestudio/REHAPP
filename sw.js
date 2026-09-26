@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rehapp-2026-09-22a'; // Bump bei jedem Deploy
+const CACHE_NAME = 'rehapp-2026-09-26a'; // Bump bei jedem Deploy
 const ASSETS_REQUIRED = ['./', './index.html', './manifest.webmanifest'];
 const ASSETS_OPTIONAL = [
   './icons/icon-192.png',
@@ -30,6 +30,18 @@ self.addEventListener('activate', event => {
     )
   );
   self.clients.claim();
+});
+
+self.addEventListener('push', event => {
+  const data = event.data?.json() ?? { title: 'REHAPP', body: '' };
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: './icons/icon-192.png',
+      badge: './icons/icon-192.png',
+      tag: 'rehapp-push'
+    })
+  );
 });
 
 self.addEventListener('fetch', event => {

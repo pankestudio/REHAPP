@@ -2858,6 +2858,7 @@ let breathPhaseTimeout = null, wimhofCount = 0;
 let mldTimerInterval = null, mldCurrentStep = -1;
 let timer16_8Interval = null, currentPage = 'pg-home';
 let installMode = 'singlefile';
+let persistentStorageState = 'unsupported';
 
 const pendingNotificationTimeouts = [];
 
@@ -3177,13 +3178,6 @@ function buildHabitsSection() {
   `;
 }
 
-function applyTheme(theme) {
-  if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
-  else if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
-  else document.documentElement.removeAttribute('data-theme');
-  storageSet('settings_theme', theme);
-}
-
 function applyFontSize(px) {
   document.documentElement.style.setProperty('--fs-base', px + 'px');
   storageSet('settings_fontsize', String(px));
@@ -3193,18 +3187,11 @@ function buildSettings() {
   const container = document.getElementById('settings-content');
   if (!container) return;
   const hidden   = getHiddenHabits();
-  const theme    = storageGet('settings_theme') || 'dark';
   const fontSize = parseInt(storageGet('settings_fontsize') || '16', 10);
   const name     = storageGet('settings_username') || '';
   const wakeup   = storageGet('settings_wakeup')   || '07:00';
-
-  const themeBtn = (t, label) => {
-    const active = theme === t;
-    return `<button onclick="applyTheme('${t}');buildSettings()"
-      style="flex:1;padding:10px 4px;border:1px solid ${active?'var(--text)':'var(--border)'};cursor:pointer;
-             font-family:var(--mono);font-size:0.8rem;letter-spacing:.1em;text-transform:uppercase;
-             background:${active?'var(--text)':'transparent'};color:${active?'var(--bg)':'var(--text3)'}">${label}</button>`;
-  };
+  const pushSupported = ('serviceWorker' in navigator) && ('PushManager' in window);
+  const pushActive    = !!storageGet('push_subscription');
 
   const habitSections = HABIT_BLOCKS.map(block => {
     const blockHabits  = HABITS.filter(h => h.block === block.id);
@@ -3266,13 +3253,21 @@ function buildSettings() {
         <input type="range" min="13" max="20" value="${fontSize}"
           oninput="applyFontSize(+this.value);document.getElementById('fs-val').textContent=this.value"
           style="width:100%;margin-bottom:14px;accent-color:var(--cx)">
+      </div>
+    </div>
 
-        <div class="row-sub" style="margin-bottom:6px">Theme</div>
-        <div style="display:flex;gap:6px;margin-bottom:4px">
-          ${themeBtn('dark','Dunkel')}
-          ${themeBtn('light','Hell')}
-          ${themeBtn('system','Auto')}
-        </div>
+    <div class="panel" style="margin:0 14px 12px">
+      <div class="panel-label">Benachrichtigungen</div>
+      <div style="padding:12px 16px">
+        ${!pushSupported ? `
+          <div class="row-sub">Push-Benachrichtigungen werden von diesem Browser nicht unterstützt.</div>
+        ` : pushActive ? `
+          <div class="row-sub" style="margin-bottom:10px">Aktiv — Fasten-Meilensteine (12h–100h) kommen auch bei geschlossenem Browser an.</div>
+          <button class="btn btn-sm" onclick="unsubscribePush()" style="width:100%">Deaktivieren</button>
+        ` : `
+          <div class="row-sub" style="margin-bottom:10px">Fasten-Meilensteine (12h–100h) auch bei geschlossenem Browser als Push erhalten.</div>
+          <button class="btn btn-sm btn-cx" onclick="subscribePush()" style="width:100%">Benachrichtigungen aktivieren</button>
+        `}
       </div>
     </div>
 
@@ -4044,6 +4039,31 @@ function storageRemove(key) {
   try { window.localStorage.removeItem(key); }
   catch (err) { console.warn('Storage remove failed', err); }
 }
+async function ensurePersistentStorage() {
+  try {
+    if (!navigator.storage || !navigator.storage.persist) return 'unsupported';
+    const already = await navigator.storage.persisted();
+    if (already) return 'granted';
+    return await navigator.storage.persist();
+  } catch (err) {
+    console.warn('Persistent storage request failed', err);
+    return 'unsupported';
+  }
+}
+function maybeShowBackupReminder() {
+  try {
+    if (persistentStorageState === true || persistentStorageState === 'granted') return;
+    const lastExport = parseInt(storageGet('last_export_ts') || '0', 10);
+    const daysSinceExport = (Date.now() - lastExport) / 86400000;
+    if (lastExport && daysSinceExport < 14) return;
+    const today = new Date().toDateString();
+    if (storageGet('last_backup_reminder_date') === today) return;
+    storageSet('last_backup_reminder_date', today);
+    toast('SPEICHER NICHT DAUERHAFT — BACKUP EMPFOHLEN');
+  } catch (err) {
+    console.warn('Backup reminder failed', err);
+  }
+}
 function clearScheduledNotifications() {
   while (pendingNotificationTimeouts.length) clearTimeout(pendingNotificationTimeouts.pop());
 }
@@ -4095,6 +4115,14 @@ function updateInstallStatus() {
     : 'Installierbare PWA aktiv: Homescreen, Offline-Cache und lokale Daten sind bereit.';
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
   if (isStandalone) copy.textContent += ' Browser-Button unten öffnet dieselbe Datei erneut im Browser.';
+  const isPersistent = persistentStorageState === true || persistentStorageState === 'granted';
+  if (isPersistent) {
+    copy.textContent += ' Speicher ist als dauerhaft markiert — die Daten bleiben auch bei längerer Nutzungspause erhalten.';
+  } else if (isStandalone) {
+    copy.textContent += ' Speicher ist nicht als dauerhaft markiert. Regelmäßiger Backup-Export wird empfohlen.';
+  } else {
+    copy.textContent += ' Der Browser kann lokale Daten nach längerer Nutzungspause löschen. Für dauerhaften Schutz die App zum Homescreen hinzufügen und regelmäßig ein Backup exportieren.';
+  }
 }
 function exportAppData() {
   const payload = {};
@@ -4108,6 +4136,7 @@ function exportAppData() {
   a.download = `regen-backup-${new Date().toISOString().slice(0,10)}.json`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  storageSet('last_export_ts', String(Date.now()));
   awardXP('backup_export', 15, 'Backup exportiert', { scope: 'day' });
   toast('BACKUP EXPORTIERT');
   popElement(document.getElementById('install-status-pill'));
@@ -4164,10 +4193,8 @@ function enhanceAccessibility() {
 
 // ══════════════ INIT ══════════════
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Gespeicherte Einstellungen sofort anwenden
-  const savedTheme = storageGet('settings_theme');
-  if (savedTheme) applyTheme(savedTheme);
   const savedFs = storageGet('settings_fontsize');
   if (savedFs) applyFontSize(parseInt(savedFs, 10));
 
@@ -4200,8 +4227,10 @@ document.addEventListener('DOMContentLoaded', () => {
   refreshXPUI();
   enhanceAccessibility();
   registerServiceWorker();
+  persistentStorageState = await ensurePersistentStorage();
   updateInstallStatus();
   updateNotificationStatus();
+  maybeShowBackupReminder();
   const backupInput = document.getElementById('backup-import');
   if (backupInput) backupInput.addEventListener('change', event => importAppDataFromFile(event.target.files[0]));
   document.addEventListener('click', trackMicroInteraction, true);
@@ -4282,6 +4311,7 @@ function timerAction() {
   storageSet('timerStart', timerStart);
   storageRemove('timerPausedAt');
   requestNotifPermission();
+  syncPushTimer();
   timerRunning = true; startTimerTick();
   document.getElementById('timer-start-btn').style.display = 'none';
   document.getElementById('timer-reset-btn').style.display = '';
@@ -4297,6 +4327,7 @@ function resetTimer() {
   timerStart = null; timerPausedAt = null; timerRunning = false; timerMode = '100h';
   storageRemove('timerStart'); storageRemove('timerPausedAt');
   storageRemove('16_8_active');
+  syncPushTimer();
   document.getElementById('timer-display').textContent = '00:00:00';
   document.getElementById('timer-mode-label').textContent = 'STANDBY';
   document.getElementById('timer-start-btn').style.display = '';
@@ -4394,6 +4425,7 @@ function start16_8Mode() {
   stopRefeedWindow(true);
   timerMode = '16_8';
   storageSet('16_8_active', '1');
+  syncPushTimer();
   clearInterval(timerInterval); clearInterval(timer16_8Interval);
   document.getElementById('timer-milestone').style.display = 'none';
   document.getElementById('timer-16-8-block').style.display = 'block';
@@ -4411,6 +4443,7 @@ function stop16_8Mode() {
   clearScheduledNotifications();
   storageRemove('16_8_active');
   timerMode = '100h';
+  syncPushTimer();
   document.getElementById('timer-16-8-block').style.display = 'none';
   document.getElementById('timer-milestone').style.display = '';
   document.getElementById('timer-start-btn').textContent = 'Fasten starten';
@@ -4833,6 +4866,103 @@ function scheduleNotifications() {
       }, remaining));
     }
   });
+}
+
+// ══════════════ WEB PUSH ══════════════
+// Meilenstein-Pushes (12h–100h) werden serverseitig von einer Netlify
+// Scheduled Function verschickt (netlify/functions/push-check.js) — die läuft
+// unabhängig davon, ob die App gerade offen ist. syncPushTimer() hält den
+// dort gespeicherten Fastenstart aktuell.
+
+function urlB64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = atob(base64);
+  return Uint8Array.from([...rawData], c => c.charCodeAt(0));
+}
+
+function getPushDeviceId() {
+  let id = storageGet('push_device_id');
+  if (!id) {
+    id = (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`);
+    storageSet('push_device_id', id);
+  }
+  return id;
+}
+
+function syncPushTimer() {
+  if (!storageGet('push_subscription')) return; // nie abonniert — nichts zu synchronisieren
+  fetch('/.netlify/functions/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ deviceId: getPushDeviceId(), timerStart: timerStart || null, timerMode }),
+  }).catch(() => {});
+}
+
+async function subscribePush() {
+  try {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      toast('PUSH WIRD NICHT UNTERSTÜTZT');
+      return;
+    }
+    const permission = await Notification.requestPermission();
+    updateNotificationStatus();
+    if (permission !== 'granted') return;
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (!reg) { toast('SERVICE WORKER NICHT BEREIT'); return; }
+    const keyRes = await fetch('/.netlify/functions/vapid-public-key');
+    if (!keyRes.ok) throw new Error('VAPID-Key nicht verfügbar');
+    const { key } = await keyRes.json();
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlB64ToUint8Array(key),
+    });
+    storageSet('push_subscription', JSON.stringify(sub));
+    await fetch('/.netlify/functions/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deviceId: getPushDeviceId(), subscription: sub, timerStart: timerStart || null, timerMode }),
+    });
+    awardXP('push_enabled', 15, 'Push-Benachrichtigungen aktiviert', { scope: 'ever' });
+    toast('BENACHRICHTIGUNGEN AKTIVIERT');
+  } catch (err) {
+    console.warn('Push-Subscription fehlgeschlagen', err);
+    toast('AKTIVIERUNG FEHLGESCHLAGEN');
+  } finally {
+    if (document.getElementById('settings-content')) buildSettings();
+  }
+}
+
+async function unsubscribePush() {
+  try {
+    const reg = ('serviceWorker' in navigator) ? await navigator.serviceWorker.getRegistration() : null;
+    const sub = reg ? await reg.pushManager.getSubscription() : null;
+    if (sub) await sub.unsubscribe();
+    const deviceId = storageGet('push_device_id');
+    if (deviceId) {
+      fetch('/.netlify/functions/unsubscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deviceId }),
+      }).catch(() => {});
+    }
+    storageRemove('push_subscription');
+    toast('BENACHRICHTIGUNGEN DEAKTIVIERT');
+  } catch (err) {
+    console.warn('Push-Abmeldung fehlgeschlagen', err);
+  } finally {
+    if (document.getElementById('settings-content')) buildSettings();
+  }
+}
+
+function sendPush(title, body) {
+  const saved = storageGet('push_subscription');
+  if (!saved) return;
+  fetch('/.netlify/functions/push', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ subscription: JSON.parse(saved), title, body }),
+  }).catch(() => {});
 }
 
 window.addEventListener('visibilitychange', () => {
@@ -5381,6 +5511,7 @@ function beginFastingAtElapsed(elapsedMs, xpKey = 'fast_start_manual', label = '
   storageRemove('timerPausedAt');
   storageRemove('16_8_active');
   requestNotifPermission();
+  syncPushTimer();
   startTimerTick();
   const startBtn = document.getElementById('timer-start-btn');
   const resetBtn = document.getElementById('timer-reset-btn');

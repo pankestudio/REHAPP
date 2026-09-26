@@ -11,15 +11,20 @@ Kein Essstörungs-Kontext — medizinisches Rehabilitationsprotokoll.
 - Vite + vite-plugin-singlefile → baut alles in eine einzige index.html
 - `idb` für IndexedDB (importiert, noch nicht aktiv genutzt)
 - PWA: sw.js (Cache-First), manifest.webmanifest, Icons in icons/
-- Deployment: Netlify Drop → Safari auf iPhone → "Zum Home-Bildschirm"
+- Netlify Functions (netlify/functions/) für Web-Push — einziger Server-Code im Projekt,
+  ausschließlich für Push-Zustellung bei geschlossenem Browser. Siehe „Push-Benachrichtigungen".
+- Deployment: `npm run deploy` (Netlify CLI) — Netlify Drop reicht NICHT mehr aus,
+  siehe Deployment-Checklist.
 
 ## Architektur
-Die gesamte App lebt in `index.html` (~5100 Zeilen). CSS, HTML und JS in einer Datei.
+Die gesamte App lebt in `index.html` (~5300 Zeilen). CSS, HTML und JS in einer Datei.
 `src/main.js` existiert nicht — wir entwickeln direkt in index.html.
 Das Vite-Build würde die Datei durch singlefile weiterverarbeiten; aktuell ist
 index.html selbst das deploybare Artefakt.
 
-localStorage für Persistenz. Kein Backend, vollständig offline-fähig.
+localStorage für Persistenz. Kernapp ohne Backend, vollständig offline-fähig.
+Einzige Ausnahme: Web-Push-Zustellung (optional, siehe unten) braucht Netzwerk
+und einen minimalen Server-Zustand (Subscription + Fastenstart pro Gerät).
 
 ## Bekannte kritische Bugs — höchste Priorität
 
@@ -90,11 +95,46 @@ Collapsibles:
   [id^="collapse-body-"] { overflow: hidden; }
   [id^="collapse-body-"].closed { display: none; }
 
+## Push-Benachrichtigungen (Web Push)
+Fasten-Meilensteine (12h/18h/24h/36h/48h/72h/100h) werden zusätzlich zur
+bestehenden lokalen `scheduleNotifications()` (funktioniert nur solange die
+Seite offen/im Hintergrund-Tab aktiv ist) per echtem Web Push zugestellt —
+das kommt auch bei komplett geschlossenem Browser an.
+
+Architektur, weil die App sonst keinen Server hat:
+- `netlify/functions/subscribe.js` — legt pro Gerät (deviceId in localStorage)
+  eine Subscription + aktuellen Fastenstart in Netlify Blobs ab. Wird von
+  `subscribePush()` und von `syncPushTimer()` (bei jedem Start/Reset des
+  Fasten-Timers) aufgerufen.
+- `netlify/functions/push-check.js` — Netlify Scheduled Function, läuft alle
+  5 Minuten (Cron in netlify.toml), unabhängig vom Client. Einziger Ort, der
+  wirklich weiß, wann ein Meilenstein fällig ist. Meilenstein-Liste MUSS mit
+  `scheduleNotifications()` in index.html übereinstimmen (dupliziert in
+  `netlify/functions/lib/milestones.js`, da kein gemeinsames Modul-Bundling).
+- `netlify/functions/push.js` — direkter Einzel-Push (manueller Test,
+  `sendPush(title, body)` im Client).
+- `netlify/functions/vapid-public-key.js` — liefert VAPID_PUBLIC an den
+  Client, damit der Key nicht hartcodiert werden muss.
+- `netlify/functions/unsubscribe.js` — löscht die Blob-Subscription.
+
+Setup (einmalig, macht der Mensch — nicht committen):
+  npx web-push generate-vapid-keys
+Netlify Dashboard → Site settings → Environment variables:
+  VAPID_PUBLIC, VAPID_PRIVATE, VAPID_EMAIL (mailto:...)
+
+iOS Safari liefert Web Push nur an zum Homescreen hinzugefügte PWAs, nicht an
+normale Browser-Tabs (siehe `updateInstallStatus()` / persistenter Speicher).
+
 ## Deployment-Checklist
-Upload-Ordner für Netlify Drop:
+`npm run deploy` (Netlify CLI) statt Netlify Drop — Drop kann keine Functions
+ausliefern, damit würde Web Push stillschweigend nicht funktionieren.
+Kopiert zusätzlich zu `dist/`:
   index.html, sw.js, manifest.webmanifest, icons/icon-192.png,
   icons/icon-512.png, icons/apple-touch-icon.png,
   fonts/PlusJakartaSans-latin.woff2, fonts/PlusJakartaSans-latin-ext.woff2
+`netlify/functions/` wird direkt aus dem Repo deployt (nicht über dist/),
+braucht dafür lokal `npm install` in `netlify/functions/` (node_modules dort
+sind gitignored, esbuild bundelt beim Deploy aus dem lokalen node_modules).
 
 iPhone: Safari → URL öffnen → Teilen (□↑) → "Zum Home-Bildschirm"
 NICHT iCloud — öffnet als Quick Look, JavaScript blockiert.

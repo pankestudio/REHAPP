@@ -1,3 +1,12 @@
 [build]
   command = "mkdir -p dist/fonts && cp index.html sw.js manifest.webmanifest dist/ && cp fonts/*.woff2 dist/fonts/"
   publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Prüft alle 5 Minuten fällige Fasten-Meilensteine und verschickt Web-Push,
+# auch wenn der Browser komplett geschlossen ist.
+[functions."push-check"]
+  schedule = "*/5 * * * *"
