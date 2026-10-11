@@ -9,7 +9,8 @@ Kein Essstörungs-Kontext — medizinisches Rehabilitationsprotokoll.
 ## Tech Stack
 - Vanilla JS + CSS, kein Framework
 - Vite + vite-plugin-singlefile → baut alles in eine einzige index.html
-- `idb` für IndexedDB (importiert, noch nicht aktiv genutzt)
+- IndexedDB nativ (kein `idb`-Package — kein Bundler im Deploy-Pfad, siehe
+  Content-System) für Supplement-/Habit-/Übungs-/Aufgaben-Inhalte
 - PWA: sw.js (Cache-First), manifest.webmanifest, Icons in icons/
 - Netlify Functions (netlify/functions/) für Web-Push — einziger Server-Code im Projekt,
   ausschließlich für Push-Zustellung bei geschlossenem Browser. Siehe „Push-Benachrichtigungen".
@@ -94,6 +95,48 @@ Aktive Tab-Kontrast (am Ende des <style>-Blocks, letzte Autorität):
 Collapsibles:
   [id^="collapse-body-"] { overflow: hidden; }
   [id^="collapse-body-"].closed { display: none; }
+
+## Content-System (Phase 1, lokal — Sync folgt in Phase 2)
+Supplemente, Habits (später: Übungen/Aufgaben) sind seit dieser Phase kein
+hartkodiertes Array mehr, sondern Items in einem einheitlichen Modell:
+  { id, type: 'supplement'|'habit'|'exercise'|'task', title, dose, time,
+    block, schedule: { days: [] }, xp, notify, active, details, order }
+- id ist stabil (z.B. `supp-vitamin-d3`, `habit-sleep`) und NIE ändern —
+  daran hängen Tagesfortschritt und XP-Dedup.
+- time: 'morning'|'midday'|'evening'|null (Supplement-Slots). block: nur bei
+  Habits zusätzlich ('morgen'|'tag'|'abend'|'verzicht') — eigene Erweiterung,
+  weil Habits vier Gruppen haben, die nicht ins 3-Slot-time-Schema passen.
+- notify ist nur ein gespeichertes Flag — noch NICHT an echte Erinnerungen
+  angebunden (kein Scheduler für beliebige Item-Zeiten/Wochentage). Das wäre
+  ein eigenes Stück Arbeit, vergleichbar mit dem Push-System unten.
+- active=false blendet ein Item aus allen Renderern aus (ersetzt das alte
+  `hidden_habits`-Konzept).
+
+Datenschicht in index.html (kein externes Package, natives IndexedDB):
+  rehapp_content/items (keyPath id) + synchroner In-Memory-Cache
+  (_contentCache), weil die Renderer weiterhin synchron sind.
+  getItems(filter), saveItem(item), deleteItem(id), reorderItems(orderedIds).
+  initContentStore() MUSS vor dem ersten Renderer-Aufruf awaited werden
+  (siehe DOMContentLoaded) — seedet beim allerersten Start aus SUPP_DATA/
+  HABITS und migriert den heutigen Fortschritt + hidden_habits einmalig
+  (Flag: `content_migrated_v1` in localStorage). SUPP_DATA/HABITS bleiben nur
+  als Seed-Quelle bestehen, werden sonst nirgends mehr gelesen.
+
+Editor im Setup-Tab (`buildContentEditorPanel()` + `openItemEditor()`):
+  Liste pro Typ, Tap → Bearbeiten-Sheet (Titel/Dosis/Tageszeit/Wochentage/XP/
+  Benachrichtigung/Aktiv), "+ Neu" pro Typ, Löschen mit Bestätigung,
+  JSON-Export/Import nur für Items. Globales Backup (exportAppData/
+  importAppDataFromFile) nimmt die Items zusätzlich unter `content` mit.
+
+Bekannte Lücken (bewusst nicht in Phase 1):
+  - 'exercise'/'task' haben noch keine Quelldaten zur Migration (GMI/Vagus/
+    BFR/MLD sind eigene interaktive Module, keine einfachen Checkbox-Items)
+    und keinen Home-Tab-Renderer — nur über den Editor anlegbar/pflegbar.
+  - Neue Habits aus dem Editor landen immer im Block 'tag' (kein Block-Feld
+    im Editor-Formular) — bei Bedarf danach den Code anpassen.
+  - Kein Reorder-UI (reorderItems() existiert, aber keine Drag/Pfeil-Buttons).
+  - `confirmResetAll()` löscht jetzt auch die IndexedDB-Datenbank — bei neuen
+    Storage-Mechanismen immer prüfen, ob das NEU-STARTEN-Feature mitzieht.
 
 ## Push-Benachrichtigungen (Web Push)
 Fasten-Meilensteine (12h/18h/24h/36h/48h/72h/100h) werden zusätzlich zur
