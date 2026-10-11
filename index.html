@@ -2661,6 +2661,81 @@ input[type="range"] { accent-color: #f0f0f0; }
   </div>
 </div>
 
+<!-- ══ CONTENT-ITEM EDITOR ══ -->
+<div class="modal-overlay" id="item-editor-modal" role="dialog" aria-modal="true">
+  <div class="modal-card" style="max-height:88vh;overflow-y:auto">
+    <div class="modal-title" id="ie-title-label">Item bearbeiten</div>
+
+    <div style="margin:14px 0 0">
+      <div class="row-sub" style="margin-bottom:4px">Titel</div>
+      <input type="text" id="ie-title" autocomplete="off"
+        style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text);
+               padding:8px 10px;font-family:inherit;font-size:var(--fs-sm);box-sizing:border-box">
+    </div>
+
+    <div style="margin:14px 0">
+      <div class="row-sub" style="margin-bottom:4px">Dosis (optional)</div>
+      <input type="text" id="ie-dose" autocomplete="off"
+        style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text);
+               padding:8px 10px;font-family:inherit;font-size:var(--fs-sm);box-sizing:border-box">
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div class="row-sub" style="margin-bottom:4px">Tageszeit</div>
+      <select id="ie-time"
+        style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);
+               padding:8px 10px;font-family:inherit;font-size:var(--fs-sm);box-sizing:border-box">
+        <option value="">— kein Zeitfenster —</option>
+        <option value="morning">Morgens</option>
+        <option value="midday">Mittags</option>
+        <option value="evening">Abends</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div class="row-sub" style="margin-bottom:6px">Wochentage — leer = täglich</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap" id="ie-days">
+        <button type="button" class="bud-btn" data-day="1" onclick="toggleIEDay(1,this)">Mo</button>
+        <button type="button" class="bud-btn" data-day="2" onclick="toggleIEDay(2,this)">Di</button>
+        <button type="button" class="bud-btn" data-day="3" onclick="toggleIEDay(3,this)">Mi</button>
+        <button type="button" class="bud-btn" data-day="4" onclick="toggleIEDay(4,this)">Do</button>
+        <button type="button" class="bud-btn" data-day="5" onclick="toggleIEDay(5,this)">Fr</button>
+        <button type="button" class="bud-btn" data-day="6" onclick="toggleIEDay(6,this)">Sa</button>
+        <button type="button" class="bud-btn" data-day="0" onclick="toggleIEDay(0,this)">So</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div class="row-sub" style="margin-bottom:4px">XP</div>
+      <input type="number" id="ie-xp" min="0" step="1" inputmode="numeric"
+        style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text);
+               padding:8px 10px;font-family:inherit;font-size:var(--fs-sm);box-sizing:border-box">
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="row-sub" style="margin:0">Benachrichtigung</div>
+      <button type="button" id="ie-notify-toggle" onclick="toggleIEFlag('notify')"
+        style="flex-shrink:0;width:40px;height:22px;border:none;cursor:pointer;position:relative;background:var(--border)">
+        <span style="position:absolute;top:3px;left:3px;width:16px;height:16px;background:var(--bg);transition:left .15s"></span>
+      </button>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div class="row-sub" style="margin:0">Aktiv</div>
+      <button type="button" id="ie-active-toggle" onclick="toggleIEFlag('active')"
+        style="flex-shrink:0;width:40px;height:22px;border:none;cursor:pointer;position:relative;background:var(--cx)">
+        <span style="position:absolute;top:3px;left:21px;width:16px;height:16px;background:var(--bg);transition:left .15s"></span>
+      </button>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn" onclick="closeItemEditor()">Abbrechen</button>
+      <button class="btn btn-cx" onclick="saveItemFromEditor()">Speichern</button>
+    </div>
+    <button class="btn btn-sm" id="ie-delete-btn" onclick="deleteItemFromEditor()"
+      style="width:100%;margin-top:10px;border-color:rgba(180,60,60,0.5);color:rgba(220,80,80,0.9)">Löschen</button>
+  </div>
+</div>
+
 <!-- ══ EINSTELLUNGEN ══ -->
 <div id="pg-settings" class="page scroll-page">
   <div class="page-header">
@@ -3088,29 +3163,252 @@ const HABIT_BLOCKS = [
   { id:'verzicht', label:'Verzicht' },
 ];
 
-function getHabitsDoneToday() {
-  return new Set(JSON.parse(storageGet('habit_done_' + getLocalDateKey()) || '[]'));
+// ══════════════════════════════════════════════════════════════════════
+// CONTENT SYSTEM — Phase 1 (lokal, IndexedDB, noch kein Sync)
+// ══════════════════════════════════════════════════════════════════════
+//
+// Einheitliches Item-Modell für Supplemente, Habits, Übungen und Aufgaben:
+//   { id, type: 'supplement'|'habit'|'exercise'|'task', title, dose, time,
+//     block, schedule: { days: number[] }, xp, notify, active, details, order }
+// - id: stabil, z.B. 'supp-vitamin-d3', 'habit-sleep'. Nie ändern — daran
+//   hängen Tages-Fortschritt (content_done_*) und XP-Dedup (awardXP).
+// - time: 'morning'|'midday'|'evening'|null — v.a. für Supplemente.
+// - block: nur Habits, zusätzliche UI-Gruppierung ('morgen'|'tag'|'abend'|
+//   'verzicht'), weil deren vier Blöcke nicht ins 3-Slot-time-Schema passen.
+// - schedule.days: [] = täglich, sonst 0 (So) – 6 (Sa).
+// - notify: Flag pro Item, Default aus. Noch NICHT an echte Erinnerungen
+//   angebunden — nur gespeichert, für eine spätere Phase vorgesehen.
+// - active: false blendet das Item aus allen Renderern aus (ersetzt das
+//   alte hidden_habits-Konzept, jetzt für jeden Typ einheitlich).
+//
+// Quelle der Wahrheit sind ab jetzt IndexedDB (rehapp_content/items) plus
+// ein synchroner In-Memory-Cache (_contentCache) für die weiterhin
+// synchronen Renderer. SUPP_DATA/HABITS bleiben als Seed-Quelle für die
+// einmalige Migration bestehen, werden sonst nirgends mehr gelesen.
+
+const CONTENT_DB_NAME = 'rehapp_content';
+const CONTENT_DB_VERSION = 1;
+const CONTENT_STORE = 'items';
+
+let _contentDB = null;
+let _contentCache = [];
+let _contentReady = null;
+
+function slugifyId(str) {
+  return String(str)
+    .toLowerCase()
+    .replace(/[äöüß]/g, c => ({ ä: 'ae', ö: 'oe', ü: 'ue', ß: 'ss' }[c]))
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
-function getHiddenHabits() {
-  return new Set(JSON.parse(storageGet('hidden_habits') || '[]'));
+function openContentDB() {
+  return new Promise((resolve, reject) => {
+    if (!('indexedDB' in window)) { reject(new Error('IndexedDB nicht verfügbar')); return; }
+    const req = indexedDB.open(CONTENT_DB_NAME, CONTENT_DB_VERSION);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(CONTENT_STORE)) {
+        db.createObjectStore(CONTENT_STORE, { keyPath: 'id' });
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
 }
 
-function toggleHabit(id) {
+function idbGetAll(db) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(CONTENT_STORE, 'readonly');
+    const req = tx.objectStore(CONTENT_STORE).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function idbPutAll(db, items) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(CONTENT_STORE, 'readwrite');
+    const store = tx.objectStore(CONTENT_STORE);
+    items.forEach(it => store.put(it));
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function idbDelete(db, id) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(CONTENT_STORE, 'readwrite');
+    tx.objectStore(CONTENT_STORE).delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function buildSeedItems() {
+  const items = [];
+  let order = 0;
+  ['morning', 'midday', 'evening'].forEach(time => {
+    (SUPP_DATA[time] || []).forEach(s => {
+      items.push({
+        id: 'supp-' + slugifyId(s.name),
+        type: 'supplement',
+        title: s.name,
+        dose: s.dose,
+        time,
+        block: null,
+        schedule: { days: [] },
+        xp: 8,
+        notify: false,
+        active: true,
+        details: { mechanism: s.mechanism, synergy: s.synergy, caution: s.caution, natural: s.natural },
+        order: order++,
+      });
+    });
+  });
+  HABITS.forEach(h => {
+    items.push({
+      id: 'habit-' + h.id,
+      type: 'habit',
+      title: h.label,
+      dose: null,
+      time: null,
+      block: h.block,
+      schedule: { days: [] },
+      xp: h.xp,
+      notify: false,
+      active: true,
+      details: { sub: h.sub, why: h.why || '', core: !!h.core },
+      order: order++,
+    });
+  });
+  return items;
+}
+
+// Trägt den HEUTIGEN bereits erledigten Fortschritt aus den alten,
+// index-/datums-basierten Storage-Keys in das neue, id-basierte
+// content_done_{dateKey} über. Läuft nur einmal, direkt nach dem Seed.
+// XP-Totals/Streaks sind davon unberührt — die hängen an eigenen,
+// bereits-vergebenen Dedup-Keys, nicht an dieser Liste.
+function migrateLegacyProgressToItems() {
+  try {
+    const dateKey = getLocalDateKey();
+    const doneToday = new Set(JSON.parse(storageGet('content_done_' + dateKey) || '[]'));
+
+    const oldHabitsDone = new Set(JSON.parse(storageGet('habit_done_' + dateKey) || '[]'));
+    oldHabitsDone.forEach(oldId => doneToday.add('habit-' + oldId));
+
+    const legacyToday = new Date().toDateString();
+    ['morning', 'midday', 'evening'].forEach(time => {
+      (SUPP_DATA[time] || []).forEach((s, i) => {
+        if (storageGet(`supp_${legacyToday}_${time}_${i}`) === '1') {
+          doneToday.add('supp-' + slugifyId(s.name));
+        }
+      });
+    });
+
+    storageSet('content_done_' + dateKey, JSON.stringify([...doneToday]));
+
+    // Alte Sichtbarkeits-Flags (Habits ausblenden) ins neue active-Feld.
+    const oldHidden = new Set(JSON.parse(storageGet('hidden_habits') || '[]'));
+    if (oldHidden.size) {
+      _contentCache.forEach(it => {
+        if (it.type === 'habit' && oldHidden.has(it.id.replace(/^habit-/, ''))) it.active = false;
+      });
+    }
+  } catch (err) {
+    console.warn('Migration des bisherigen Fortschritts fehlgeschlagen', err);
+  }
+}
+
+async function initContentStore() {
+  if (_contentReady) return _contentReady;
+  _contentReady = (async () => {
+    try {
+      _contentDB = await openContentDB();
+      const alreadyMigrated = storageGet('content_migrated_v1') === '1';
+      let rows = await idbGetAll(_contentDB);
+      if (!alreadyMigrated && !rows.length) {
+        _contentCache = buildSeedItems();
+        migrateLegacyProgressToItems();
+        await idbPutAll(_contentDB, _contentCache);
+        storageSet('content_migrated_v1', '1');
+      } else {
+        _contentCache = rows;
+        if (!alreadyMigrated) storageSet('content_migrated_v1', '1');
+      }
+      _contentCache.sort((a, b) => a.order - b.order);
+    } catch (err) {
+      console.warn('Content-Store nicht verfügbar, Fallback ohne Persistenz', err);
+      _contentDB = null;
+      _contentCache = buildSeedItems();
+    }
+  })();
+  return _contentReady;
+}
+
+function getItems(filter = {}) {
+  return _contentCache
+    .filter(it => {
+      if (filter.type && it.type !== filter.type) return false;
+      if (filter.block && it.block !== filter.block) return false;
+      if (filter.time && it.time !== filter.time) return false;
+      if (filter.activeOnly && !it.active) return false;
+      return true;
+    })
+    .sort((a, b) => a.order - b.order);
+}
+
+async function saveItem(item) {
+  if (!item.id) {
+    item.id = `${item.type}-${slugifyId(item.title || 'item')}-${Date.now().toString(36)}`;
+  }
+  if (typeof item.order !== 'number') {
+    const maxOrder = _contentCache.reduce((m, it) => Math.max(m, it.order || 0), -1);
+    item.order = maxOrder + 1;
+  }
+  const idx = _contentCache.findIndex(it => it.id === item.id);
+  if (idx >= 0) _contentCache[idx] = item; else _contentCache.push(item);
+  if (_contentDB) { try { await idbPutAll(_contentDB, [item]); } catch (err) { console.warn('saveItem persist fehlgeschlagen', err); } }
+  return item;
+}
+
+async function deleteItem(id) {
+  _contentCache = _contentCache.filter(it => it.id !== id);
+  if (_contentDB) { try { await idbDelete(_contentDB, id); } catch (err) { console.warn('deleteItem fehlgeschlagen', err); } }
+}
+
+async function reorderItems(orderedIds) {
+  orderedIds.forEach((id, i) => {
+    const it = _contentCache.find(x => x.id === id);
+    if (it) it.order = i;
+  });
+  if (_contentDB) {
+    const touched = _contentCache.filter(it => orderedIds.includes(it.id));
+    try { await idbPutAll(_contentDB, touched); } catch (err) { console.warn('reorderItems persist fehlgeschlagen', err); }
+  }
+}
+
+function getItemsDoneToday() {
+  return new Set(JSON.parse(storageGet('content_done_' + getLocalDateKey()) || '[]'));
+}
+
+function toggleItemDone(id) {
   const dateKey = getLocalDateKey();
-  const done    = getHabitsDoneToday();
-  const habit   = HABITS.find(h => h.id === id);
-  if (!habit) return;
+  const done = getItemsDoneToday();
+  const item = _contentCache.find(it => it.id === id);
+  if (!item) return;
   if (done.has(id)) {
     done.delete(id);
   } else {
     done.add(id);
-    awardXP('habit_' + id + '_' + dateKey, habit.xp, habit.label, { scope: 'day' });
+    awardXP('item_' + id, item.xp, item.title, { scope: 'day', silent: true });
     playTone(523, 0.08);
     setTimeout(() => playTone(659, 0.1), 100);
+    if (navigator.vibrate) navigator.vibrate(20);
   }
-  storageSet('habit_done_' + dateKey, JSON.stringify([...done]));
-  buildHabitsSection();
+  storageSet('content_done_' + dateKey, JSON.stringify([...done]));
+  return done.has(id);
 }
 
 function toggleHabitWhy(id, e) {
@@ -3123,13 +3421,11 @@ function toggleHabitWhy(id, e) {
 function buildHabitsSection() {
   const container = document.getElementById('habit-section');
   if (!container) return;
-  const done   = getHabitsDoneToday();
-  const hidden = getHiddenHabits();
-  const today  = new Date().toLocaleDateString('de-DE', { weekday:'long', day:'numeric', month:'long' }).toUpperCase();
+  const done = getItemsDoneToday();
+  const habits = getItems({ type: 'habit', activeOnly: true });
 
-  const visibleHabits = HABITS.filter(h => !hidden.has(h.id));
-  const total     = visibleHabits.length;
-  const completed = visibleHabits.filter(h => done.has(h.id)).length;
+  const total     = habits.length;
+  const completed = habits.filter(h => done.has(h.id)).length;
   const pct       = total ? Math.round((completed / total) * 100) : 0;
 
   container.innerHTML = `
@@ -3145,7 +3441,7 @@ function buildHabitsSection() {
       <div style="height:100%;width:${pct}%;background:var(--cx);transition:width .4s"></div>
     </div>
     ${HABIT_BLOCKS.map(block => {
-      const blockHabits = HABITS.filter(h => h.block === block.id && !hidden.has(h.id));
+      const blockHabits = habits.filter(h => h.block === block.id);
       if (!blockHabits.length) return '';
       const blockDone = blockHabits.filter(h => done.has(h.id)).length;
       return `
@@ -3153,23 +3449,24 @@ function buildHabitsSection() {
           <div class="panel-label">${block.label} · ${blockDone}/${blockHabits.length}</div>
           ${blockHabits.map(h => {
             const isDone = done.has(h.id);
+            const why = h.details && h.details.why;
             return `
-              <div class="check-row" onclick="toggleHabit('${h.id}')" style="${isDone?'opacity:.55':''}">
+              <div class="check-row" onclick="toggleItemDone('${h.id}');buildHabitsSection()" style="${isDone?'opacity:.55':''}">
                 <div class="chkbox${isDone?' done':''}"></div>
                 <div style="flex:1;min-width:0">
-                  <div class="check-label${isDone?' done':''}">${h.label}</div>
-                  <div class="row-sub">${h.sub}</div>
+                  <div class="check-label${isDone?' done':''}">${h.title}</div>
+                  <div class="row-sub">${h.details ? h.details.sub : ''}</div>
                 </div>
                 <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
                   <span style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3)">+${h.xp}</span>
-                  ${h.why ? `<button onclick="toggleHabitWhy('${h.id}',event)"
+                  ${why ? `<button onclick="toggleHabitWhy('${h.id}',event)"
                     style="font-family:var(--mono);font-size:0.8rem;padding:2px 6px;
                            background:transparent;border:1px solid var(--border);color:var(--text3)">?</button>` : ''}
                 </div>
               </div>
-              ${h.why ? `<div id="why-${h.id}" style="display:none;padding:8px 16px 12px;
+              ${why ? `<div id="why-${h.id}" style="display:none;padding:8px 16px 12px;
                 font-size:var(--fs-xs);color:var(--text3);line-height:1.6;
-                border-top:1px solid var(--border)">${h.why}</div>` : ''}
+                border-top:1px solid var(--border)">${why}</div>` : ''}
             `;
           }).join('')}
         </div>
@@ -3183,52 +3480,174 @@ function applyFontSize(px) {
   storageSet('settings_fontsize', String(px));
 }
 
+// ══════════════ CONTENT EDITOR (Setup-Tab) ══════════════
+
+const CONTENT_TYPE_DEFS = [
+  { type: 'supplement', label: 'Supplemente' },
+  { type: 'habit',      label: 'Habits' },
+  { type: 'exercise',   label: 'Übungen' },
+  { type: 'task',       label: 'Aufgaben' },
+];
+
+function buildContentEditorPanel() {
+  const sections = CONTENT_TYPE_DEFS.map(({ type, label }) => {
+    const rows = getItems({ type });
+    const rowsHtml = rows.length ? rows.map(it => `
+      <div class="check-row" onclick="openItemEditor('${it.id}')" style="${it.active ? '' : 'opacity:.45'}">
+        <div style="flex:1;min-width:0">
+          <div class="check-label">${it.title}</div>
+          <div class="row-sub">${it.active ? '' : 'Inaktiv · '}+${it.xp} XP${it.dose ? ' · ' + it.dose : ''}</div>
+        </div>
+        <span style="color:var(--text3)">›</span>
+      </div>
+    `).join('') : `<div class="row-sub" style="padding:10px 16px">Noch keine Einträge.</div>`;
+    return `
+      <div style="margin-bottom:4px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px 6px">
+          <span style="font-family:var(--mono);font-size:0.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)">${label} · ${rows.length}</span>
+          <button onclick="openItemEditor(null,'${type}')"
+            style="font-family:var(--mono);font-size:0.8rem;padding:3px 8px;
+                   background:transparent;border:1px solid var(--border);color:var(--text3);letter-spacing:.1em">
+            + NEU
+          </button>
+        </div>
+        ${rowsHtml}
+      </div>`;
+  }).join('');
+  return `
+    <div class="panel" style="margin:0 14px 12px">
+      <div class="panel-label" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Inhalte</span>
+        <span style="display:flex;gap:6px">
+          <button onclick="exportContentItems()"
+            style="font-family:var(--mono);font-size:0.8rem;padding:3px 8px;background:transparent;border:1px solid var(--border);color:var(--text3);letter-spacing:.1em">JSON ↗</button>
+          <label style="font-family:var(--mono);font-size:0.8rem;padding:3px 8px;background:transparent;border:1px solid var(--border);color:var(--text3);letter-spacing:.1em;cursor:pointer">
+            JSON ↙<input type="file" accept="application/json" onchange="importContentItems(event)" style="display:none">
+          </label>
+        </span>
+      </div>
+      ${sections}
+    </div>`;
+}
+
+let _ieDraft = null;
+
+function openItemEditor(id, newType) {
+  const existing = id ? _contentCache.find(it => it.id === id) : null;
+  _ieDraft = existing
+    ? JSON.parse(JSON.stringify(existing))
+    : { id: null, type: newType, title: '', dose: null, time: null,
+        block: newType === 'habit' ? 'tag' : null,
+        schedule: { days: [] }, xp: 10, notify: false, active: true, details: {}, order: undefined };
+
+  document.getElementById('ie-title-label').textContent = existing ? 'Item bearbeiten' : 'Neues Item';
+  document.getElementById('ie-title').value = _ieDraft.title || '';
+  document.getElementById('ie-dose').value = _ieDraft.dose || '';
+  document.getElementById('ie-time').value = _ieDraft.time || '';
+  document.getElementById('ie-xp').value = _ieDraft.xp || 0;
+  document.querySelectorAll('#ie-days .bud-btn').forEach(btn => {
+    btn.classList.toggle('active-yes', (_ieDraft.schedule.days || []).includes(parseInt(btn.dataset.day, 10)));
+  });
+  renderIEToggle('notify', _ieDraft.notify);
+  renderIEToggle('active', _ieDraft.active);
+  document.getElementById('ie-delete-btn').style.display = existing ? '' : 'none';
+  document.getElementById('item-editor-modal').classList.add('open');
+}
+
+function closeItemEditor() {
+  document.getElementById('item-editor-modal').classList.remove('open');
+  _ieDraft = null;
+}
+
+function toggleIEDay(day, btn) {
+  if (!_ieDraft) return;
+  const days = _ieDraft.schedule.days || (_ieDraft.schedule.days = []);
+  const idx = days.indexOf(day);
+  if (idx === -1) days.push(day); else days.splice(idx, 1);
+  btn.classList.toggle('active-yes', days.includes(day));
+}
+
+function renderIEToggle(field, on) {
+  const btn = document.getElementById(`ie-${field}-toggle`);
+  if (!btn) return;
+  btn.style.background = on ? 'var(--cx)' : 'var(--border)';
+  const knob = btn.querySelector('span');
+  if (knob) knob.style.left = on ? '21px' : '3px';
+}
+
+function toggleIEFlag(field) {
+  if (!_ieDraft) return;
+  _ieDraft[field] = !_ieDraft[field];
+  renderIEToggle(field, _ieDraft[field]);
+}
+
+function refreshContentDrivenUI() {
+  buildHabitsSection();
+  buildSupplements();
+  buildHomeSuppList();
+  buildSettings();
+}
+
+async function saveItemFromEditor() {
+  if (!_ieDraft) return;
+  const title = document.getElementById('ie-title').value.trim();
+  if (!title) { toast('TITEL FEHLT'); return; }
+  _ieDraft.title = title;
+  _ieDraft.dose  = document.getElementById('ie-dose').value.trim() || null;
+  _ieDraft.time  = document.getElementById('ie-time').value || null;
+  _ieDraft.xp    = parseInt(document.getElementById('ie-xp').value, 10) || 0;
+  await saveItem(_ieDraft);
+  closeItemEditor();
+  refreshContentDrivenUI();
+  toast('GESPEICHERT');
+}
+
+async function deleteItemFromEditor() {
+  if (!_ieDraft || !_ieDraft.id) return;
+  if (!confirm(`"${_ieDraft.title}" wirklich löschen?`)) return;
+  await deleteItem(_ieDraft.id);
+  closeItemEditor();
+  refreshContentDrivenUI();
+  toast('GELÖSCHT');
+}
+
+function exportContentItems() {
+  const blob = new Blob([JSON.stringify(getItems({}), null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `rehapp-content-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast('INHALTE EXPORTIERT');
+}
+
+function importContentItems(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async ev => {
+    try {
+      const incoming = JSON.parse(ev.target.result);
+      if (!Array.isArray(incoming)) throw new Error('Kein Array');
+      for (const it of incoming) await saveItem(it);
+      refreshContentDrivenUI();
+      toast('INHALTE IMPORTIERT');
+    } catch (err) {
+      console.warn('Content-Import fehlgeschlagen', err);
+      toast('IMPORT FEHLGESCHLAGEN');
+    }
+  };
+  reader.readAsText(file);
+}
+
 function buildSettings() {
   const container = document.getElementById('settings-content');
   if (!container) return;
-  const hidden   = getHiddenHabits();
   const fontSize = parseInt(storageGet('settings_fontsize') || '16', 10);
   const name     = storageGet('settings_username') || '';
   const wakeup   = storageGet('settings_wakeup')   || '07:00';
   const pushSupported = ('serviceWorker' in navigator) && ('PushManager' in window);
   const pushActive    = !!storageGet('push_subscription');
-
-  const habitSections = HABIT_BLOCKS.map(block => {
-    const blockHabits  = HABITS.filter(h => h.block === block.id);
-    const activeCount  = blockHabits.filter(h => !hidden.has(h.id)).length;
-    const allActive    = activeCount === blockHabits.length;
-    const rows = blockHabits.map((h, i, arr) => {
-      const on   = !hidden.has(h.id);
-      const last = i === arr.length - 1;
-      return `
-        <div style="display:flex;align-items:center;gap:10px;padding:9px 0;${last?'':'border-bottom:1px solid var(--border)'}">
-          <div style="flex:1;min-width:0;font-size:var(--fs-sm);
-            color:${on?'var(--text)':'var(--text3)'};">${h.label}
-            <div class="row-sub">${h.sub} · +${h.xp} XP</div>
-          </div>
-          <button onclick="toggleHiddenHabit('${h.id}')"
-            style="flex-shrink:0;width:40px;height:22px;border:none;cursor:pointer;position:relative;
-                   background:${on?'var(--cx)':'var(--border)'};transition:background .15s">
-            <span style="position:absolute;top:3px;left:${on?'21':'3'}px;width:16px;height:16px;
-              background:var(--bg);transition:left .15s"></span>
-          </button>
-        </div>`;
-    }).join('');
-    return `
-      <div style="padding:12px 16px 4px">
-        <div style="display:flex;justify-content:space-between;align-items:center;
-          padding-bottom:8px;border-bottom:1px solid var(--border)">
-          <span style="font-family:var(--mono);font-size:0.8rem;letter-spacing:.15em;
-            text-transform:uppercase;color:var(--accent)">${block.label} · ${activeCount}/${blockHabits.length}</span>
-          <button onclick="toggleBlockHabits('${block.id}','${allActive?'off':'on'}')"
-            style="font-family:var(--mono);font-size:0.8rem;padding:3px 8px;
-                   background:transparent;border:1px solid var(--border);color:var(--text3);letter-spacing:.1em">
-            ${allActive ? 'ALLE AUS' : 'ALLE AN'}
-          </button>
-        </div>
-        <div>${rows}</div>
-      </div>`;
-  }).join('');
 
   container.innerHTML = `
     <div class="panel" style="margin:0 14px 12px">
@@ -3271,17 +3690,7 @@ function buildSettings() {
       </div>
     </div>
 
-    <div class="panel" style="margin:0 14px 12px">
-      <div class="panel-label" style="display:flex;justify-content:space-between;align-items:center">
-        <span>Habits</span>
-        <button onclick="resetAllHabitsVisible()"
-          style="font-family:var(--mono);font-size:0.8rem;padding:3px 8px;
-                 background:transparent;border:1px solid var(--border);color:var(--text3);letter-spacing:.1em">
-          ALLE AN
-        </button>
-      </div>
-      ${habitSections}
-    </div>
+    ${buildContentEditorPanel()}
 
     <div class="panel" style="margin:0 14px 12px">
       <div class="panel-label">Daten</div>
@@ -3314,48 +3723,19 @@ function buildSettings() {
   `;
 }
 
-function toggleBlockHabits(blockId, onOff) {
-  const hidden    = getHiddenHabits();
-  const blockHabits = HABITS.filter(h => h.block === blockId);
-  blockHabits.forEach(h => onOff === 'off' ? hidden.add(h.id) : hidden.delete(h.id));
-  storageSet('hidden_habits', JSON.stringify([...hidden]));
-  buildSettings();
-  buildHabitsSection();
-}
-
-function resetAllHabitsVisible() {
-  storageSet('hidden_habits', '[]');
-  buildSettings();
-  buildHabitsSection();
-}
-
 function confirmResetAll() {
   if (!confirm('Alle Daten löschen? Nicht rückgängig.')) return;
   localStorage.clear();
+  try {
+    if (_contentDB) _contentDB.close();
+    indexedDB.deleteDatabase(CONTENT_DB_NAME);
+  } catch (err) { console.warn('Content-DB löschen fehlgeschlagen', err); }
   location.reload();
-}
-
-function toggleHiddenHabit(id) {
-  const hidden = getHiddenHabits();
-  if (hidden.has(id)) hidden.delete(id); else hidden.add(id);
-  storageSet('hidden_habits', JSON.stringify([...hidden]));
-  buildSettings();
-  buildHabitsSection();
 }
 
 function importBackupFromSettings(e) {
   const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      const data = JSON.parse(ev.target.result);
-      Object.entries(data).forEach(([k,v]) => localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)));
-      showToast('Backup importiert — App wird neu geladen');
-      setTimeout(() => location.reload(), 1200);
-    } catch { showToast('Fehler beim Import'); }
-  };
-  reader.readAsText(file);
+  importAppDataFromFile(file);
 }
 
 // ══════════════ TIMELESS QUOTES (Home, tägl. rotierend) ══════════════
@@ -3615,10 +3995,9 @@ function renderOedemTrend() {
 function buildSearchIndex() {
   SEARCH_INDEX.length = 0;
   // Supplements
-  ['morning','midday','evening'].forEach(t => {
-    SUPP_DATA[t].forEach(s => {
-      SEARCH_INDEX.push({ section: 'Supplemente', title: s.name + ' ' + s.dose, text: s.mechanism + ' ' + s.synergy + ' ' + s.natural, page: 'pg-supp' });
-    });
+  getItems({ type: 'supplement' }).forEach(s => {
+    const d = s.details || {};
+    SEARCH_INDEX.push({ section: 'Supplemente', title: s.title + ' ' + (s.dose||''), text: [d.mechanism,d.synergy,d.natural].filter(Boolean).join(' '), page: 'pg-supp' });
   });
   // Recipes
   RECIPES.forEach(r => SEARCH_INDEX.push({ section: 'Rezepte', title: r.title, text: r.text.replace(/<[^>]+>/g,''), page: 'pg-fast' }));
@@ -3799,22 +4178,21 @@ function setSuppTab(tab) {
 
 function buildHomeSuppList() {
   const root = document.getElementById('home-supp-list'); if (!root) return;
-  const today = new Date().toDateString();
-  const items = SUPP_DATA[currentSuppTab] || [];
+  const done = getItemsDoneToday();
+  const items = getItems({ type: 'supplement', time: currentSuppTab, activeOnly: true });
   root.innerHTML = '';
-  items.slice(0,4).forEach((s, i) => {
-    const key = `supp_${today}_${currentSuppTab}_${i}`;
-    const done = storageGet(key) === '1';
+  items.slice(0,4).forEach(s => {
+    const isDone = done.has(s.id);
+    const mechanism = (s.details && s.details.mechanism) || '';
     const row = document.createElement('div');
     row.className = 'check-row';
-    row.innerHTML = `<div class="chkbox ${done?'done':''}"></div><div class="row-body"><div class="check-label ${done?'done':''}">${s.name} — ${s.dose}</div><div style="font-size:var(--fs-sm);color:var(--text2);margin-top:4px;line-height:1.5">${s.mechanism.split('.')[0]}.</div></div>`;
+    row.innerHTML = `<div class="chkbox ${isDone?'done':''}"></div><div class="row-body"><div class="check-label ${isDone?'done':''}">${s.title}${s.dose ? ' — ' + s.dose : ''}</div><div style="font-size:var(--fs-sm);color:var(--text2);margin-top:4px;line-height:1.5">${mechanism.split('.')[0]}.</div></div>`;
     row.onclick = () => {
-      const d = storageGet(key) === '1';
-      storageSet(key, d ? '0' : '1');
-      if (!d) awardXP(key, 8, 'Supplement', { scope: 'day', silent: true });
+      const wasDone = getItemsDoneToday().has(s.id);
+      toggleItemDone(s.id);
       buildHomeSuppList();
       buildSupplements();
-      toast(d ? s.name.toUpperCase() : '+ ' + s.name.toUpperCase());
+      toast(wasDone ? s.title.toUpperCase() : '+ ' + s.title.toUpperCase());
     };
     root.appendChild(row);
   });
@@ -3825,7 +4203,6 @@ function buildHomeSuppList() {
     more.onclick = () => showPage('pg-supp');
     root.appendChild(more);
   }
-  // Auto-set active tab by time of day
 }
 
 function initSuppTab() {
@@ -4130,7 +4507,8 @@ function exportAppData() {
     const key = localStorage.key(i);
     payload[key] = localStorage.getItem(key);
   }
-  const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), app: 'REHAPP', data: payload }, null, 2)], { type: 'application/json' });
+  const content = getItems({});
+  const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), app: 'REHAPP', data: payload, content }, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `regen-backup-${new Date().toISOString().slice(0,10)}.json`;
@@ -4144,17 +4522,22 @@ function exportAppData() {
 function importAppDataFromFile(file) {
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = () => {
+  reader.onload = async () => {
     try {
       const parsed = JSON.parse(reader.result);
       const data = parsed && parsed.data ? parsed.data : parsed;
       Object.entries(data).forEach(([key, value]) => storageSet(key, value));
+      if (Array.isArray(parsed.content)) {
+        await initContentStore();
+        for (const it of parsed.content) await saveItem(it);
+      }
       buildWater(); buildSupplements(); buildRecipes(); buildMLD();
       buildVagus(); buildBFR(); buildMasterplan();
       buildCRPSCalendar(); buildBudapestFilter(); renderOedemTrend();
       buildSearchIndex();
       loadProgress(); restorePreferences(); refreshXPUI(); updateInstallStatus(); updateNotificationStatus();
-      initSuppTab(); renderDailyQuote();
+      initSuppTab(); renderDailyQuote(); buildHabitsSection();
+      if (document.getElementById('settings-content')) buildSettings();
       awardXP('backup_import', 25, 'Backup importiert', { scope: 'day' });
       toast('BACKUP IMPORTIERT');
     } catch (err) {
@@ -4213,6 +4596,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('timer-reset-btn').style.display = '';
   }
 
+  await initContentStore();
   buildWater(); buildSupplements(); buildRecipes(); buildMLD();
   buildHabitsSection();
   buildVagus(); buildBFR(); buildMasterplan();
@@ -4503,66 +4887,65 @@ function update16_8Display() {
 // ══════════════ SUPPLEMENTS ══════════════
 
 function buildSupplements() {
-  const today = new Date().toDateString();
+  const done = getItemsDoneToday();
   ['morning','midday','evening'].forEach(time => {
     const c = document.getElementById(`supp-${time}`); if (!c) return; c.innerHTML = '';
-    SUPP_DATA[time].forEach((s,i) => {
-      const key = `supp_${today}_${time}_${i}`;
-      const done = storageGet(key) === '1';
-      const detailKey = `supp_detail_open_${time}_${i}`;
+    getItems({ type: 'supplement', time, activeOnly: true }).forEach(s => {
+      const d = s.details || {};
+      const isDone = done.has(s.id);
+      const detailKey = `item_detail_open_${s.id}`;
       const detailOpen = storageGet(detailKey) === '1';
       const row = document.createElement('div');
       row.className = 'supp-row-wrap';
       row.innerHTML = `
         <div class="check-row" style="cursor:pointer;padding:14px 16px">
-          <div class="chkbox ${done?'done':''}"></div>
+          <div class="chkbox ${isDone?'done':''}"></div>
           <div class="row-body">
-            <div class="check-label ${done?'done':''}">${s.name} — ${s.dose}</div>
-            <div style="font-size:var(--fs-sm);color:var(--text2);margin-top:4px;line-height:1.5">${s.mechanism.split('.')[0]}.</div>
+            <div class="check-label ${isDone?'done':''}">${s.title}${s.dose ? ' — ' + s.dose : ''}</div>
+            <div style="font-size:var(--fs-sm);color:var(--text2);margin-top:4px;line-height:1.5">${(d.mechanism||'').split('.')[0]}.</div>
           </div>
-          <div style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3);letter-spacing:.08em;flex-shrink:0;padding-left:12px;cursor:pointer;min-width:20px;text-align:center" onclick="toggleSuppDetail('${time}',${i})" id="supp-toggle-${time}-${i}">${detailOpen?'▲':'▼'}</div>
+          <div style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3);letter-spacing:.08em;flex-shrink:0;padding-left:12px;cursor:pointer;min-width:20px;text-align:center" onclick="toggleSuppDetail('${s.id}')" id="supp-toggle-${s.id}">${detailOpen?'▲':'▼'}</div>
         </div>
-        <div id="supp-detail-${time}-${i}" style="display:${detailOpen?'block':'none'};padding:8px 16px 16px;border-top:1px solid var(--border);background:rgba(255,255,255,0.02)">
+        <div id="supp-detail-${s.id}" style="display:${detailOpen?'block':'none'};padding:8px 16px 16px;border-top:1px solid var(--border);background:rgba(255,255,255,0.02)">
           <div style="margin-bottom:10px">
             <div style="font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:5px">Wirkung</div>
-            <div style="font-size:var(--fs-sm);color:var(--text2);line-height:1.75">${s.mechanism}</div>
+            <div style="font-size:var(--fs-sm);color:var(--text2);line-height:1.75">${d.mechanism||'—'}</div>
           </div>
           <div style="margin-bottom:10px">
             <div style="font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:5px">Synergie</div>
-            <div style="font-size:var(--fs-sm);color:var(--text2);line-height:1.75">${s.synergy}</div>
+            <div style="font-size:var(--fs-sm);color:var(--text2);line-height:1.75">${d.synergy||'—'}</div>
           </div>
           <div style="margin-bottom:10px">
             <div style="font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:5px">Vorsicht</div>
-            <div style="font-size:var(--fs-sm);color:var(--text2);line-height:1.75">${s.caution}</div>
+            <div style="font-size:var(--fs-sm);color:var(--text2);line-height:1.75">${d.caution||'—'}</div>
           </div>
           <div>
             <div style="font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:5px">Natürliche Quellen</div>
-            <div style="font-size:var(--fs-sm);color:var(--text2);line-height:1.75">${s.natural}</div>
+            <div style="font-size:var(--fs-sm);color:var(--text2);line-height:1.75">${d.natural||'—'}</div>
           </div>
         </div>`;
       // Check-row click = toggle done
       const checkRow = row.querySelector('.check-row');
       checkRow.onclick = (e) => {
         if (e.target.closest('[onclick]') && !e.target.closest('.chkbox') && e.target.tagName !== 'DIV') return;
-        if (e.target.closest(`#supp-toggle-${time}-${i}`)) return;
-        const d = storageGet(key) === '1';
-        storageSet(key, d ? '0' : '1');
-        if (!d) awardXP(key, 8, 'Supplement abgehakt', { scope: 'day', silent: true });
-        if (!d && navigator.vibrate) navigator.vibrate(20);
+        if (e.target.closest(`#supp-toggle-${s.id}`)) return;
+        const wasDone = getItemsDoneToday().has(s.id);
+        toggleItemDone(s.id);
         buildSupplements();
-        toast(d ? s.name.toUpperCase() : '+ '+s.name.toUpperCase());
+        buildHomeSuppList();
+        toast(wasDone ? s.title.toUpperCase() : '+ '+s.title.toUpperCase());
       };
       c.appendChild(row);
     });
   });
 }
 
-function toggleSuppDetail(time, i) {
-  const detailKey = `supp_detail_open_${time}_${i}`;
+function toggleSuppDetail(id) {
+  const detailKey = `item_detail_open_${id}`;
   const isOpen = storageGet(detailKey) === '1';
   storageSet(detailKey, isOpen ? '0' : '1');
-  const detail = document.getElementById(`supp-detail-${time}-${i}`);
-  const toggle = document.getElementById(`supp-toggle-${time}-${i}`);
+  const detail = document.getElementById(`supp-detail-${id}`);
+  const toggle = document.getElementById(`supp-toggle-${id}`);
   if (detail) detail.style.display = isOpen ? 'none' : 'block';
   if (toggle) toggle.textContent = isOpen ? '▼' : '▲';
 }
