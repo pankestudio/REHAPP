@@ -4,8 +4,8 @@ const ASSETS_OPTIONAL = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
-  './fonts/PlusJakartaSans-latin.woff2',
-  './fonts/PlusJakartaSans-latin-ext.woff2'
+  './fonts/HostGrotesk-latin.woff2',
+  './fonts/HostGrotesk-latin-ext.woff2'
 ];
 
 self.addEventListener('install', event => {

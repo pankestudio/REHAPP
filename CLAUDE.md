@@ -174,7 +174,7 @@ ausliefern, damit würde Web Push stillschweigend nicht funktionieren.
 Kopiert zusätzlich zu `dist/`:
   index.html, sw.js, manifest.webmanifest, icons/icon-192.png,
   icons/icon-512.png, icons/apple-touch-icon.png,
-  fonts/PlusJakartaSans-latin.woff2, fonts/PlusJakartaSans-latin-ext.woff2
+  fonts/HostGrotesk-latin.woff2, fonts/HostGrotesk-latin-ext.woff2
 `netlify/functions/` wird direkt aus dem Repo deployt (nicht über dist/),
 braucht dafür lokal `npm install` in `netlify/functions/` (node_modules dort
 sind gitignored, esbuild bundelt beim Deploy aus dem lokalen node_modules).
