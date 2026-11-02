@@ -962,22 +962,6 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         <div id="crps-calendar-container" style="padding-bottom:16px"></div>
       </div>
 
-      <div class="h-row" data-collapse-id="recipes" onclick="toggleCollapse('recipes')">
-        <div class="h-row-body"><div class="h-row-title">Rezepte</div><div class="h-row-meta">Antiinflammatorisch &amp; Refeed</div></div>
-        <div class="h-row-chevron" id="collapse-arrow-recipes">›</div>
-      </div>
-      <div id="collapse-body-recipes" class="closed">
-        <div class="h-chip-row" style="padding-bottom:12px">
-          <button type="button" class="h-pill" onclick="filterRecipes('all',this)">Alle</button>
-          <button type="button" class="h-pill h-pill--outline" onclick="filterRecipes('knochen',this)">Knochen</button>
-          <button type="button" class="h-pill h-pill--outline" onclick="filterRecipes('entzu',this)">Entzündung</button>
-          <button type="button" class="h-pill h-pill--outline" onclick="filterRecipes('kollagen',this)">Kollagen</button>
-          <button type="button" class="h-pill h-pill--outline" onclick="filterRecipes('refeed',this)">Refeed</button>
-          <button type="button" class="h-pill h-pill--outline" onclick="filterRecipes('schnell',this)">Schnell</button>
-        </div>
-        <div id="recipes-container" style="padding-bottom:16px"></div>
-      </div>
-
       <div class="h-row" style="cursor:default">
         <div class="h-row-body"><div class="h-row-title">Erinnerungen exportieren</div><div class="h-row-meta">Täglich wiederkehrende Einträge für alle Maßnahmen</div></div>
       </div>
@@ -986,6 +970,19 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         <button type="button" class="h-pill h-pill--outline" style="flex:1" onclick="exportCalendar('google')">Google Kalender</button>
       </div>
     </div>
+  </div>
+
+  <div class="h-section">
+    <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Rezepte</div></div>
+    <div class="h-meta" style="margin:12px 0">Nach mehrtägigem Fasten den Kostaufbau mit der Ärztin abstimmen.</div>
+    <div class="h-seg" id="recipe-filter-seg" style="margin-bottom:16px">
+      <button type="button" class="h-seg-btn active" onclick="filterRecipes('Alle',this)">Alle<svg class="h-seg-ellipse" viewBox="0 0 80 16" aria-hidden="true"><path d="M3 8 Q 20 2, 40 8 T 77 8"/></svg></button>
+      <button type="button" class="h-seg-btn" onclick="filterRecipes('Schnell',this)">Schnell<svg class="h-seg-ellipse" viewBox="0 0 80 16" aria-hidden="true"><path d="M3 8 Q 20 2, 40 8 T 77 8"/></svg></button>
+      <button type="button" class="h-seg-btn" onclick="filterRecipes('Refeed',this)">Refeed<svg class="h-seg-ellipse" viewBox="0 0 80 16" aria-hidden="true"><path d="M3 8 Q 20 2, 40 8 T 77 8"/></svg></button>
+      <button type="button" class="h-seg-btn" onclick="filterRecipes('Protein',this)">Protein<svg class="h-seg-ellipse" viewBox="0 0 80 16" aria-hidden="true"><path d="M3 8 Q 20 2, 40 8 T 77 8"/></svg></button>
+      <button type="button" class="h-seg-btn" onclick="filterRecipes('Pflanzlich',this)">Pflanzlich<svg class="h-seg-ellipse" viewBox="0 0 80 16" aria-hidden="true"><path d="M3 8 Q 20 2, 40 8 T 77 8"/></svg></button>
+    </div>
+    <div class="h-list" id="recipes-container"></div>
   </div>
 
   <div class="h-section">
@@ -1391,19 +1388,69 @@ const SUPP_DATA = {
   ]
 };
 
+const RECIPE_TAGS = ['Kollagen', 'Knochen & Gelenke', 'Entzündungsarm', 'Omega-3', 'Protein', 'Pflanzlich', 'Refeed', 'Schnell', 'Vorbereiten'];
+
 const RECIPES = [
-  { title: 'Goldene Knochenbrühe', tags: ['knochen','kollagen','refeed'], prep: '10 min Vorbereitung / 8-24h Kochzeit',
-    text: `<strong>Zutaten:</strong> 1kg Rinderknochen (Markknochen), 2 Möhren, 2 Selleriestangen, 1 Zwiebel, 4cm Ingwer, 4cm Kurkuma frisch, 2 EL Apfelessig, Meersalz, Pfeffer, 3L Wasser.<br><br><strong>Zubereitung:</strong> Knochen bei 200°C 30 Min rösten. Alle Zutaten in Topf. Apfelessig löst Mineralien aus den Knochen. 8-24h auf kleinster Flamme köcheln. Abseihen. Täglich 1-2 Tassen trinken.<br><br><strong>Wirkung:</strong> Glycin, Prolin, Hydroxyprolin für Kollagensynthese. Kurkuma + Ingwer antiinflammatorisch. Mineralien direkt bioverfügbar.` },
-  { title: 'Anti-Entzündungs-Bowl', tags: ['entzu','schnell'], prep: '15 min',
-    text: `<strong>Zutaten:</strong> 150g wilder Lachs oder Sardinen, 60g Quinoa, Handvoll Spinat, halbe Avocado, Blaubeeren, Walnüsse, Sesam, Olivenöl, Zitrone, Ingwer, Meersalz.<br><br><strong>Dressing:</strong> 2 EL Olivenöl + Saft halbe Zitrone + 1cm geriebener Ingwer + Prise Kurkuma + Salz.<br><br><strong>Wirkung:</strong> Omega-3 aus Lachs + Walnüssen. Antioxidantien aus Beeren. Kalium aus Avocado. Vollständige antiinflammatorische Mahlzeit.` },
-  { title: 'Kollagen-Shake', tags: ['kollagen','knochen','schnell'], prep: '5 min',
-    text: `<strong>Zutaten:</strong> 10g Kollagenpeptide Typ II, 150g Blaubeeren (TK ok), 1 Banane, 200ml Kokosmilch, 1 TL Ingwer frisch, Saft halbe Zitrone, 1 TL Maca optional.<br><br><strong>Zubereitung:</strong> Alles mixen. Sofort trinken.<br><br><strong>Wirkung:</strong> Vitamin C aktiviert Kollagensynthese direkt. Beeren antioxidativ. Morgens nach Supplements ideal.` },
-  { title: 'Kurkuma-Ingwer Paste / Golden Milk', tags: ['entzu','schnell'], prep: '10 min',
-    text: `<strong>Paste (2 Wochen haltbar):</strong> 3 EL Kurkuma + 1 EL Ingwer + 1 TL schwarzer Pfeffer + 1 EL Kokosöl + 3 EL Wasser — einkochen bis Paste entsteht.<br><br><strong>Golden Milk:</strong> 1 TL Paste + 250ml warme Mandelmilch + Honig. Abends trinken.<br><br><strong>Wirkung:</strong> Curcumin hemmt NF-kB. Schwarzer Pfeffer: +2000% Bioverfügbarkeit.` },
-  { title: 'Refeed-Suppe', tags: ['refeed','knochen'], prep: '20 min',
-    text: `<strong>Erste Mahlzeit nach dem Fasten — sehr sanft starten.</strong><br><br><strong>Zutaten:</strong> 500ml Knochenbrühe, 1 Karotte fein, halbe Zucchini fein, Handvoll Spinat, 1cm Ingwer, Meersalz, Miso optional.<br><br><strong>Zubereitung:</strong> Brühe erwärmen, Gemüse sehr weich kochen, Spinat kurz ziehen lassen.<br><br>Kein Fleisch, keine Rohkost, kein Fett am ersten Refeed-Tag.` },
-  { title: 'Mineraldichte Salatschüssel', tags: ['knochen','entzu'], prep: '10 min',
-    text: `<strong>Zutaten:</strong> Rucola + Spinat, 2 hartgekochte Eier, 30g Parmesan, Sesam, Kürbiskerne, Paprika, Kirschtomaten, halbe Avocado.<br><br><strong>Dressing:</strong> Olivenöl + Zitrone + Senf + Knoblauch + Salz.<br><br><strong>Wirkung:</strong> Kalzium aus Parmesan + Sesam. Zink aus Kürbiskernen. Vitamin K2 aus Parmesan. Lycopin antiinflammatorisch.` },
+  { title: 'Goldene Knochenbrühe', meta: '10 Min + 8–24 h · ca. 2 L', tags: ['Kollagen', 'Refeed'],
+    ingredients: ['1 kg Rinderknochen (Mark- und Gelenkknochen)', '2 Möhren', '2 Selleriestangen', '1 Zwiebel', '4 cm Ingwer', '4 cm frische Kurkuma', '2 EL Apfelessig', '1 TL Pfefferkörner', 'Meersalz', '3 L Wasser'],
+    steps: ['Knochen bei 200 °C 30 Min rösten.', 'Mit Gemüse, Gewürzen, Essig und kaltem Wasser in einen großen Topf geben, aufkochen, Schaum abschöpfen.', '8–24 h auf kleinster Stufe sieden lassen.', 'Abseihen, abkühlen lassen, Fettschicht abnehmen. Hält 5 Tage im Kühlschrank, eingefroren 3 Monate.'],
+    warum: 'Liefert Gelatine mit Glycin und Prolin, Bausteine des Bindegewebes. Warm, salzig und leicht verdaulich, gut nach dem Fasten. Der Mineralstoffgehalt ist eher gering, sie ersetzt keine Mahlzeit.' },
+  { title: 'Entzündungsarme Lachs-Bowl', meta: '15 Min · 1 Portion', tags: ['Entzündungsarm', 'Omega-3', 'Schnell'],
+    ingredients: ['150 g Lachs (Wildlachs oder MSC) oder 1 Dose Sardinen', '60 g Quinoa', '1 Handvoll Spinat', '½ Avocado', '1 Handvoll Blaubeeren', '15 g Walnüsse', '1 TL Sesam', 'Dressing: 2 EL Olivenöl', 'Saft ½ Zitrone', '1 cm Ingwer gerieben', '1 Prise Kurkuma', 'Salz'],
+    steps: ['Quinoa in der doppelten Menge Wasser 12–15 Min garen.', 'Lachs mit der Hautseite nach unten bei mittlerer Hitze 4 Min braten, wenden, 2 Min fertig garen (oder Sardinen abtropfen lassen).', 'Dressing verrühren, alles anrichten, mit Walnüssen und Sesam bestreuen.'],
+    warum: 'Lachs und Walnüsse liefern Omega-3-Fettsäuren, Beeren und Spinat Polyphenole, Avocado Kalium. Mediterrane Kost dieser Art ist in Studien mit niedrigeren Entzündungswerten verbunden.' },
+  { title: 'Kollagen-Shake', meta: '5 Min · 1 Glas', tags: ['Kollagen', 'Schnell'],
+    ingredients: ['10–15 g Kollagenpeptide (hydrolysiert, Typ I/III)', '150 g Blaubeeren (TK geht)', '½ Banane', '200 ml Kokosdrink ungesüßt', '1 TL frischer Ingwer', 'Saft ½ Zitrone oder ½ Orange'],
+    steps: ['Alles fein mixen und gleich trinken.', 'Am besten etwa 60 Min vor Bewegung oder BFR (siehe Wissen → Kollagen-Timing).'],
+    warum: 'Kollagenpeptide liefern Glycin und Prolin. Vitamin C aus Zitrusfrüchten und Beeren braucht der Körper als Cofaktor für die Kollagenbildung.' },
+  { title: 'Golden Milk mit Kurkuma-Paste', meta: '10 Min · Paste für ca. 2 Wochen', tags: ['Entzündungsarm', 'Vorbereiten'],
+    ingredients: ['Paste: 4 EL Kurkuma gemahlen', '1 EL Ingwer gemahlen', '1 TL schwarzer Pfeffer frisch gemahlen', '120 ml Wasser', '2 EL Kokosöl', 'Pro Tasse: 1 TL Paste', '250 ml Mandeldrink ungesüßt', '1 Prise Zimt'],
+    steps: ['Wasser mit den Gewürzen bei kleiner Hitze 5–7 Min rühren, bis eine dicke Paste entsteht.', 'Vom Herd nehmen, Kokosöl einrühren, in ein Glas füllen. Im Kühlschrank bis zu 2 Wochen haltbar.', 'Für eine Tasse 1 TL Paste in warmem Mandeldrink verrühren, mit Zimt abschmecken.'],
+    warum: 'Curcumin aus Kurkuma wirkt in Studien entzündungshemmend, wird aber schlecht aufgenommen. Piperin aus schwarzem Pfeffer und Fett verbessern die Aufnahme deutlich. Wer Blutverdünner nimmt: größere Mengen Kurkuma vorher ärztlich abklären.' },
+  { title: 'Refeed-Suppe', meta: '20 Min · 1 Portion', tags: ['Refeed'],
+    ingredients: ['500 ml Knochenbrühe oder Pilz-Kombu-Brühe', '1 Möhre fein gewürfelt', '½ Zucchini fein gewürfelt', '1 Handvoll Spinat', '1 cm Ingwer', 'Salz', '1 TL Miso optional (Reis- oder Soja-Miso, Mugi-Miso enthält Gerste)'],
+    steps: ['Brühe erhitzen, Möhre und Zucchini darin 10–12 Min sehr weich garen.', 'Spinat und Ingwer 1 Min ziehen lassen.', 'Vom Herd nehmen und erst jetzt das Miso einrühren.', 'Langsam löffeln, nach einer Tasse 15–20 Min Pause machen.'],
+    warum: 'Warm, salzig, weich gegart und fettarm, das belastet den Magen-Darm-Trakt wenig. Am ersten Tag nach dem Fasten noch keine Rohkost, wenig Fett, kleine Portionen.' },
+  { title: 'Mineralstoff-Salat', meta: '15 Min · 1 Portion', tags: ['Knochen & Gelenke', 'Protein'],
+    ingredients: ['2 Handvoll Rucola und Spinat', '2 Eier', '30 g Parmesan', '1 EL Kürbiskerne', '1 TL Sesam', '½ rote Paprika', '6 Kirschtomaten', '½ Avocado', 'Dressing: 2 EL Olivenöl', '1 EL Zitronensaft', '½ TL Senf', '½ Knoblauchzehe', 'Salz'],
+    steps: ['Eier 9 Min kochen, abschrecken, schälen, vierteln.', 'Kürbiskerne ohne Fett anrösten.', 'Gemüse schneiden, mit dem Dressing mischen, Eier, Parmesan-Späne und Kerne darauf verteilen.'],
+    warum: 'Parmesan und Sesam liefern Calcium, Kürbiskerne Zink und Magnesium, Paprika Vitamin C. Das Lycopin der Tomaten wird mit dem Öl besser aufgenommen.' },
+  { title: 'Shakshuka mit Spinat', meta: '25 Min · 2 Portionen', tags: ['Protein', 'Entzündungsarm'],
+    ingredients: ['1 EL Olivenöl', '1 Zwiebel', '1 rote Paprika', '2 Knoblauchzehen', '1 TL Kreuzkümmel', '1 TL Paprikapulver edelsüß', '1 Prise Chili', '400 g stückige Tomaten', '2 Handvoll Spinat', '4 Eier', '50 g Feta', 'Petersilie', 'Salz', 'Pfeffer'],
+    steps: ['Zwiebel und Paprika in Öl 5 Min weich braten, Knoblauch und Gewürze 1 Min mitrösten.', 'Tomaten zugeben, 8 Min einkochen, salzen, Spinat unterheben.', 'Vier Mulden formen, Eier hineinschlagen, mit Deckel 6–8 Min stocken lassen.', 'Mit Feta und Petersilie servieren.'],
+    warum: 'Viel Protein aus Eiern, dazu Gemüse und Gewürze aus einer Pfanne. Ohne Brot glutenfrei und kohlenhydratarm.' },
+  { title: 'Ofenlachs mit Brokkoli und Zitronen-Tahin', meta: '25 Min · 2 Portionen', tags: ['Omega-3', 'Knochen & Gelenke'],
+    ingredients: ['2 Lachsfilets à 150 g', '1 Brokkoli', '1 rote Zwiebel', '2 EL Olivenöl', '½ Zitrone in Scheiben', 'Salz', 'Pfeffer', 'Sauce: 2 EL Tahin', 'Saft ½ Zitrone', '3–4 EL Wasser', '½ Knoblauchzehe', 'Salz'],
+    steps: ['Ofen auf 200 °C vorheizen. Brokkoli-Röschen und Zwiebelspalten mit 1 EL Öl und Salz 10 Min rösten.', 'Lachs dazulegen, mit Öl, Salz, Pfeffer und Zitronenscheiben belegen, 10–12 Min garen.', 'Tahin mit Zitrone, Knoblauch und Wasser glatt rühren und darüberträufeln.'],
+    warum: 'Omega-3 aus dem Lachs, Calcium aus Tahin, Vitamin C und K aus Brokkoli.' },
+  { title: 'Linsen-Dal mit Kurkuma und Spinat', meta: '30 Min · 3 Portionen', tags: ['Pflanzlich', 'Vorbereiten'],
+    ingredients: ['200 g rote Linsen', '1 EL Kokosöl', '1 Zwiebel', '2 Knoblauchzehen', '3 cm Ingwer', '1 TL Kurkuma', '1 TL Kreuzkümmel', '½ TL Garam Masala', '400 g stückige Tomaten', '200 ml Kokosmilch', '500 ml Wasser', '2 Handvoll Spinat', 'Saft ½ Limette', 'Salz', 'Koriander'],
+    steps: ['Linsen spülen. Zwiebel in Kokosöl 4 Min anschwitzen, Knoblauch, Ingwer und Gewürze 1 Min mitrösten.', 'Linsen, Tomaten, Kokosmilch und Wasser zugeben und 15–18 Min köcheln, bis die Linsen zerfallen.', 'Spinat unterrühren, mit Limette und Salz abschmecken.'],
+    warum: 'Pflanzliches Protein und Ballaststoffe, gut vorzukochen. Etwas kohlenhydratreicher als die anderen Rezepte, eher für Tage mit viel Bewegung.' },
+  { title: 'Joghurt-Schale mit Beeren und Leinsamen', meta: '5 Min · 1 Portion', tags: ['Protein', 'Schnell'],
+    ingredients: ['250 g griechischer Joghurt oder Skyr', '100 g Beeren', '1 EL geschrotete Leinsamen', '15 g Walnüsse', '½ TL Zimt', '10 g Kollagenpeptide optional'],
+    steps: ['Joghurt in eine Schale geben, Beeren, Leinsamen, Walnüsse und Zimt darauf verteilen.'],
+    warum: 'Rund 20–25 g Protein zum Öffnen des Essfensters, pflanzliches Omega-3 aus Leinsamen und Walnüssen, kein zugesetzter Zucker.' },
+  { title: 'Weiße Bohnen mit Sardinen', meta: '10 Min · 1 Portion', tags: ['Omega-3', 'Schnell'],
+    ingredients: ['1 Dose Sardinen in Olivenöl', '1 Dose weiße Bohnen (240 g abgetropft)', '½ rote Zwiebel', '1 Handvoll Rucola', '6 Kirschtomaten', 'Petersilie', 'Saft ½ Zitrone', '1 EL Olivenöl', 'Salz', 'Pfeffer', 'Chiliflocken'],
+    steps: ['Bohnen abspülen. Zwiebel fein schneiden und mit Zitronensaft und Salz 5 Min ziehen lassen.', 'Alles mischen, die Sardinen in Stücken darauflegen.'],
+    warum: 'Sardinen liefern Omega-3, Vitamin D und mit den weichen Gräten auch Calcium. Bohnen bringen Ballaststoffe und sättigen lange.' },
+  { title: 'Ofengemüse mit Kichererbsen und Feta', meta: '35 Min · 2 Portionen', tags: ['Pflanzlich', 'Entzündungsarm'],
+    ingredients: ['1 Aubergine', '1 Zucchini', '1 rote Paprika', '1 rote Zwiebel', '1 Dose Kichererbsen', '3 EL Olivenöl', '1 TL Oregano', '1 TL geräuchertes Paprikapulver', '100 g Feta', 'Salz', 'Pfeffer', '½ Zitrone'],
+    steps: ['Ofen auf 220 °C vorheizen. Gemüse grob würfeln, Kichererbsen abtropfen lassen und trocken tupfen.', 'Alles mit Öl und Gewürzen auf ein Blech geben und 25 Min rösten, einmal wenden.', 'Feta darüberbröseln, 5 Min mitbacken, mit Zitrone beträufeln.'],
+    warum: 'Viel Gemüse und Olivenöl nach mediterranem Muster, Kichererbsen bringen Protein und Ballaststoffe.' },
+  { title: 'Miso-Suppe mit Tofu und Pilzen', meta: '15 Min · 2 Portionen', tags: ['Refeed', 'Pflanzlich'],
+    ingredients: ['800 ml Pilz-Kombu-Brühe', '150 g Tofu', '100 g Shiitake oder Champignons', '1 EL getrocknete Wakame', '2 EL helle Reis- oder Soja-Miso', '2 Frühlingszwiebeln'],
+    steps: ['Brühe erhitzen, Pilze in Scheiben 5 Min darin ziehen lassen.', 'Wakame 2 Min einweichen und mit den Tofuwürfeln in die Suppe geben.', 'Vom Herd nehmen, Miso mit etwas Brühe glatt rühren und einrühren. Frühlingszwiebeln darüberstreuen.'],
+    warum: 'Leicht und warm, mit etwas Protein. Gut als zweite Mahlzeit nach dem Fasten. Miso ist fermentiert, deshalb nicht mehr kochen.' },
+  { title: 'Pilz-Kombu-Brühe', meta: '10 Min + 45 Min · ca. 1,5 L', tags: ['Pflanzlich', 'Refeed', 'Vorbereiten'],
+    ingredients: ['20 g getrocknete Shiitake', '1 Stück Kombu (10 cm)', '1 Zwiebel', '2 Möhren', '3 cm Ingwer', '2 Knoblauchzehen', '1 EL Tamari (glutenfrei)', '1,8 L Wasser', 'Salz'],
+    steps: ['Alles außer Tamari in kaltes Wasser geben und langsam erhitzen. Kombu kurz vor dem Kochen herausnehmen.', '40–45 Min leise köcheln lassen, abseihen, mit Tamari und Salz abschmecken.', 'Die Shiitake fein schneiden und in Suppen weiterverwenden.'],
+    warum: 'Pflanzliche Alternative zur Knochenbrühe, voller Umami-Geschmack, passt zu „Kein Fleisch". Hält 4 Tage im Kühlschrank.' },
+  { title: 'Chia-Pudding mit Himbeeren', meta: '5 Min + über Nacht · 1 Portion', tags: ['Vorbereiten', 'Pflanzlich'],
+    ingredients: ['30 g Chiasamen', '200 ml Kokosdrink ungesüßt', '½ TL Vanille', '100 g Himbeeren', '1 EL Kokosraspel', '1 EL Mandelmus'],
+    steps: ['Chiasamen mit Kokosdrink und Vanille verrühren, nach 10 Min noch einmal rühren, über Nacht kalt stellen.', 'Mit Himbeeren, Kokosraspeln und Mandelmus servieren.'],
+    warum: 'Ballaststoffe und pflanzliches Omega-3 ohne Zucker, fertig, wenn das Essfenster um 12 Uhr öffnet.' },
 ];
 
 const MLD_STEPS = [
@@ -5272,24 +5319,33 @@ function buildSupplements() {
 
 // ══════════════ RECIPES ══════════════
 
-function buildRecipes(filter = 'all') {
+function buildRecipes(filter = 'Alle') {
   const c = document.getElementById('recipes-container'); c.innerHTML = '';
-  RECIPES.filter(r => filter === 'all' || r.tags.includes(filter)).forEach((r,i) => {
+  RECIPES.filter(r => filter === 'Alle' || r.tags.includes(filter)).forEach((r) => {
+    const rid = 'recipe-' + slugifyId(r.title);
     const d = document.createElement('div');
-    d.setAttribute('data-tags', r.tags.join(','));
     d.innerHTML = `
-      <div class="h-row" data-collapse-id="recipe-${i}" onclick="toggleCollapse('recipe-${i}')">
-        <div class="h-row-body"><div class="h-row-title">${escapeHtml(r.title)}</div><div class="h-row-meta">${escapeHtml(r.prep)} · ${r.tags.join(', ')}</div></div>
-        <div class="h-row-chevron" id="collapse-arrow-recipe-${i}">›</div>
+      <div class="h-row" data-collapse-id="${rid}" onclick="toggleCollapse('${rid}')">
+        <div class="h-row-body"><div class="h-row-title">${escapeHtml(r.title)}</div><div class="h-row-meta">${escapeHtml(r.meta)}</div></div>
+        <div class="h-row-chevron" id="collapse-arrow-${rid}">›</div>
       </div>
-      <div id="collapse-body-recipe-${i}" class="closed"><div class="h-expand-copy">${r.text}</div></div>`;
+      <div id="collapse-body-${rid}" class="closed">
+        <div class="h-expand-copy">
+          ${r.ingredients.map(ing => `<div style="padding:4px 0">${escapeHtml(ing)}</div>`).join('')}
+          <ol style="margin:12px 0 0;padding-left:18px">${r.steps.map(s => `<li style="padding:3px 0">${escapeHtml(s)}</li>`).join('')}</ol>
+          <div class="h-meta" style="margin-top:12px;line-height:1.5">${escapeHtml(r.warum)}</div>
+          <div class="h-chip-row" style="margin-top:12px;padding-bottom:16px">
+            ${r.tags.map(t => `<span class="h-pill h-pill--outline" style="min-height:28px;padding:0 12px;font-size:12.5px;cursor:default">${escapeHtml(t)}</span>`).join('')}
+          </div>
+        </div>
+      </div>`;
     c.appendChild(d);
   });
 }
 
 function filterRecipes(tag, btn) {
-  document.querySelectorAll('#collapse-body-recipes .h-pill').forEach(p => p.classList.add('h-pill--outline'));
-  btn.classList.remove('h-pill--outline'); buildRecipes(tag);
+  document.querySelectorAll('#recipe-filter-seg .h-seg-btn').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active'); buildRecipes(tag);
 }
 
 // ══════════════ BREATHING ══════════════
