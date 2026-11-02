@@ -3133,6 +3133,94 @@ const TROPHIES = [
   { id: 'phase1_done', icon: 'P1', title: 'Phase 1 Clear', copy: '14-Tage-Plan: Vorbereitungsphase abgeschlossen.', test: () => storageGet('masterplan_phase1_done') === '1' },
 ];
 
+// ══════════════════════════════════════════════════════════════════════
+// HYBRID — BADGE-RENDERER (Phase 2)
+// ══════════════════════════════════════════════════════════════════════
+// Eine Funktion für alle Abzeichen, egal ob eigenes Ziel oder System-
+// Abzeichen: renderBadge({ cat, tier, icon, drawing, size }) → SVG-String.
+// Form kommt aus der Kategorie, Stufe bestimmt Füllung/Kontur/Symbolfarbe,
+// Symbol ist entweder ein registriertes Icon (24er-Viewbox) oder eine
+// eigene Zeichnung (Striche direkt in 0–100-Koordinaten).
+
+const BADGE_SHAPES = {
+  koerper:  'M50 6a44 44 0 1 1 0 88a44 44 0 1 1 0-88z',
+  menschen: 'M30 8h40a22 22 0 0 1 22 22v40a22 22 0 0 1-22 22H30A22 22 0 0 1 8 70V30A22 22 0 0 1 30 8z',
+  mut:      'M50 5L93 17V55L50 95L7 55V17z',
+  geist:    'M28 8H72L95 50L72 92H28L5 50z',
+  verzicht: 'M33 6H67L94 33V67L67 94H33L6 67V33z',
+};
+
+// 24er-Viewbox, Strich-Icons (nur Kindelemente — Stroke/Fill kommen von
+// der umschließenden <g> beim Rendern, damit Stufenfarbe zentral bleibt).
+const BADGE_ICONS = {
+  schritte:    '<path d="M4 18l8-6 8 6M4 12l8-6 8 6"/>',
+  sonne:       '<circle cx="12" cy="12" r="5"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8l2.8-2.8M17 7l2.8-2.8"/>',
+  tropfen:     '<path d="M12 2C8 8 4 12 4 16a8 8 0 0 0 16 0c0-4-4-8-8-14z"/>',
+  telefon:     '<path d="M6 2h4l2 5-3 2a14 14 0 0 0 6 6l2-3 5 2v4a2 2 0 0 1-2 2C10 20 4 14 4 4a2 2 0 0 1 2-2z"/>',
+  herz:        '<path d="M12 21C7 16 3 12.5 3 8.5 3 5.5 5.5 3 8.5 3c1.7 0 3.1.8 3.5 2 .4-1.2 1.8-2 3.5-2C18.5 3 21 5.5 21 8.5 21 12.5 17 16 12 21z"/>',
+  verbindung:  '<circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8.5 8.5l7 7"/>',
+  flamme:      '<path d="M12 2c3 4 6 7 6 11a6 6 0 0 1-12 0c0-1.5.5-2.5 1.5-3.5-.3 2 .7 3 1.5 3C8 11 9 7 12 2z"/>',
+  berg:        '<path d="M3 20l6-10 4 6 2-3 6 7z"/>',
+  haken:       '<path d="M4 12l5 5L20 6"/>',
+  welle:       '<path d="M2 12c3-6 6-6 9 0s6 6 9 0"/>',
+  mond:        '<path d="M15 3a9 9 0 1 0 6 15 9 9 0 0 1-6-15z"/>',
+  funke:       '<path d="M12 2l1.5 7L21 11l-7.5 2L12 22l-1.5-9L3 11l7.5-2z"/>',
+  blatt:       '<path d="M4 20C4 10 10 4 20 4c0 10-6 16-16 16z"/><path d="M6 18C10 14 14 10 18 6"/>',
+  glas:        '<path d="M7 3h10l-1.5 17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1z"/><path d="M7.5 10h9"/>',
+  buch:        '<path d="M4 4h7a3 3 0 0 1 3 3v13a3 3 0 0 0-3-3H4z"/><path d="M20 4h-7a3 3 0 0 0-3 3v13a3 3 0 0 1 3-3h7z"/>',
+  bett:        '<path d="M3 18v-7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7M3 14h18M6 14v-3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3"/>',
+  tasse:       '<path d="M5 4h11v9a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/><path d="M16 7h2a2 2 0 0 1 0 4h-2"/>',
+  hantel:      '<path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"/>',
+  musik:       '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
+  pflanze:     '<path d="M12 21V10"/><path d="M12 10C7 10 5 7 5 3c5 0 7 3 7 7z"/><path d="M12 10c5 0 7-3 7-7-5 0-7 3-7 7z"/>',
+  sprechblase: '<path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/>',
+  kamera:      '<path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="14" r="4"/>',
+  stift:       '<path d="M3 21l4-1 12-12-3-3L4 17z"/><path d="M14 6l3 3"/>',
+  zuhause:     '<path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>',
+};
+
+function renderBadge({ cat, tier, icon = null, drawing = null, size = 84 }) {
+  const shape = BADGE_SHAPES[cat] || BADGE_SHAPES.koerper;
+  const flaecheFill = tier === 'skizze' ? 'url(#hatch)' : tier === 'tusche' ? 'var(--ink)' : tier === 'glanz' ? 'var(--yellow)' : 'none';
+  const flaecheOpacity = tier === 'skizze' ? '.32' : '1';
+  const konturColor = tier === 'gesperrt' ? 'var(--lock)' : 'var(--ink)';
+  const konturDash = tier === 'gesperrt' ? 'stroke-dasharray:6 7;' : '';
+  const symbolColor = tier === 'tusche' ? 'var(--paper)' : tier === 'gesperrt' ? 'var(--lock)' : 'var(--ink)';
+
+  let svg = `<svg viewBox="0 0 100 100" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">`;
+
+  // 1. Fläche
+  svg += `<path d="${shape}" style="fill:${flaecheFill};fill-opacity:${flaecheOpacity}" filter="url(#w1)"/>`;
+
+  // 2. Nur Tusche: Innenkontur
+  if (tier === 'tusche') {
+    svg += `<path d="${shape}" transform="translate(50 50) scale(0.8) translate(-50 -50)" style="fill:none;stroke:var(--paper);stroke-width:2.2" filter="url(#w2)"/>`;
+  }
+
+  // 3. Kontur
+  svg += `<path d="${shape}" style="fill:none;stroke:${konturColor};stroke-width:3;stroke-linejoin:round;${konturDash}" filter="url(#w1)"/>`;
+
+  // 4. Zweiter, versetzter Strich (Skizzen-Look) — nicht bei gesperrt
+  if (tier !== 'gesperrt') {
+    svg += `<path d="${shape}" transform="translate(1.8 1.4)" style="fill:none;stroke:${konturColor};stroke-width:1.3;opacity:.85" filter="url(#w2)"/>`;
+  }
+
+  // 5. Symbol: eigene Zeichnung ODER registriertes Icon
+  if (drawing && drawing.length) {
+    svg += drawing.map(d => `<path d="${d}" style="fill:none;stroke:${symbolColor};stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round" filter="url(#w3)"/>`).join('');
+  } else if (icon && BADGE_ICONS[icon]) {
+    svg += `<g transform="translate(32 32) scale(1.5)" style="fill:none;stroke:${symbolColor};stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" filter="url(#w3)">${BADGE_ICONS[icon]}</g>`;
+  }
+
+  // 6. Nur Glanz: Glanzstern oben rechts
+  if (tier === 'glanz') {
+    svg += `<path d="M12 2c.7 5.2 3.3 8 9 9-5.7 1-8.3 3.8-9 10-.7-6.2-3.3-9-9-10 5.7-1 8.3-3.8 9-9z" transform="translate(72 -8) scale(1.25)" style="fill:var(--yellow);stroke:var(--ink);stroke-width:1.5" filter="url(#w3)"/>`;
+  }
+
+  svg += `</svg>`;
+  return svg;
+}
+
 // ══════════════ PROTOCOL DATA ══════════════
 
 const VAGUS_DRILLS = [
