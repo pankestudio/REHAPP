@@ -1863,7 +1863,7 @@ input[type="range"] { accent-color: #f0f0f0; }
 .h-pill {
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 56px; padding: 0 28px;
-  border-radius: 999px; border: none;
+  border-radius: 999px !important; border: none;
   background: var(--ink); color: var(--paper);
   font-family: var(--ui); font-size: 16px; font-weight: 500;
   cursor: pointer;
@@ -1874,7 +1874,7 @@ input[type="range"] { accent-color: #f0f0f0; }
 
 .h-circle-btn {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 56px; height: 56px; border-radius: 50%;
+  width: 56px; height: 56px; border-radius: 50% !important;
   background: transparent; border: 1px solid var(--ink); color: var(--ink);
   cursor: pointer;
   transition: transform var(--dur-in) var(--ease), opacity var(--dur-in) var(--ease);
@@ -1929,7 +1929,7 @@ input[type="range"] { accent-color: #f0f0f0; }
 .h-player-ring-wrap { position: relative; width: 300px; height: 300px; margin: 24px auto; }
 .h-player-ring-wrap svg.h-ring { width: 300px; height: 300px; }
 .h-player-blob {
-  position: absolute; inset: 0; margin: auto; width: 180px; height: 180px; border-radius: 50%;
+  position: absolute; inset: 0; margin: auto; width: 180px; height: 180px; border-radius: 50% !important;
   background: var(--yellow, #F2C94C); opacity: 0.35; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(1);
   animation: hPlayerBreathe 4s ease-in-out infinite;
 }
@@ -1955,7 +1955,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   font-family: var(--ui); font-size: 15px; font-weight: 500; color: var(--muted);
 }
 .h-segment-btn.active { color: var(--ink); border-bottom: 2px solid var(--ink); margin-bottom: -1px; }
-.h-badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.h-badge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
 .h-badge-grid button { background: none; border: none; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 
 /* ── Unlock-Feiermoment (Phase 6): eigener Overlay über allen anderen ── */
@@ -1978,6 +1978,14 @@ input[type="range"] { accent-color: #f0f0f0; }
     transition-duration: 0.01ms !important;
     stroke-dashoffset: 0 !important;
   }
+}
+
+/* ── Hybrid Aufräumen, letzte Autorität: kein eckiger Button in der
+   ganzen App — auch die älteren, noch nicht umgebauten Panels (Wissen/
+   Übungen) bekommen Pille statt Ecken. ── */
+.btn, .btn-sm, .btn-cx, .file-btn, .mode-btn, .fpill, .mood-btn, .cal-btn,
+.quick-action, .timer-mode-btn, .phase-badge, .bud-btn, .tag {
+  border-radius: 999px !important;
 }
 </style>
 </head>
@@ -2026,6 +2034,7 @@ input[type="range"] { accent-color: #f0f0f0; }
     </div>
     <div class="h-sep"></div>
 
+    <div id="h-backup-notice"></div>
     <div class="h-line-list" id="h-goal-list"></div>
     <div id="h-goal-empty" style="display:none"></div>
 
@@ -2225,6 +2234,10 @@ input[type="range"] { accent-color: #f0f0f0; }
     <div style="max-width:480px;margin:0 auto;padding:0 20px calc(32px + var(--safe-bot))">
       <div class="h-header">
         <div class="h-title" style="font-size:24px">Sammlung</div>
+      </div>
+      <div style="margin:4px 0 16px">
+        <div id="sm-head-count" style="font-size:clamp(64px,22vw,196px);font-weight:300;line-height:0.8;border-bottom:3px solid var(--ink);display:inline-block">0 /0</div>
+        <div class="h-meta" style="margin-top:8px">Abzeichen freigeschaltet</div>
       </div>
       <div class="h-segment">
         <button type="button" class="h-segment-btn" id="sm-seg-badges" onclick="setSammlungSegment('badges')">Abzeichen</button>
@@ -4434,10 +4447,10 @@ function renderGoalRow(g, done, todayKey) {
   return `
     <div class="h-line-row" data-goal-id="${g.id}" style="justify-content:space-between">
       <div onclick="onGoalRowTap('${g.id}')" style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;cursor:pointer">
-        <div style="flex-shrink:0">${renderBadge({ cat: g.category, tier, icon: g.icon, drawing: g.drawing, size: 32 })}</div>
+        <div style="flex-shrink:0;width:32px;height:32px">${done ? '' : `<svg class="h-arrow-open" viewBox="0 0 32 32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M7 16 H24 M17 9 L24 16 L17 23"/></svg>`}</div>
         <div style="flex:1;min-width:0">
           <div style="position:relative;display:inline-block;max-width:100%">
-            <span class="h-text">${escapeHtml(g.title)}</span>
+            <span class="h-text" ${done ? 'style="color:var(--faint)"' : ''}>${escapeHtml(g.title)}</span>
             ${done ? `<svg class="h-strike-shaft" style="position:absolute;left:-3%;top:38%;width:106%;overflow:visible" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M2 7 Q 30 3, 50 6 T 98 5" stroke-width="3"/></svg>` : ''}
           </div>
           ${g.time ? `<div class="h-meta">${escapeHtml(g.time)}</div>` : ''}
@@ -4505,6 +4518,7 @@ function buildHeuteScreen() {
   }
 
   renderHeuteModuleList();
+  renderBackupNotice();
 }
 
 // Fasten/Wasser/Supplemente-Zeilen unter den Zielen — Module statt eigene
@@ -4643,14 +4657,25 @@ function buildSammlungBadges() {
   const byCat = {};
   goals.forEach(g => { (byCat[g.category] = byCat[g.category] || []).push(g); });
 
-  let html = '';
+  const counterEarnedCount = getCounters().filter(c => computeCounterTier(c) !== 'gesperrt').length;
+  const goalEarnedCount = goals.filter(g => computeTier(g) !== 'gesperrt').length;
+  const totalBadges = goals.length + getCounters().length + 1; // +1 = sys-overcome
+  const earnedBadges = goalEarnedCount + counterEarnedCount + (getEarned('sys-overcome') ? 1 : 0);
+  const headEl = document.getElementById('sm-head-count');
+  if (headEl) headEl.textContent = `${earnedBadges} /${totalBadges}`;
+
+  let legend = `<div style="display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap">` +
+    ['skizze', 'tusche', 'glanz'].map(t => `<div style="display:flex;align-items:center;gap:6px">${renderBadge({ cat: 'geist', tier: t, icon: 'funke', size: 20 })}<span class="h-meta">${unlockTierLabel(t).replace('freigeschaltet.', '')}</span></div>`).join('') +
+    `</div>`;
+
+  let html = legend;
   GOAL_CATEGORIES.forEach(c => {
     const list = byCat[c.id] || [];
     if (!list.length) return;
     html += `<div class="h-meta" style="margin-bottom:10px">${c.label}</div><div class="h-badge-grid">`;
     html += list.map(g => `
       <button type="button" onclick="openBadgeDetail('${g.id}')">
-        ${renderBadge({ cat: g.category, tier: computeTier(g), icon: g.icon, drawing: g.drawing, size: 56 })}
+        ${renderBadge({ cat: g.category, tier: computeTier(g), icon: g.icon, drawing: g.drawing, size: 84 })}
         <span class="h-meta" style="font-size:11px;text-align:center">${escapeHtml(g.title)}${g.paused ? ' · pausiert' : ''}</span>
       </button>
     `).join('');
@@ -4663,7 +4688,7 @@ function buildSammlungBadges() {
   html += `<div class="h-meta" style="margin-bottom:10px">Verzicht-Zähler</div><div class="h-badge-grid">`;
   html += counters.map(c => `
     <button type="button" onclick="openBadgeDetail('${c.id}')">
-      ${renderBadge({ cat: 'verzicht', tier: computeCounterTier(c), icon: c.icon, drawing: c.drawing, size: 56 })}
+      ${renderBadge({ cat: 'verzicht', tier: computeCounterTier(c), icon: c.icon, drawing: c.drawing, size: 84 })}
       <span class="h-meta" style="font-size:11px;text-align:center">${escapeHtml(c.title)} · ${computeCounterDays(c)}d</span>
     </button>
   `).join('');
@@ -4671,11 +4696,11 @@ function buildSammlungBadges() {
 
   html += `<div class="h-meta" style="margin-bottom:10px">System</div><div class="h-badge-grid">
     <button type="button" onclick="openBadgeDetail('sys-overcome')">
-      ${renderBadge({ cat: 'mut', tier: sysEarned ? sysEarned.tier : 'gesperrt', icon: 'funke', size: 56 })}
+      ${renderBadge({ cat: 'mut', tier: sysEarned ? sysEarned.tier : 'gesperrt', icon: 'funke', size: 84 })}
       <span class="h-meta" style="font-size:11px;text-align:center">Überwunden</span>
     </button>
     <button type="button" disabled style="cursor:default">
-      ${renderBadge({ cat: 'verzicht', tier: hundredDays ? 'glanz' : 'gesperrt', icon: 'funke', size: 56 })}
+      ${renderBadge({ cat: 'verzicht', tier: hundredDays ? 'glanz' : 'gesperrt', icon: 'funke', size: 84 })}
       <span class="h-meta" style="font-size:11px;text-align:center">Hundert Tage</span>
     </button>
   </div>`;
@@ -6690,19 +6715,30 @@ async function ensurePersistentStorage() {
     return 'unsupported';
   }
 }
+// Dezente Zeile über der Zielliste statt Toast-Overlay (der Toast legte sich
+// bisher über die letzten Zielzeilen) — höchstens einmal pro Woche.
+let _showBackupNotice = false;
 function maybeShowBackupReminder() {
   try {
     if (persistentStorageState === true || persistentStorageState === 'granted') return;
     const lastExport = parseInt(storageGet('last_export_ts') || '0', 10);
     const daysSinceExport = (Date.now() - lastExport) / 86400000;
     if (lastExport && daysSinceExport < 14) return;
-    const today = new Date().toDateString();
-    if (storageGet('last_backup_reminder_date') === today) return;
-    storageSet('last_backup_reminder_date', today);
-    toast('SPEICHER NICHT DAUERHAFT — BACKUP EMPFOHLEN');
+    const lastShown = parseInt(storageGet('last_backup_notice_ts') || '0', 10);
+    if (lastShown && (Date.now() - lastShown) / 86400000 < 7) return;
+    storageSet('last_backup_notice_ts', String(Date.now()));
+    _showBackupNotice = true;
+    renderBackupNotice();
   } catch (err) {
     console.warn('Backup reminder failed', err);
   }
+}
+function renderBackupNotice() {
+  const el = document.getElementById('h-backup-notice');
+  if (!el) return;
+  el.innerHTML = _showBackupNotice
+    ? `<div class="h-meta" style="padding:8px 0;cursor:pointer" onclick="exportAppData()">Speicher nicht dauerhaft · <span style="text-decoration:underline">Backup sichern →</span></div>`
+    : '';
 }
 function clearScheduledNotifications() {
   while (pendingNotificationTimeouts.length) clearTimeout(pendingNotificationTimeouts.pop());
