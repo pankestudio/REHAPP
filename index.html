@@ -124,10 +124,20 @@ body {
 
 /* ════════════════ SECTIONTITLE ════════════════ */
 .h-section { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 28px; }
-.h-section-row { display: flex; justify-content: space-between; align-items: baseline; }
-.h-section-title { font-size: 40px; font-weight: 300; letter-spacing: -0.03em; line-height: 1; }
-.h-section-count { font-size: 15px; color: var(--muted); }
+.h-section-row { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.h-section-title { font-size: 40px; font-weight: 300; letter-spacing: -0.03em; line-height: 1; flex: 1; min-width: 0; }
+.h-section-count { font-size: 15px; color: var(--muted); flex-shrink: 0; }
 .h-section--sm .h-section-title { font-size: 22px; }
+.h-section-chevron {
+  width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  background: none; border: none; color: var(--muted); cursor: pointer;
+  transform: rotate(90deg);
+  transition: transform 240ms ease-out;
+}
+.h-section.collapsed .h-section-chevron { transform: rotate(0deg); }
+.h-section-body { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 240ms ease-out; }
+.h-section-body > div { overflow: hidden; min-height: 0; }
+.h-section.collapsed .h-section-body { grid-template-rows: 0fr; }
 
 /* ════════════════ PILL / CIRCLEBUTTON ════════════════ */
 .h-pill {
@@ -363,15 +373,13 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     <div class="h-sep"></div>
 
     <div id="h-backup-notice"></div>
-    <div class="h-section" style="margin-top:0;border-top:none;padding-top:0">
-      <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count" id="h-goal-section-count"></div></div>
-    </div>
+    <div class="h-section" data-section-key="home:ziele" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('home:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count" id="h-goal-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:ziele"><div>
+    </div></div></div>
     <div class="h-list" id="h-goal-list" style="margin-top:4px"></div>
     <div id="h-goal-empty" style="display:none"></div>
 
-    <div class="h-section">
-      <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Heute noch</div></div>
-    </div>
+    <div class="h-section" data-section-key="home:heute-noch"><div class="h-section-row" onclick="toggleSection('home:heute-noch')"><div class="h-section-title" style="font-size:28px">Heute noch</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:heute-noch"><div>
+    </div></div></div>
     <div class="h-list" id="h-module-list" style="margin-top:4px"></div>
 
     <div class="h-templates" id="h-templates"></div>
@@ -727,13 +735,11 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     <div class="h-header-right"><div class="h-clock" id="h-clock-move">--:--</div><div class="h-date" id="h-date-move"></div></div>
   </div>
 
-  <div class="h-section" style="margin-top:0;border-top:none;padding-top:0">
-    <div class="h-section-row"><div class="h-section-title">Routinen</div></div>
+  <div class="h-section" data-section-key="move:routinen" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('move:routinen')"><div class="h-section-title">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:routinen"><div>
     <div class="h-list" id="ue-routine-list" style="margin-top:12px"></div>
-  </div>
+  </div></div></div>
 
-  <div class="h-section">
-    <div class="h-section-row"><div class="h-section-title">Atmung</div></div>
+  <div class="h-section" data-section-key="move:atmung"><div class="h-section-row" onclick="toggleSection('move:atmung')"><div class="h-section-title">Atmung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:atmung"><div>
     <div style="margin-top:16px">
       <div class="h-seg" id="breath-mode-seg">
         <button type="button" class="h-seg-btn active" onclick="setBreathMode('4-6',this)">4–6 Lymph<svg class="h-seg-ellipse" viewBox="0 0 80 16" aria-hidden="true"><path d="M3 8 Q 20 2, 40 8 T 77 8"/></svg></button>
@@ -756,10 +762,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
       </div>
       <div class="h-meta" id="breath-cycles-display" style="text-align:center;margin-top:10px"></div>
     </div>
-  </div>
+  </div></div></div>
 
-  <div class="h-section">
-    <div class="h-section-row"><div class="h-section-title">Protokolle</div></div>
+  <div class="h-section" data-section-key="move:protokolle"><div class="h-section-row" onclick="toggleSection('move:protokolle')"><div class="h-section-title">Protokolle</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:protokolle"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" onclick="openMldProtocolPlayer()">
         <div class="h-row-body"><div class="h-row-title">Lymphdrainage — Selbst-MLD</div><div class="h-row-meta">7 Schritte mit Einzel-Timer</div></div>
@@ -778,10 +783,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
       </div>
       <button type="button" class="h-pill" style="width:100%;margin-top:4px" onclick="openBfrProtocolPlayer()">BFR-Protokoll im Player starten</button>
     </div>
-  </div>
+  </div></div></div>
 
-  <div class="h-section">
-    <div class="h-section-row"><div class="h-section-title">Einzelübungen</div></div>
+  <div class="h-section" data-section-key="move:einzeluebungen"><div class="h-section-row" onclick="toggleSection('move:einzeluebungen')"><div class="h-section-title">Einzelübungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:einzeluebungen"><div>
     <div class="h-list" id="ue-list" style="margin-top:12px"></div>
 
     <div class="h-list" id="ue-extra-list">
@@ -882,7 +886,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         </div>
       </div>
     </div>
-  </div>
+  </div></div></div>
 </div>
 
 <!-- ══════════════════════════════════════ XP / GAMIFICATION ══ -->
@@ -894,13 +898,11 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     <div class="h-header-right"><div class="h-clock" id="h-clock-supp">--:--</div><div class="h-date" id="h-date-supp"></div></div>
   </div>
 
-  <div class="h-section" style="margin-top:20px">
-    <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Supplemente</div></div>
+  <div class="h-section" data-section-key="supp:supplemente" style="margin-top:20px"><div class="h-section-row" onclick="toggleSection('supp:supplemente')"><div class="h-section-title" style="font-size:28px">Supplemente</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:supplemente"><div>
     <div class="h-list" style="margin-top:12px" id="supp-wissen-list"></div>
-  </div>
+  </div></div></div>
 
-  <div class="h-section">
-    <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Protokolle</div></div>
+  <div class="h-section" data-section-key="supp:protokolle"><div class="h-section-row" onclick="toggleSection('supp:protokolle')"><div class="h-section-title" style="font-size:28px">Protokolle</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:protokolle"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" data-collapse-id="wissen-mld" onclick="toggleCollapse('wissen-mld')">
         <div class="h-row-body"><div class="h-row-title">Lymphdrainage — Hintergrund</div></div>
@@ -919,10 +921,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         <button type="button" class="h-pill h-pill--outline" style="margin-bottom:16px" onclick="openBfrProtocolPlayer()">Im Player starten</button>
       </div>
     </div>
-  </div>
+  </div></div></div>
 
-  <div class="h-section">
-    <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Atmung</div></div>
+  <div class="h-section" data-section-key="supp:atmung"><div class="h-section-row" onclick="toggleSection('supp:atmung')"><div class="h-section-title" style="font-size:28px">Atmung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:atmung"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" data-collapse-id="wissen-atmung" onclick="toggleCollapse('wissen-atmung')">
         <div class="h-row-body"><div class="h-row-title">Techniken im Überblick</div></div>
@@ -937,10 +938,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         </div>
       </div>
     </div>
-  </div>
+  </div></div></div>
 
-  <div class="h-section">
-    <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Fasten</div></div>
+  <div class="h-section" data-section-key="supp:fasten"><div class="h-section-row" onclick="toggleSection('supp:fasten')"><div class="h-section-title" style="font-size:28px">Fasten</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:fasten"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" data-collapse-id="masterplan" onclick="toggleCollapse('masterplan')">
         <div class="h-row-body"><div class="h-row-title">14-Tage Masterplan</div><div class="h-row-meta">Phasenübersicht</div></div>
@@ -970,10 +970,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         <button type="button" class="h-pill h-pill--outline" style="flex:1" onclick="exportCalendar('google')">Google Kalender</button>
       </div>
     </div>
-  </div>
+  </div></div></div>
 
-  <div class="h-section">
-    <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Rezepte</div></div>
+  <div class="h-section" data-section-key="supp:rezepte"><div class="h-section-row" onclick="toggleSection('supp:rezepte')"><div class="h-section-title" style="font-size:28px">Rezepte</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:rezepte"><div>
     <div class="h-meta" style="margin:12px 0">Nach mehrtägigem Fasten den Kostaufbau mit der Ärztin abstimmen.</div>
     <div class="h-seg" id="recipe-filter-seg" style="margin-bottom:16px">
       <button type="button" class="h-seg-btn active" onclick="filterRecipes('Alle',this)">Alle<svg class="h-seg-ellipse" viewBox="0 0 80 16" aria-hidden="true"><path d="M3 8 Q 20 2, 40 8 T 77 8"/></svg></button>
@@ -983,10 +982,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
       <button type="button" class="h-seg-btn" onclick="filterRecipes('Pflanzlich',this)">Pflanzlich<svg class="h-seg-ellipse" viewBox="0 0 80 16" aria-hidden="true"><path d="M3 8 Q 20 2, 40 8 T 77 8"/></svg></button>
     </div>
     <div class="h-list" id="recipes-container"></div>
-  </div>
+  </div></div></div>
 
-  <div class="h-section">
-    <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Verlauf</div></div>
+  <div class="h-section" data-section-key="supp:verlauf"><div class="h-section-row" onclick="toggleSection('supp:verlauf')"><div class="h-section-title" style="font-size:28px">Verlauf</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:verlauf"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" data-collapse-id="budapest" onclick="toggleCollapse('budapest')">
         <div class="h-row-body"><div class="h-row-title">Budapest-Filter</div><div class="h-row-meta">CRPS-Indikator-Tracking</div></div>
@@ -1018,7 +1016,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         </div>
       </div>
     </div>
-  </div>
+  </div></div></div>
 
 </div>
 
@@ -1140,8 +1138,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     <div class="h-header-right"><div class="h-clock" id="h-clock-settings">--:--</div><div class="h-date" id="h-date-settings"></div></div>
   </div>
 
-  <div class="h-section" style="margin-top:0;border-top:none;padding-top:0">
-    <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Klang</div></div>
+  <div class="h-section" data-section-key="settings:klang" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('settings:klang')"><div class="h-section-title" style="font-size:28px">Klang</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:klang"><div>
     <div class="h-seg" id="set-sound-packs" style="margin:16px 0 24px"></div>
     <div class="h-row" style="cursor:default">
       <div class="h-row-body"><div class="h-row-title">Countdown ab 5 s</div></div>
@@ -1151,30 +1148,25 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
       <div class="h-row-title" style="margin-bottom:6px">Lautstärke</div>
       <input type="range" id="set-volume" min="0" max="100" value="70" oninput="onSetVolumeChange()">
     </div>
-  </div>
+  </div></div></div>
 
-  <div class="h-section">
-    <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Routinen</div></div>
+  <div class="h-section" data-section-key="settings:routinen"><div class="h-section-row" onclick="toggleSection('settings:routinen')"><div class="h-section-title" style="font-size:28px">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:routinen"><div>
     <div class="h-list" id="set-routine-list" style="margin-top:12px"></div>
-  </div>
+  </div></div></div>
 
-  <div class="h-section">
-    <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Übungen</div></div>
+  <div class="h-section" data-section-key="settings:uebungen"><div class="h-section-row" onclick="toggleSection('settings:uebungen')"><div class="h-section-title" style="font-size:28px">Übungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:uebungen"><div>
     <div class="h-list" id="set-exercise-list" style="margin-top:12px"></div>
-  </div>
+  </div></div></div>
 
-  <div class="h-section">
-    <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Ziele</div></div>
+  <div class="h-section" data-section-key="settings:ziele"><div class="h-section-row" onclick="toggleSection('settings:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:ziele"><div>
     <div class="h-list" id="set-goals-list" style="margin-top:12px"></div>
-  </div>
+  </div></div></div>
 
-  <div class="h-section">
-    <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Erinnerungen</div></div>
+  <div class="h-section" data-section-key="settings:erinnerungen"><div class="h-section-row" onclick="toggleSection('settings:erinnerungen')"><div class="h-section-title" style="font-size:28px">Erinnerungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:erinnerungen"><div>
     <div class="h-list" id="set-reminders-list" style="margin-top:12px"></div>
-  </div>
+  </div></div></div>
 
-  <div class="h-section">
-    <div class="h-section-row"><div class="h-section-title" style="font-size:28px">App</div></div>
+  <div class="h-section" data-section-key="settings:app"><div class="h-section-row" onclick="toggleSection('settings:app')"><div class="h-section-title" style="font-size:28px">App</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:app"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" style="cursor:default">
         <div class="h-row-body"><div class="h-row-title">App-Modus</div><div class="h-row-meta" id="install-status-copy">Wird geprüft …</div></div>
@@ -1201,15 +1193,13 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         </div>
       </div>
     </div>
-  </div>
+  </div></div></div>
 
-  <div class="h-section">
-    <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Inhalte</div></div>
+  <div class="h-section" data-section-key="settings:inhalte"><div class="h-section-row" onclick="toggleSection('settings:inhalte')"><div class="h-section-title" style="font-size:28px">Inhalte</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:inhalte"><div>
     <div id="set-content-editor" style="margin-top:12px"></div>
-  </div>
+  </div></div></div>
 
-  <div class="h-section">
-    <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Daten</div></div>
+  <div class="h-section" data-section-key="settings:daten"><div class="h-section-row" onclick="toggleSection('settings:daten')"><div class="h-section-title" style="font-size:28px">Daten</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:daten"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" onclick="exportAppData()">
         <div class="h-row-body"><div class="h-row-title">Backup exportieren</div></div>
@@ -1225,7 +1215,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         <div class="h-row-body"><div class="h-row-title">Alles zurücksetzen</div></div>
       </div>
     </div>
-  </div>
+  </div></div></div>
 
   <div class="h-meta" style="text-align:center;margin:28px 0">REHAPP · Build <span id="set-build-date"></span></div>
 
@@ -2867,33 +2857,43 @@ function buildSammlungBadges() {
     ['skizze', 'tusche', 'glanz'].map(t => `<div style="display:flex;align-items:center;gap:6px">${renderBadge({ cat: 'geist', tier: t, icon: 'funke', size: 20 })}<span class="h-meta">${unlockTierLabel(t).replace('freigeschaltet.', '')}</span></div>`).join('') +
     `</div>`;
 
+  const sammlungSection = (key, title, bodyHtml) => `
+    <div class="h-section h-section--sm" data-section-key="sammlung:${key}" style="margin-top:20px">
+      <div class="h-section-row" onclick="toggleSection('sammlung:${key}')">
+        <div class="h-section-title">${escapeHtml(title)}</div>
+        <div class="h-section-count"></div>
+        <button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+        </button>
+      </div>
+      <div class="h-section-body" id="sb-sammlung:${key}"><div>${bodyHtml}</div></div>
+    </div>`;
+
   let html = legend;
   GOAL_CATEGORIES.forEach(c => {
     const list = byCat[c.id] || [];
     if (!list.length) return;
-    html += `<div class="h-meta" style="margin-bottom:10px">${c.label}</div><div class="h-badge-grid">`;
-    html += list.map(g => `
+    const body = `<div class="h-badge-grid">` + list.map(g => `
       <button type="button" onclick="openBadgeDetail('${g.id}')">
         ${renderBadge({ cat: g.category, tier: badgeTierFor(g), icon: g.icon, drawing: g.drawing, size: 84 })}
         <span class="h-meta" style="font-size:11px;text-align:center">${escapeHtml(g.title)}${g.paused ? ' · pausiert' : ''}</span>
       </button>
-    `).join('');
-    html += `</div>`;
+    `).join('') + `</div>`;
+    html += sammlungSection(c.id, c.label, body);
   });
 
   const counters = getCounters();
   const sysEarned = getEarned('sys-overcome');
   const hundredDays = counters.some(c => computeCounterDays(c) >= 100);
-  html += `<div class="h-meta" style="margin-bottom:10px">Verzicht-Zähler</div><div class="h-badge-grid">`;
-  html += counters.map(c => `
+  const counterBody = `<div class="h-badge-grid">` + counters.map(c => `
     <button type="button" onclick="openBadgeDetail('${c.id}')">
       ${renderBadge({ cat: 'verzicht', tier: computeCounterTier(c), icon: c.icon, drawing: c.drawing, size: 84 })}
       <span class="h-meta" style="font-size:11px;text-align:center">${escapeHtml(c.title)} · ${computeCounterDays(c)}d</span>
     </button>
-  `).join('');
-  html += `</div>`;
+  `).join('') + `</div>`;
+  html += sammlungSection('verzicht-zaehler', 'Verzicht-Zähler', counterBody);
 
-  html += `<div class="h-meta" style="margin-bottom:10px">System</div><div class="h-badge-grid">
+  const systemBody = `<div class="h-badge-grid">
     <button type="button" onclick="openBadgeDetail('sys-overcome')">
       ${renderBadge({ cat: 'mut', tier: sysEarned ? sysEarned.tier : 'gesperrt', icon: 'funke', size: 84 })}
       <span class="h-meta" style="font-size:11px;text-align:center">Überwunden</span>
@@ -2903,8 +2903,10 @@ function buildSammlungBadges() {
       <span class="h-meta" style="font-size:11px;text-align:center">Hundert Tage</span>
     </button>
   </div>`;
+  html += sammlungSection('system', 'System', systemBody);
 
   el.innerHTML = html;
+  restoreSectionCollapseState();
 }
 
 async function resetCounter(id) {
@@ -5024,6 +5026,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   restorePreferences();
   restoreMechanoState();
   restoreCollapseState();
+  restoreSectionCollapseState();
   initSuppTab();
   renderDailyQuote();
   refreshXPUI();
@@ -5087,6 +5090,7 @@ function showPage(id) {
   const ne = document.getElementById(nm[id]); if (ne) ne.classList.add('active');
   currentPage = id;
   window.scrollTo(0, 0);
+  restoreSectionCollapseState();
 }
 
 // ══════════════ TIMER ══════════════
@@ -5871,6 +5875,42 @@ function restoreCollapseState() {
     const shouldBeOpen = saved === '1';
     if (body) body.classList.toggle('closed', !shouldBeOpen);
     if (arrow) arrow.classList.toggle('open', shouldBeOpen);
+  });
+}
+
+// ══════════════ SECTIONTITLE — einklappbar (Runde 4 Punkt 4) ══════════════
+// Jede .h-section trägt data-section-key="{tab}:{slug}". Zustand pro Sektion
+// in localStorage (collapsed:{key}), überlebt also einen Neuladen. Die Höhe
+// animiert über grid-template-rows 1fr/0fr (siehe CSS), der Chevron dreht
+// sich um 90°. .h-section-count wird nur dann automatisch mit der Anzahl
+// befüllt, wenn das Element keine eigene id hat — Sektionen mit fest
+// verdrahtetem Zähler (z.B. "Ziele" mit h-goal-section-count) verwalten ihren
+// Zähler bereits selbst und zeigen ihn unabhängig vom Auf-/Zugeklappt-Zustand.
+function computeSectionItemCount(bodyEl) {
+  if (!bodyEl) return 0;
+  return bodyEl.querySelectorAll('.h-row, .h-seg-btn, .h-badge-grid > button').length;
+}
+function applySectionCollapseVisual(section, collapsed) {
+  section.classList.toggle('collapsed', collapsed);
+  const chevron = section.querySelector('.h-section-chevron');
+  if (chevron) chevron.setAttribute('aria-expanded', String(!collapsed));
+  const countEl = section.querySelector('.h-section-count');
+  if (countEl && !countEl.id) {
+    const body = section.querySelector('.h-section-body');
+    countEl.textContent = collapsed ? '· ' + computeSectionItemCount(body) : '';
+  }
+}
+function toggleSection(key) {
+  const section = document.querySelector(`.h-section[data-section-key="${CSS.escape(key)}"]`);
+  if (!section) return;
+  const collapsed = !section.classList.contains('collapsed');
+  applySectionCollapseVisual(section, collapsed);
+  storageSet('collapsed:' + key, collapsed ? '1' : '0');
+}
+function restoreSectionCollapseState() {
+  document.querySelectorAll('.h-section[data-section-key]').forEach(section => {
+    const key = section.dataset.sectionKey;
+    applySectionCollapseVisual(section, storageGet('collapsed:' + key) === '1');
   });
 }
 
