@@ -1924,6 +1924,17 @@ input[type="range"] { accent-color: #f0f0f0; }
 .h-ring-label .h-num-xl { font-size: 44px; }
 .h-templates:empty { display: none; }
 
+/* ── Ziel-Sheet (Phase 5): Vollbild-Overlay, gleiches z-index-Muster wie
+   der spätere Player-Overlay (fixed;inset:0;z-index:600). ── */
+.h-sheet-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 600;
+  background: var(--paper);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.h-sheet-overlay.open { display: block; }
+
 @media (prefers-reduced-motion: reduce) {
   .h-screen, .h-screen *, .h-pen-draw {
     animation-duration: 0.01ms !important;
@@ -1988,8 +1999,67 @@ input[type="range"] { accent-color: #f0f0f0; }
     <div class="h-line-list" id="h-goal-list"></div>
     <div id="h-goal-empty" style="display:none"></div>
 
+    <div style="display:flex;justify-content:center;margin:24px 0">
+      <button type="button" class="h-circle-btn" onclick="openGoalSheet()" aria-label="Neues Ziel">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
+      </button>
+    </div>
+
     <div class="h-sep"></div>
     <div class="h-templates" id="h-templates"></div>
+  </div>
+
+  <!-- ZIEL-SHEET (Phase 5): Erstellen + Bearbeiten, Vollbild-Overlay -->
+  <div class="h-sheet-overlay" id="goal-sheet-overlay" role="dialog" aria-modal="true" aria-label="Ziel bearbeiten">
+    <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
+      <div class="h-header">
+        <div class="h-title" id="gs-title" style="font-size:24px">Neues Ziel</div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeGoalSheet()" aria-label="Schließen">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        </button>
+      </div>
+
+      <div id="gs-badge-preview" style="display:flex;justify-content:center;gap:20px;margin-bottom:28px"></div>
+
+      <div style="margin-bottom:20px">
+        <div class="h-meta" style="margin-bottom:6px">Name</div>
+        <input type="text" id="gs-name" placeholder="z.B. Spaziergang" autocomplete="off"
+          style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);padding:8px 0;box-sizing:border-box;color:var(--ink);font-family:var(--ui);font-size:16px">
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div class="h-meta" style="margin-bottom:8px">Kategorie</div>
+        <div id="gs-categories" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div class="h-meta" style="margin-bottom:8px">Zeichen</div>
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <button type="button" class="h-pill h-pill--outline" id="gs-mode-icon" style="min-height:40px;padding:0 18px;font-size:14px" onclick="setGoalSheetDrawMode(false)">Symbol</button>
+          <button type="button" class="h-pill h-pill--outline" id="gs-mode-draw" style="min-height:40px;padding:0 18px;font-size:14px" onclick="setGoalSheetDrawMode(true)">Selbst zeichnen</button>
+        </div>
+        <div id="gs-icon-grid" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+        <div id="gs-draw-wrap" style="display:none">
+          <canvas id="gs-draw-canvas" width="280" height="280" style="width:100%;max-width:280px;aspect-ratio:1;border:1px solid var(--line);touch-action:none;display:block;margin:0 auto"></canvas>
+          <div style="display:flex;justify-content:center;margin-top:10px">
+            <button type="button" class="h-pill h-pill--outline" style="min-height:36px;padding:0 16px;font-size:13px" onclick="clearGoalSheetDrawing()">Löschen</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div class="h-meta" style="margin-bottom:8px">Rhythmus</div>
+        <div id="gs-rhythms" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      </div>
+
+      <div style="margin-bottom:32px">
+        <div class="h-meta" style="margin-bottom:6px">Uhrzeit (optional)</div>
+        <input type="time" id="gs-time" style="background:transparent;border:1px solid var(--line);padding:8px 10px;color:var(--ink);font-family:var(--ui);font-size:14px">
+      </div>
+
+      <button type="button" class="h-pill" style="width:100%" onclick="saveGoalFromSheet()">Speichern</button>
+      <button type="button" class="h-pill h-pill--outline" id="gs-archive-btn" style="width:100%;margin-top:12px;display:none" onclick="archiveGoalFromSheet()">Archivieren</button>
+    </div>
   </div>
 
   <!-- HEADER -->
@@ -4145,6 +4215,276 @@ async function addGoalFromTemplate(slug) {
   if (!tpl) return;
   await saveGoal({ ...tpl, id: 'goal-' + slugifyId(tpl.title) + '-' + Date.now().toString(36), drawing: null, time: null });
   buildHeuteScreen();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// ZIEL-SHEET — Hybrid Phase 5 (Erstellen/Bearbeiten, Freihand-Zeichnen)
+// ══════════════════════════════════════════════════════════════════════
+// Einstiegspunkt für NEUE Ziele ist der "+"-Button im Heute-Screen. Das
+// Bearbeiten bestehender Ziele über eine Tap-Geste in der Liste kommt erst
+// mit der Ziele-Verwaltung in Phase 8 (Setup) — die Sheet-Logik selbst
+// unterstützt beide Fälle bereits jetzt vollständig (openGoalSheet(id)).
+
+const GOAL_CATEGORIES = [
+  { id: 'koerper',  label: 'Körper' },
+  { id: 'menschen', label: 'Menschen' },
+  { id: 'mut',      label: 'Mut' },
+  { id: 'geist',    label: 'Geist' },
+  { id: 'verzicht', label: 'Verzicht' },
+];
+const GOAL_RHYTHMS = [
+  { id: 'taeglich', label: 'Täglich' },
+  { id: 'drei',     label: '3× Woche' },
+  { id: 'woche',    label: 'Wöchentlich' },
+  { id: 'einmal',   label: 'Einmalig' },
+];
+
+let _goalSheetState = null;
+let _gsDrawing = false;
+let _gsRawStroke = [];
+let _gsCanvasCtx = null;
+let _gsCanvasBound = false;
+
+// Ramer-Douglas-Peucker: reduziert eine rohe Pointer-Spur auf die Stützpunkte,
+// die ihre Form tragen — macht aus hunderten Pointermove-Samples einen
+// kompakten SVG-Pfad, der als Badge-Zeichnung persistiert werden kann.
+function perpendicularDistance(p, a, b) {
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const len = Math.hypot(dx, dy);
+  if (len === 0) return Math.hypot(p.x - a.x, p.y - a.y);
+  const t = ((p.x - a.x) * dx + (p.y - a.y) * dy) / (len * len);
+  const projX = a.x + t * dx, projY = a.y + t * dy;
+  return Math.hypot(p.x - projX, p.y - projY);
+}
+function simplifyRDP(points, epsilon) {
+  if (points.length < 3) return points.slice();
+  let maxDist = 0, idx = 0;
+  const first = points[0], last = points[points.length - 1];
+  for (let i = 1; i < points.length - 1; i++) {
+    const d = perpendicularDistance(points[i], first, last);
+    if (d > maxDist) { maxDist = d; idx = i; }
+  }
+  if (maxDist > epsilon) {
+    const left = simplifyRDP(points.slice(0, idx + 1), epsilon);
+    const right = simplifyRDP(points.slice(idx), epsilon);
+    return left.slice(0, -1).concat(right);
+  }
+  return [first, last];
+}
+
+function pathDToPoints(d) {
+  return d.replace(/^M\s*/, '').split(/\s*L\s*/).map(pair => {
+    const [x, y] = pair.trim().split(/\s+/).map(Number);
+    return { x, y };
+  });
+}
+function pointsToPathD(points) {
+  return 'M ' + points.map(p => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L ');
+}
+
+function canvasPointFromEvent(canvas, e) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x: (e.clientX - rect.left) / rect.width * canvas.width,
+    y: (e.clientY - rect.top) / rect.height * canvas.height,
+  };
+}
+function canvasPointToLogical(canvas, p) {
+  return { x: p.x / canvas.width * 100, y: p.y / canvas.height * 100 };
+}
+
+function ensureGoalSheetCanvas() {
+  const canvas = document.getElementById('gs-draw-canvas');
+  if (!canvas || _gsCanvasBound) return;
+  _gsCanvasBound = true;
+  _gsCanvasCtx = canvas.getContext('2d');
+
+  canvas.addEventListener('pointerdown', e => {
+    if ((_goalSheetState.drawing || []).length >= 20) return;
+    canvas.setPointerCapture(e.pointerId);
+    _gsDrawing = true;
+    _gsRawStroke = [canvasPointFromEvent(canvas, e)];
+  });
+  canvas.addEventListener('pointermove', e => {
+    if (!_gsDrawing) return;
+    _gsRawStroke.push(canvasPointFromEvent(canvas, e));
+    drawGoalSheetLiveStroke();
+  });
+  const finishStroke = () => {
+    if (!_gsDrawing) return;
+    _gsDrawing = false;
+    if (_gsRawStroke.length >= 2) {
+      const simplified = simplifyRDP(_gsRawStroke, 2.2).map(p => canvasPointToLogical(canvas, p));
+      if (!_goalSheetState.drawing) _goalSheetState.drawing = [];
+      if (_goalSheetState.drawing.length < 20) _goalSheetState.drawing.push(pointsToPathD(simplified));
+    }
+    _gsRawStroke = [];
+    redrawGoalSheetCanvas();
+    renderGoalSheetPreview();
+  };
+  canvas.addEventListener('pointerup', finishStroke);
+  canvas.addEventListener('pointercancel', finishStroke);
+}
+
+function drawGoalSheetLiveStroke() {
+  const canvas = document.getElementById('gs-draw-canvas');
+  redrawGoalSheetCanvas();
+  const ctx = _gsCanvasCtx;
+  ctx.strokeStyle = '#14140F'; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath();
+  _gsRawStroke.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.stroke();
+}
+
+function redrawGoalSheetCanvas() {
+  const canvas = document.getElementById('gs-draw-canvas');
+  if (!canvas || !_gsCanvasCtx) return;
+  _gsCanvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+  _gsCanvasCtx.strokeStyle = '#14140F'; _gsCanvasCtx.lineWidth = 3; _gsCanvasCtx.lineCap = 'round'; _gsCanvasCtx.lineJoin = 'round';
+  (_goalSheetState.drawing || []).forEach(d => {
+    const pts = pathDToPoints(d);
+    _gsCanvasCtx.beginPath();
+    pts.forEach((p, i) => {
+      const cx = p.x / 100 * canvas.width, cy = p.y / 100 * canvas.height;
+      i === 0 ? _gsCanvasCtx.moveTo(cx, cy) : _gsCanvasCtx.lineTo(cx, cy);
+    });
+    _gsCanvasCtx.stroke();
+  });
+}
+
+function clearGoalSheetDrawing() {
+  _goalSheetState.drawing = [];
+  redrawGoalSheetCanvas();
+  renderGoalSheetPreview();
+}
+
+function setGoalSheetDrawMode(isDraw) {
+  _goalSheetState.isDrawMode = isDraw;
+  document.getElementById('gs-mode-icon').classList.toggle('h-pill--outline', isDraw);
+  document.getElementById('gs-mode-draw').classList.toggle('h-pill--outline', !isDraw);
+  document.getElementById('gs-icon-grid').style.display = isDraw ? 'none' : '';
+  document.getElementById('gs-draw-wrap').style.display = isDraw ? '' : 'none';
+  if (isDraw) {
+    ensureGoalSheetCanvas();
+    requestAnimationFrame(redrawGoalSheetCanvas);
+  }
+  renderGoalSheetIconGrid();
+  renderGoalSheetPreview();
+}
+
+function renderGoalSheetCategories() {
+  const el = document.getElementById('gs-categories');
+  el.innerHTML = GOAL_CATEGORIES.map(c => `
+    <button type="button" class="h-pill ${_goalSheetState.category === c.id ? '' : 'h-pill--outline'}" style="min-height:40px;padding:0 16px;font-size:14px" onclick="setGoalSheetCategory('${c.id}')">${c.label}</button>
+  `).join('');
+}
+function setGoalSheetCategory(cat) {
+  _goalSheetState.category = cat;
+  renderGoalSheetCategories();
+  renderGoalSheetIconGrid();
+  renderGoalSheetPreview();
+}
+
+function renderGoalSheetRhythms() {
+  const el = document.getElementById('gs-rhythms');
+  el.innerHTML = GOAL_RHYTHMS.map(r => `
+    <button type="button" class="h-pill ${_goalSheetState.rhythm === r.id ? '' : 'h-pill--outline'}" style="min-height:40px;padding:0 16px;font-size:14px" onclick="setGoalSheetRhythm('${r.id}')">${r.label}</button>
+  `).join('');
+}
+function setGoalSheetRhythm(r) {
+  _goalSheetState.rhythm = r;
+  renderGoalSheetRhythms();
+}
+
+function renderGoalSheetIconGrid() {
+  const el = document.getElementById('gs-icon-grid');
+  el.innerHTML = Object.keys(BADGE_ICONS).map(iconKey => {
+    const selected = !_goalSheetState.isDrawMode && _goalSheetState.icon === iconKey;
+    return `<button type="button" class="h-circle-btn h-circle-btn--sm" style="${selected ? 'background:var(--ink)' : ''}" onclick="setGoalSheetIcon('${iconKey}')" aria-label="${iconKey}" aria-pressed="${selected}">
+      <svg viewBox="0 0 24 24" width="20" height="20"><g style="fill:none;stroke:${selected ? 'var(--paper)' : 'var(--ink)'};stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round">${BADGE_ICONS[iconKey]}</g></svg>
+    </button>`;
+  }).join('');
+}
+function setGoalSheetIcon(iconKey) {
+  _goalSheetState.icon = iconKey;
+  setGoalSheetDrawMode(false);
+}
+
+function renderGoalSheetPreview() {
+  const el = document.getElementById('gs-badge-preview');
+  el.innerHTML = ['skizze', 'tusche', 'glanz'].map(tier => `
+    <div style="text-align:center">
+      ${renderBadge({
+        cat: _goalSheetState.category,
+        tier,
+        icon: _goalSheetState.isDrawMode ? null : _goalSheetState.icon,
+        drawing: _goalSheetState.isDrawMode ? _goalSheetState.drawing : null,
+        size: 64,
+      })}
+      <div class="h-meta" style="margin-top:4px;text-transform:capitalize">${tier}</div>
+    </div>
+  `).join('');
+}
+
+function openGoalSheet(goalId = null) {
+  const existing = goalId ? getGoal(goalId) : null;
+  _goalSheetState = existing
+    ? {
+        id: existing.id, title: existing.title, category: existing.category,
+        icon: existing.icon || 'funke', drawing: existing.drawing ? existing.drawing.slice() : null,
+        isDrawMode: !!(existing.drawing && existing.drawing.length),
+        rhythm: existing.rhythm, time: existing.time || '', xp: existing.xp || 10,
+      }
+    : { id: null, title: '', category: 'koerper', icon: 'schritte', drawing: null, isDrawMode: false, rhythm: 'taeglich', time: '', xp: 10 };
+
+  document.getElementById('gs-title').textContent = existing ? 'Ziel bearbeiten' : 'Neues Ziel';
+  document.getElementById('gs-name').value = _goalSheetState.title;
+  document.getElementById('gs-time').value = _goalSheetState.time;
+  document.getElementById('gs-archive-btn').style.display = existing ? '' : 'none';
+
+  renderGoalSheetCategories();
+  renderGoalSheetRhythms();
+  setGoalSheetDrawMode(_goalSheetState.isDrawMode);
+  redrawGoalSheetCanvas();
+
+  document.getElementById('goal-sheet-overlay').classList.add('open');
+}
+
+function closeGoalSheet() {
+  document.getElementById('goal-sheet-overlay').classList.remove('open');
+}
+
+async function saveGoalFromSheet() {
+  const name = document.getElementById('gs-name').value.trim();
+  if (!name) { toast('BITTE EINEN NAMEN EINGEBEN'); return; }
+  const time = document.getElementById('gs-time').value || null;
+  const prior = _goalSheetState.id ? getGoal(_goalSheetState.id) : null;
+  const goal = {
+    id: _goalSheetState.id,
+    title: name,
+    category: _goalSheetState.category,
+    icon: _goalSheetState.isDrawMode ? null : _goalSheetState.icon,
+    drawing: _goalSheetState.isDrawMode && _goalSheetState.drawing && _goalSheetState.drawing.length ? _goalSheetState.drawing : null,
+    rhythm: _goalSheetState.rhythm,
+    time,
+    xp: _goalSheetState.xp || 10,
+    archived: prior ? prior.archived : false,
+    createdAt: prior ? prior.createdAt : undefined,
+    sourceHabitId: prior ? prior.sourceHabitId : undefined,
+  };
+  await saveGoal(goal);
+  closeGoalSheet();
+  buildHeuteScreen();
+  toast(prior ? 'ZIEL AKTUALISIERT' : 'ZIEL ANGELEGT');
+}
+
+async function archiveGoalFromSheet() {
+  if (!_goalSheetState || !_goalSheetState.id) return;
+  if (!confirm('Dieses Ziel wirklich archivieren? Es verschwindet aus der Heute-Liste, der Fortschritt bleibt erhalten.')) return;
+  await archiveGoal(_goalSheetState.id);
+  closeGoalSheet();
+  buildHeuteScreen();
+  toast('ZIEL ARCHIVIERT');
 }
 
 function toggleHabitWhy(id, e) {
