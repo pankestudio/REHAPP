@@ -2504,11 +2504,19 @@ input[type="range"] { accent-color: #f0f0f0; }
     <div class="page-sub">Routinen // Atmung // Protokolle // Einzelübungen</div>
   </div>
 
+  <!-- ROUTINEN (Hybrid Aufräumen): Morgen/Mittag/Abend, je mit Mini-Version -->
+  <div class="h-embed" style="margin:0 14px 8px">
+    <div class="h-meta" style="margin-bottom:6px">Routinen</div>
+    <div class="h-line-list" id="ue-routine-list"></div>
+  </div>
+
   <!-- EXERCISES (Hybrid Aufräumen): Player-gestützte Übungsliste, vormals eigenes Overlay -->
-  <div class="h-embed" style="margin:0 14px 16px">
+  <div class="h-embed" style="margin:16px 14px 16px">
+    <div class="h-meta" style="margin-bottom:6px">Einzelübungen</div>
     <div class="h-line-list" id="ue-list"></div>
   </div>
 
+  <div class="h-embed" style="margin:0 14px 4px"><div class="h-meta">Atmung</div></div>
   <!-- BREATHING -->
   <div class="panel">
     <div class="panel-label">Atemtraining</div>
@@ -2555,9 +2563,10 @@ input[type="range"] { accent-color: #f0f0f0; }
     </div>
   </div>
 
+  <div class="h-embed" style="margin:20px 14px 4px"><div class="h-meta">Protokolle</div></div>
   <!-- MLD QUICK -->
   <div class="panel">
-    <div class="row" onclick="showPage('pg-mld')" style="border-bottom:none">
+    <div class="row" onclick="openMldProtocolPlayer()" style="border-bottom:none">
       <div class="row-icon"><svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
       <div class="row-body"><div class="row-title">Lymphdrainage — Selbst-MLD</div><div class="row-sub">7 Schritte mit Einzel-Timer — 25 Min →</div></div>
     </div>
@@ -2573,7 +2582,7 @@ input[type="range"] { accent-color: #f0f0f0; }
       <div style="padding:10px 16px 6px;font-size:var(--fs-sm);color:var(--text2);line-height:1.7">
         Phase 2 passiv (nur Kompression). Phase 3 aktiv: 30-15-15-15 Schema. GH-Ausschüttung ohne Gelenkbelastung. Fibroblasten-Aktivierung für Kapsel & Bänder.
       </div>
-      <div class="row" onclick="showBFR()" style="border-bottom:none">
+      <div class="row" onclick="openBfrProtocolPlayer()" style="border-bottom:none">
         <div class="row-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></div>
         <div class="row-body"><div class="row-title">BFR Protokoll starten</div><div class="row-sub">5 Schritte — Manschette, Übungen, Lösen →</div></div>
       </div>
@@ -2841,9 +2850,20 @@ input[type="range"] { accent-color: #f0f0f0; }
 <!-- ══════════════════════════════════════ SUPPLEMENTE ══ -->
 <div id="pg-supp" class="page scroll-page">
   <div class="page-header">
-    <div class="page-title">Supplemente</div>
-    <div class="page-sub">Täglicher Stack</div>
+    <div class="page-title">Wissen</div>
+    <div class="page-sub">Notfall · Supplemente · Protokolle · Atmung</div>
   </div>
+
+  <!-- NOTFALL-CHECK — fest angepinnt, ein Tipp öffnet die volle Checkliste -->
+  <div class="panel" style="border-color:var(--red)" onclick="showEmergency()">
+    <div class="row" style="border-bottom:none;cursor:pointer">
+      <div class="row-icon" style="color:var(--red)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+      <div class="row-body"><div class="row-title" style="color:var(--red)">Notfall-Check: Thrombose-Warnzeichen</div><div class="row-sub">Sofort prüfen bei Verdacht →</div></div>
+    </div>
+  </div>
+
+  <div class="h-sep" style="margin:20px 14px"></div>
+  <div class="h-meta" style="margin:0 14px 10px">Supplemente</div>
 
   <div class="status-banner">
     <div class="status-title">⚡ Kollagen-Timing Window</div>
@@ -2858,6 +2878,48 @@ input[type="range"] { accent-color: #f0f0f0; }
 
   <div class="supp-time"><div class="supp-dot purple"></div><div class="supp-time-lbl">Abends</div></div>
   <div class="panel"><div id="supp-evening"></div></div>
+
+  <div class="h-sep" style="margin:20px 14px"></div>
+  <div class="h-meta" style="margin:0 14px 10px">Protokolle</div>
+  <div class="panel">
+    <div class="panel-collapse-header" data-collapse-id="wissen-mld" onclick="toggleCollapse('wissen-mld')">
+      <div class="panel-collapse-title">Lymphdrainage — Hintergrund</div>
+      <div class="panel-collapse-arrow" id="collapse-arrow-wissen-mld">▼</div>
+    </div>
+    <div id="collapse-body-wissen-mld" class="closed">
+      <div style="padding:8px 16px 14px;font-size:var(--fs-sm);color:var(--text2);line-height:1.7">
+        Federleichter Druck ca. 30–40 mmHg. Kein Öl. Immer Richtung Herz. Haut wandern lassen, nicht verschieben. Die geführte 7-Schritte-Anwendung mit Timer läuft in Übungen → Protokolle.
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-collapse-header" data-collapse-id="wissen-bfr" onclick="toggleCollapse('wissen-bfr')">
+      <div class="panel-collapse-title">BFR-Training — Hintergrund</div>
+      <div class="panel-collapse-arrow" id="collapse-arrow-wissen-bfr">▼</div>
+    </div>
+    <div id="collapse-body-wissen-bfr" class="closed">
+      <div style="padding:8px 16px 14px;font-size:var(--fs-sm);color:var(--text2);line-height:1.7">
+        Phase 2 passiv (nur Kompression). Phase 3 aktiv: 30-15-15-15-Schema. GH-Ausschüttung ohne Gelenkbelastung, Fibroblasten-Aktivierung für Kapsel &amp; Bänder. Manschettendruck 60–80% LOP, Puls distal tastbar lassen — bei Taubheit, Blaufärbung oder Schmerz sofort lösen. Das geführte 5-Schritte-Protokoll läuft in Übungen → Protokolle.
+      </div>
+    </div>
+  </div>
+
+  <div class="h-sep" style="margin:20px 14px"></div>
+  <div class="h-meta" style="margin:0 14px 10px">Atmung</div>
+  <div class="panel">
+    <div class="panel-collapse-header" data-collapse-id="wissen-atmung" onclick="toggleCollapse('wissen-atmung')">
+      <div class="panel-collapse-title">Techniken im Überblick</div>
+      <div class="panel-collapse-arrow" id="collapse-arrow-wissen-atmung">▼</div>
+    </div>
+    <div id="collapse-body-wissen-atmung" class="closed">
+      <div style="padding:8px 16px 14px;font-size:var(--fs-sm);color:var(--text2);line-height:1.8">
+        <strong style="color:var(--text)">4–6 Lymph:</strong> Einatmen 4 Sek, ausatmen 6 Sek — aktiviert den Parasympathikus und beschleunigt den Lymphfluss, ideal nach MLD.<br>
+        <strong style="color:var(--text)">Box 4×4:</strong> 4-4-4-4 — direkteste Methode zur Parasympathikus-Aktivierung bei Stress und Schmerzspitzen.<br>
+        <strong style="color:var(--text)">4-7-8 Schlaf:</strong> stimuliert den Vagusnerv, senkt Herzfrequenz und Entzündungsmarker.<br>
+        <strong style="color:var(--text)">Wim Hof:</strong> kontrollierte Hyperventilation + Retention, stärkt die Stressregulation. Alle Techniken laufen geführt in Übungen → Atmung.
+      </div>
+    </div>
+  </div>
 
   <div class="spacer"></div>
 </div>
@@ -4968,7 +5030,24 @@ function buildUebungenList() {
     </div>
   `).join('') : `<div class="h-meta">Noch keine Übungen angelegt.</div>`;
 }
-function openUebungen() { buildUebungenList(); }
+function buildRoutineList() {
+  const el = document.getElementById('ue-routine-list');
+  if (!el) return;
+  const routines = getActiveHeuteGoals().filter(g => g.kind === 'routine');
+  el.innerHTML = routines.map(g => `
+    <div class="h-line-row">
+      <div style="flex:1;cursor:pointer" onclick="openRoutinePlayer('${g.id}')">
+        <div class="h-text">${escapeHtml(g.title)}</div>
+        <div class="h-meta">${g.steps.length} Schritte${g.time ? ' · ' + escapeHtml(g.time) : ''}</div>
+      </div>
+      <button type="button" class="h-pill h-pill--outline" style="min-height:32px;padding:0 12px;font-size:12px;flex-shrink:0" onclick="openRoutinePlayer('${g.id}', true)">Mini</button>
+      <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="openRoutinePlayer('${g.id}')" aria-label="${escapeHtml(g.title)} starten">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
+function openUebungen() { buildRoutineList(); buildUebungenList(); }
 
 // ── Sound-Pakete: 4 kurze, per Web Audio synthetisierte Zähltöne.
 // "stumm" erzeugt bewusst keinen Node. Lautstärke/Vorschau-UI kommt mit
@@ -5143,6 +5222,7 @@ async function finishPlayerExercise() {
     unlocked = res.unlocked;
   }
   if (!seq) awardXP('exercise_' + ex.id, ex.xp || 10, ex.title, { scope: 'day', silent: true });
+  else if (seq.completionAward) awardXP(seq.completionAward.key, seq.completionAward.amount, seq.completionAward.label, { scope: 'day', silent: true });
 
   setTimeout(() => {
     closePlayer();
@@ -5185,6 +5265,28 @@ function openRoutinePlayer(routineGoalId, mini = false) {
   document.getElementById('player-overlay').classList.add('open');
   loadPlayerStep(0);
 }
+
+// Geführte Protokolle (MLD/BFR) laufen über denselben Player-Mechanismus
+// wie Routinen, nur ohne verknüpftes Ziel — Abschluss vergibt stattdessen
+// direkt XP (wie bisher completeVagusSession()/completeBFRSession()).
+function openProtocolPlayer(stepsRaw, title, completionAward) {
+  const steps = stepsRaw.map(s => ({ title: s.title, cue: s.desc, sec: s.sec }));
+  _playerState = {
+    exercise: null, totalSec: 0, soundPack: getSoundPack(),
+    running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null,
+    sequence: { steps, idx: 0, routineGoalId: null, title, completionAward },
+  };
+  renderSoundPackPicker();
+  document.getElementById('player-overlay').classList.add('open');
+  loadPlayerStep(0);
+}
+function openMldProtocolPlayer() {
+  openProtocolPlayer(MLD_STEPS, 'Lymphdrainage', { key: 'mld_session_' + getLocalDateKey(), amount: 25, label: 'Lymphdrainage abgeschlossen' });
+}
+function openBfrProtocolPlayer() {
+  openProtocolPlayer(BFR_STEPS, 'BFR-Training', { key: 'bfr_session_' + getLocalDateKey(), amount: 25, label: 'BFR abgeschlossen' });
+}
+
 function loadPlayerStep(idx) {
   const seq = _playerState.sequence;
   seq.idx = idx;
