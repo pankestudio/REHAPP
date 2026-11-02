@@ -4,6 +4,10 @@
   "private": true,
   "scripts": {
     "validate": "node validate.js",
+    "check-ui": "node scripts/check-ui.mjs",
     "deploy": "mkdir -p dist/fonts && cp index.html sw.js manifest.webmanifest dist/ && cp fonts/*.woff2 dist/fonts/ && npx netlify deploy --prod --dir dist"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
   }
 }
