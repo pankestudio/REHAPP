@@ -1977,15 +1977,6 @@ input[type="range"] { accent-color: #f0f0f0; }
   <pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" stroke="#14140F" stroke-width="1.2"/></pattern>
 </defs></svg>
 <div class="app">
-<!-- Persistent XP chip – always visible on all pages -->
-<div class="xp-persist">
-  <div class="xp-persist-chip" onclick="showPage('pg-xp')">
-    <div class="xp-persist-level" id="xp-persist-level">LV 1</div>
-    <div class="xp-persist-score" id="xp-persist-score">0 XP</div>
-  </div>
-</div>
-<!-- XP float gain indicator -->
-<div class="xp-float" id="xp-float"></div>
 
 <!-- ══════════════════════════════════════ HOME ══ -->
 <div id="pg-home" class="page active scroll-page">
@@ -2001,14 +1992,12 @@ input[type="range"] { accent-color: #f0f0f0; }
       <div class="h-header-right">
         <div class="h-clock" id="h-clock">--:--</div>
         <div class="h-date" id="h-date"></div>
-        <button type="button" class="h-circle-btn h-circle-btn--sm" style="margin-top:8px" onclick="openEinstellungen()" aria-label="Einstellungen">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82A1.65 1.65 0 0 0 3 13.09H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        </button>
       </div>
     </div>
 
     <div class="h-counters" id="h-counters"></div>
 
+    <div class="h-sep"></div>
     <div class="h-ring-wrap">
       <svg class="h-ring" viewBox="0 0 160 160">
         <circle cx="80" cy="80" r="70" stroke="var(--line)" stroke-width="2" fill="none"/>
@@ -2022,21 +2011,116 @@ input[type="range"] { accent-color: #f0f0f0; }
         <div class="h-meta" id="h-overcome-chip" style="display:none;margin-top:4px">Mit Überwindung ✓</div>
       </div>
     </div>
+    <div class="h-sep"></div>
 
     <div class="h-line-list" id="h-goal-list"></div>
     <div id="h-goal-empty" style="display:none"></div>
 
-    <div style="display:flex;justify-content:center;gap:16px;margin:24px 0">
-      <button type="button" class="h-circle-btn" onclick="openGoalSheet()" aria-label="Neues Ziel">
-        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
-      </button>
-      <button type="button" class="h-circle-btn" onclick="openUebungen()" aria-label="Übungen">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-      </button>
-    </div>
+    <div class="h-line-list" id="h-module-list" style="margin-top:8px"></div>
 
-    <div class="h-sep"></div>
     <div class="h-templates" id="h-templates"></div>
+  </div>
+</div>
+
+  <!-- FASTEN-SHEET (Hybrid Aufräumen): Timer bleibt vollständig erhalten,
+       jetzt als Sheet statt als Dauerblock auf Heute. -->
+  <div class="h-sheet-overlay" id="fasten-sheet-overlay" role="dialog" aria-modal="true" aria-label="Fasten">
+    <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
+      <div class="h-header">
+        <div class="h-title" style="font-size:24px">Fasten</div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeFastenSheet()" aria-label="Schließen">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        </button>
+      </div>
+      <div class="hero" style="margin-top:0">
+        <div class="timer-mode-switch">
+          <button class="timer-mode-btn active" id="tmode-100h" onclick="switchTimerMode('100h',this)">100h Fasten</button>
+          <button class="timer-mode-btn" id="tmode-168" onclick="switchTimerMode('16_8',this)">16:8 Rhythmus</button>
+        </div>
+        <div class="hero-mode" id="timer-mode-label">STANDBY</div>
+        <div class="timer-display" id="timer-display">00:00:00</div>
+        <div class="milestones" id="timer-milestone">
+          <div class="ms" id="ms-ketose"><div class="ms-h">18h</div><div class="ms-n">Ketose</div></div>
+          <div class="ms" id="ms-auto"><div class="ms-h">48h</div><div class="ms-n">Autophagie</div></div>
+          <div class="ms" id="ms-stem"><div class="ms-h">72h</div><div class="ms-n">Stamm&shy;zellen</div></div>
+          <div class="ms" id="ms-peak"><div class="ms-h">100h</div><div class="ms-n">Peak</div></div>
+        </div>
+        <div id="timer-16-8-block"></div>
+        <div class="timer-btns" style="margin-top:14px">
+          <button class="btn btn-cx" id="timer-start-btn" onclick="timerAction()">Fasten starten</button>
+          <button class="btn" id="timer-reset-btn" onclick="confirmReset()" style="display:none">Reset</button>
+        </div>
+        <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:4px">
+          <div class="panel-collapse-header" data-collapse-id="timer-adjust" onclick="toggleCollapse('timer-adjust')" style="padding:10px 0;border-bottom:none">
+            <div class="panel-collapse-title" style="font-size:var(--fs-xs)">Timer anpassen</div>
+            <div class="panel-collapse-arrow" id="collapse-arrow-timer-adjust">▼</div>
+          </div>
+          <div id="collapse-body-timer-adjust" class="closed" style="padding-bottom:4px">
+            <div style="font-size:var(--fs-xs);color:var(--text3);margin-bottom:10px">Falls der Timer zu spät gestartet wurde, bereits gefastete Zeit direkt setzen.</div>
+            <div class="timer-control-grid">
+              <div>
+                <div style="font-size:var(--fs-xs);color:var(--text3);margin-bottom:4px">Stunden</div>
+                <input class="input-mini" type="number" id="manual-fast-hours" min="0" max="99" value="0" inputmode="numeric">
+              </div>
+              <div>
+                <div style="font-size:var(--fs-xs);color:var(--text3);margin-bottom:4px">Minuten</div>
+                <input class="input-mini" type="number" id="manual-fast-minutes" min="0" max="59" value="0" inputmode="numeric">
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+              <button class="btn btn-sm btn-cx" onclick="applyManualFastOffset()">Mit Vorsprung starten</button>
+              <button class="btn btn-sm" onclick="fillManualFastPreset(12,0)">12h</button>
+              <button class="btn btn-sm" onclick="fillManualFastPreset(18,0)">18h</button>
+              <button class="btn btn-sm" onclick="fillManualFastPreset(24,0)">24h</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WASSER-SHEET (Hybrid Aufräumen) -->
+  <div class="h-sheet-overlay" id="wasser-sheet-overlay" role="dialog" aria-modal="true" aria-label="Wasser">
+    <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
+      <div class="h-header">
+        <div class="h-title" style="font-size:24px">Wasser</div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeWasserSheet()" aria-label="Schließen">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        </button>
+      </div>
+      <div class="panel">
+        <div class="panel-label" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Wasser // 3L Ziel</span>
+          <span style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text2);letter-spacing:.08em">+3 XP / 0.4L</span>
+        </div>
+        <div class="water-stats">
+          <div><div class="water-ml" id="water-ml-home">0 ml</div><div class="water-remain" id="water-remain-home">noch 3000ml</div></div>
+          <div style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3);text-align:right">8 × 0.4L</div>
+        </div>
+        <div style="display:flex;gap:8px;padding:0 14px 14px;justify-content:center;flex-wrap:wrap" id="water-track"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUPPLEMENTE-SHEET (Hybrid Aufräumen): aktuelles Zeitfenster, Abhak-Liste -->
+  <div class="h-sheet-overlay" id="supplemente-sheet-overlay" role="dialog" aria-modal="true" aria-label="Supplemente">
+    <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
+      <div class="h-header">
+        <div class="h-title" style="font-size:24px">Supplemente</div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeSupplementeSheet()" aria-label="Schließen">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        </button>
+      </div>
+      <div style="display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap" id="supp-time-tabs">
+        <button class="phase-badge" id="stab-morning" onclick="setSuppTab('morning')">Morgens</button>
+        <button class="phase-badge" id="stab-midday"  onclick="setSuppTab('midday')">Mittags</button>
+        <button class="phase-badge" id="stab-evening" onclick="setSuppTab('evening')">Abends</button>
+      </div>
+      <div id="home-supp-list"></div>
+      <div style="padding:4px 0 0">
+        <button class="h-pill h-pill--outline" style="width:100%" onclick="closeSupplementeSheet();showPage('pg-supp')">Vollständiger Stack →</button>
+      </div>
+    </div>
   </div>
 
   <!-- ZIEL-SHEET (Phase 5): Erstellen + Bearbeiten, Vollbild-Overlay -->
@@ -2101,13 +2185,10 @@ input[type="range"] { accent-color: #f0f0f0; }
   </div>
 
   <!-- SAMMLUNG (Phase 6): Abzeichen + Verlauf, Vollbild-Overlay -->
-  <div class="h-sheet-overlay" id="sammlung-overlay" role="dialog" aria-modal="true" aria-label="Sammlung">
-    <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
+  <div id="pg-sammlung" class="page scroll-page h-embed" style="padding-top:calc(16px + var(--safe-top))">
+    <div style="max-width:480px;margin:0 auto;padding:0 20px calc(32px + var(--safe-bot))">
       <div class="h-header">
         <div class="h-title" style="font-size:24px">Sammlung</div>
-        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeSammlung()" aria-label="Schließen">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
-        </button>
       </div>
       <div class="h-segment">
         <button type="button" class="h-segment-btn" id="sm-seg-badges" onclick="setSammlungSegment('badges')">Abzeichen</button>
@@ -2142,19 +2223,6 @@ input[type="range"] { accent-color: #f0f0f0; }
     <button type="button" class="h-pill h-pill--outline" style="margin-top:12px" onclick="replayUnlockCelebration()">Nochmal</button>
   </div>
 
-  <!-- ÜBUNGEN-LISTE (Phase 7) -->
-  <div class="h-sheet-overlay" id="uebungen-overlay" role="dialog" aria-modal="true" aria-label="Übungen">
-    <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
-      <div class="h-header">
-        <div class="h-title" style="font-size:24px">Übungen</div>
-        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeUebungen()" aria-label="Schließen">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
-        </button>
-      </div>
-      <div class="h-line-list" id="ue-list"></div>
-    </div>
-  </div>
-
   <!-- ÜBUNGS-PLAYER (Phase 7): invertiert ink/paper über lokale Custom
        Properties für einen ablenkungsfreien, dunklen Fokus-Screen. -->
   <div class="h-sheet-overlay" id="player-overlay" role="dialog" aria-modal="true" aria-label="Übungs-Player" style="z-index:610">
@@ -2175,36 +2243,6 @@ input[type="range"] { accent-color: #f0f0f0; }
   </div>
 
   <!-- EINSTELLUNGEN (Phase 8) -->
-  <div class="h-sheet-overlay" id="einstellungen-overlay" role="dialog" aria-modal="true" aria-label="Einstellungen">
-    <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
-      <div class="h-header">
-        <div class="h-title" style="font-size:24px">Einstellungen</div>
-        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeEinstellungen()" aria-label="Schließen">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
-        </button>
-      </div>
-
-      <div class="h-meta" style="margin-bottom:10px">Sound</div>
-      <div id="set-sound-packs" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"></div>
-      <div class="h-meta" style="margin-bottom:6px">Lautstärke</div>
-      <input type="range" id="set-volume" min="0" max="100" value="70" oninput="onSetVolumeChange()" style="width:100%;margin-bottom:28px">
-
-      <div class="h-sep"></div>
-      <div class="h-meta" style="margin:20px 0 10px">Übungen</div>
-      <div class="h-line-list" id="set-exercise-list"></div>
-
-      <div class="h-sep"></div>
-      <div class="h-meta" style="margin:20px 0 10px">Ziele</div>
-      <div class="h-line-list" id="set-goals-list"></div>
-
-      <div class="h-sep"></div>
-      <div class="h-meta" style="margin:20px 0 10px">Daten</div>
-      <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-bottom:10px" onclick="exportAppData()">Backup exportieren</button>
-      <button type="button" class="h-pill h-pill--outline" style="width:100%" onclick="document.getElementById('set-backup-import').click()">Backup importieren</button>
-      <input type="file" id="set-backup-import" accept="application/json" style="display:none" onchange="importAppDataFromFile(this.files[0])">
-    </div>
-  </div>
-
   <!-- ÜBUNG BEARBEITEN (Phase 8): Sheet über Einstellungen -->
   <div class="h-sheet-overlay" id="exercise-editor-overlay" role="dialog" aria-modal="true" aria-label="Übung bearbeiten" style="z-index:620">
     <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
@@ -2251,195 +2289,6 @@ input[type="range"] { accent-color: #f0f0f0; }
     </div>
   </div>
 
-  <!-- HEADER -->
-  <div class="page-header" style="padding-bottom:10px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <div class="page-title" id="greeting-title">REHAPP</div>
-        <div class="page-sub" id="today-date" style="margin-top:4px"></div>
-      </div>
-      <div class="header-search-btn" onclick="openSearch()" aria-label="Suche">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(245,245,247,0.7)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </div>
-    </div>
-  </div>
-
-  <!-- XP / LEVEL STRIP -->
-  <div class="xp-strip">
-    <div style="flex:1">
-      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-        <span style="font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.14em;text-transform:uppercase;color:var(--text3)" id="xp-level-badge-home">LV 1</span>
-        <span style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3)" id="xp-next-text-home">120 XP bis LV 2</span>
-      </div>
-      <div class="xp-progress" style="margin:0;height:7px" aria-hidden="true"><div class="xp-progress-bar" id="xp-progress-bar"></div></div>
-    </div>
-    <div style="text-align:right;flex-shrink:0">
-      <div style="font-size:var(--fs-lg);font-weight:800;letter-spacing:-0.02em" id="xp-total">0 XP</div>
-      <div style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3);margin-top:2px" id="xp-streak">Serie 0</div>
-    </div>
-    <button onclick="showPage('pg-xp')" style="padding:8px 12px;border-radius:12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;color:var(--text2);cursor:pointer;flex-shrink:0">XP →</button>
-  </div>
-
-  <!-- DAILY QUOTE -->
-  <div class="quote-card" id="daily-quote-home" style="margin:8px 14px 6px">
-    <div class="quote-day" id="quote-day-home">Tag 1</div>
-    <div class="quote-text" id="quote-text-home">"Der Anfang ist die Hälfte des Ganzen."</div>
-    <div class="quote-author" id="quote-author-home">— Aristoteles</div>
-  </div>
-
-  <!-- TIMER HERO -->
-  <div class="hero" style="margin-top:10px">
-    <!-- 100h / 16:8 mode switch -->
-    <div class="timer-mode-switch">
-      <button class="timer-mode-btn active" id="tmode-100h" onclick="switchTimerMode('100h',this)">100h Fasten</button>
-      <button class="timer-mode-btn" id="tmode-168" onclick="switchTimerMode('16_8',this)">16:8 Rhythmus</button>
-    </div>
-    <div class="hero-mode" id="timer-mode-label">STANDBY</div>
-    <div class="timer-display" id="timer-display">00:00:00</div>
-
-    <div class="milestones" id="timer-milestone">
-      <div class="ms" id="ms-ketose"><div class="ms-h">18h</div><div class="ms-n">Ketose</div></div>
-      <div class="ms" id="ms-auto"><div class="ms-h">48h</div><div class="ms-n">Autophagie</div></div>
-      <div class="ms" id="ms-stem"><div class="ms-h">72h</div><div class="ms-n">Stamm&shy;zellen</div></div>
-      <div class="ms" id="ms-peak"><div class="ms-h">100h</div><div class="ms-n">Peak</div></div>
-    </div>
-    <div id="timer-16-8-block"></div>
-    <div class="timer-btns" style="margin-top:14px">
-      <button class="btn btn-cx" id="timer-start-btn" onclick="timerAction()">Fasten starten</button>
-      <button class="btn" id="timer-reset-btn" onclick="confirmReset()" style="display:none">Reset</button>
-    </div>
-
-    <!-- Timer anpassen – inline collapsible -->
-    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:4px">
-      <div class="panel-collapse-header" data-collapse-id="timer-adjust" onclick="toggleCollapse('timer-adjust')" style="padding:10px 0;border-bottom:none">
-        <div class="panel-collapse-title" style="font-size:var(--fs-xs)">Timer anpassen</div>
-        <div class="panel-collapse-arrow" id="collapse-arrow-timer-adjust">▼</div>
-      </div>
-      <div id="collapse-body-timer-adjust" class="closed" style="padding-bottom:4px">
-        <div style="font-size:var(--fs-xs);color:var(--text3);margin-bottom:10px">Falls der Timer zu spät gestartet wurde, bereits gefastete Zeit direkt setzen.</div>
-        <div class="timer-control-grid">
-          <div>
-            <div style="font-size:var(--fs-xs);color:var(--text3);margin-bottom:4px">Stunden</div>
-            <input class="input-mini" type="number" id="manual-fast-hours" min="0" max="99" value="0" inputmode="numeric">
-          </div>
-          <div>
-            <div style="font-size:var(--fs-xs);color:var(--text3);margin-bottom:4px">Minuten</div>
-            <input class="input-mini" type="number" id="manual-fast-minutes" min="0" max="59" value="0" inputmode="numeric">
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-          <button class="btn btn-sm btn-cx" onclick="applyManualFastOffset()">Mit Vorsprung starten</button>
-          <button class="btn btn-sm" onclick="fillManualFastPreset(12,0)">12h</button>
-          <button class="btn btn-sm" onclick="fillManualFastPreset(18,0)">18h</button>
-          <button class="btn btn-sm" onclick="fillManualFastPreset(24,0)">24h</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- WATER TRACKER -->
-  <div class="panel">
-    <div class="panel-label" style="display:flex;justify-content:space-between;align-items:center">
-      <span>Wasser // 3L Ziel</span>
-      <span style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text2);letter-spacing:.08em">+3 XP / 0.4L</span>
-    </div>
-    <div class="water-stats">
-      <div><div class="water-ml" id="water-ml-home">0 ml</div><div class="water-remain" id="water-remain-home">noch 3000ml</div></div>
-      <div style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3);text-align:right">8 × 0.4L</div>
-    </div>
-    <div style="display:flex;gap:8px;padding:0 14px 14px;justify-content:center;flex-wrap:wrap" id="water-track"></div>
-  </div>
-
-  <!-- TODAY'S SUPPLEMENTS -->
-  <div class="panel">
-    <div class="panel-collapse-header" data-collapse-id="homesupp" onclick="toggleCollapse('homesupp')" style="border-bottom:none;align-items:flex-start;padding-bottom:8px">
-      <div style="flex:1">
-        <div class="panel-collapse-title">Supplemente heute</div>
-        <div style="display:flex;gap:5px;margin-top:8px;flex-wrap:wrap" id="supp-time-tabs">
-          <button class="phase-badge" id="stab-morning" onclick="event.stopPropagation();setSuppTab('morning')">Morgens</button>
-          <button class="phase-badge" id="stab-midday"  onclick="event.stopPropagation();setSuppTab('midday')">Mittags</button>
-          <button class="phase-badge" id="stab-evening" onclick="event.stopPropagation();setSuppTab('evening')">Abends</button>
-        </div>
-      </div>
-      <div class="panel-collapse-arrow open" id="collapse-arrow-homesupp" style="margin-top:2px">▲</div>
-    </div>
-    <div id="collapse-body-homesupp">
-      <div id="home-supp-list"></div>
-      <div style="padding:4px 16px 10px">
-        <button class="btn btn-sm" onclick="showPage('pg-supp')" style="width:100%">Vollständiger Stack →</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- STATUS + MOOD -->
-  <div class="panel">
-    <div class="panel-collapse-header" data-collapse-id="mood" onclick="toggleCollapse('mood')">
-      <div class="panel-collapse-title">Status</div>
-      <div class="panel-collapse-arrow open" id="collapse-arrow-mood">▲</div>
-    </div>
-    <div id="collapse-body-mood">
-      <div class="mood-row">
-        <button class="mood-btn" onclick="selectMood(this,'Gut')">Gut</button>
-        <button class="mood-btn" onclick="selectMood(this,'Ok')">Ok</button>
-        <button class="mood-btn" onclick="selectMood(this,'Müde')">Müde</button>
-        <button class="mood-btn" onclick="selectMood(this,'Schmerzen')">Schmerzen</button>
-        <button class="mood-btn" onclick="selectMood(this,'Stark')">Stark</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- PROGRESS -->
-  <div class="panel">
-    <div class="panel-collapse-header" data-collapse-id="progress" onclick="toggleCollapse('progress')">
-      <div class="panel-collapse-title">Schmerz & Ödem // Verlauf</div>
-      <div class="panel-collapse-arrow" id="collapse-arrow-progress">▼</div>
-    </div>
-    <div id="collapse-body-progress" class="closed">
-      <div class="sliders">
-        <div class="slider-lbl">Schmerz <span id="pain-val">5</span></div>
-        <input type="range" min="0" max="10" value="5" step="1" id="pain-slider" oninput="updateSlider('pain')" aria-label="Schmerzskala">
-        <div class="slider-lbl">Schwellung <span id="swell-val">5</span></div>
-        <input type="range" min="0" max="10" value="5" step="1" id="swell-slider" oninput="updateSlider('swell')" aria-label="Schwellungsskala">
-      </div>
-      <div style="padding:0 16px 12px;display:flex;gap:8px;align-items:center">
-        <button class="btn btn-sm btn-cx" onclick="saveProgress()">Eintragen</button>
-        <span style="font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.1em;color:var(--text3);text-transform:uppercase">Verlauf</span>
-      </div>
-      <div class="chart-wrap">
-        <div class="chart-bars" id="progress-trend"></div>
-        <div class="trend-insight" id="trend-insight">Trend erscheint nach dem ersten Eintrag.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- QUICK ACTIONS -->
-  <div class="panel panel-lite">
-    <div class="panel-collapse-header" data-collapse-id="quick" onclick="toggleCollapse('quick')">
-      <div class="panel-collapse-title">Schnellstart & System</div>
-      <div class="panel-collapse-arrow" id="collapse-arrow-quick">▼</div>
-    </div>
-    <div id="collapse-body-quick" class="closed">
-      <div class="quick-grid compact-grid" style="padding:12px 16px 8px">
-        <button class="quick-action" onclick="showPage('pg-move')"><span>Atem</span><strong>Starten</strong></button>
-        <button class="quick-action" onclick="showPage('pg-mld')"><span>Drainage</span><strong>Timer</strong></button>
-        <button class="quick-action" onclick="showPage('pg-fast')"><span>Fasten</span><strong>Plan</strong></button>
-        <button class="quick-action" onclick="exportAppData()"><span>Backup</span><strong>Export</strong></button>
-      </div>
-      <div class="system-grid" style="padding:0 16px 12px">
-        <div class="system-item"><div><div class="system-label">App-Modus</div><div class="system-sub" id="install-status-copy">Wird geprüft …</div></div><div class="system-pill" id="install-status-pill">WEB</div></div>
-        <div class="system-item"><div><div class="system-label">Benachrichtigungen</div><div class="system-sub" id="notif-status-copy">Noch nicht geprüft.</div></div><div class="system-pill" id="notif-status-pill">CHECK</div></div>
-      </div>
-      <div class="backup-inline"><label class="btn btn-sm file-btn">Backup importieren<input type="file" id="backup-import" accept="application/json"></label></div>
-      <div class="action-row-two">
-        <button class="btn btn-sm" onclick="exportAppDataText()">Text-Export</button>
-        <button class="btn btn-sm" onclick="openInBrowser()">Im Browser öffnen</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="habit-section" style="padding-bottom:4px"></div>
-  <div class="spacer"></div>
-</div>
 
 <!-- ══════════════════════════════════════ FASTEN ══ -->
 <div id="pg-fast" class="page scroll-page">
@@ -2588,8 +2437,13 @@ input[type="range"] { accent-color: #f0f0f0; }
 <!-- ══════════════════════════════════════ BEWEGUNG ══ -->
 <div id="pg-move" class="page scroll-page">
   <div class="page-header">
-    <div class="page-title">Bewegung</div>
-    <div class="page-sub">Atem // Vagus // BFR // Meditation</div>
+    <div class="page-title">Übungen</div>
+    <div class="page-sub">Routinen // Atmung // Protokolle // Einzelübungen</div>
+  </div>
+
+  <!-- EXERCISES (Hybrid Aufräumen): Player-gestützte Übungsliste, vormals eigenes Overlay -->
+  <div class="h-embed" style="margin:0 14px 16px">
+    <div class="h-line-list" id="ue-list"></div>
   </div>
 
   <!-- BREATHING -->
@@ -3169,12 +3023,42 @@ input[type="range"] { accent-color: #f0f0f0; }
   </div>
 </div>
 
-<!-- ══ EINSTELLUNGEN ══ -->
+<!-- ══ SETUP ══ -->
 <div id="pg-settings" class="page scroll-page">
   <div class="page-header">
-    <div class="page-title">Einstellungen</div>
-    <div class="page-sub">Habits · Protokoll · Daten</div>
+    <div class="page-title">Setup</div>
+    <div class="page-sub">Sound · Übungen · Ziele · Daten</div>
   </div>
+
+  <div class="h-embed" style="margin:0 14px 16px">
+    <div class="h-meta" style="margin-bottom:10px">Sound</div>
+    <div id="set-sound-packs" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"></div>
+    <div class="h-meta" style="margin-bottom:6px">Lautstärke</div>
+    <input type="range" id="set-volume" min="0" max="100" value="70" oninput="onSetVolumeChange()" style="width:100%;margin-bottom:28px">
+
+    <div class="h-sep"></div>
+    <div class="h-meta" style="margin:20px 0 10px">Übungen</div>
+    <div class="h-line-list" id="set-exercise-list"></div>
+
+    <div class="h-sep"></div>
+    <div class="h-meta" style="margin:20px 0 10px">Ziele</div>
+    <div class="h-line-list" id="set-goals-list"></div>
+
+    <div class="h-sep"></div>
+    <div class="h-meta" style="margin:20px 0 10px">Daten</div>
+    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-bottom:10px" onclick="exportAppData()">Backup exportieren</button>
+    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-bottom:10px" onclick="document.getElementById('set-backup-import').click()">Backup importieren</button>
+    <input type="file" id="set-backup-import" accept="application/json" style="display:none" onchange="importAppDataFromFile(this.files[0])">
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button type="button" class="h-pill h-pill--outline" style="flex:1" onclick="exportAppDataText()">Text-Export</button>
+      <button type="button" class="h-pill h-pill--outline" style="flex:1" onclick="openInBrowser()">Im Browser öffnen</button>
+    </div>
+    <div class="system-grid">
+      <div class="system-item"><div><div class="system-label">App-Modus</div><div class="system-sub" id="install-status-copy">Wird geprüft …</div></div><div class="system-pill" id="install-status-pill">WEB</div></div>
+      <div class="system-item"><div><div class="system-label">Benachrichtigungen</div><div class="system-sub" id="notif-status-copy">Noch nicht geprüft.</div></div><div class="system-pill" id="notif-status-pill">CHECK</div></div>
+    </div>
+  </div>
+
   <div id="settings-content" style="padding:0 0 24px"></div>
 </div>
 
@@ -3184,25 +3068,21 @@ input[type="range"] { accent-color: #f0f0f0; }
     <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
     <div class="nav-label">Heute</div>
   </div>
-  <div class="nav-item" onclick="showPage('pg-fast')" id="nav-fast">
-    <div class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div>
-    <div class="nav-label">Fasten</div>
-  </div>
   <div class="nav-item" onclick="showPage('pg-move')" id="nav-move">
-    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-    <div class="nav-label">Bewegung</div>
+    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></div>
+    <div class="nav-label">Übungen</div>
+  </div>
+  <div class="nav-item" onclick="showPage('pg-sammlung')" id="nav-sammlung">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M8.7 13.7 7 22l5-3 5 3-1.7-8.3"/></svg></div>
+    <div class="nav-label">Sammlung</div>
   </div>
   <div class="nav-item" onclick="showPage('pg-supp')" id="nav-supp">
-    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
-    <div class="nav-label">Suppl.</div>
-  </div>
-  <div class="nav-item" onclick="showPage('pg-xp')" id="nav-xp">
-    <div class="nav-icon"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div>
-    <div class="nav-label">XP</div>
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+    <div class="nav-label">Wissen</div>
   </div>
   <div class="nav-item" onclick="showPage('pg-settings')" id="nav-settings">
     <div class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
-    <div class="nav-label">Settings</div>
+    <div class="nav-label">Setup</div>
   </div>
 </nav>
 
@@ -4327,7 +4207,7 @@ function buildHeuteScreen() {
   if (countersEl) {
     countersEl.innerHTML = `
       <div class="h-counter"><div class="h-num-lg" style="font-size:56px">${bestStreak}</div><div class="h-meta">Serie</div></div>
-      <div class="h-counter" style="cursor:pointer" onclick="openSammlung()"><div class="h-num-lg" style="font-size:56px">${badgeCount}</div><div class="h-meta">Abzeichen →</div></div>
+      <div class="h-counter" style="cursor:pointer" onclick="showPage('pg-sammlung')"><div class="h-num-lg" style="font-size:56px">${badgeCount}</div><div class="h-meta">Abzeichen →</div></div>
     `;
   }
 
@@ -4361,11 +4241,58 @@ function buildHeuteScreen() {
   if (templatesEl) {
     const existingTitles = new Set(goals.map(g => g.title));
     const available = GOAL_TEMPLATES.filter(t => !existingTitles.has(t.title));
-    templatesEl.innerHTML = available.length
-      ? `<div class="h-meta" style="margin-bottom:10px">Vorlagen</div><div style="display:flex;flex-wrap:wrap;gap:8px">${available.map(t => `<button class="h-pill h-pill--outline" style="min-height:40px;padding:0 18px;font-size:14px" onclick="addGoalFromTemplate('${slugifyId(t.title)}')">${escapeHtml(t.title)}</button>`).join('')}</div>`
-      : '';
+    templatesEl.innerHTML = `<div class="h-meta" style="margin-bottom:10px">Vorlagen</div><div style="display:flex;flex-wrap:wrap;gap:8px">` +
+      `<button class="h-pill" style="min-height:40px;padding:0 18px;font-size:14px" onclick="openGoalSheet()">+ Eigenes Ziel</button>` +
+      available.map(t => `<button class="h-pill h-pill--outline" style="min-height:40px;padding:0 18px;font-size:14px" onclick="addGoalFromTemplate('${slugifyId(t.title)}')">${escapeHtml(t.title)}</button>`).join('') +
+      `</div>`;
   }
+
+  renderHeuteModuleList();
 }
+
+// Fasten/Wasser/Supplemente-Zeilen unter den Zielen — Module statt eigene
+// Dauerblöcke, siehe Hybrid-Aufräumen-Mapping-Tabelle.
+function renderHeuteModuleList() {
+  const el = document.getElementById('h-module-list');
+  if (!el) return;
+  const fastenLabel = document.getElementById('timer-mode-label');
+  const fastenValue = document.getElementById('timer-display');
+  const fastenSub = (fastenLabel && fastenLabel.textContent.replace(/^\/\/\s*/, '')) || 'Bereit';
+  const fastenVal = (fastenValue && fastenValue.textContent) || '00:00:00';
+
+  const today = new Date().toDateString();
+  const waterSaved = JSON.parse(storageGet('water6_' + today) || '[]');
+  const waterL = (waterSaved.length * 0.4).toFixed(1).replace('.', ',');
+
+  const h = new Date().getHours();
+  const suppTab = h < 11 ? 'morning' : h < 15 ? 'midday' : 'evening';
+  const suppLabel = suppTab === 'morning' ? 'Morgens' : suppTab === 'midday' ? 'Mittags' : 'Abends';
+  const suppItems = getItems({ type: 'supplement', time: suppTab, activeOnly: true });
+  const doneToday = getItemsDoneToday();
+  const suppDone = suppItems.filter(s => doneToday.has(s.id)).length;
+
+  el.innerHTML = `
+    <div class="h-row" onclick="openFastenSheet()" style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer">
+      <div class="h-meta">Fasten · ${escapeHtml(fastenSub)}</div>
+      <div class="h-meta" style="color:var(--text)">${escapeHtml(fastenVal)} →</div>
+    </div>
+    <div class="h-row" onclick="openWasserSheet()" style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer">
+      <div class="h-meta">Wasser</div>
+      <div class="h-meta" style="color:var(--text)">${waterL} / 3 L →</div>
+    </div>
+    <div class="h-row" onclick="openSupplementeSheet()" style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;cursor:pointer">
+      <div class="h-meta">Supplemente · ${suppLabel}</div>
+      <div class="h-meta" style="color:var(--text)">${suppDone}/${suppItems.length} →</div>
+    </div>
+  `;
+}
+
+function openFastenSheet() { document.getElementById('fasten-sheet-overlay').classList.add('open'); }
+function closeFastenSheet() { document.getElementById('fasten-sheet-overlay').classList.remove('open'); renderHeuteModuleList(); }
+function openWasserSheet() { buildWater(); document.getElementById('wasser-sheet-overlay').classList.add('open'); }
+function closeWasserSheet() { document.getElementById('wasser-sheet-overlay').classList.remove('open'); renderHeuteModuleList(); }
+function openSupplementeSheet() { initSuppTab(); document.getElementById('supplemente-sheet-overlay').classList.add('open'); }
+function closeSupplementeSheet() { document.getElementById('supplemente-sheet-overlay').classList.remove('open'); renderHeuteModuleList(); }
 
 async function onGoalRowTap(goalId) {
   const todayKey = getLocalDateKey();
@@ -4481,10 +4408,6 @@ function setSammlungSegment(seg) {
 
 function openSammlung() {
   setSammlungSegment('badges');
-  document.getElementById('sammlung-overlay').classList.add('open');
-}
-function closeSammlung() {
-  document.getElementById('sammlung-overlay').classList.remove('open');
 }
 
 function describeBadgeProgress(goal, tier) {
@@ -4656,8 +4579,7 @@ function buildUebungenList() {
     </div>
   `).join('') : `<div class="h-meta">Noch keine Übungen angelegt.</div>`;
 }
-function openUebungen() { buildUebungenList(); document.getElementById('uebungen-overlay').classList.add('open'); }
-function closeUebungen() { document.getElementById('uebungen-overlay').classList.remove('open'); }
+function openUebungen() { buildUebungenList(); }
 
 // ── Sound-Pakete: 4 kurze, per Web Audio synthetisierte Zähltöne.
 // "stumm" erzeugt bewusst keinen Node. Lautstärke/Vorschau-UI kommt mit
@@ -5023,9 +4945,7 @@ function openEinstellungen() {
   document.getElementById('set-volume').value = Math.round(getSoundVolume() * 100);
   buildSetExerciseList();
   buildSetGoalsList();
-  document.getElementById('einstellungen-overlay').classList.add('open');
 }
-function closeEinstellungen() { document.getElementById('einstellungen-overlay').classList.remove('open'); }
 
 // ══════════════════════════════════════════════════════════════════════
 // ZIEL-SHEET — Hybrid Phase 5 (Erstellen/Bearbeiten, Freihand-Zeichnen)
@@ -6509,10 +6429,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const savedFs = storageGet('settings_fontsize');
   if (savedFs) applyFontSize(parseInt(savedFs, 10));
 
-  const h = new Date().getHours();
-  document.getElementById('today-date').textContent = new Date().toLocaleDateString('de-DE', { weekday:'long', day:'numeric', month:'long' }).toUpperCase();
-  const greet = document.getElementById('greeting-title');
-  if (greet) greet.textContent = h < 12 ? 'GUTEN MORGEN' : h < 17 ? 'GUTEN TAG' : 'GUTEN ABEND';
+  const todayDateEl = document.getElementById('today-date');
+  if (todayDateEl) todayDateEl.textContent = new Date().toLocaleDateString('de-DE', { weekday:'long', day:'numeric', month:'long' }).toUpperCase();
 
   const saved = storageGet('timerStart');
   if (saved) {
@@ -6586,11 +6504,13 @@ function showPage(id) {
   if (id === 'pg-mld') { showMLD(); return; }
   if (id === 'pg-emergency') { showEmergency(); return; }
   if (id === 'pg-bfr') { showBFR(); return; }
-  ['pg-home','pg-fast','pg-move','pg-supp','pg-xp','pg-settings'].forEach(p => { const e = document.getElementById(p); if(e) e.classList.remove('active'); });
+  ['pg-home','pg-move','pg-sammlung','pg-supp','pg-settings'].forEach(p => { const e = document.getElementById(p); if(e) e.classList.remove('active'); });
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   const t = document.getElementById(id); if (t) t.classList.add('active');
-  if (id === 'pg-settings') buildSettings();
-  const nm = {'pg-home':'nav-home','pg-fast':'nav-fast','pg-move':'nav-move','pg-supp':'nav-supp','pg-xp':'nav-xp','pg-settings':'nav-settings'};
+  if (id === 'pg-settings') { buildSettings(); openEinstellungen(); }
+  if (id === 'pg-move') openUebungen();
+  if (id === 'pg-sammlung') openSammlung();
+  const nm = {'pg-home':'nav-home','pg-move':'nav-move','pg-sammlung':'nav-sammlung','pg-supp':'nav-supp','pg-settings':'nav-settings'};
   const ne = document.getElementById(nm[id]); if (ne) ne.classList.add('active');
   currentPage = id;
   window.scrollTo(0, 0);
