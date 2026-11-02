@@ -2001,6 +2001,9 @@ input[type="range"] { accent-color: #f0f0f0; }
       <div class="h-header-right">
         <div class="h-clock" id="h-clock">--:--</div>
         <div class="h-date" id="h-date"></div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" style="margin-top:8px" onclick="openEinstellungen()" aria-label="Einstellungen">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82A1.65 1.65 0 0 0 3 13.09H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
       </div>
     </div>
 
@@ -2037,7 +2040,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   </div>
 
   <!-- ZIEL-SHEET (Phase 5): Erstellen + Bearbeiten, Vollbild-Overlay -->
-  <div class="h-sheet-overlay" id="goal-sheet-overlay" role="dialog" aria-modal="true" aria-label="Ziel bearbeiten">
+  <div class="h-sheet-overlay" id="goal-sheet-overlay" role="dialog" aria-modal="true" aria-label="Ziel bearbeiten" style="z-index:615">
     <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
       <div class="h-header">
         <div class="h-title" id="gs-title" style="font-size:24px">Neues Ziel</div>
@@ -2079,9 +2082,17 @@ input[type="range"] { accent-color: #f0f0f0; }
         <div id="gs-rhythms" style="display:flex;flex-wrap:wrap;gap:8px"></div>
       </div>
 
-      <div style="margin-bottom:32px">
+      <div style="margin-bottom:24px">
         <div class="h-meta" style="margin-bottom:6px">Uhrzeit (optional)</div>
         <input type="time" id="gs-time" style="background:transparent;border:1px solid var(--line);padding:8px 10px;color:var(--ink);font-family:var(--ui);font-size:14px">
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;gap:16px">
+        <div>
+          <div class="h-meta">Erinnerung</div>
+          <div class="h-meta" style="color:var(--faint);font-size:11px;margin-top:2px">Kommt mit dem Erinnerungs-System — wird vorerst nur gespeichert.</div>
+        </div>
+        <button type="button" class="h-pill h-pill--outline" id="gs-notify-btn" style="min-height:40px;padding:0 16px;font-size:14px;flex-shrink:0" onclick="toggleGoalSheetNotify()">Aus</button>
       </div>
 
       <button type="button" class="h-pill" style="width:100%" onclick="saveGoalFromSheet()">Speichern</button>
@@ -2160,6 +2171,83 @@ input[type="range"] { accent-color: #f0f0f0; }
           <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- EINSTELLUNGEN (Phase 8) -->
+  <div class="h-sheet-overlay" id="einstellungen-overlay" role="dialog" aria-modal="true" aria-label="Einstellungen">
+    <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
+      <div class="h-header">
+        <div class="h-title" style="font-size:24px">Einstellungen</div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeEinstellungen()" aria-label="Schließen">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        </button>
+      </div>
+
+      <div class="h-meta" style="margin-bottom:10px">Sound</div>
+      <div id="set-sound-packs" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"></div>
+      <div class="h-meta" style="margin-bottom:6px">Lautstärke</div>
+      <input type="range" id="set-volume" min="0" max="100" value="70" oninput="onSetVolumeChange()" style="width:100%;margin-bottom:28px">
+
+      <div class="h-sep"></div>
+      <div class="h-meta" style="margin:20px 0 10px">Übungen</div>
+      <div class="h-line-list" id="set-exercise-list"></div>
+
+      <div class="h-sep"></div>
+      <div class="h-meta" style="margin:20px 0 10px">Ziele</div>
+      <div class="h-line-list" id="set-goals-list"></div>
+
+      <div class="h-sep"></div>
+      <div class="h-meta" style="margin:20px 0 10px">Daten</div>
+      <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-bottom:10px" onclick="exportAppData()">Backup exportieren</button>
+      <button type="button" class="h-pill h-pill--outline" style="width:100%" onclick="document.getElementById('set-backup-import').click()">Backup importieren</button>
+      <input type="file" id="set-backup-import" accept="application/json" style="display:none" onchange="importAppDataFromFile(this.files[0])">
+    </div>
+  </div>
+
+  <!-- ÜBUNG BEARBEITEN (Phase 8): Sheet über Einstellungen -->
+  <div class="h-sheet-overlay" id="exercise-editor-overlay" role="dialog" aria-modal="true" aria-label="Übung bearbeiten" style="z-index:620">
+    <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
+      <div class="h-header">
+        <div class="h-title" style="font-size:24px">Übung bearbeiten</div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeExerciseEditor()" aria-label="Schließen">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        </button>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div class="h-meta" style="margin-bottom:6px">Name</div>
+        <input type="text" id="ee-name" autocomplete="off"
+          style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);padding:8px 0;box-sizing:border-box;color:var(--ink);font-family:var(--ui);font-size:16px">
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div class="h-meta" style="margin-bottom:8px">Dauer</div>
+        <div style="display:flex;align-items:center;gap:16px;justify-content:center">
+          <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustExerciseDuration(-5)" aria-label="5 Sekunden weniger">−</button>
+          <div class="h-num-xl" id="ee-duration-display" style="font-size:40px;min-width:110px;text-align:center">0:00</div>
+          <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustExerciseDuration(5)" aria-label="5 Sekunden mehr">+</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div class="h-meta" style="margin-bottom:6px">Hinweis (optional)</div>
+        <input type="text" id="ee-cue" autocomplete="off"
+          style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);padding:8px 0;box-sizing:border-box;color:var(--ink);font-family:var(--ui);font-size:16px">
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div class="h-meta" style="margin-bottom:8px">Verknüpftes Ziel</div>
+        <select id="ee-goal" style="width:100%;background:transparent;border:1px solid var(--line);padding:8px 10px;color:var(--ink);font-family:var(--ui);font-size:14px"></select>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px">
+        <div class="h-meta">Aktiv</div>
+        <button type="button" class="h-pill h-pill--outline" id="ee-active-btn" style="min-height:40px;padding:0 16px;font-size:14px" onclick="toggleExerciseActive()">An</button>
+      </div>
+
+      <button type="button" class="h-pill" style="width:100%" onclick="saveExerciseFromEditor()">Speichern</button>
+      <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="deleteExerciseFromEditor()">Löschen</button>
     </div>
   </div>
 
@@ -4581,6 +4669,8 @@ const SOUND_PACKS = {
 };
 function getSoundPack() { return storageGet('exercise_sound_pack') || 'glas'; }
 function setSoundPack(pack) { storageSet('exercise_sound_pack', pack); }
+function getSoundVolume() { return Math.max(0, Math.min(100, parseInt(storageGet('exercise_sound_volume') || '70', 10))) / 100; }
+function setSoundVolume(v) { storageSet('exercise_sound_volume', String(v)); }
 
 let _playerAudioCtx = null;
 let _playerState = null;
@@ -4600,8 +4690,9 @@ function scheduleTick(when, pack) {
   osc.connect(gain); gain.connect(ctx.destination);
   osc.type = s.type;
   osc.frequency.setValueAtTime(s.freq, when);
+  const peak = Math.max(0.0001, 0.22 * getSoundVolume());
   gain.gain.setValueAtTime(0.0001, when);
-  gain.gain.exponentialRampToValueAtTime(0.22, when + 0.005);
+  gain.gain.exponentialRampToValueAtTime(peak, when + 0.005);
   gain.gain.exponentialRampToValueAtTime(0.0001, when + s.dur);
   osc.start(when);
   osc.stop(when + s.dur + 0.02);
@@ -4756,12 +4847,193 @@ function closePlayer() {
 }
 
 // ══════════════════════════════════════════════════════════════════════
+// EINSTELLUNGEN — Hybrid Phase 8
+// ══════════════════════════════════════════════════════════════════════
+
+const SOUND_PACK_LABELS = { glas: 'Glas', holz: 'Holz', analog: 'Analog', stumm: 'Stumm' };
+
+function renderSoundPackPicker() {
+  const el = document.getElementById('set-sound-packs');
+  const current = getSoundPack();
+  el.innerHTML = Object.keys(SOUND_PACK_LABELS).map(p => `
+    <button type="button" class="h-pill ${p === current ? '' : 'h-pill--outline'}" style="min-height:40px;padding:0 16px;font-size:14px" onclick="chooseSoundPack('${p}')">${SOUND_PACK_LABELS[p]}</button>
+  `).join('');
+}
+function chooseSoundPack(pack) {
+  setSoundPack(pack);
+  renderSoundPackPicker();
+  previewSoundPack(pack);
+}
+// Eigene, einmalige Vorschau statt scheduleTick wiederzuverwenden — die
+// spielt grundsätzlich in einen laufenden Player-Zustand (_playerState)
+// hinein, den es hier in den Einstellungen nicht gibt.
+function previewSoundPack(pack) {
+  if (pack === 'stumm' || !SOUND_PACKS[pack]) return;
+  const ctx = ensurePlayerAudioCtx();
+  if (ctx.state === 'suspended') ctx.resume();
+  const s = SOUND_PACKS[pack];
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.type = s.type;
+  osc.frequency.setValueAtTime(s.freq, now);
+  const peak = Math.max(0.0001, 0.22 * getSoundVolume());
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(peak, now + 0.005);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + s.dur);
+  osc.start(now);
+  osc.stop(now + s.dur + 0.02);
+}
+function onSetVolumeChange() {
+  setSoundVolume(parseInt(document.getElementById('set-volume').value, 10));
+}
+
+function buildSetExerciseList() {
+  const el = document.getElementById('set-exercise-list');
+  if (!el) return;
+  const exercises = getItems({ type: 'exercise' });
+  el.innerHTML = exercises.length ? exercises.map((ex, i) => `
+    <div class="h-line-row">
+      <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+        <button type="button" class="h-circle-btn h-circle-btn--sm" style="width:28px;height:28px" ${i === 0 ? 'disabled' : ''} onclick="moveExercise('${ex.id}',-1)" aria-label="Nach oben">
+          <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+        </button>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" style="width:28px;height:28px" ${i === exercises.length - 1 ? 'disabled' : ''} onclick="moveExercise('${ex.id}',1)" aria-label="Nach unten">
+          <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </div>
+      <div style="flex:1;cursor:pointer;min-width:0" onclick="openExerciseEditor('${ex.id}')">
+        <div class="h-text">${escapeHtml(ex.title)}${ex.active ? '' : ' (inaktiv)'}</div>
+        <div class="h-meta">${formatMMSS(ex.details.durationSec || 0)} min</div>
+      </div>
+    </div>
+  `).join('') : `<div class="h-meta">Noch keine Übungen.</div>`;
+}
+function moveExercise(id, dir) {
+  const exercises = getItems({ type: 'exercise' });
+  const idx = exercises.findIndex(e => e.id === id);
+  const swapIdx = idx + dir;
+  if (idx < 0 || swapIdx < 0 || swapIdx >= exercises.length) return;
+  [exercises[idx], exercises[swapIdx]] = [exercises[swapIdx], exercises[idx]];
+  reorderItems(exercises.map(e => e.id));
+  buildSetExerciseList();
+}
+
+let _exerciseEditorState = null;
+function openExerciseEditor(id) {
+  const ex = getItems({ type: 'exercise' }).find(e => e.id === id);
+  if (!ex) return;
+  _exerciseEditorState = {
+    id: ex.id, title: ex.title, durationSec: ex.details.durationSec || 60,
+    cue: ex.details.cue || '', linkedGoalId: ex.details.linkedGoalId || '', active: ex.active,
+  };
+  document.getElementById('ee-name').value = _exerciseEditorState.title;
+  document.getElementById('ee-cue').value = _exerciseEditorState.cue;
+  updateExerciseDurationDisplay();
+  renderExerciseGoalPicker();
+  updateExerciseActiveBtn();
+  document.getElementById('exercise-editor-overlay').classList.add('open');
+}
+function closeExerciseEditor() { document.getElementById('exercise-editor-overlay').classList.remove('open'); }
+
+function updateExerciseDurationDisplay() {
+  document.getElementById('ee-duration-display').textContent = formatMMSS(_exerciseEditorState.durationSec);
+}
+function adjustExerciseDuration(delta) {
+  _exerciseEditorState.durationSec = Math.max(5, _exerciseEditorState.durationSec + delta);
+  updateExerciseDurationDisplay();
+}
+function renderExerciseGoalPicker() {
+  const el = document.getElementById('ee-goal');
+  const goals = getGoals({ archived: false });
+  el.innerHTML = `<option value="">– keine –</option>` + goals.map(g => `<option value="${g.id}" ${g.id === _exerciseEditorState.linkedGoalId ? 'selected' : ''}>${escapeHtml(g.title)}</option>`).join('');
+}
+function toggleExerciseActive() {
+  _exerciseEditorState.active = !_exerciseEditorState.active;
+  updateExerciseActiveBtn();
+}
+function updateExerciseActiveBtn() {
+  const btn = document.getElementById('ee-active-btn');
+  btn.textContent = _exerciseEditorState.active ? 'An' : 'Aus';
+  btn.classList.toggle('h-pill--outline', !_exerciseEditorState.active);
+}
+async function saveExerciseFromEditor() {
+  const name = document.getElementById('ee-name').value.trim();
+  if (!name) { toast('BITTE EINEN NAMEN EINGEBEN'); return; }
+  const cue = document.getElementById('ee-cue').value.trim() || null;
+  const linkedGoalId = document.getElementById('ee-goal').value || null;
+  const existing = getItems({ type: 'exercise' }).find(e => e.id === _exerciseEditorState.id);
+  if (!existing) return;
+  await saveItem({
+    ...existing,
+    title: name,
+    active: _exerciseEditorState.active,
+    details: { ...existing.details, durationSec: _exerciseEditorState.durationSec, cue, linkedGoalId },
+  });
+  closeExerciseEditor();
+  buildSetExerciseList();
+  buildUebungenList();
+  toast('ÜBUNG AKTUALISIERT');
+}
+async function deleteExerciseFromEditor() {
+  if (!_exerciseEditorState) return;
+  if (!confirm('Diese Übung wirklich löschen?')) return;
+  await deleteItem(_exerciseEditorState.id);
+  closeExerciseEditor();
+  buildSetExerciseList();
+  buildUebungenList();
+  toast('ÜBUNG GELÖSCHT');
+}
+
+function buildSetGoalsList() {
+  const el = document.getElementById('set-goals-list');
+  if (!el) return;
+  const active = getGoals({ archived: false });
+  const archived = getGoals({ archived: true });
+  let html = active.length ? active.map(g => `
+    <div class="h-line-row" onclick="openGoalSheet('${g.id}')">
+      <div style="flex-shrink:0">${renderBadge({ cat: g.category, tier: computeTier(g), icon: g.icon, drawing: g.drawing, size: 28 })}</div>
+      <div style="flex:1">${escapeHtml(g.title)}</div>
+    </div>
+  `).join('') : `<div class="h-meta">Noch keine Ziele.</div>`;
+  if (archived.length) {
+    html += `<div class="h-meta" style="margin:16px 0 6px">Archiviert</div>`;
+    html += archived.map(g => `
+      <div class="h-line-row">
+        <div style="flex:1;opacity:.6">${escapeHtml(g.title)}</div>
+        <button type="button" class="h-pill h-pill--outline" style="min-height:32px;padding:0 14px;font-size:12px;flex-shrink:0" onclick="event.stopPropagation();reactivateGoal('${g.id}')">Reaktivieren</button>
+      </div>
+    `).join('');
+  }
+  el.innerHTML = html;
+}
+async function reactivateGoal(id) {
+  const g = getGoal(id);
+  if (!g) return;
+  g.archived = false;
+  await saveGoal(g);
+  buildSetGoalsList();
+  buildHeuteScreen();
+  toast('ZIEL REAKTIVIERT');
+}
+
+function openEinstellungen() {
+  renderSoundPackPicker();
+  document.getElementById('set-volume').value = Math.round(getSoundVolume() * 100);
+  buildSetExerciseList();
+  buildSetGoalsList();
+  document.getElementById('einstellungen-overlay').classList.add('open');
+}
+function closeEinstellungen() { document.getElementById('einstellungen-overlay').classList.remove('open'); }
+
+// ══════════════════════════════════════════════════════════════════════
 // ZIEL-SHEET — Hybrid Phase 5 (Erstellen/Bearbeiten, Freihand-Zeichnen)
 // ══════════════════════════════════════════════════════════════════════
-// Einstiegspunkt für NEUE Ziele ist der "+"-Button im Heute-Screen. Das
-// Bearbeiten bestehender Ziele über eine Tap-Geste in der Liste kommt erst
-// mit der Ziele-Verwaltung in Phase 8 (Setup) — die Sheet-Logik selbst
-// unterstützt beide Fälle bereits jetzt vollständig (openGoalSheet(id)).
+// Einstiegspunkt für NEUE Ziele ist der "+"-Button im Heute-Screen.
+// Bestehende Ziele werden über die Ziele-Liste in den Einstellungen
+// (Phase 8) bearbeitet — die Sheet-Logik selbst deckt beide Fälle ab
+// (openGoalSheet(id)).
 
 const GOAL_CATEGORIES = [
   { id: 'koerper',  label: 'Körper' },
@@ -4971,14 +5243,15 @@ function openGoalSheet(goalId = null) {
         id: existing.id, title: existing.title, category: existing.category,
         icon: existing.icon || 'funke', drawing: existing.drawing ? existing.drawing.slice() : null,
         isDrawMode: !!(existing.drawing && existing.drawing.length),
-        rhythm: existing.rhythm, time: existing.time || '', xp: existing.xp || 10,
+        rhythm: existing.rhythm, time: existing.time || '', xp: existing.xp || 10, notify: !!existing.notify,
       }
-    : { id: null, title: '', category: 'koerper', icon: 'schritte', drawing: null, isDrawMode: false, rhythm: 'taeglich', time: '', xp: 10 };
+    : { id: null, title: '', category: 'koerper', icon: 'schritte', drawing: null, isDrawMode: false, rhythm: 'taeglich', time: '', xp: 10, notify: false };
 
   document.getElementById('gs-title').textContent = existing ? 'Ziel bearbeiten' : 'Neues Ziel';
   document.getElementById('gs-name').value = _goalSheetState.title;
   document.getElementById('gs-time').value = _goalSheetState.time;
   document.getElementById('gs-archive-btn').style.display = existing ? '' : 'none';
+  updateGoalSheetNotifyBtn();
 
   renderGoalSheetCategories();
   renderGoalSheetRhythms();
@@ -4986,6 +5259,16 @@ function openGoalSheet(goalId = null) {
   redrawGoalSheetCanvas();
 
   document.getElementById('goal-sheet-overlay').classList.add('open');
+}
+
+function updateGoalSheetNotifyBtn() {
+  const btn = document.getElementById('gs-notify-btn');
+  btn.textContent = _goalSheetState.notify ? 'An' : 'Aus';
+  btn.classList.toggle('h-pill--outline', !_goalSheetState.notify);
+}
+function toggleGoalSheetNotify() {
+  _goalSheetState.notify = !_goalSheetState.notify;
+  updateGoalSheetNotifyBtn();
 }
 
 function closeGoalSheet() {
@@ -5006,6 +5289,7 @@ async function saveGoalFromSheet() {
     rhythm: _goalSheetState.rhythm,
     time,
     xp: _goalSheetState.xp || 10,
+    notify: !!_goalSheetState.notify,
     archived: prior ? prior.archived : false,
     createdAt: prior ? prior.createdAt : undefined,
     sourceHabitId: prior ? prior.sourceHabitId : undefined,
@@ -6122,7 +6406,10 @@ function exportAppData() {
     payload[key] = localStorage.getItem(key);
   }
   const content = getItems({});
-  const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), app: 'REHAPP', data: payload, content }, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify({
+    exportedAt: new Date().toISOString(), app: 'REHAPP', data: payload, content,
+    goals: _goalsCache, logs: _logsCache, earned: _earnedCache,
+  }, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `regen-backup-${new Date().toISOString().slice(0,10)}.json`;
@@ -6133,6 +6420,32 @@ function exportAppData() {
   toast('BACKUP EXPORTIERT');
   popElement(document.getElementById('install-status-pill'));
 }
+
+// Ziele/Logs/Abzeichen fehlten bis Hybrid Phase 8 im Export — ein Backup
+// hätte sie beim Wiederherstellen stillschweigend verloren. upsertLog-/
+// EarnedRecord verhindern Duplikate, falls dasselbe Backup zweimal
+// importiert wird.
+function upsertLogRecord(log) {
+  const idx = _logsCache.findIndex(l => l.id === log.id);
+  if (idx >= 0) _logsCache[idx] = log; else _logsCache.push(log);
+}
+function upsertEarnedRecord(rec) {
+  const idx = _earnedCache.findIndex(e => e.id === rec.id);
+  if (idx >= 0) _earnedCache[idx] = rec; else _earnedCache.push(rec);
+}
+async function importGoalsLogsEarned(parsed) {
+  if (!Array.isArray(parsed.goals) && !Array.isArray(parsed.logs) && !Array.isArray(parsed.earned)) return;
+  await initGoalsStore();
+  for (const g of parsed.goals || []) await saveGoal(g);
+  const logs = parsed.logs || [];
+  logs.forEach(upsertLogRecord);
+  if (_contentDB && logs.length) { try { await idbPutAll(_contentDB, logs, LOG_STORE); } catch (err) { console.warn('Logs-Import persist fehlgeschlagen', err); } }
+  const earned = parsed.earned || [];
+  earned.forEach(upsertEarnedRecord);
+  if (_contentDB && earned.length) { try { await idbPutAll(_contentDB, earned, EARNED_STORE); } catch (err) { console.warn('Earned-Import persist fehlgeschlagen', err); } }
+  checkNewUnlocks();
+}
+
 function importAppDataFromFile(file) {
   if (!file) return;
   const reader = new FileReader();
@@ -6145,12 +6458,13 @@ function importAppDataFromFile(file) {
         await initContentStore();
         for (const it of parsed.content) await saveItem(it);
       }
+      await importGoalsLogsEarned(parsed);
       buildWater(); buildSupplements(); buildRecipes(); buildMLD();
       buildVagus(); buildBFR(); buildMasterplan();
       buildCRPSCalendar(); buildBudapestFilter(); renderOedemTrend();
       buildSearchIndex();
       loadProgress(); restorePreferences(); refreshXPUI(); updateInstallStatus(); updateNotificationStatus();
-      initSuppTab(); renderDailyQuote(); buildHabitsSection();
+      initSuppTab(); renderDailyQuote(); buildHabitsSection(); buildHeuteScreen();
       if (document.getElementById('settings-content')) buildSettings();
       awardXP('backup_import', 25, 'Backup importiert', { scope: 'day' });
       toast('BACKUP IMPORTIERT');
