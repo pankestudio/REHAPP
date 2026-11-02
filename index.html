@@ -2113,7 +2113,7 @@ input[type="range"] { accent-color: #f0f0f0; }
       <div class="panel">
         <div class="panel-label" style="display:flex;justify-content:space-between;align-items:center">
           <span>Wasser // 3L Ziel</span>
-          <span style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text2);letter-spacing:.08em">+3 XP / 0.4L</span>
+          <span style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text2);letter-spacing:.08em">8 × 0.4L</span>
         </div>
         <div class="water-stats">
           <div><div class="water-ml" id="water-ml-home">0 ml</div><div class="water-remain" id="water-remain-home">noch 3000ml</div></div>
@@ -2611,7 +2611,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   <div class="panel" style="overflow:visible;padding-bottom:0">
     <div class="panel-label">Neurorehabilitation // Graded Motor Imagery</div>
     <div style="padding:8px 16px 12px;font-size:var(--fs-sm);color:var(--text2);line-height:1.7">
-      GMI nutzt die Neuroplastizität des Gehirns: bei CRPS ist die kortikale Körperkarte des Fußes fehlverschaltet. Diese Module trainieren die Neuverschaltung Schritt für Schritt — ohne mechanische Belastung. GMI-Module geben <strong style="color:var(--text)">doppelte XP</strong>.
+      GMI nutzt die Neuroplastizität des Gehirns: bei CRPS ist die kortikale Körperkarte des Fußes fehlverschaltet. Diese Module trainieren die Neuverschaltung Schritt für Schritt — ohne mechanische Belastung. GMI-Module sind ein zentraler Baustein der Desensibilisierung.
     </div>
   </div>
 
@@ -2621,7 +2621,7 @@ input[type="range"] { accent-color: #f0f0f0; }
       <div class="gmi-icon">✋</div>
       <div class="gmi-title-wrap">
         <div class="gmi-title">Sensory Wake-Up</div>
-        <div class="gmi-subtitle">Texturerkennung // 10 Min // +80 XP</div>
+        <div class="gmi-subtitle">Texturerkennung // 10 Min</div>
       </div>
       <div class="gmi-xp-badge">▼</div>
     </div>
@@ -2650,7 +2650,7 @@ input[type="range"] { accent-color: #f0f0f0; }
       <div class="gmi-icon">🧠</div>
       <div class="gmi-title-wrap">
         <div class="gmi-title">Explicit Motor Imagery</div>
-        <div class="gmi-subtitle">Mentale Bewegung // 10 Min // +80 XP</div>
+        <div class="gmi-subtitle">Mentale Bewegung // 10 Min</div>
       </div>
       <div class="gmi-xp-badge">▼</div>
     </div>
@@ -2669,7 +2669,7 @@ input[type="range"] { accent-color: #f0f0f0; }
       <div class="gmi-icon">🪥</div>
       <div class="gmi-title-wrap">
         <div class="gmi-title">Scrubbing — Stress Loading</div>
-        <div class="gmi-subtitle">Gewebereiz // 3 Min // +200 XP</div>
+        <div class="gmi-subtitle">Gewebereiz // 3 Min</div>
       </div>
       <div class="gmi-xp-badge">▼</div>
     </div>
@@ -2688,7 +2688,7 @@ input[type="range"] { accent-color: #f0f0f0; }
           <button class="bud-btn" onclick="logGMIPain('scrubbing',6,this)">5–6</button>
           <button class="bud-btn" onclick="logGMIPain('scrubbing',8,this)">7+</button>
         </div>
-        <button class="btn btn-sm btn-cx" onclick="completeScrubbingSession()" style="width:100%">Session abschliessen — +200 XP</button>
+        <button class="btn btn-sm btn-cx" onclick="completeScrubbingSession()" style="width:100%">Session abschliessen</button>
       </div>
     </div>
   </div>
@@ -2696,7 +2696,7 @@ input[type="range"] { accent-color: #f0f0f0; }
   <!-- MEDITATION -->
   <div class="panel">
     <div class="panel-collapse-header" data-collapse-id="meditation" onclick="toggleCollapse('meditation')">
-      <div class="panel-collapse-title">Knochen-Heilung // Geführte Visualisierung // +60 XP</div>
+      <div class="panel-collapse-title">Knochen-Heilung // Geführte Visualisierung</div>
       <div class="panel-collapse-arrow" id="collapse-arrow-meditation">▼</div>
     </div>
     <div id="collapse-body-meditation" class="closed">
@@ -2720,132 +2720,6 @@ input[type="range"] { accent-color: #f0f0f0; }
 </div>
 
 <!-- ══════════════════════════════════════ XP / GAMIFICATION ══ -->
-<div id="pg-xp" class="page scroll-page">
-  <div class="page-header">
-    <div class="page-title">Experience</div>
-    <div class="page-sub">Level // Missionen // CRPS-Tracker</div>
-  </div>
-
-  <!-- XP CARD -->
-  <div class="xp-card" aria-label="Experience Punkte">
-    <div class="xp-meta">
-      <div>
-        <div class="xp-kicker" style="font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Experience</div>
-        <div class="xp-total" id="xp-total-tab">0 XP</div>
-      </div>
-      <div class="xp-level-badge" id="xp-level-badge">Level 1</div>
-    </div>
-    <div class="xp-progress" aria-hidden="true"><div class="xp-progress-bar" id="xp-progress-bar-tab"></div></div>
-    <div class="xp-foot">
-      <span id="xp-next-text">120 XP bis Level 2</span>
-      <span id="xp-streak-tab">Serie 0</span>
-    </div>
-    <div class="xp-secondary-stats">
-      <div class="stat-chip"><span>Heute</span><strong id="xp-today-points">0 XP</strong></div>
-      <div class="stat-chip"><span>Trophäen</span><strong id="xp-trophy-count">0 / 12</strong></div>
-      <div class="stat-chip"><span>Missionen</span><strong id="mission-progress-mini">0 / 6</strong></div>
-    </div>
-  </div>
-
-  <!-- DAILY QUOTE -->
-  <div class="quote-card" id="daily-quote-card">
-    <div class="quote-day" id="quote-day-label">Tag 1</div>
-    <div class="quote-text" id="quote-text">"Der Anfang ist die Hälfte des Ganzen."</div>
-    <div class="quote-author" id="quote-author">— Aristoteles</div>
-  </div>
-
-  <!-- MISSIONS -->
-  <div class="panel panel-lite" aria-label="Daily Missions">
-    <div class="panel-label">Daily Missions</div>
-    <div class="mission-list" id="mission-list"></div>
-  </div>
-
-  <!-- BUDAPEST FILTER (CRPS-Indikatoren) -->
-  <div class="panel">
-    <div class="panel-collapse-header" data-collapse-id="budapest" onclick="toggleCollapse('budapest')">
-      <div class="panel-collapse-title">Budapest-Filter // CRPS-Indikator-Tracking</div>
-      <div class="panel-collapse-arrow open" id="collapse-arrow-budapest">▲</div>
-    </div>
-    <div id="collapse-body-budapest">
-      <div style="padding:8px 16px 6px;font-size:var(--fs-sm);color:var(--text2);line-height:1.6">
-        Die Budapest-Kriterien sind der klinische Standard zur CRPS-Diagnose. Täglich tracken um den Verlauf zu dokumentieren.
-      </div>
-      <div id="budapest-container"></div>
-      <div style="padding:8px 16px 14px;display:flex;justify-content:space-between;align-items:center">
-        <button class="btn btn-sm btn-cx" onclick="saveBudapest()">Eintrag speichern — +30 XP</button>
-        <span style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3)" id="budapest-score-display"></span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ÖDEM CIRCUMFERENCE -->
-  <div class="panel">
-    <div class="panel-collapse-header" data-collapse-id="oedem" onclick="toggleCollapse('oedem')">
-      <div class="panel-collapse-title">Ödem-Sensor // Knöchelumfang</div>
-      <div class="panel-collapse-arrow open" id="collapse-arrow-oedem">▲</div>
-    </div>
-    <div id="collapse-body-oedem">
-      <div style="padding:8px 16px 4px;font-size:var(--fs-sm);color:var(--text2)">
-        Täglich morgens messen. XP-Bonus bei Reduktion &gt; 0.5 cm. Warnung bei Anstieg.
-      </div>
-      <div class="oedem-input-row">
-        <input class="input-mini oedem-input" type="number" id="oedem-cm" min="10" max="40" step="0.1" placeholder="23.5" inputmode="decimal">
-        <span class="oedem-unit">cm</span>
-        <button class="btn btn-sm btn-cx" onclick="saveOedem()">Speichern</button>
-      </div>
-      <div class="oedem-trend">
-        <div style="font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Verlauf 7 Tage</div>
-        <div class="oedem-bar-row" id="oedem-trend-bars"></div>
-        <div style="font-size:var(--fs-sm);color:var(--text2);margin-top:6px" id="oedem-trend-text"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TROPHIES -->
-  <div class="panel panel-lite" aria-label="Trophäen">
-    <div class="panel-collapse-header" data-collapse-id="trophies" onclick="toggleCollapse('trophies')">
-      <div class="panel-collapse-title">Trophäen</div>
-      <div class="panel-collapse-arrow" id="collapse-arrow-trophies">▼</div>
-    </div>
-    <div id="collapse-body-trophies" class="closed">
-      <div class="trophy-grid" id="trophy-grid"></div>
-    </div>
-  </div>
-
-  <!-- PWA INSTALL GUIDE -->
-  <div class="panel" style="margin-bottom:14px">
-    <div class="panel-collapse-header" data-collapse-id="pwa" onclick="toggleCollapse('pwa')">
-      <div class="panel-collapse-title">iPhone — App installieren (wichtig)</div>
-      <div class="panel-collapse-arrow" id="collapse-arrow-pwa">▼</div>
-    </div>
-    <div id="collapse-body-pwa" class="closed">
-      <div style="padding:10px 16px 14px;font-size:var(--fs-sm);color:var(--text2);line-height:1.9">
-
-        <div style="padding:10px 12px;border-radius:12px;background:rgba(224,112,112,0.12);border:1px solid rgba(224,112,112,0.25);margin-bottom:14px">
-          <strong style="color:var(--red);display:block;margin-bottom:4px">⚠ iCloud funktioniert nicht</strong>
-          Apple öffnet HTML-Dateien aus iCloud als Vorschau — JavaScript ist blockiert, Buttons reagieren nicht. Die Datei muss gehostet werden.
-        </div>
-
-        <strong style="color:var(--text);display:block;margin-bottom:8px">Schritt 1 — Hosting einrichten (1 Min, kostenlos)</strong>
-        1. Am Computer: <span style="font-family:var(--mono);color:var(--text)">netlify.com/drop</span> öffnen<br>
-        2. Den heruntergeladenen Ordner (mit <span style="font-family:var(--mono);color:var(--text)">index.html, sw.js, manifest.webmanifest, icons/</span>) in das Browser-Fenster ziehen<br>
-        3. Netlify gibt sofort eine HTTPS-URL wie <span style="font-family:var(--mono);color:var(--text)">xyz.netlify.app</span><br><br>
-
-        <strong style="color:var(--text);display:block;margin-bottom:8px">Schritt 2 — Auf iPhone installieren</strong>
-        4. Die Netlify-URL auf dem iPhone in <strong>Safari</strong> öffnen — nicht Chrome, nicht andere Browser<br>
-        5. Teilen-Symbol tippen: <strong>□↑</strong> (unten in der Mitte)<br>
-        6. Im Menü nach unten scrollen → <strong>„Zum Home-Bildschirm"</strong> tippen<br>
-        7. REHAPP erscheint als App-Icon — startet ohne Browser-Chrome, Daten bleiben offline gespeichert
-
-        <div style="margin-top:12px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.04);font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3)">
-          Tipp: URL im Notiz-App speichern oder per AirDrop vom Computer ans iPhone senden.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="spacer"></div>
-</div>
 
 <!-- ══════════════════════════════════════ SUPPLEMENTE ══ -->
 <div id="pg-supp" class="page scroll-page">
@@ -2917,6 +2791,50 @@ input[type="range"] { accent-color: #f0f0f0; }
         <strong style="color:var(--text)">Box 4×4:</strong> 4-4-4-4 — direkteste Methode zur Parasympathikus-Aktivierung bei Stress und Schmerzspitzen.<br>
         <strong style="color:var(--text)">4-7-8 Schlaf:</strong> stimuliert den Vagusnerv, senkt Herzfrequenz und Entzündungsmarker.<br>
         <strong style="color:var(--text)">Wim Hof:</strong> kontrollierte Hyperventilation + Retention, stärkt die Stressregulation. Alle Techniken laufen geführt in Übungen → Atmung.
+      </div>
+    </div>
+  </div>
+
+  <div class="h-sep" style="margin:20px 14px"></div>
+  <div class="h-meta" style="margin:0 14px 10px">Verlauf</div>
+
+  <!-- BUDAPEST FILTER (CRPS-Indikatoren) -->
+  <div class="panel">
+    <div class="panel-collapse-header" data-collapse-id="budapest" onclick="toggleCollapse('budapest')">
+      <div class="panel-collapse-title">Budapest-Filter — CRPS-Indikator-Tracking</div>
+      <div class="panel-collapse-arrow" id="collapse-arrow-budapest">▼</div>
+    </div>
+    <div id="collapse-body-budapest" class="closed">
+      <div style="padding:8px 16px 6px;font-size:var(--fs-sm);color:var(--text2);line-height:1.6">
+        Die Budapest-Kriterien sind der klinische Standard zur CRPS-Diagnose. Täglich tracken um den Verlauf zu dokumentieren.
+      </div>
+      <div id="budapest-container"></div>
+      <div style="padding:8px 16px 14px;display:flex;justify-content:space-between;align-items:center">
+        <button class="h-pill" style="min-height:40px;padding:0 18px;font-size:14px" onclick="saveBudapest()">Eintrag speichern</button>
+        <span style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3)" id="budapest-score-display"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÖDEM CIRCUMFERENCE -->
+  <div class="panel">
+    <div class="panel-collapse-header" data-collapse-id="oedem" onclick="toggleCollapse('oedem')">
+      <div class="panel-collapse-title">Ödem-Sensor — Knöchelumfang</div>
+      <div class="panel-collapse-arrow" id="collapse-arrow-oedem">▼</div>
+    </div>
+    <div id="collapse-body-oedem" class="closed">
+      <div style="padding:8px 16px 4px;font-size:var(--fs-sm);color:var(--text2)">
+        Täglich morgens messen.
+      </div>
+      <div class="oedem-input-row">
+        <input class="input-mini oedem-input" type="number" id="oedem-cm" min="10" max="40" step="0.1" placeholder="23.5" inputmode="decimal">
+        <span class="oedem-unit">cm</span>
+        <button class="h-pill" style="min-height:40px;padding:0 18px;font-size:14px" onclick="saveOedem()">Speichern</button>
+      </div>
+      <div class="oedem-trend">
+        <div style="font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Verlauf 7 Tage</div>
+        <div class="oedem-bar-row" id="oedem-trend-bars"></div>
+        <div style="font-size:var(--fs-sm);color:var(--text2);margin-top:6px" id="oedem-trend-text"></div>
       </div>
     </div>
   </div>
@@ -3181,6 +3099,34 @@ input[type="range"] { accent-color: #f0f0f0; }
     <div class="system-grid">
       <div class="system-item"><div><div class="system-label">App-Modus</div><div class="system-sub" id="install-status-copy">Wird geprüft …</div></div><div class="system-pill" id="install-status-pill">WEB</div></div>
       <div class="system-item"><div><div class="system-label">Benachrichtigungen</div><div class="system-sub" id="notif-status-copy">Noch nicht geprüft.</div></div><div class="system-pill" id="notif-status-pill">CHECK</div></div>
+    </div>
+
+    <div class="h-sep"></div>
+    <div class="panel" style="margin:0 0 14px">
+      <div class="panel-collapse-header" data-collapse-id="pwa" onclick="toggleCollapse('pwa')">
+        <div class="panel-collapse-title">iPhone — App installieren (wichtig)</div>
+        <div class="panel-collapse-arrow" id="collapse-arrow-pwa">▼</div>
+      </div>
+      <div id="collapse-body-pwa" class="closed">
+        <div style="padding:10px 16px 14px;font-size:var(--fs-sm);color:var(--text2);line-height:1.9">
+          <div style="padding:10px 12px;border-radius:12px;background:rgba(224,112,112,0.12);border:1px solid rgba(224,112,112,0.25);margin-bottom:14px">
+            <strong style="color:var(--red);display:block;margin-bottom:4px">⚠ iCloud funktioniert nicht</strong>
+            Apple öffnet HTML-Dateien aus iCloud als Vorschau — JavaScript ist blockiert, Buttons reagieren nicht. Die Datei muss gehostet werden.
+          </div>
+          <strong style="color:var(--text);display:block;margin-bottom:8px">Schritt 1 — Hosting einrichten (1 Min, kostenlos)</strong>
+          1. Am Computer: <span style="font-family:var(--mono);color:var(--text)">netlify.com/drop</span> öffnen<br>
+          2. Den heruntergeladenen Ordner (mit <span style="font-family:var(--mono);color:var(--text)">index.html, sw.js, manifest.webmanifest, icons/</span>) in das Browser-Fenster ziehen<br>
+          3. Netlify gibt sofort eine HTTPS-URL wie <span style="font-family:var(--mono);color:var(--text)">xyz.netlify.app</span><br><br>
+          <strong style="color:var(--text);display:block;margin-bottom:8px">Schritt 2 — Auf iPhone installieren</strong>
+          4. Die Netlify-URL auf dem iPhone in <strong>Safari</strong> öffnen — nicht Chrome, nicht andere Browser<br>
+          5. Teilen-Symbol tippen: <strong>□↑</strong> (unten in der Mitte)<br>
+          6. Im Menü nach unten scrollen → <strong>„Zum Home-Bildschirm"</strong> tippen<br>
+          7. REHAPP erscheint als App-Icon — startet ohne Browser-Chrome, Daten bleiben offline gespeichert
+          <div style="margin-top:12px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.04);font-family:var(--mono);font-size:var(--fs-xs);color:var(--text3)">
+            Tipp: URL im Notiz-App speichern oder per AirDrop vom Computer ans iPhone senden.
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -5886,7 +5832,7 @@ function buildContentEditorPanel() {
       <div class="check-row" onclick="openItemEditor('${it.id}')" style="${it.active ? '' : 'opacity:.45'}">
         <div style="flex:1;min-width:0">
           <div class="check-label">${it.title}</div>
-          <div class="row-sub">${it.active ? '' : 'Inaktiv · '}+${it.xp} XP${it.dose ? ' · ' + it.dose : ''}</div>
+          <div class="row-sub">${it.active ? '' : 'Inaktiv'}${it.dose ? (it.active ? '' : ' · ') + it.dose : ''}</div>
         </div>
         <span style="color:var(--text3)">›</span>
       </div>
@@ -6101,7 +6047,7 @@ function buildSettings() {
     <div class="panel" style="margin:0 14px 24px;border:1px solid rgba(180,60,60,0.3)">
       <div class="panel-label" style="color:rgba(220,80,80,0.9)">Zurücksetzen</div>
       <div style="padding:8px 16px 12px">
-        <div class="row-sub" style="margin-bottom:12px">Löscht alle Daten — XP, Habits, Protokolle, Einstellungen. Nicht rückgängig machbar.</div>
+        <div class="row-sub" style="margin-bottom:12px">Löscht alle Daten — Ziele, Verlauf, Protokolle, Einstellungen. Nicht rückgängig machbar.</div>
         <button onclick="confirmResetAll()"
           style="width:100%;border:1px solid rgba(180,60,60,0.6);background:transparent;
                  padding:12px;font-family:var(--mono);font-size:0.8rem;letter-spacing:.12em;
@@ -6213,7 +6159,7 @@ function buildCRPSCalendar() {
           <div style="font-size:var(--fs-sm);color:var(--text2);margin-top:3px">${d.moduleDetail}</div>
         </div>
         <div style="margin-bottom:12px;font-size:var(--fs-sm);color:var(--text2);font-style:italic">${d.quote} <span style="font-style:normal;opacity:.6">— ${d.author}</span></div>
-        ${!done ? `<button class="btn btn-sm btn-cx" onclick="completeCRPSDay(${d.day})" style="width:100%">Tag ${d.day} als erledigt markieren — +50 XP</button>` : '<div style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text2);text-transform:uppercase;letter-spacing:.1em;text-align:center">✓ Abgeschlossen</div>'}
+        ${!done ? `<button class="btn btn-sm btn-cx" onclick="completeCRPSDay(${d.day})" style="width:100%">Tag ${d.day} als erledigt markieren</button>` : '<div style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--text2);text-transform:uppercase;letter-spacing:.1em;text-align:center">✓ Abgeschlossen</div>'}
       </div>
     </div>`;
   }).join('');
@@ -6233,7 +6179,7 @@ function completeCRPSDay(day) {
   awardXP(`crps_day_${day}`, 50, `Tag ${day} CRPS-Protokoll`, { scope: 'ever' });
   buildCRPSCalendar();
   safeVibrate([20, 15, 40]);
-  toast(`TAG ${day} ABGESCHLOSSEN — +50 XP`);
+  toast(`TAG ${day} ABGESCHLOSSEN`);
 }
 
 // ══════════════ GMI MODULES ══════════════
@@ -6279,7 +6225,7 @@ function completeScrubbingSession() {
   awardXP(`scrubbing_${getLocalDateKey()}`, 200, 'Scrubbing', { scope: 'day' });
   storageSet('xp_award_ever_scrubbing_done', '1');
   safeVibrate([40, 20, 40, 20, 60]);
-  toast('SCRUBBING ABGESCHLOSSEN — +200 XP');
+  toast('SCRUBBING ABGESCHLOSSEN');
   refreshXPUI();
 }
 
@@ -6331,7 +6277,7 @@ function saveBudapest() {
   if (jaCount >= 4) {
     toast(`BUDAPEST: ${jaCount}/6 AKTIV — ARZT INFORMIEREN`);
   } else {
-    toast(`BUDAPEST-LOG GESPEICHERT — +30 XP`);
+    toast(`BUDAPEST-LOG GESPEICHERT`);
   }
 }
 
@@ -6349,7 +6295,7 @@ function saveOedem() {
     const diff = val - last;
     if (diff <= -0.5) {
       awardXP(`oedem_reduction_${getLocalDateKey()}`, 50, 'Ödem-Reduktion', { scope: 'day' });
-      msg += ` — REDUKTION ${Math.abs(diff).toFixed(1)}cm — +50 XP`;
+      msg += ` — REDUKTION ${Math.abs(diff).toFixed(1)}cm`;
     } else if (diff > 0.5) {
       msg += ` ⚠ ANSTIEG: Elektrolyte & Salz prüfen`;
     }
@@ -6646,58 +6592,11 @@ function evaluateTrophies() {
     try {
       if (item.test() && unlockTrophy(item.id)) {
         awardXP('trophy_' + item.id, 20, 'Trophäe', { scope: 'ever', silent: true });
-        toast(`TROPHÄE: ${item.title.toUpperCase()}`);
       }
     } catch (err) {
       console.warn('Trophy evaluation failed', err);
     }
   });
-}
-
-function renderTrophies() {
-  const root = document.getElementById('trophy-grid');
-  if (!root) return;
-  let count = 0;
-  root.innerHTML = TROPHIES.map(item => {
-    const unlocked = storageGet('trophy_' + item.id) === '1';
-    if (unlocked) count += 1;
-    return `<div class="trophy-item ${unlocked ? 'unlocked' : ''}"><div class="trophy-emoji">${item.icon}</div><div class="trophy-name">${item.title}</div><div class="trophy-meta">${unlocked ? item.copy : 'Noch gesperrt'}</div></div>`;
-  }).join('');
-  const counter = document.getElementById('xp-trophy-count');
-  if (counter) counter.textContent = `${count} / ${TROPHIES.length}`;
-}
-
-function getMissionState() {
-  const today = new Date().toDateString();
-  const water = JSON.parse(storageGet('water6_' + today) || '[]').length;
-  const checks = DAILY_CHECKS.filter(item => storageGet('check_' + today + '_' + item.id) === '1').length;
-  const hasBreath = storageGet('xp_award_day_' + getLocalDateKey() + '_breath_start') === '1';
-  const hasProgress = storageGet('xp_award_day_' + getLocalDateKey() + '_progress_entry_' + getLocalDateKey()) === '1';
-  const hasVagus = storageGet('xp_award_day_' + getLocalDateKey() + '_vagus_drill_complete') === '1';
-  const hasBFR = storageGet('xp_award_day_' + getLocalDateKey() + '_bfr_session_complete') === '1';
-  return [
-    { id: 'water', title: '3L Wasser', copy: `${water}/15 Einheiten`, done: water >= 15, xp: '+20 XP' },
-    { id: 'checks', title: '5 Tageschecks', copy: `${checks}/5 erledigt`, done: checks >= 5, xp: '+20 XP' },
-    { id: 'vagus', title: 'Vagus-Session', copy: hasVagus ? 'Heute abgeschlossen' : 'Noch offen', done: hasVagus, xp: '+20 XP' },
-    { id: 'breath', title: 'Atemsession', copy: hasBreath ? 'Heute abgeschlossen' : 'Noch offen', done: hasBreath, xp: '+15 XP' },
-    { id: 'progress', title: 'Verlauf loggen', copy: hasProgress ? 'Heute eingetragen' : 'Noch offen', done: hasProgress, xp: '+18 XP' },
-    { id: 'bfr', title: 'BFR-Einheit', copy: hasBFR ? 'Heute absolviert' : 'Optional Phase 3', done: hasBFR, xp: '+25 XP' },
-  ];
-}
-
-function updateMissionUI() {
-  const root = document.getElementById('mission-list');
-  if (!root) return;
-  const missions = getMissionState();
-  const doneCount = missions.filter(m => m.done).length;
-  root.innerHTML = missions.map(m => `<div class="mission-item ${m.done ? 'done' : ''}"><div class="mission-dot"></div><div class="mission-copy"><strong>${m.title}</strong><span>${m.copy}</span></div><div class="mission-xp">${m.xp}</div></div>`).join('');
-  const mini = document.getElementById('mission-progress-mini');
-  if (mini) mini.textContent = `${doneCount} / ${missions.length}`;
-  if (doneCount === missions.length && storageGet('mission_complete_' + getLocalDateKey()) !== '1') {
-    storageSet('mission_complete_' + getLocalDateKey(), '1');
-    awardXP('daily_missions_complete_' + getLocalDateKey(), 40, 'Daily Missions', { scope: 'day' });
-    toast('DAILY MISSIONS ABGESCHLOSSEN');
-  }
 }
 
 function refreshXPUI() {
@@ -6733,8 +6632,6 @@ function refreshXPUI() {
   if (streakTab) streakTab.textContent = `Serie ${streak}`;
   if (todayPoints) todayPoints.textContent = `${parseInt(storageGet('xp_day_' + getLocalDateKey()) || '0', 10)} XP`;
   evaluateTrophies();
-  renderTrophies();
-  updateMissionUI();
 }
 
 function awardXP(actionKey, amount, label, options = {}) {
@@ -8059,7 +7956,7 @@ function startVizTimer() {
       if (btn) { btn.textContent = 'Nochmal starten'; btn.disabled = false; }
       safeVibrate([40, 30, 40]);
       playTone(440, 0.15); setTimeout(() => playTone(550, 0.2), 180);
-      toast('VISUALISIERUNG ABGESCHLOSSEN — +60 XP');
+      toast('VISUALISIERUNG ABGESCHLOSSEN');
       refreshXPUI();
     }
   }, 1000);
