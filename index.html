@@ -3400,8 +3400,12 @@ const HABIT_BLOCKS = [
 // einmalige Migration bestehen, werden sonst nirgends mehr gelesen.
 
 const CONTENT_DB_NAME = 'rehapp_content';
-const CONTENT_DB_VERSION = 1;
+// v2 (Hybrid Phase 3): + goals/logs/earned Stores für Ziele & Abzeichen.
+const CONTENT_DB_VERSION = 2;
 const CONTENT_STORE = 'items';
+const GOAL_STORE = 'goals';
+const LOG_STORE = 'logs';
+const EARNED_STORE = 'earned';
 
 let _contentDB = null;
 let _contentCache = [];
@@ -3424,35 +3428,44 @@ function openContentDB() {
       if (!db.objectStoreNames.contains(CONTENT_STORE)) {
         db.createObjectStore(CONTENT_STORE, { keyPath: 'id' });
       }
+      if (!db.objectStoreNames.contains(GOAL_STORE)) {
+        db.createObjectStore(GOAL_STORE, { keyPath: 'id' });
+      }
+      if (!db.objectStoreNames.contains(LOG_STORE)) {
+        db.createObjectStore(LOG_STORE, { keyPath: 'id' });
+      }
+      if (!db.objectStoreNames.contains(EARNED_STORE)) {
+        db.createObjectStore(EARNED_STORE, { keyPath: 'id' });
+      }
     };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
   });
 }
 
-function idbGetAll(db) {
+function idbGetAll(db, storeName = CONTENT_STORE) {
   return new Promise((resolve, reject) => {
-    const tx = db.transaction(CONTENT_STORE, 'readonly');
-    const req = tx.objectStore(CONTENT_STORE).getAll();
+    const tx = db.transaction(storeName, 'readonly');
+    const req = tx.objectStore(storeName).getAll();
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
   });
 }
 
-function idbPutAll(db, items) {
+function idbPutAll(db, items, storeName = CONTENT_STORE) {
   return new Promise((resolve, reject) => {
-    const tx = db.transaction(CONTENT_STORE, 'readwrite');
-    const store = tx.objectStore(CONTENT_STORE);
+    const tx = db.transaction(storeName, 'readwrite');
+    const store = tx.objectStore(storeName);
     items.forEach(it => store.put(it));
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
   });
 }
 
-function idbDelete(db, id) {
+function idbDelete(db, id, storeName = CONTENT_STORE) {
   return new Promise((resolve, reject) => {
-    const tx = db.transaction(CONTENT_STORE, 'readwrite');
-    tx.objectStore(CONTENT_STORE).delete(id);
+    const tx = db.transaction(storeName, 'readwrite');
+    tx.objectStore(storeName).delete(id);
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
   });
@@ -3622,6 +3635,289 @@ function toggleItemDone(id) {
   }
   storageSet('content_done_' + dateKey, JSON.stringify([...done]));
   return done.has(id);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// ZIELE & ABZEICHEN — Hybrid Phase 3 (goals/logs/earned in rehapp_content)
+// ══════════════════════════════════════════════════════════════════════
+// Tier wird nie gespeichert, sondern immer aus den Logs berechnet
+// (computeTier) — earned merkt sich nur die je höchste erreichte Stufe pro
+// Abzeichen, damit ein Unlock-Moment nicht doppelt gefeiert wird.
+//
+// Kulanz-Regel (täglich wie wochenweise): ein einzelner verpasster
+// Tag/Woche bricht eine Serie nicht, erst zwei in Folge. Der heutige, noch
+// offene Zeitraum zählt nie als verpasst — computeDailyStreak/
+// computeWeekStreak starten deshalb bei "gestern"/"letzte Woche", wenn der
+// aktuelle Zeitraum das Soll noch nicht erfüllt hat.
+
+let _goalsCache = [];
+let _logsCache = [];
+let _earnedCache = [];
+let _pendingUnlocks = [];
+
+const GOAL_TIER_RANK = { gesperrt: 0, skizze: 1, tusche: 2, glanz: 3 };
+const GOAL_TIER_THRESHOLDS = {
+  taeglich: { tusche: 7, glanz: 30 },
+  drei:     { tusche: 4, glanz: 12 },
+  woche:    { tusche: 4, glanz: 12 },
+};
+
+function getGoals(filter = {}) {
+  return _goalsCache.filter(g => {
+    if (filter.archived !== undefined && !!g.archived !== filter.archived) return false;
+    if (filter.category && g.category !== filter.category) return false;
+    return true;
+  });
+}
+function getGoal(id) { return _goalsCache.find(g => g.id === id); }
+
+async function saveGoal(goal) {
+  if (!goal.id) goal.id = 'goal-' + slugifyId(goal.title || 'ziel') + '-' + Date.now().toString(36);
+  if (goal.createdAt === undefined) goal.createdAt = Date.now();
+  if (goal.archived === undefined) goal.archived = false;
+  const idx = _goalsCache.findIndex(g => g.id === goal.id);
+  if (idx >= 0) _goalsCache[idx] = goal; else _goalsCache.push(goal);
+  if (_contentDB) { try { await idbPutAll(_contentDB, [goal], GOAL_STORE); } catch (err) { console.warn('saveGoal persist fehlgeschlagen', err); } }
+  checkNewUnlocks();
+  return goal;
+}
+
+async function archiveGoal(id) {
+  const g = getGoal(id);
+  if (!g) return;
+  g.archived = true;
+  await saveGoal(g);
+}
+
+function getLog(goalId, dateKey) {
+  return _logsCache.find(l => l.goalId === goalId && l.date === dateKey);
+}
+function isLogged(goalId, dateKey) { return !!getLog(goalId, dateKey); }
+function getLogsForGoal(goalId) { return _logsCache.filter(l => l.goalId === goalId); }
+
+async function toggleLog(goalId, dateKey, mut = false) {
+  const existing = getLog(goalId, dateKey);
+  if (existing) {
+    _logsCache = _logsCache.filter(l => l !== existing);
+    if (_contentDB) { try { await idbDelete(_contentDB, existing.id, LOG_STORE); } catch (err) { console.warn('toggleLog delete fehlgeschlagen', err); } }
+    return { log: null, unlocked: [] };
+  }
+  const log = { id: goalId + '__' + dateKey, goalId, date: dateKey, mut: !!mut, at: Date.now() };
+  _logsCache.push(log);
+  if (_contentDB) { try { await idbPutAll(_contentDB, [log], LOG_STORE); } catch (err) { console.warn('toggleLog persist fehlgeschlagen', err); } }
+  return { log, unlocked: checkNewUnlocks() };
+}
+
+async function setLogMut(goalId, dateKey, mut) {
+  const existing = getLog(goalId, dateKey);
+  if (!existing) return { log: null, unlocked: [] };
+  existing.mut = !!mut;
+  if (_contentDB) { try { await idbPutAll(_contentDB, [existing], LOG_STORE); } catch (err) { console.warn('setLogMut persist fehlgeschlagen', err); } }
+  return { log: existing, unlocked: checkNewUnlocks() };
+}
+
+function getEarned(badgeId) { return _earnedCache.find(e => e.id === badgeId); }
+function getAllEarned() { return _earnedCache.slice(); }
+
+async function setEarned(badgeId, tier) {
+  const existing = getEarned(badgeId);
+  const rec = existing || { id: badgeId };
+  rec.tier = tier;
+  rec.at = Date.now();
+  if (!existing) _earnedCache.push(rec);
+  if (_contentDB) { try { await idbPutAll(_contentDB, [rec], EARNED_STORE); } catch (err) { console.warn('setEarned persist fehlgeschlagen', err); } }
+  return rec;
+}
+
+// Serie in Tagen (rhythm 'taeglich'). Siehe Kulanz-Regel oben.
+function computeDailyStreak(goalId, today = new Date()) {
+  let streak = 0, misses = 0;
+  const d = new Date(today);
+  d.setHours(0, 0, 0, 0);
+  if (!isLogged(goalId, getLocalDateKey(d))) d.setDate(d.getDate() - 1);
+  for (let steps = 0; steps < 400; steps++) {
+    const key = getLocalDateKey(d);
+    if (isLogged(goalId, key)) { streak++; misses = 0; }
+    else { misses++; if (misses >= 2) break; }
+    d.setDate(d.getDate() - 1);
+  }
+  return streak;
+}
+
+// Serie in Wochen (rhythm 'drei' = Soll 3 Logs/Woche, 'woche' = Soll 1 Log/Woche).
+function computeWeekStreak(goalId, rhythm, today = new Date()) {
+  const need = rhythm === 'drei' ? 3 : 1;
+  const countInWeek = monday => {
+    const start = getLocalDateKey(monday);
+    const end = new Date(monday); end.setDate(end.getDate() + 6);
+    const endKey = getLocalDateKey(end);
+    return getLogsForGoal(goalId).filter(l => l.date >= start && l.date <= endKey).length;
+  };
+  const w = new Date(today);
+  w.setHours(0, 0, 0, 0);
+  w.setDate(w.getDate() - ((w.getDay() + 6) % 7)); // Montag dieser Woche
+  if (countInWeek(w) < need) w.setDate(w.getDate() - 7);
+  let streak = 0, misses = 0;
+  for (let steps = 0; steps < 80; steps++) {
+    if (countInWeek(w) >= need) { streak++; misses = 0; }
+    else { misses++; if (misses >= 2) break; }
+    w.setDate(w.getDate() - 7);
+  }
+  return streak;
+}
+
+function computeTier(goal, today = new Date()) {
+  const logs = getLogsForGoal(goal.id);
+  if (goal.rhythm === 'einmal') {
+    const done = logs[0];
+    if (!done) return 'skizze'; // angelegt
+    return done.mut ? 'glanz' : 'tusche';
+  }
+  if (!logs.length) return 'gesperrt'; // noch nie erledigt
+  if (goal.rhythm === 'taeglich') {
+    const streak = computeDailyStreak(goal.id, today);
+    if (streak >= GOAL_TIER_THRESHOLDS.taeglich.glanz) return 'glanz';
+    if (streak >= GOAL_TIER_THRESHOLDS.taeglich.tusche) return 'tusche';
+    return 'skizze';
+  }
+  if (goal.rhythm === 'drei' || goal.rhythm === 'woche') {
+    const streak = computeWeekStreak(goal.id, goal.rhythm, today);
+    const th = GOAL_TIER_THRESHOLDS[goal.rhythm];
+    if (streak >= th.glanz) return 'glanz';
+    if (streak >= th.tusche) return 'tusche';
+    return 'skizze';
+  }
+  return 'gesperrt';
+}
+
+// Vergleicht den berechneten Tier jedes aktiven Ziels mit dem zuletzt
+// gespeicherten Stand in _earnedCache. Bei einem Anstieg: Fortschritt
+// sichern + Unlock in die Warteschlange (Phase 6 zeigt sie als
+// Vollbild-Feiermoment). sys-overcome ist das einzige Cross-Ziel-Abzeichen
+// in Phase 3 — es gehört zu keinem einzelnen Ziel, sondern feiert die erste
+// "mit Überwindung" markierte Erledigung überhaupt.
+function checkNewUnlocks() {
+  const newly = [];
+  getGoals({ archived: false }).forEach(g => {
+    const tier = computeTier(g);
+    const prev = getEarned(g.id);
+    const prevTier = prev ? prev.tier : 'gesperrt';
+    if (tier !== prevTier && GOAL_TIER_RANK[tier] > GOAL_TIER_RANK[prevTier]) {
+      setEarned(g.id, tier);
+      newly.push({ badgeId: g.id, tier, goal: g });
+    } else if (!prev) {
+      setEarned(g.id, tier);
+    }
+  });
+  if (!getEarned('sys-overcome') && _logsCache.some(l => l.mut)) {
+    setEarned('sys-overcome', 'glanz');
+    newly.push({ badgeId: 'sys-overcome', tier: 'glanz', goal: null });
+  }
+  if (newly.length) _pendingUnlocks.push(...newly);
+  return newly;
+}
+
+// Ordnet migrierten Habits eine Ziel-Kategorie/Icon zu. Bewusst pro Habit
+// und nicht pauschal, damit die Sammlung (Phase 6) nicht aus 30 identischen
+// Symbolen besteht. Fehlt ein Eintrag (z.B. künftige, über den Editor neu
+// angelegte Habits), greift ein neutraler Default in migrateHabitsToGoals.
+const HABIT_TO_GOAL_CATEGORY = {
+  sleep: 'koerper', foot_am: 'koerper', morning: 'koerper', breath: 'geist',
+  sunlight: 'koerper', noscreen_am: 'geist', teeth: 'koerper', movement: 'koerper',
+  foot_noon: 'koerper', box: 'geist', learning: 'geist', cooking: 'koerper',
+  others: 'menschen', strength: 'koerper', protein: 'koerper', social: 'menschen',
+  meal_order: 'koerper', post_meal_walk: 'koerper', estim_noon: 'koerper',
+  estim_evening: 'koerper', foot_pm: 'koerper', stretch: 'koerper', vagus_eve: 'geist',
+  meditation: 'geist', gratitude: 'geist', no_alcohol: 'verzicht', no_sugar: 'verzicht',
+  no_drugs: 'verzicht', no_meat: 'verzicht', no_carbs: 'verzicht', gluten_free: 'verzicht',
+};
+const HABIT_TO_GOAL_ICON = {
+  sleep: 'bett', foot_am: 'schritte', morning: 'sonne', breath: 'welle',
+  sunlight: 'sonne', noscreen_am: 'blatt', teeth: 'funke', movement: 'schritte',
+  foot_noon: 'schritte', box: 'welle', learning: 'buch', cooking: 'tasse',
+  others: 'herz', strength: 'hantel', protein: 'tasse', social: 'sprechblase',
+  meal_order: 'tasse', post_meal_walk: 'schritte', estim_noon: 'funke',
+  estim_evening: 'funke', foot_pm: 'welle', stretch: 'pflanze', vagus_eve: 'welle',
+  meditation: 'mond', gratitude: 'herz', no_alcohol: 'glas', no_sugar: 'tropfen',
+  no_drugs: 'blatt', no_meat: 'pflanze', no_carbs: 'tropfen', gluten_free: 'pflanze',
+};
+
+// 5 Start-Ziele — Fallback-Seed, falls jemand (noch) keine aktiven Habits
+// hat, und Quelle für die "Vorlagen"-Quick-Add-Pills aus Phase 4.
+const GOAL_TEMPLATES = [
+  { title: 'Spaziergang',      category: 'koerper',  icon: 'schritte',  rhythm: 'taeglich', xp: 15 },
+  { title: 'Wasser trinken',   category: 'koerper',  icon: 'tropfen',   rhythm: 'taeglich', xp: 10 },
+  { title: 'Atemübung',        category: 'geist',    icon: 'welle',     rhythm: 'taeglich', xp: 10 },
+  { title: 'Jemanden anrufen', category: 'menschen', icon: 'telefon',   rhythm: 'woche',    xp: 15 },
+  { title: 'Etwas Neues wagen',category: 'mut',      icon: 'funke',     rhythm: 'einmal',   xp: 25 },
+];
+
+// Bestehende Nutzerdaten dürfen nicht verloren gehen: vor der einmaligen
+// Ziele-Migration wird immer zuerst ein vollständiger Snapshot (localStorage
+// + Content-Items) unter einem eigenen Backup-Key gesichert — unabhängig
+// vom manuellen exportAppData()-Download, der hier nicht automatisch
+// ausgelöst werden kann.
+function writeGoalsMigrationBackup() {
+  try {
+    const dump = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      dump[key] = localStorage.getItem(key);
+    }
+    storageSet('backup_before_goals_migration_v1', JSON.stringify({
+      at: new Date().toISOString(), localStorage: dump, items: _contentCache,
+    }));
+  } catch (err) {
+    console.warn('Backup vor Ziele-Migration fehlgeschlagen', err);
+  }
+}
+
+async function migrateHabitsToGoals() {
+  writeGoalsMigrationBackup();
+  const activeHabits = getItems({ type: 'habit', activeOnly: true });
+  const created = [];
+  activeHabits.forEach(habit => {
+    const sourceId = habit.id.replace(/^habit-/, '');
+    const goalId = 'goal-from-' + sourceId;
+    if (getGoal(goalId)) return;
+    created.push({
+      id: goalId,
+      title: habit.title,
+      category: HABIT_TO_GOAL_CATEGORY[sourceId] || 'geist',
+      icon: HABIT_TO_GOAL_ICON[sourceId] || 'funke',
+      drawing: null,
+      rhythm: 'taeglich',
+      time: null,
+      xp: habit.xp || 10,
+      archived: false,
+      createdAt: Date.now(),
+      sourceHabitId: habit.id,
+    });
+  });
+  if (!created.length && !_goalsCache.length) {
+    GOAL_TEMPLATES.forEach(t => created.push({
+      ...t, id: 'goal-' + slugifyId(t.title), drawing: null, time: null, archived: false, createdAt: Date.now(),
+    }));
+  }
+  for (const g of created) await saveGoal(g);
+}
+
+async function initGoalsStore() {
+  if (!_contentDB) return;
+  try {
+    _goalsCache = await idbGetAll(_contentDB, GOAL_STORE);
+    _logsCache = await idbGetAll(_contentDB, LOG_STORE);
+    _earnedCache = await idbGetAll(_contentDB, EARNED_STORE);
+  } catch (err) {
+    console.warn('Ziele-Store nicht verfügbar', err);
+    _goalsCache = []; _logsCache = []; _earnedCache = [];
+    return;
+  }
+  if (storageGet('goals_migrated_v1') !== '1') {
+    await migrateHabitsToGoals();
+    storageSet('goals_migrated_v1', '1');
+  }
+  checkNewUnlocks();
 }
 
 function toggleHabitWhy(id, e) {
@@ -4810,6 +5106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   await initContentStore();
+  await initGoalsStore();
   buildWater(); buildSupplements(); buildRecipes(); buildMLD();
   buildHabitsSection();
   buildVagus(); buildBFR(); buildMasterplan();
