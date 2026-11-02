@@ -1969,6 +1969,16 @@ input[type="range"] { accent-color: #f0f0f0; }
 .h-unlock-overlay.open { display: flex; }
 .h-unlock-badge-in { animation: hUnlockIn 500ms var(--ease) both; }
 @keyframes hUnlockIn { from { opacity: 0; transform: scale(.7); } to { opacity: 1; transform: scale(1); } }
+.h-speech-bubble {
+  position: relative; display: inline-block; margin: 0 auto 6px; padding: 6px 14px;
+  border: 2px solid var(--ink); border-radius: 999px !important; background: var(--paper);
+  font-family: var(--ui); font-size: 13px; color: var(--ink);
+}
+.h-speech-bubble::after {
+  content: ''; position: absolute; left: 50%; bottom: -7px; transform: translateX(-50%);
+  width: 10px; height: 10px; background: var(--paper); border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink);
+  rotate: 45deg;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .h-screen, .h-screen *, .h-pen-draw,
@@ -4784,15 +4794,18 @@ function closeBadgeDetail() {
 // Einfache, handgezeichnete Strichfigur mit erhobenen Armen — kein
 // externes Asset nötig, bleibt offline, nutzt das Stift-Filtersystem aus
 // Phase 1.
+// Die Bohne: weißer ovaler Körper, handgezeichnete Kontur (Filter w1), zwei
+// Kulleraugen, Lächeln, kleine Sprechblase — ersetzt das bisherige
+// Strichmännchen.
 function renderUnlockCharacter() {
-  return `<svg width="80" height="80" viewBox="0 0 100 100" filter="url(#w2)" aria-hidden="true">
-    <circle cx="50" cy="26" r="14" class="h-pen" stroke-width="3"/>
-    <path d="M50 40 L50 72" class="h-pen" stroke-width="3"/>
-    <path d="M50 48 L28 20" class="h-pen" stroke-width="3"/>
-    <path d="M50 48 L72 20" class="h-pen" stroke-width="3"/>
-    <path d="M50 72 L32 96" class="h-pen" stroke-width="3"/>
-    <path d="M50 72 L68 96" class="h-pen" stroke-width="3"/>
-  </svg>`;
+  return `
+    <div class="h-speech-bubble">Geschafft!</div>
+    <svg width="80" height="80" viewBox="0 0 100 100" aria-hidden="true">
+      <ellipse cx="50" cy="54" rx="30" ry="36" fill="var(--paper)" stroke="var(--ink)" stroke-width="3" filter="url(#w1)"/>
+      <circle cx="38" cy="48" r="4" fill="var(--ink)"/>
+      <circle cx="62" cy="48" r="4" fill="var(--ink)"/>
+      <path d="M36 64 Q50 76 64 64" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+    </svg>`;
 }
 
 // Kleines Glocken-Arpeggio über den bestehenden playTone-Helper — eigenes,
