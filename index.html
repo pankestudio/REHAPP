@@ -1924,6 +1924,19 @@ input[type="range"] { accent-color: #f0f0f0; }
 .h-ring-label .h-num-xl { font-size: 44px; }
 .h-templates:empty { display: none; }
 
+/* ── Player (Hybrid Aufräumen): heller Papier-Hintergrund statt Dunkel-
+   Invertierung, handgezeichneter Ring + atmender gelber Blob dahinter. ── */
+.h-player-ring-wrap { position: relative; width: 300px; height: 300px; margin: 24px auto; }
+.h-player-ring-wrap svg.h-ring { width: 300px; height: 300px; }
+.h-player-blob {
+  position: absolute; inset: 0; margin: auto; width: 180px; height: 180px; border-radius: 50%;
+  background: var(--yellow, #F2C94C); opacity: 0.35; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(1);
+  animation: hPlayerBreathe 4s ease-in-out infinite;
+}
+@keyframes hPlayerBreathe { 0%,100% { transform: translate(-50%,-50%) scale(0.85); } 50% { transform: translate(-50%,-50%) scale(1.08); } }
+.h-player-ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+@media (prefers-reduced-motion: reduce) { .h-player-blob { animation: none; } }
+
 /* ── Ziel-Sheet (Phase 5): Vollbild-Overlay, gleiches z-index-Muster wie
    der spätere Player-Overlay (fixed;inset:0;z-index:600). ── */
 .h-sheet-overlay {
@@ -2123,6 +2136,29 @@ input[type="range"] { accent-color: #f0f0f0; }
     </div>
   </div>
 
+  <!-- ABEND-CHECK-IN (Hybrid Aufräumen): Status + Dankbarkeit statt eigenem Panel -->
+  <div class="h-sheet-overlay" id="abend-checkin-overlay" role="dialog" aria-modal="true" aria-label="Abend-Check-in">
+    <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
+      <div class="h-header">
+        <div class="h-title" style="font-size:24px">Abend-Check-in</div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeAbendCheckin()" aria-label="Schließen">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        </button>
+      </div>
+      <div class="h-meta" style="margin-bottom:10px">Status</div>
+      <div class="mood-row" style="margin-bottom:24px">
+        <button class="mood-btn" onclick="selectMood(this,'Gut')">Gut</button>
+        <button class="mood-btn" onclick="selectMood(this,'Ok')">Ok</button>
+        <button class="mood-btn" onclick="selectMood(this,'Müde')">Müde</button>
+        <button class="mood-btn" onclick="selectMood(this,'Schmerzen')">Schmerzen</button>
+        <button class="mood-btn" onclick="selectMood(this,'Stark')">Stark</button>
+      </div>
+      <div class="h-meta" style="margin-bottom:6px">Was war dein Up heute?</div>
+      <textarea id="checkin-up-text" rows="3" style="width:100%;background:transparent;border:1px solid var(--line);padding:10px;color:var(--ink);font-family:var(--ui);font-size:15px;box-sizing:border-box;resize:vertical;margin-bottom:24px"></textarea>
+      <button type="button" class="h-pill" style="width:100%" onclick="saveAbendCheckin()">Fertig</button>
+    </div>
+  </div>
+
   <!-- ZIEL-SHEET (Phase 5): Erstellen + Bearbeiten, Vollbild-Overlay -->
   <div class="h-sheet-overlay" id="goal-sheet-overlay" role="dialog" aria-modal="true" aria-label="Ziel bearbeiten" style="z-index:615">
     <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
@@ -2226,19 +2262,33 @@ input[type="range"] { accent-color: #f0f0f0; }
   <!-- ÜBUNGS-PLAYER (Phase 7): invertiert ink/paper über lokale Custom
        Properties für einen ablenkungsfreien, dunklen Fokus-Screen. -->
   <div class="h-sheet-overlay" id="player-overlay" role="dialog" aria-modal="true" aria-label="Übungs-Player" style="z-index:610">
-    <div style="--ink:#F4F3EF;--paper:#14140F;background:var(--paper);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;position:relative">
+    <div class="h-embed" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;position:relative;box-sizing:border-box">
       <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closePlayer()" aria-label="Schließen" style="position:absolute;top:calc(16px + var(--safe-top));right:20px">
         <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
       </button>
-      <div class="h-meta" id="player-exercise-title" style="color:var(--faint)"></div>
-      <div class="h-num-xxl" id="player-countdown" style="font-size:120px">00:00</div>
-      <div class="h-title" id="player-cue" style="font-size:28px;margin-top:4px;min-height:34px"></div>
-      <div style="margin-top:48px;display:flex;gap:16px;align-items:center">
+      <div class="h-meta" id="player-step-label" style="color:var(--faint);min-height:16px"></div>
+      <div class="h-meta" id="player-exercise-title" style="margin-top:2px"></div>
+      <div class="h-player-ring-wrap">
+        <div class="h-player-blob" id="player-blob"></div>
+        <svg class="h-ring" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="70" stroke="var(--line)" stroke-width="2" fill="none"/>
+          <circle cx="80" cy="80" r="70" stroke="var(--ink)" stroke-width="3" fill="none"
+            stroke-linecap="round" id="player-ring-progress"
+            stroke-dasharray="439.8" stroke-dashoffset="439.8"
+            transform="rotate(-90 80 80)"/>
+        </svg>
+        <div class="h-player-ring-label">
+          <div class="h-num-xxl" id="player-countdown" style="font-size:72px">00:00</div>
+          <div class="h-title" id="player-cue" style="font-size:20px;margin-top:4px;min-height:26px"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;align-items:center;margin-top:8px">
         <button type="button" class="h-pill" id="player-start-btn" onclick="togglePlayerRun()">Start</button>
         <button type="button" class="h-circle-btn" id="player-reset-btn" onclick="resetPlayer()" aria-label="Zurücksetzen">
           <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
         </button>
       </div>
+      <div style="display:flex;gap:8px;margin-top:28px" id="player-sound-picker"></div>
     </div>
   </div>
 
@@ -3853,9 +3903,18 @@ const GOAL_TIER_THRESHOLDS = {
 function getGoals(filter = {}) {
   return _goalsCache.filter(g => {
     if (filter.archived !== undefined && !!g.archived !== filter.archived) return false;
+    if (filter.paused !== undefined && !!g.paused !== filter.paused) return false;
     if (filter.category && g.category !== filter.category) return false;
     return true;
   });
+}
+// Die 8 aktiven Ziele für Heute/Ring: weder archiviert noch pausiert, und
+// keine Verzicht-Zähler (die laufen separat, siehe computeCounterDays).
+function getActiveHeuteGoals() {
+  return getGoals({ archived: false, paused: false }).filter(g => g.kind !== 'counter');
+}
+function getCounters() {
+  return getGoals({ archived: false }).filter(g => g.kind === 'counter');
 }
 function getGoal(id) { return _goalsCache.find(g => g.id === id); }
 
@@ -4090,6 +4149,191 @@ async function migrateHabitsToGoals() {
   for (const g of created) await saveGoal(g);
 }
 
+// ══════════════════════════════════════════════════════════════════════
+// ZIELE-MIGRATION v2 — Hybrid Aufräumen
+// ══════════════════════════════════════════════════════════════════════
+// Aus den 31 (per v1 1:1 aus HABITS migrierten) Zielen werden: 8 aktive
+// Ziele (3 davon Routinen, die mehrere alte Einzel-Ziele zu einem
+// Routine-Schritt-Ablauf zusammenfassen), 6 Verzicht-Zähler (laufen ab
+// einem Startdatum, kein tägliches Abhaken mehr) und 8 pausierte Ziele
+// (bleiben erhalten, nur aus Heute ausgeblendet, in Setup reaktivierbar).
+// Kein Ziel/Log wird gelöscht ohne dass seine Tage in ein Nachfolge-Ziel
+// übernommen wurden — siehe mergeLogsIntoGoal().
+
+const ROUTINE_DEFS = [
+  {
+    id: 'goal-from-morning', title: 'Morgenroutine', category: 'koerper', icon: 'sonne',
+    time: '08:30', xp: 20, mergeHabitIds: ['foot_am', 'breath'],
+    steps: [
+      { title: 'Fuß-Aktivierung', sourceHabitId: 'foot_am', sec: 180, mini: false },
+      { title: 'Morgenroutine', sourceHabitId: 'morning', sec: 480, mini: true },
+      { title: 'Atemübung 4-7-8', sourceHabitId: 'breath', sec: 120, mini: true },
+    ],
+  },
+  {
+    id: 'goal-mittagsroutine', title: 'Mittagsroutine', category: 'koerper', icon: 'schritte',
+    time: '12:00', xp: 20, mergeHabitIds: ['movement', 'foot_noon', 'box', 'strength', 'estim_noon'],
+    steps: [
+      { title: 'Bewegungspause', sourceHabitId: 'movement', sec: 120, mini: true },
+      { title: 'Gangschulung', sourceHabitId: 'foot_noon', sec: 240, mini: true },
+      { title: 'Box Breathing', sourceHabitId: 'box', sec: 180, mini: false },
+      { title: 'Kräftigung', sourceHabitId: 'strength', sec: 300, mini: false },
+      { title: 'Elektrostimulation', sourceHabitId: 'estim_noon', sec: 300, mini: false },
+    ],
+  },
+  {
+    id: 'goal-abendroutine', title: 'Abendroutine', category: 'koerper', icon: 'mond',
+    time: '22:00', xp: 20, mergeHabitIds: ['estim_evening', 'foot_pm', 'stretch', 'vagus_eve', 'meditation'],
+    steps: [
+      { title: 'Elektrostimulation', sourceHabitId: 'estim_evening', sec: 300, mini: true },
+      { title: 'Fuß-Regeneration', sourceHabitId: 'foot_pm', sec: 180, mini: true },
+      { title: 'Dehnung', sourceHabitId: 'stretch', sec: 600, mini: false },
+      { title: 'Vagus', sourceHabitId: 'vagus_eve', sec: 300, mini: false },
+      { title: 'Meditation', sourceHabitId: 'meditation', sec: 600, mini: false },
+    ],
+  },
+];
+const COUNTER_HABIT_IDS = ['no_alcohol', 'no_sugar', 'no_drugs', 'no_meat', 'no_carbs', 'gluten_free'];
+const PAUSED_HABIT_IDS = ['sleep', 'noscreen_am', 'teeth', 'learning', 'protein', 'social', 'meal_order', 'post_meal_walk'];
+const ACTIVE_RENAME_V2 = [
+  { sourceHabitId: 'sunlight', title: 'Draußen' },
+  { sourceHabitId: 'cooking', title: 'Selbst gekocht' },
+  { sourceHabitId: 'others', title: 'Etwas für jemanden tun', rhythm: 'drei' },
+];
+
+function writeGoalsMigrationBackupV2() {
+  try {
+    const dump = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      dump[key] = localStorage.getItem(key);
+    }
+    storageSet('backup_before_goals_migration_v2', JSON.stringify({
+      at: new Date().toISOString(), localStorage: dump,
+      goals: _goalsCache, logs: _logsCache, earned: _earnedCache,
+    }));
+  } catch (err) {
+    console.warn('Backup vor Ziele-Migration v2 fehlgeschlagen', err);
+  }
+}
+
+// Serie in Tagen zurücklaufen (gleiche Kulanz-Regel wie computeDailyStreak)
+// und das Startdatum der aktuell laufenden Serie liefern — Basis für
+// Verzicht-Zähler, die ab jetzt nicht mehr auf tägliche Logs angewiesen sind.
+function computeStreakStartDate(goalId, today = new Date()) {
+  let misses = 0, startKey = getLocalDateKey(today);
+  const d = new Date(today);
+  d.setHours(0, 0, 0, 0);
+  if (!isLogged(goalId, getLocalDateKey(d))) return getLocalDateKey(d);
+  for (let steps = 0; steps < 1000; steps++) {
+    const key = getLocalDateKey(d);
+    if (isLogged(goalId, key)) { startKey = key; misses = 0; }
+    else { misses++; if (misses >= 2) break; }
+    d.setDate(d.getDate() - 1);
+  }
+  return startKey;
+}
+
+// Vereint die Logs mehrerer alter Einzel-Ziele in ein neues/bestehendes
+// Ziel (ein Tag zählt, wenn MINDESTENS eines der alten Ziele an dem Tag
+// erledigt war) und löscht danach die alten Quell-Ziele. targetGoalId darf
+// selbst eine der Quellen sein (dann bleibt sie als Ziel bestehen, nur ihre
+// Logs werden ergänzt).
+async function mergeLogsIntoGoal(targetGoalId, sourceHabitIds) {
+  for (const habitId of sourceHabitIds) {
+    const sourceGoalId = 'goal-from-' + habitId;
+    if (sourceGoalId === targetGoalId) continue;
+    const sourceLogs = _logsCache.filter(l => l.goalId === sourceGoalId);
+    for (const log of sourceLogs) {
+      const existing = getLog(targetGoalId, log.date);
+      if (existing) {
+        if (log.mut && !existing.mut) { existing.mut = true; if (_contentDB) await idbPutAll(_contentDB, [existing], LOG_STORE); }
+      } else {
+        const merged = { id: targetGoalId + '__' + log.date, goalId: targetGoalId, date: log.date, mut: !!log.mut, at: log.at };
+        _logsCache.push(merged);
+        if (_contentDB) await idbPutAll(_contentDB, [merged], LOG_STORE);
+      }
+    }
+    _logsCache = _logsCache.filter(l => l.goalId !== sourceGoalId);
+    if (_contentDB) { for (const log of sourceLogs) { try { await idbDelete(_contentDB, log.id, LOG_STORE); } catch (err) {} } }
+    const earnedRec = getEarned(sourceGoalId);
+    if (earnedRec) { _earnedCache = _earnedCache.filter(e => e.id !== sourceGoalId); if (_contentDB) { try { await idbDelete(_contentDB, sourceGoalId, EARNED_STORE); } catch (err) {} } }
+    const sourceGoal = getGoal(sourceGoalId);
+    if (sourceGoal) { _goalsCache = _goalsCache.filter(g => g.id !== sourceGoalId); if (_contentDB) { try { await idbDelete(_contentDB, sourceGoalId, GOAL_STORE); } catch (err) {} } }
+  }
+}
+
+async function migrateGoalsToV2() {
+  writeGoalsMigrationBackupV2();
+
+  // 1) Drei Routinen — bestehendes "Morgenroutine"-Ziel wird zur ersten
+  //    Routine, Mittag/Abend sind neue Ziele, die die Logs ihrer Schritte übernehmen.
+  for (const def of ROUTINE_DEFS) {
+    let g = getGoal(def.id);
+    if (!g) g = { id: def.id, createdAt: Date.now(), archived: false, paused: false };
+    g.title = def.title; g.category = def.category; g.icon = def.icon; g.drawing = g.drawing || null;
+    g.rhythm = 'taeglich'; g.time = def.time; g.xp = def.xp; g.kind = 'routine'; g.steps = def.steps;
+    g.archived = false; g.paused = false;
+    await saveGoal(g);
+    await mergeLogsIntoGoal(def.id, def.mergeHabitIds);
+  }
+
+  // 2) Drei bestehende Ziele bleiben aktiv, nur Titel/Rhythmus angleichen.
+  for (const r of ACTIVE_RENAME_V2) {
+    const goalId = 'goal-from-' + r.sourceHabitId;
+    const g = getGoal(goalId);
+    if (!g) continue;
+    g.title = r.title;
+    if (r.rhythm) g.rhythm = r.rhythm;
+    g.paused = false; g.archived = false;
+    await saveGoal(g);
+  }
+
+  // 3) Mama anrufen — brandneu, keine Vorgeschichte.
+  if (!getGoal('goal-mama-anrufen')) {
+    await saveGoal({ id: 'goal-mama-anrufen', title: 'Mama anrufen', category: 'menschen', icon: 'telefon', rhythm: 'woche', xp: 15, drawing: null, time: null, archived: false, paused: false, createdAt: Date.now() });
+  }
+
+  // 4) Abend-Check-in — übernimmt die Logs von "Dankbarkeit" (gratitude),
+  //    öffnet beim Abhaken ein Sheet mit Status + "Was war dein Up heute?".
+  if (!getGoal('goal-abend-checkin')) {
+    await saveGoal({ id: 'goal-abend-checkin', title: 'Abend-Check-in', category: 'geist', icon: 'mond', rhythm: 'taeglich', time: '22:30', xp: 15, drawing: null, archived: false, paused: false, kind: 'checkin', createdAt: Date.now() });
+  }
+  await mergeLogsIntoGoal('goal-abend-checkin', ['gratitude']);
+
+  // 5) Verzicht-Zähler — laufen ab einem Startdatum weiter, kein Tages-Log mehr nötig.
+  for (const habitId of COUNTER_HABIT_IDS) {
+    const goalId = 'goal-from-' + habitId;
+    const g = getGoal(goalId);
+    if (!g) continue;
+    g.since = computeStreakStartDate(goalId);
+    g.kind = 'counter';
+    delete g.rhythm; delete g.time;
+    g.paused = false; g.archived = false;
+    await saveGoal(g);
+  }
+
+  // 6) Pausierte Ziele — bleiben erhalten, nur aus Heute ausgeblendet.
+  for (const habitId of PAUSED_HABIT_IDS) {
+    const goalId = 'goal-from-' + habitId;
+    const g = getGoal(goalId);
+    if (!g) continue;
+    g.paused = true;
+    await saveGoal(g);
+  }
+}
+
+function verifyGoalsMigrationV2() {
+  const active = getActiveHeuteGoals().length;
+  const paused = getGoals({ archived: false, paused: true }).length;
+  const counters = getCounters().length;
+  const ok = active === 8 && paused === 8 && counters === 6;
+  if (!ok) {
+    console.warn(`Ziele-Migration v2: unerwartete Verteilung (aktiv=${active}, pausiert=${paused}, zähler=${counters}) — Backup liegt unter backup_before_goals_migration_v2.`);
+  }
+  return ok;
+}
+
 async function initGoalsStore() {
   if (!_contentDB) return;
   try {
@@ -4104,6 +4348,11 @@ async function initGoalsStore() {
   if (storageGet('goals_migrated_v1') !== '1') {
     await migrateHabitsToGoals();
     storageSet('goals_migrated_v1', '1');
+  }
+  if (storageGet('goals_migrated_v2') !== '1') {
+    await migrateGoalsToV2();
+    verifyGoalsMigrationV2();
+    storageSet('goals_migrated_v2', '1');
   }
   checkNewUnlocks();
 }
@@ -4151,11 +4400,20 @@ function animateRingTo(el, targetOffset) {
   requestAnimationFrame(step);
 }
 
+function computeCounterDays(counter, today = new Date()) {
+  if (!counter.since) return 0;
+  const since = new Date(counter.since + 'T00:00:00');
+  return Math.max(0, Math.floor((today - since) / 86400000) + 1);
+}
+
+// Die zwei Verzicht-Zähler mit der längsten laufenden Serie — ersetzen
+// "Serie"/"Abzeichen" als große Zahlen im Heute-Kopf (Design-Korrektur).
 function computeHeuteCounters() {
-  const dailyGoals = getGoals({ archived: false }).filter(g => g.rhythm === 'taeglich');
-  const bestStreak = dailyGoals.reduce((m, g) => Math.max(m, computeDailyStreak(g.id)), 0);
-  const badgeCount = getAllEarned().filter(e => e.tier && e.tier !== 'gesperrt').length;
-  return { bestStreak, badgeCount };
+  const counters = getCounters()
+    .map(c => ({ counter: c, days: computeCounterDays(c) }))
+    .sort((a, b) => b.days - a.days)
+    .slice(0, 2);
+  return { counters };
 }
 
 function sortGoalsForHeute(goals, doneToday) {
@@ -4197,18 +4455,17 @@ function buildHeuteScreen() {
   updateHeuteClock();
 
   const todayKey = getLocalDateKey();
-  const goals = getGoals({ archived: false });
+  const goals = getActiveHeuteGoals();
   const doneToday = new Set(goals.filter(g => isLogged(g.id, todayKey)).map(g => g.id));
   const total = goals.length;
   const done = doneToday.size;
 
-  const { bestStreak, badgeCount } = computeHeuteCounters();
+  const { counters } = computeHeuteCounters();
   const countersEl = document.getElementById('h-counters');
   if (countersEl) {
-    countersEl.innerHTML = `
-      <div class="h-counter"><div class="h-num-lg" style="font-size:56px">${bestStreak}</div><div class="h-meta">Serie</div></div>
-      <div class="h-counter" style="cursor:pointer" onclick="showPage('pg-sammlung')"><div class="h-num-lg" style="font-size:56px">${badgeCount}</div><div class="h-meta">Abzeichen →</div></div>
-    `;
+    countersEl.innerHTML = counters.map(({ counter, days }) =>
+      `<div class="h-counter" style="cursor:pointer" onclick="showPage('pg-sammlung')"><div class="h-num-lg" style="font-size:56px">${days}</div><div class="h-meta">${escapeHtml(counter.title)}</div></div>`
+    ).join('') || '<div class="h-meta">Noch keine Verzicht-Zähler.</div>';
   }
 
   const ring = document.getElementById('h-ring-progress');
@@ -4294,7 +4551,31 @@ function closeWasserSheet() { document.getElementById('wasser-sheet-overlay').cl
 function openSupplementeSheet() { initSuppTab(); document.getElementById('supplemente-sheet-overlay').classList.add('open'); }
 function closeSupplementeSheet() { document.getElementById('supplemente-sheet-overlay').classList.remove('open'); renderHeuteModuleList(); }
 
+function openAbendCheckin() {
+  const todayKey = getLocalDateKey();
+  document.querySelectorAll('#abend-checkin-overlay .mood-btn').forEach(b => b.classList.toggle('selected', b.textContent === storageGet('mood_' + new Date().toDateString())));
+  document.getElementById('checkin-up-text').value = storageGet('gratitude_' + todayKey) || '';
+  document.getElementById('abend-checkin-overlay').classList.add('open');
+}
+function closeAbendCheckin() { document.getElementById('abend-checkin-overlay').classList.remove('open'); }
+async function saveAbendCheckin() {
+  const todayKey = getLocalDateKey();
+  storageSet('gratitude_' + todayKey, document.getElementById('checkin-up-text').value);
+  const { unlocked } = await toggleLog('goal-abend-checkin', todayKey, false);
+  if (navigator.vibrate) navigator.vibrate(20);
+  closeAbendCheckin();
+  buildHeuteScreen();
+  enqueueUnlocks(unlocked);
+  toast('CHECK-IN GESPEICHERT');
+}
+
 async function onGoalRowTap(goalId) {
+  const g = getGoal(goalId);
+  if (g && g.kind === 'routine') { openRoutinePlayer(goalId); return; }
+  if (g && g.kind === 'checkin') {
+    if (isLogged(goalId, getLocalDateKey())) { await toggleLog(goalId, getLocalDateKey(), false); buildHeuteScreen(); return; }
+    openAbendCheckin(goalId); return;
+  }
   const todayKey = getLocalDateKey();
   const wasLogged = isLogged(goalId, todayKey);
   const { unlocked } = await toggleLog(goalId, todayKey, false);
@@ -4338,10 +4619,21 @@ async function addGoalFromTemplate(slug) {
 // einfach, statt die Sammlung mit leeren Einträgen zu füllen.
 function getSammlungGoalBadges() {
   return _goalsCache.filter(g => {
-    if (!g.archived) return true;
+    if (g.kind === 'counter') return false;
+    if (!g.archived && !g.paused) return true;
     const earned = getEarned(g.id);
     return !!(earned && earned.tier && earned.tier !== 'gesperrt');
   });
+}
+
+// Verzicht-Zähler bekommen kein Tages-Tier wie normale Ziele, sondern ein
+// einfaches System-Abzeichen nach Tagesanzahl (30 Tage Tusche, 100 Glanz).
+function computeCounterTier(counter) {
+  const days = computeCounterDays(counter);
+  if (days >= 100) return 'glanz';
+  if (days >= 30) return 'tusche';
+  if (days >= 1) return 'skizze';
+  return 'gesperrt';
 }
 
 function buildSammlungBadges() {
@@ -4359,27 +4651,63 @@ function buildSammlungBadges() {
     html += list.map(g => `
       <button type="button" onclick="openBadgeDetail('${g.id}')">
         ${renderBadge({ cat: g.category, tier: computeTier(g), icon: g.icon, drawing: g.drawing, size: 56 })}
-        <span class="h-meta" style="font-size:11px;text-align:center">${escapeHtml(g.title)}</span>
+        <span class="h-meta" style="font-size:11px;text-align:center">${escapeHtml(g.title)}${g.paused ? ' · pausiert' : ''}</span>
       </button>
     `).join('');
     html += `</div>`;
   });
 
+  const counters = getCounters();
   const sysEarned = getEarned('sys-overcome');
+  const hundredDays = counters.some(c => computeCounterDays(c) >= 100);
+  html += `<div class="h-meta" style="margin-bottom:10px">Verzicht-Zähler</div><div class="h-badge-grid">`;
+  html += counters.map(c => `
+    <button type="button" onclick="openBadgeDetail('${c.id}')">
+      ${renderBadge({ cat: 'verzicht', tier: computeCounterTier(c), icon: c.icon, drawing: c.drawing, size: 56 })}
+      <span class="h-meta" style="font-size:11px;text-align:center">${escapeHtml(c.title)} · ${computeCounterDays(c)}d</span>
+    </button>
+  `).join('');
+  html += `</div>`;
+
   html += `<div class="h-meta" style="margin-bottom:10px">System</div><div class="h-badge-grid">
     <button type="button" onclick="openBadgeDetail('sys-overcome')">
       ${renderBadge({ cat: 'mut', tier: sysEarned ? sysEarned.tier : 'gesperrt', icon: 'funke', size: 56 })}
       <span class="h-meta" style="font-size:11px;text-align:center">Überwunden</span>
+    </button>
+    <button type="button" disabled style="cursor:default">
+      ${renderBadge({ cat: 'verzicht', tier: hundredDays ? 'glanz' : 'gesperrt', icon: 'funke', size: 56 })}
+      <span class="h-meta" style="font-size:11px;text-align:center">Hundert Tage</span>
     </button>
   </div>`;
 
   el.innerHTML = html;
 }
 
+async function resetCounter(id) {
+  const c = getGoal(id);
+  if (!c) return;
+  if (!confirm(`"${c.title}" wirklich neu beginnen? Die aktuelle Serie von ${computeCounterDays(c)} Tagen geht verloren.`)) return;
+  c.since = getLocalDateKey();
+  await saveGoal(c);
+  buildSammlungHistory();
+  buildHeuteScreen();
+}
+
 function buildSammlungHistory() {
   const el = document.getElementById('sm-history-view');
   if (!el) return;
-  if (!_logsCache.length) { el.innerHTML = `<div class="h-meta">Noch keine Einträge.</div>`; return; }
+  const counters = getCounters();
+  let countersHtml = '';
+  if (counters.length) {
+    countersHtml = `<div class="h-meta" style="margin-bottom:6px">Verzicht-Zähler</div><div class="h-line-list" style="margin-bottom:20px">` +
+      counters.map(c => `
+        <div class="h-line-row" style="justify-content:space-between">
+          <div style="flex:1">${escapeHtml(c.title)} <span class="h-meta">· ${computeCounterDays(c)} Tage seit ${c.since}</span></div>
+          <button type="button" class="h-pill h-pill--outline" style="min-height:32px;padding:0 12px;font-size:12px;flex-shrink:0" onclick="resetCounter('${c.id}')">Neu beginnen</button>
+        </div>
+      `).join('') + `</div>`;
+  }
+  if (!_logsCache.length) { el.innerHTML = countersHtml || `<div class="h-meta">Noch keine Einträge.</div>`; return; }
   const byDate = {};
   _logsCache.forEach(l => { (byDate[l.date] = byDate[l.date] || []).push(l); });
   const dates = Object.keys(byDate).sort().reverse();
@@ -4396,6 +4724,7 @@ function buildSammlungHistory() {
     }).join('');
     return `<div class="h-meta" style="margin:16px 0 6px">${dateLabel}</div><div class="h-line-list">${rows}</div>`;
   }).join('');
+  el.innerHTML = countersHtml + el.innerHTML;
 }
 
 function setSammlungSegment(seg) {
@@ -4412,6 +4741,7 @@ function openSammlung() {
 
 function describeBadgeProgress(goal, tier) {
   if (!goal) return tier === 'gesperrt' ? 'Noch nicht freigeschaltet — markiere eine Erledigung mit Überwindung.' : 'Freigeschaltet.';
+  if (goal.kind === 'counter') return `Seit ${computeCounterDays(goal)} Tagen.`;
   if (goal.rhythm === 'einmal') {
     const log = getLogsForGoal(goal.id)[0];
     if (!log) return 'Angelegt — noch nicht erledigt.';
@@ -4426,7 +4756,7 @@ function describeBadgeProgress(goal, tier) {
 function openBadgeDetail(badgeId) {
   const goal = getGoal(badgeId);
   const earned = getEarned(badgeId);
-  const tier = goal ? computeTier(goal) : (earned ? earned.tier : 'gesperrt');
+  const tier = goal ? (goal.kind === 'counter' ? computeCounterTier(goal) : computeTier(goal)) : (earned ? earned.tier : 'gesperrt');
   document.getElementById('bd-badge').innerHTML = renderBadge({
     cat: goal ? goal.category : 'mut', tier,
     icon: goal ? goal.icon : 'funke', drawing: goal ? goal.drawing : null, size: 120,
@@ -4464,19 +4794,59 @@ function unlockTierLabel(tier) {
   return { skizze: 'Skizze freigeschaltet.', tusche: 'Tusche freigeschaltet.', glanz: 'Glanz freigeschaltet.' }[tier] || '';
 }
 
-let _unlockQueue = [];
 let _unlockCurrent = null;
+// Maximal ein Vollbild-Freischalt-Screen pro App-Öffnung — weitere Tusche/
+// Glanz-Freischaltungen aus demselben Abhaken warten in einer Warteschlange,
+// die über Reloads hinweg in localStorage überlebt, bis zum nächsten Öffnen.
+let _celebrationShownThisOpen = false;
+const UNLOCK_QUEUE_KEY = 'unlock_queue_v1';
+function getPersistedUnlockQueue() { try { return JSON.parse(storageGet(UNLOCK_QUEUE_KEY) || '[]'); } catch (err) { return []; } }
+function setPersistedUnlockQueue(q) { storageSet(UNLOCK_QUEUE_KEY, JSON.stringify(q)); }
+
+// Skizze (erste Erledigung) bekommt nur einen kleinen, sich selbst
+// zeichnenden Moment direkt in der Heute-Zeile — kein Vollbild-Overlay.
+function showSkizzeMoment(goalId) {
+  const row = document.querySelector(`.h-line-row[data-goal-id="${CSS.escape(goalId)}"]`);
+  const textEl = row && row.querySelector('.h-text');
+  if (!textEl) return;
+  const goal = getGoal(goalId);
+  const holder = document.createElement('span');
+  holder.style.cssText = 'display:inline-flex;vertical-align:middle;margin-left:8px';
+  holder.innerHTML = renderBadge({ cat: goal ? goal.category : 'mut', tier: 'skizze', icon: goal ? goal.icon : 'funke', drawing: goal ? goal.drawing : null, size: 22 });
+  textEl.insertAdjacentElement('afterend', holder);
+  playTone(880, 0.07);
+  setTimeout(() => holder.remove(), 1500);
+}
 
 function enqueueUnlocks(unlocked) {
   if (!unlocked || !unlocked.length) return;
-  _unlockQueue.push(...unlocked);
-  if (!_unlockCurrent) advanceUnlockQueue();
-  else updateUnlockNextLabel();
+  unlocked.forEach(u => {
+    if (u.tier === 'skizze') { showSkizzeMoment(u.badgeId); return; }
+    const q = getPersistedUnlockQueue();
+    q.push({ badgeId: u.badgeId, tier: u.tier });
+    setPersistedUnlockQueue(q);
+  });
+  maybeShowNextCelebration();
+}
+
+function maybeShowNextCelebration() {
+  if (_celebrationShownThisOpen || _unlockCurrent) return;
+  const q = getPersistedUnlockQueue();
+  if (!q.length) return;
+  const next = q.shift();
+  setPersistedUnlockQueue(q);
+  _celebrationShownThisOpen = true;
+  _unlockCurrent = { badgeId: next.badgeId, tier: next.tier, goal: getGoal(next.badgeId) || null };
+  renderUnlockCelebration();
+  document.getElementById('unlock-overlay').classList.add('open');
+  updateUnlockNextLabel();
+  playBellArpeggio();
 }
 
 function updateUnlockNextLabel() {
   const btn = document.getElementById('unlock-next-btn');
-  if (btn) btn.textContent = _unlockQueue.length ? `Weiter (${_unlockQueue.length})` : 'Fertig';
+  const remaining = getPersistedUnlockQueue().length;
+  if (btn) btn.textContent = remaining ? `Fertig (+${remaining} beim nächsten Öffnen)` : 'Fertig';
 }
 
 function renderUnlockCelebration() {
@@ -4491,18 +4861,12 @@ function renderUnlockCelebration() {
   document.getElementById('unlock-character').innerHTML = renderUnlockCharacter();
 }
 
+// Nur noch ein einfaches Schließen — maximal ein Screen pro App-Öffnung,
+// weitere bleiben in der persistenten Warteschlange fürs nächste Mal.
 function advanceUnlockQueue() {
-  if (!_unlockQueue.length) {
-    _unlockCurrent = null;
-    document.getElementById('unlock-overlay').classList.remove('open');
-    buildHeuteScreen();
-    return;
-  }
-  _unlockCurrent = _unlockQueue.shift();
-  renderUnlockCelebration();
-  document.getElementById('unlock-overlay').classList.add('open');
-  updateUnlockNextLabel();
-  playBellArpeggio();
+  _unlockCurrent = null;
+  document.getElementById('unlock-overlay').classList.remove('open');
+  buildHeuteScreen();
 }
 
 function replayUnlockCelebration() {
@@ -4671,6 +5035,11 @@ function updatePlayerDisplay(elapsed) {
     countdownEl.textContent = formatMMSS(remaining);
     cueEl.textContent = ex.details.cue || '';
   }
+  const ring = document.getElementById('player-ring-progress');
+  if (ring) {
+    const pct = _playerState.totalSec ? Math.min(1, elapsed / _playerState.totalSec) : 0;
+    ring.setAttribute('stroke-dashoffset', String(439.8 * (1 - pct)));
+  }
 }
 
 function playerTick() {
@@ -4728,19 +5097,27 @@ async function finishPlayerExercise() {
   cancelAnimationFrame(_playerState.rafId);
   clearScheduledTicks();
   releaseWakeLock();
+
+  const seq = _playerState.sequence;
+  if (seq && seq.idx + 1 < seq.steps.length) {
+    document.getElementById('player-cue').textContent = 'Weiter …';
+    setTimeout(() => loadPlayerStep(seq.idx + 1), 900);
+    return;
+  }
+
   document.getElementById('player-cue').textContent = 'Fertig.';
   document.getElementById('player-start-btn').style.display = 'none';
   document.getElementById('player-reset-btn').style.display = 'none';
 
   const ex = _playerState.exercise;
-  const linkedGoalId = ex.details && ex.details.linkedGoalId;
+  const linkedGoalId = seq ? seq.routineGoalId : (ex.details && ex.details.linkedGoalId);
   let unlocked = [];
   const todayKey = getLocalDateKey();
   if (linkedGoalId && getGoal(linkedGoalId) && !isLogged(linkedGoalId, todayKey)) {
     const res = await toggleLog(linkedGoalId, todayKey, false);
     unlocked = res.unlocked;
   }
-  awardXP('exercise_' + ex.id, ex.xp || 10, ex.title, { scope: 'day', silent: true });
+  if (!seq) awardXP('exercise_' + ex.id, ex.xp || 10, ex.title, { scope: 'day', silent: true });
 
   setTimeout(() => {
     closePlayer();
@@ -4754,14 +5131,49 @@ function openPlayer(exerciseId) {
   if (!ex) return;
   _playerState = {
     exercise: ex, totalSec: ex.details.durationSec || 60, soundPack: getSoundPack(),
-    running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null,
+    running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null, sequence: null,
   };
+  document.getElementById('player-step-label').textContent = '';
   document.getElementById('player-exercise-title').textContent = ex.title;
   document.getElementById('player-start-btn').textContent = 'Start';
   document.getElementById('player-start-btn').style.display = '';
   document.getElementById('player-reset-btn').style.display = '';
+  renderSoundPackPicker();
   updatePlayerDisplay(0);
   document.getElementById('player-overlay').classList.add('open');
+}
+
+// Routinen (Morgen/Mittag/Abend) und geführte Protokolle (MLD/BFR) laufen
+// als Schritt-Sequenz durch denselben Player — ein Ziel/Protokoll ist eine
+// Liste von {title, sec, cue?}-Schritten statt einer einzelnen Übung.
+function openRoutinePlayer(routineGoalId, mini = false) {
+  const goal = getGoal(routineGoalId);
+  if (!goal || !goal.steps || !goal.steps.length) return;
+  const steps = mini ? goal.steps.filter(s => s.mini) : goal.steps;
+  if (!steps.length) return;
+  _playerState = {
+    exercise: null, totalSec: 0, soundPack: getSoundPack(),
+    running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null,
+    sequence: { steps, idx: 0, routineGoalId, title: goal.title },
+  };
+  renderSoundPackPicker();
+  document.getElementById('player-overlay').classList.add('open');
+  loadPlayerStep(0);
+}
+function loadPlayerStep(idx) {
+  const seq = _playerState.sequence;
+  seq.idx = idx;
+  const step = seq.steps[idx];
+  _playerState.exercise = { id: 'routine-step-' + idx, title: step.title, xp: 0, details: { cue: step.cue || '', durationSec: step.sec } };
+  _playerState.totalSec = step.sec;
+  _playerState.elapsedAtPause = 0;
+  _playerState.running = false;
+  document.getElementById('player-step-label').textContent = `${seq.title} · Schritt ${idx + 1} von ${seq.steps.length}`;
+  document.getElementById('player-exercise-title').textContent = step.title;
+  document.getElementById('player-start-btn').textContent = 'Start';
+  document.getElementById('player-start-btn').style.display = '';
+  document.getElementById('player-reset-btn').style.display = '';
+  updatePlayerDisplay(0);
 }
 function closePlayer() {
   if (_playerState) { cancelAnimationFrame(_playerState.rafId); clearScheduledTicks(); releaseWakeLock(); _playerState = null; }
@@ -4775,11 +5187,14 @@ function closePlayer() {
 const SOUND_PACK_LABELS = { glas: 'Glas', holz: 'Holz', analog: 'Analog', stumm: 'Stumm' };
 
 function renderSoundPackPicker() {
-  const el = document.getElementById('set-sound-packs');
   const current = getSoundPack();
-  el.innerHTML = Object.keys(SOUND_PACK_LABELS).map(p => `
-    <button type="button" class="h-pill ${p === current ? '' : 'h-pill--outline'}" style="min-height:40px;padding:0 16px;font-size:14px" onclick="chooseSoundPack('${p}')">${SOUND_PACK_LABELS[p]}</button>
-  `).join('');
+  ['set-sound-packs', 'player-sound-picker'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = Object.keys(SOUND_PACK_LABELS).map(p => `
+      <button type="button" class="h-pill ${p === current ? '' : 'h-pill--outline'}" style="min-height:36px;padding:0 14px;font-size:13px" onclick="chooseSoundPack('${p}')">${SOUND_PACK_LABELS[p]}</button>
+    `).join('');
+  });
 }
 function chooseSoundPack(pack) {
   setSoundPack(pack);
@@ -4868,7 +5283,7 @@ function adjustExerciseDuration(delta) {
 }
 function renderExerciseGoalPicker() {
   const el = document.getElementById('ee-goal');
-  const goals = getGoals({ archived: false });
+  const goals = getActiveHeuteGoals().filter(g => !g.kind);
   el.innerHTML = `<option value="">– keine –</option>` + goals.map(g => `<option value="${g.id}" ${g.id === _exerciseEditorState.linkedGoalId ? 'selected' : ''}>${escapeHtml(g.title)}</option>`).join('');
 }
 function toggleExerciseActive() {
@@ -4911,14 +5326,30 @@ async function deleteExerciseFromEditor() {
 function buildSetGoalsList() {
   const el = document.getElementById('set-goals-list');
   if (!el) return;
-  const active = getGoals({ archived: false });
+  const active = getActiveHeuteGoals();
+  const paused = getGoals({ archived: false, paused: true });
   const archived = getGoals({ archived: true });
+  const counters = getCounters();
   let html = active.length ? active.map(g => `
-    <div class="h-line-row" onclick="openGoalSheet('${g.id}')">
+    <div class="h-line-row" ${g.kind ? '' : `onclick="openGoalSheet('${g.id}')"`}>
       <div style="flex-shrink:0">${renderBadge({ cat: g.category, tier: computeTier(g), icon: g.icon, drawing: g.drawing, size: 28 })}</div>
-      <div style="flex:1">${escapeHtml(g.title)}</div>
+      <div style="flex:1">${escapeHtml(g.title)}${g.kind === 'routine' ? ' · Routine' : g.kind === 'checkin' ? ' · Check-in' : ''}</div>
+      ${!g.kind ? `<button type="button" class="h-pill h-pill--outline" style="min-height:32px;padding:0 14px;font-size:12px;flex-shrink:0" onclick="event.stopPropagation();pauseGoal('${g.id}')">Pausieren</button>` : ''}
     </div>
   `).join('') : `<div class="h-meta">Noch keine Ziele.</div>`;
+  if (counters.length) {
+    html += `<div class="h-meta" style="margin:16px 0 6px">Verzicht-Zähler</div>`;
+    html += counters.map(c => `<div class="h-line-row"><div style="flex:1;opacity:.8">${escapeHtml(c.title)} · ${computeCounterDays(c)}d</div></div>`).join('');
+  }
+  if (paused.length) {
+    html += `<div class="h-meta" style="margin:16px 0 6px">Pausiert</div>`;
+    html += paused.map(g => `
+      <div class="h-line-row">
+        <div style="flex:1;opacity:.6">${escapeHtml(g.title)}</div>
+        <button type="button" class="h-pill h-pill--outline" style="min-height:32px;padding:0 14px;font-size:12px;flex-shrink:0" onclick="event.stopPropagation();reactivateGoal('${g.id}')">Reaktivieren</button>
+      </div>
+    `).join('');
+  }
   if (archived.length) {
     html += `<div class="h-meta" style="margin:16px 0 6px">Archiviert</div>`;
     html += archived.map(g => `
@@ -4930,10 +5361,20 @@ function buildSetGoalsList() {
   }
   el.innerHTML = html;
 }
+async function pauseGoal(id) {
+  const g = getGoal(id);
+  if (!g) return;
+  g.paused = true;
+  await saveGoal(g);
+  buildSetGoalsList();
+  buildHeuteScreen();
+  toast('ZIEL PAUSIERT');
+}
 async function reactivateGoal(id) {
   const g = getGoal(id);
   if (!g) return;
   g.archived = false;
+  g.paused = false;
   await saveGoal(g);
   buildSetGoalsList();
   buildHeuteScreen();
@@ -5211,8 +5652,12 @@ async function saveGoalFromSheet() {
     xp: _goalSheetState.xp || 10,
     notify: !!_goalSheetState.notify,
     archived: prior ? prior.archived : false,
+    paused: prior ? prior.paused : false,
     createdAt: prior ? prior.createdAt : undefined,
     sourceHabitId: prior ? prior.sourceHabitId : undefined,
+    kind: prior ? prior.kind : undefined,
+    steps: prior ? prior.steps : undefined,
+    since: prior ? prior.since : undefined,
   };
   await saveGoal(goal);
   closeGoalSheet();
@@ -6446,6 +6891,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await initGoalsStore();
   await seedExercisesIfNeeded();
   buildHeuteScreen();
+  maybeShowNextCelebration();
   buildWater(); buildSupplements(); buildRecipes(); buildMLD();
   buildHabitsSection();
   buildVagus(); buildBFR(); buildMasterplan();
