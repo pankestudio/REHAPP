@@ -894,11 +894,6 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     <div class="h-header-right"><div class="h-clock" id="h-clock-supp">--:--</div><div class="h-date" id="h-date-supp"></div></div>
   </div>
 
-  <div class="h-notice" onclick="openEmergencySheet()">
-    <div class="h-notice-icon"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-    <div><div class="h-notice-title">Notfall-Check: Thrombose-Warnzeichen</div><div class="h-notice-text">Sofort prüfen bei Verdacht →</div></div>
-  </div>
-
   <div class="h-section" style="margin-top:20px">
     <div class="h-section-row"><div class="h-section-title" style="font-size:28px">Supplemente</div></div>
     <div class="h-list" style="margin-top:12px" id="supp-wissen-list"></div>
@@ -1030,34 +1025,6 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 
 </div>
 
-<!-- ══ NOTFALL-SHEET (Hybrid Aufräumen): voller Inhalt des Notice auf Wissen ══ -->
-<div class="h-sheet-overlay" id="emergency-sheet-overlay" role="dialog" aria-modal="true" aria-label="Notfall-Check">
-  <div class="h-sheet-body">
-    <div class="h-sheet-head">
-      <div class="h-title">Notfall-Check</div>
-      <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeEmergencySheet()" aria-label="Schließen">
-        <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
-      </button>
-    </div>
-
-    <div class="h-meta" style="margin-bottom:10px">Thrombose-Warnzeichen</div>
-    <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">TVT — Tiefe Venenthrombose</div><div class="h-row-meta">Sofort Arzt bei mehreren Symptomen · deine Verletzung überlagert diese Zeichen — im Zweifel immer abklären</div></div></div>
-    <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Schwellung</div><div class="h-row-meta">Einseitig, plötzlich stärker — Bein dicker als gesunde Seite</div></div></div>
-    <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Wärme</div><div class="h-row-meta">Betroffenes Bein deutlich wärmer, Seitenvergleich</div></div></div>
-    <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Rötung</div><div class="h-row-meta">Rötliche oder bläuliche Verfärbung entlang der Vene</div></div></div>
-    <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Druck</div><div class="h-row-meta">Schmerzhafte Wade auf Druck entlang Venenverlauf</div></div></div>
-    <div class="h-row" style="cursor:default;border-bottom:none"><div class="h-row-body"><div class="h-row-title">Wichtig</div><div class="h-row-meta">Wadenschmerz beim Hochziehen des Fußes ist kein verlässlicher Selbsttest und darf keine Entwarnung geben.</div></div></div>
-
-    <div class="h-notice" style="cursor:default">
-      <div class="h-notice-icon"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-      <div><div class="h-notice-title">Lungenembolie — sofort 112</div><div class="h-notice-text">Nicht selbst fahren. Atemnot (plötzlich, ohne erklärbaren Grund) · Brustschmerz beim Einatmen, Enge · Herzrasen, Schwindel, Ohnmacht · Husten, trocken oder mit Blut.</div></div>
-    </div>
-
-    <a href="tel:112" class="h-pill" style="width:100%;display:flex;margin-top:20px">112 anrufen</a>
-  </div>
-</div>
-
-<!-- ══ SEARCH OVERLAY ══ -->
 <!-- ══ RESET MODAL ══ -->
 <div class="h-modal-overlay" id="reset-modal" role="dialog" aria-modal="true">
   <div class="h-modal-card">
@@ -5074,9 +5041,6 @@ function showPage(id) {
   currentPage = id;
   window.scrollTo(0, 0);
 }
-
-function openEmergencySheet() { document.getElementById('emergency-sheet-overlay').classList.add('open'); }
-function closeEmergencySheet() { document.getElementById('emergency-sheet-overlay').classList.remove('open'); }
 
 // ══════════════ TIMER ══════════════
 
