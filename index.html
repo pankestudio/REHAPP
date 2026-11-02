@@ -685,7 +685,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
   <div class="h-sheet-overlay" id="exercise-editor-overlay" role="dialog" aria-modal="true" aria-label="Übung bearbeiten" style="z-index:620">
     <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
       <div class="h-header">
-        <div class="h-title" style="font-size:24px">Übung bearbeiten</div>
+        <div class="h-title" id="ee-sheet-title" style="font-size:24px">Übung bearbeiten</div>
         <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeExerciseEditor()" aria-label="Schließen">
           <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
         </button>
@@ -697,13 +697,38 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
           style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);padding:8px 0;box-sizing:border-box;color:var(--ink);font-family:var(--ui);font-size:16px">
       </div>
 
-      <div style="margin-bottom:20px">
+      <div style="margin-bottom:24px">
+        <div class="h-meta" style="margin-bottom:8px">Art</div>
+        <div class="h-seg" id="ee-kind-seg">
+          <button type="button" class="h-seg-btn" onclick="setExerciseEditorKind('timer')">Timer<svg class="h-seg-ellipse" viewBox="0 0 80 16" aria-hidden="true"><path d="M3 8 Q 20 2, 40 8 T 77 8"/></svg></button>
+          <button type="button" class="h-seg-btn" onclick="setExerciseEditorKind('atmung')">Atmung<svg class="h-seg-ellipse" viewBox="0 0 80 16" aria-hidden="true"><path d="M3 8 Q 20 2, 40 8 T 77 8"/></svg></button>
+          <button type="button" class="h-seg-btn" onclick="setExerciseEditorKind('schritte')">Schritte<svg class="h-seg-ellipse" viewBox="0 0 80 16" aria-hidden="true"><path d="M3 8 Q 20 2, 40 8 T 77 8"/></svg></button>
+        </div>
+      </div>
+
+      <div id="ee-kind-timer" style="margin-bottom:24px">
         <div class="h-meta" style="margin-bottom:8px">Dauer</div>
-        <div style="display:flex;align-items:center;gap:16px;justify-content:center">
+        <div class="h-stepper">
           <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustExerciseDuration(-5)" aria-label="5 Sekunden weniger">−</button>
-          <div class="h-num-xl" id="ee-duration-display" style="font-size:40px;min-width:110px;text-align:center">0:00</div>
+          <div class="h-stepper-val" id="ee-duration-display">0:00</div>
           <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustExerciseDuration(5)" aria-label="5 Sekunden mehr">+</button>
         </div>
+      </div>
+
+      <div id="ee-kind-atmung" style="margin-bottom:24px;display:none">
+        <div id="ee-phase-steppers"></div>
+        <div class="h-meta" style="margin:16px 0 8px">Runden</div>
+        <div class="h-stepper">
+          <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustExerciseRounds(-1)" aria-label="Eine Runde weniger">−</button>
+          <div class="h-stepper-val" id="ee-rounds-display">1</div>
+          <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustExerciseRounds(1)" aria-label="Eine Runde mehr">+</button>
+        </div>
+      </div>
+
+      <div id="ee-kind-schritte" style="margin-bottom:24px;display:none">
+        <div class="h-meta" style="margin-bottom:8px">Schritte · Reihenfolge per Pfeil</div>
+        <div class="h-list" id="ee-steps-list"></div>
+        <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="addExerciseStep()">+ Schritt</button>
       </div>
 
       <div style="margin-bottom:20px">
@@ -713,17 +738,22 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
       </div>
 
       <div style="margin-bottom:20px">
+        <div class="h-meta" style="margin-bottom:6px">Beschreibung (optional)</div>
+        <textarea id="ee-description" rows="3" style="width:100%;background:transparent;border:1px solid var(--line);padding:10px;color:var(--ink);font-family:var(--ui);font-size:15px;box-sizing:border-box;resize:vertical"></textarea>
+      </div>
+
+      <div style="margin-bottom:20px">
         <div class="h-meta" style="margin-bottom:8px">Verknüpftes Ziel</div>
         <select id="ee-goal" style="width:100%;background:transparent;border:1px solid var(--line);padding:8px 10px;color:var(--ink);font-family:var(--ui);font-size:14px"></select>
       </div>
 
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px">
         <div class="h-meta">Aktiv</div>
-        <button type="button" class="h-pill h-pill--outline" id="ee-active-btn" style="min-height:40px;padding:0 16px;font-size:14px" onclick="toggleExerciseActive()">An</button>
+        <button type="button" class="h-switch" id="ee-active-switch" onclick="toggleExerciseActive()" aria-label="Aktiv"></button>
       </div>
 
-      <button type="button" class="h-pill" style="width:100%" onclick="saveExerciseFromEditor()">Speichern</button>
-      <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="deleteExerciseFromEditor()">Löschen</button>
+      <button type="button" class="h-pill" style="width:100%" onclick="saveExerciseFromEditor()">Übung sichern</button>
+      <button type="button" class="h-pill h-pill--outline" id="ee-delete-btn" style="width:100%;margin-top:12px" onclick="deleteExerciseFromEditor()">Übung löschen</button>
     </div>
   </div>
 
@@ -737,6 +767,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 
   <div class="h-section" data-section-key="move:routinen" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('move:routinen')"><div class="h-section-title">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:routinen"><div>
     <div class="h-list" id="ue-routine-list" style="margin-top:12px"></div>
+    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="openRoutineEditor(null)">+ Routine</button>
   </div></div></div>
 
   <div class="h-section" data-section-key="move:atmung"><div class="h-section-row" onclick="toggleSection('move:atmung')"><div class="h-section-title">Atmung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:atmung"><div>
@@ -761,6 +792,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         <button type="button" class="h-pill h-pill--outline" onclick="startQuickBoxBreath()">2 Min Box</button>
       </div>
       <div class="h-meta" id="breath-cycles-display" style="text-align:center;margin-top:10px"></div>
+      <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:16px" onclick="openExerciseEditor(null)">+ Übung</button>
     </div>
   </div></div></div>
 
@@ -787,6 +819,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 
   <div class="h-section" data-section-key="move:einzeluebungen"><div class="h-section-row" onclick="toggleSection('move:einzeluebungen')"><div class="h-section-title">Einzelübungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:einzeluebungen"><div>
     <div class="h-list" id="ue-list" style="margin-top:12px"></div>
+    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="openExerciseEditor(null)">+ Übung</button>
 
     <div class="h-list" id="ue-extra-list">
       <div class="h-row" data-collapse-id="vagus" onclick="toggleCollapse('vagus')">
@@ -1152,10 +1185,12 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 
   <div class="h-section" data-section-key="settings:routinen"><div class="h-section-row" onclick="toggleSection('settings:routinen')"><div class="h-section-title" style="font-size:28px">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:routinen"><div>
     <div class="h-list" id="set-routine-list" style="margin-top:12px"></div>
+    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="openRoutineEditor(null)">+ Routine</button>
   </div></div></div>
 
   <div class="h-section" data-section-key="settings:uebungen"><div class="h-section-row" onclick="toggleSection('settings:uebungen')"><div class="h-section-title" style="font-size:28px">Übungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:uebungen"><div>
     <div class="h-list" id="set-exercise-list" style="margin-top:12px"></div>
+    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="openExerciseEditor(null)">+ Übung</button>
   </div></div></div>
 
   <div class="h-section" data-section-key="settings:ziele"><div class="h-section-row" onclick="toggleSection('settings:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:ziele"><div>
@@ -1218,8 +1253,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
   </div></div></div>
 
   <div class="h-meta" style="text-align:center;margin:28px 0">REHAPP · Build <span id="set-build-date"></span></div>
+</div>
 
-  <!-- ROUTINE-SHEET: Uhrzeit, Schritte, Mini-Version -->
+<!-- ROUTINE-SHEET: Uhrzeit, Schritte, Mini-Version -->
   <div class="h-sheet-overlay" id="routine-editor-overlay" role="dialog" aria-modal="true" aria-label="Routine bearbeiten">
     <div class="h-sheet-body">
       <div class="h-sheet-head">
@@ -1228,13 +1264,52 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
           <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
         </button>
       </div>
-      <div class="h-meta" style="margin-bottom:6px">Uhrzeit</div>
-      <input type="time" id="re-time" style="margin-bottom:24px" onchange="saveRoutineTime()">
+
+      <div style="margin-bottom:20px">
+        <div class="h-meta" style="margin-bottom:6px">Name</div>
+        <input type="text" id="re-name" autocomplete="off"
+          style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);padding:8px 0;box-sizing:border-box;color:var(--ink);font-family:var(--ui);font-size:16px">
+      </div>
+
+      <div style="margin-bottom:24px">
+        <div class="h-meta" style="margin-bottom:6px">Uhrzeit</div>
+        <input type="time" id="re-time" style="width:100%">
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div class="h-meta" style="margin-bottom:8px">Kategorie</div>
+        <div id="re-categories" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      </div>
+
+      <div style="margin-bottom:24px">
+        <div class="h-meta" style="margin-bottom:8px">Symbol</div>
+        <div id="re-icon-grid" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div class="h-meta" style="margin-bottom:8px">Pause zwischen Schritten</div>
+        <div class="h-stepper">
+          <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustRoutinePause(-5)" aria-label="Pause verkürzen">−</button>
+          <div class="h-stepper-val" id="re-pause-display">5s</div>
+          <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustRoutinePause(5)" aria-label="Pause verlängern">+</button>
+        </div>
+      </div>
+
       <div class="h-meta" style="margin-bottom:6px">Schritte · Mini-Version wählen, Reihenfolge per Pfeil</div>
       <div class="h-list" id="re-steps-list" style="margin-bottom:8px"></div>
+      <div style="margin-bottom:24px">
+        <div class="h-meta" style="margin-bottom:8px">Schritt aus Übungen hinzufügen</div>
+        <select id="re-add-step-select" onchange="addRoutineStepFromExercise(this.value); this.value='';" style="width:100%;background:transparent;border:1px solid var(--line);padding:8px 10px;color:var(--ink);font-family:var(--ui);font-size:14px"></select>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px">
+        <div class="h-meta">Aktiv</div>
+        <button type="button" class="h-switch" id="re-active-switch" onclick="toggleRoutineActive()" aria-label="Aktiv"></button>
+      </div>
+
+      <button type="button" class="h-pill" style="width:100%" onclick="saveRoutineFromEditor()">Routine sichern</button>
     </div>
   </div>
-</div>
 
 <!-- ══ BOTTOM NAV ══ -->
 <nav class="h-nav">
@@ -3124,23 +3199,23 @@ function seedExercisesIfNeeded() {
   if (storageGet('exercises_seeded_v1') === '1') return Promise.resolve();
   const seeds = [
     { id: 'exercise-box-breathing', title: 'Box Breathing', xp: 10, details: {
-      durationSec: 128, cue: null,
+      kind: 'atmung', durationSec: 128, cue: null, rounds: 8,
       pattern: [{ label: 'Einatmen', sec: 4 }, { label: 'Halten', sec: 4 }, { label: 'Ausatmen', sec: 4 }, { label: 'Halten', sec: 4 }],
       linkedGoalId: 'goal-from-box',
     } },
     { id: 'exercise-478', title: '4-7-8 Atmung', xp: 8, details: {
-      durationSec: 57, cue: null,
+      kind: 'atmung', durationSec: 57, cue: null, rounds: 3,
       pattern: [{ label: 'Einatmen', sec: 4 }, { label: 'Halten', sec: 7 }, { label: 'Ausatmen', sec: 8 }],
       linkedGoalId: 'goal-from-breath',
     } },
     { id: 'exercise-foot-activation', title: 'Fuß-Aktivierung', xp: 12, details: {
-      durationSec: 180, cue: 'Kreisen, wippen, Zehen spreizen', pattern: null, linkedGoalId: 'goal-from-foot_am',
+      kind: 'timer', durationSec: 180, cue: 'Kreisen, wippen, Zehen spreizen', pattern: null, linkedGoalId: 'goal-from-foot_am',
     } },
     { id: 'exercise-stretch', title: 'Dehnung', xp: 10, details: {
-      durationSec: 600, cue: 'Faszien & Gelenke lockern', pattern: null, linkedGoalId: 'goal-from-stretch',
+      kind: 'timer', durationSec: 600, cue: 'Faszien & Gelenke lockern', pattern: null, linkedGoalId: 'goal-from-stretch',
     } },
     { id: 'exercise-vagus', title: 'Vagus-Stimulation', xp: 15, details: {
-      durationSec: 300, cue: 'Tief & langsam atmen, summen', pattern: null, linkedGoalId: 'goal-from-vagus_eve',
+      kind: 'timer', durationSec: 300, cue: 'Tief & langsam atmen, summen', pattern: null, linkedGoalId: 'goal-from-vagus_eve',
     } },
   ];
   const existingIds = new Set(getItems({ type: 'exercise' }).map(i => i.id));
@@ -3164,7 +3239,7 @@ function buildUebungenList() {
     <div class="h-row">
       <div style="flex:1">
         <div class="h-text">${escapeHtml(ex.title)}</div>
-        <div class="h-meta">${formatMMSS(ex.details.durationSec || 0)} min${ex.details.pattern ? ' · ' + ex.details.pattern.map(p => p.label).join('/') : ''}</div>
+        <div class="h-meta">${formatMMSS(ex.details.durationSec || 0)} min${ex.details.pattern ? ' · ' + ex.details.pattern.map(p => p.label).join('/') : ''}${ex.details.kind === 'schritte' ? ' · ' + (ex.details.steps || []).length + ' Schritte' : ''}</div>
       </div>
       <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="openPlayer('${ex.id}')" aria-label="${escapeHtml(ex.title)} starten">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -3375,8 +3450,8 @@ async function finishPlayerExercise() {
 
   const seq = _playerState.sequence;
   if (seq && seq.idx + 1 < seq.steps.length) {
-    document.getElementById('player-cue').textContent = 'Weiter …';
-    setTimeout(() => loadPlayerStep(seq.idx + 1), 900);
+    document.getElementById('player-cue').textContent = `Gleich: ${seq.steps[seq.idx + 1].title}`;
+    setTimeout(() => loadPlayerStep(seq.idx + 1), (seq.pauseSec || 0.9) * 1000);
     return;
   }
 
@@ -3405,6 +3480,11 @@ async function finishPlayerExercise() {
 function openPlayer(exerciseId) {
   const ex = getItems({ type: 'exercise' }).find(i => i.id === exerciseId);
   if (!ex) return;
+  if (ex.details.kind === 'schritte' && (ex.details.steps || []).length) {
+    openProtocolPlayer(ex.details.steps.map(s => ({ title: s.name, desc: s.hint, sec: s.sec })), ex.title,
+      { key: 'exercise_' + ex.id + '_' + getLocalDateKey(), amount: ex.xp || 10, label: ex.title + ' abgeschlossen' });
+    return;
+  }
   _playerState = {
     exercise: ex, totalSec: ex.details.durationSec || 60, soundPack: getSoundPack(),
     running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null, sequence: null,
@@ -3430,7 +3510,7 @@ function openRoutinePlayer(routineGoalId, mini = false) {
   _playerState = {
     exercise: null, totalSec: 0, soundPack: getSoundPack(),
     running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null,
-    sequence: { steps, idx: 0, routineGoalId, title: goal.title },
+    sequence: { steps, idx: 0, routineGoalId, title: goal.title, pauseSec: goal.pauseSec || 5 },
   };
   renderSoundPackPicker();
   document.getElementById('player-overlay').classList.add('open');
@@ -3547,22 +3627,51 @@ function moveExercise(id, dir) {
   buildSetExerciseList();
 }
 
+const EXERCISE_PHASE_LABELS = ['Einatmen', 'Halten', 'Ausatmen', 'Halten'];
+
 let _exerciseEditorState = null;
 function openExerciseEditor(id) {
-  const ex = getItems({ type: 'exercise' }).find(e => e.id === id);
-  if (!ex) return;
+  const ex = id ? getItems({ type: 'exercise' }).find(e => e.id === id) : null;
+  const d = ex ? ex.details : {};
+  const pattern = d.pattern || [];
   _exerciseEditorState = {
-    id: ex.id, title: ex.title, durationSec: ex.details.durationSec || 60,
-    cue: ex.details.cue || '', linkedGoalId: ex.details.linkedGoalId || '', active: ex.active,
+    id: ex ? ex.id : null,
+    title: ex ? ex.title : '',
+    kind: d.kind || (pattern.length ? 'atmung' : 'timer'),
+    durationSec: d.durationSec || 60,
+    phaseSecs: EXERCISE_PHASE_LABELS.map((_, i) => (pattern[i] ? pattern[i].sec : 0)),
+    rounds: d.rounds || 1,
+    steps: (d.steps || []).map(s => ({ ...s })),
+    cue: d.cue || '',
+    description: d.description || '',
+    linkedGoalId: d.linkedGoalId || '',
+    active: ex ? ex.active : true,
   };
+  document.getElementById('ee-sheet-title').textContent = ex ? 'Übung bearbeiten' : 'Neue Übung';
   document.getElementById('ee-name').value = _exerciseEditorState.title;
   document.getElementById('ee-cue').value = _exerciseEditorState.cue;
+  document.getElementById('ee-description').value = _exerciseEditorState.description;
+  document.getElementById('ee-delete-btn').style.display = ex ? '' : 'none';
+  setExerciseEditorKind(_exerciseEditorState.kind);
   updateExerciseDurationDisplay();
+  updateExerciseRoundsDisplay();
+  renderExercisePhaseSteppers();
+  renderExerciseStepsList();
   renderExerciseGoalPicker();
-  updateExerciseActiveBtn();
+  updateExerciseActiveSwitch();
   document.getElementById('exercise-editor-overlay').classList.add('open');
 }
 function closeExerciseEditor() { document.getElementById('exercise-editor-overlay').classList.remove('open'); }
+
+function setExerciseEditorKind(kind) {
+  _exerciseEditorState.kind = kind;
+  document.querySelectorAll('#ee-kind-seg .h-seg-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['timer', 'atmung', 'schritte'][i] === kind);
+  });
+  document.getElementById('ee-kind-timer').style.display = kind === 'timer' ? '' : 'none';
+  document.getElementById('ee-kind-atmung').style.display = kind === 'atmung' ? '' : 'none';
+  document.getElementById('ee-kind-schritte').style.display = kind === 'schritte' ? '' : 'none';
+}
 
 function updateExerciseDurationDisplay() {
   document.getElementById('ee-duration-display').textContent = formatMMSS(_exerciseEditorState.durationSec);
@@ -3571,6 +3680,75 @@ function adjustExerciseDuration(delta) {
   _exerciseEditorState.durationSec = Math.max(5, _exerciseEditorState.durationSec + delta);
   updateExerciseDurationDisplay();
 }
+function updateExerciseRoundsDisplay() {
+  document.getElementById('ee-rounds-display').textContent = String(_exerciseEditorState.rounds);
+}
+function adjustExerciseRounds(delta) {
+  _exerciseEditorState.rounds = Math.max(1, _exerciseEditorState.rounds + delta);
+  updateExerciseRoundsDisplay();
+}
+function renderExercisePhaseSteppers() {
+  const el = document.getElementById('ee-phase-steppers');
+  el.innerHTML = EXERCISE_PHASE_LABELS.map((label, i) => `
+    <div class="h-row" style="cursor:default">
+      <div class="h-row-body"><div class="h-row-title">${label}${i === 1 || i === 3 ? ' (' + (i === 1 ? '1' : '2') + ')' : ''}</div><div class="h-row-meta">0 = Phase entfällt</div></div>
+      <div class="h-stepper">
+        <button type="button" class="h-circle-btn h-circle-btn--sm" style="width:36px;height:36px" onclick="adjustExercisePhase(${i},-1)" aria-label="${label} weniger">−</button>
+        <div class="h-stepper-val" id="ee-phase-${i}" style="font-size:16px;min-width:28px">${_exerciseEditorState.phaseSecs[i]}</div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" style="width:36px;height:36px" onclick="adjustExercisePhase(${i},1)" aria-label="${label} mehr">+</button>
+      </div>
+    </div>`).join('');
+}
+function adjustExercisePhase(i, delta) {
+  _exerciseEditorState.phaseSecs[i] = Math.max(0, _exerciseEditorState.phaseSecs[i] + delta);
+  document.getElementById('ee-phase-' + i).textContent = String(_exerciseEditorState.phaseSecs[i]);
+}
+
+function renderExerciseStepsList() {
+  const el = document.getElementById('ee-steps-list');
+  const steps = _exerciseEditorState.steps;
+  el.innerHTML = steps.length ? steps.map((s, i) => `
+    <div class="h-row">
+      <button type="button" class="h-circle-btn h-circle-btn--sm" style="width:28px;height:28px;flex-shrink:0" ${i === 0 ? 'disabled' : ''} onclick="moveExerciseStep(${i},-1)" aria-label="Nach oben">
+        <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+      </button>
+      <div class="h-row-body">
+        <input type="text" value="${escapeHtml(s.name || '')}" placeholder="Name" oninput="updateExerciseStepField(${i},'name',this.value)" style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);padding:4px 0;color:var(--ink);font-family:var(--ui);font-size:15px;margin-bottom:4px">
+        <input type="text" value="${escapeHtml(s.hint || '')}" placeholder="Hinweis (optional)" oninput="updateExerciseStepField(${i},'hint',this.value)" style="width:100%;background:transparent;border:none;color:var(--muted);font-family:var(--ui);font-size:13px">
+      </div>
+      <div class="h-stepper">
+        <button type="button" class="h-circle-btn h-circle-btn--sm" style="width:28px;height:28px" onclick="adjustExerciseStepSec(${i},-5)" aria-label="Dauer weniger">−</button>
+        <div class="h-stepper-val" style="font-size:13px;min-width:34px">${s.sec || 30}s</div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" style="width:28px;height:28px" onclick="adjustExerciseStepSec(${i},5)" aria-label="Dauer mehr">+</button>
+      </div>
+      <button type="button" class="h-circle-btn h-circle-btn--sm" style="width:28px;height:28px;flex-shrink:0" onclick="removeExerciseStep(${i})" aria-label="Schritt löschen">✕</button>
+    </div>
+  `).join('') : `<div class="h-meta">Noch keine Schritte.</div>`;
+}
+function addExerciseStep() {
+  _exerciseEditorState.steps.push({ name: '', sec: 30, hint: '' });
+  renderExerciseStepsList();
+}
+function removeExerciseStep(i) {
+  _exerciseEditorState.steps.splice(i, 1);
+  renderExerciseStepsList();
+}
+function moveExerciseStep(i, dir) {
+  const steps = _exerciseEditorState.steps;
+  const j = i + dir;
+  if (j < 0 || j >= steps.length) return;
+  [steps[i], steps[j]] = [steps[j], steps[i]];
+  renderExerciseStepsList();
+}
+function updateExerciseStepField(i, field, value) {
+  _exerciseEditorState.steps[i][field] = value;
+}
+function adjustExerciseStepSec(i, delta) {
+  const s = _exerciseEditorState.steps[i];
+  s.sec = Math.max(5, (s.sec || 30) + delta);
+  renderExerciseStepsList();
+}
+
 function renderExerciseGoalPicker() {
   const el = document.getElementById('ee-goal');
   const goals = getActiveHeuteGoals().filter(g => !g.kind);
@@ -3578,39 +3756,64 @@ function renderExerciseGoalPicker() {
 }
 function toggleExerciseActive() {
   _exerciseEditorState.active = !_exerciseEditorState.active;
-  updateExerciseActiveBtn();
+  updateExerciseActiveSwitch();
 }
-function updateExerciseActiveBtn() {
-  const btn = document.getElementById('ee-active-btn');
-  btn.textContent = _exerciseEditorState.active ? 'An' : 'Aus';
-  btn.classList.toggle('h-pill--outline', !_exerciseEditorState.active);
+function updateExerciseActiveSwitch() {
+  document.getElementById('ee-active-switch').classList.toggle('on', _exerciseEditorState.active);
 }
+
+// Übungen, die in Routinen-Schritten per exerciseId referenziert werden —
+// für die Lösch-Bestätigung ("in welchen Routinen kommt das vor").
+function routinesUsingExercise(exerciseId) {
+  return getActiveHeuteGoals().filter(g => g.kind === 'routine' && (g.steps || []).some(s => s.exerciseId === exerciseId));
+}
+
 async function saveExerciseFromEditor() {
   const name = document.getElementById('ee-name').value.trim();
-  if (!name) { toast('BITTE EINEN NAMEN EINGEBEN'); return; }
+  if (!name) { toast('Bitte einen Namen eingeben'); return; }
   const cue = document.getElementById('ee-cue').value.trim() || null;
+  const description = document.getElementById('ee-description').value.trim() || null;
   const linkedGoalId = document.getElementById('ee-goal').value || null;
-  const existing = getItems({ type: 'exercise' }).find(e => e.id === _exerciseEditorState.id);
-  if (!existing) return;
-  await saveItem({
-    ...existing,
-    title: name,
-    active: _exerciseEditorState.active,
-    details: { ...existing.details, durationSec: _exerciseEditorState.durationSec, cue, linkedGoalId },
-  });
+  const st = _exerciseEditorState;
+  const isNew = !st.id;
+  const existing = isNew ? null : getItems({ type: 'exercise' }).find(e => e.id === st.id);
+  if (!isNew && !existing) return;
+
+  const details = { kind: st.kind, cue, description, linkedGoalId };
+  if (st.kind === 'timer') {
+    details.durationSec = st.durationSec;
+    details.pattern = null;
+  } else if (st.kind === 'atmung') {
+    const pattern = st.phaseSecs.map((sec, i) => ({ label: EXERCISE_PHASE_LABELS[i], sec })).filter(p => p.sec > 0);
+    details.pattern = pattern;
+    details.rounds = st.rounds;
+    details.durationSec = pattern.reduce((sum, p) => sum + p.sec, 0) * st.rounds;
+  } else if (st.kind === 'schritte') {
+    details.steps = st.steps.map(s => ({ name: s.name || 'Schritt', sec: s.sec || 30, hint: s.hint || '' }));
+    details.durationSec = details.steps.reduce((sum, s) => sum + s.sec, 0);
+    details.pattern = null;
+  }
+
+  const item = isNew
+    ? { id: 'exercise-' + slugifyId(name) + '-' + Date.now().toString(36), type: 'exercise', title: name, dose: null, time: null, block: null, schedule: { days: [] }, xp: 10, notify: false, active: st.active, details, order: 9000 + Date.now() % 1000 }
+    : { ...existing, title: name, active: st.active, details: { ...existing.details, ...details } };
+
+  await saveItem(item);
   closeExerciseEditor();
   buildSetExerciseList();
   buildUebungenList();
-  toast('ÜBUNG AKTUALISIERT');
+  toast(isNew ? 'Übung angelegt' : 'Übung aktualisiert');
 }
 async function deleteExerciseFromEditor() {
-  if (!_exerciseEditorState) return;
-  if (!confirm('Diese Übung wirklich löschen?')) return;
+  if (!_exerciseEditorState || !_exerciseEditorState.id) return;
+  const used = routinesUsingExercise(_exerciseEditorState.id);
+  const usedText = used.length ? ` Sie wird in diesen Routinen verwendet: ${used.map(g => g.title).join(', ')}.` : '';
+  if (!confirm(`"${_exerciseEditorState.title}" wirklich löschen?${usedText}`)) return;
   await deleteItem(_exerciseEditorState.id);
   closeExerciseEditor();
   buildSetExerciseList();
   buildUebungenList();
-  toast('ÜBUNG GELÖSCHT');
+  toast('Übung gelöscht');
 }
 
 function buildSetGoalsList() {
@@ -4193,57 +4396,133 @@ function buildSetRoutineList() {
   `).join('') || `<div class="h-meta">Keine Routinen.</div>`;
 }
 
-let _routineEditorId = null;
+let _routineEditorState = null;
 function openRoutineEditor(id) {
-  const g = getGoal(id);
-  if (!g) return;
-  _routineEditorId = id;
-  document.getElementById('re-title').textContent = g.title;
-  document.getElementById('re-time').value = g.time || '';
+  const g = id ? getGoal(id) : null;
+  _routineEditorState = g
+    ? { id: g.id, title: g.title, time: g.time || '', category: g.category || 'koerper', icon: g.icon || 'schritte', pauseSec: g.pauseSec || 5, steps: (g.steps || []).map(s => ({ ...s })), active: !g.paused }
+    : { id: null, title: '', time: '', category: 'koerper', icon: 'schritte', pauseSec: 5, steps: [], active: true };
+  document.getElementById('re-title').textContent = g ? 'Routine bearbeiten' : 'Neue Routine';
+  document.getElementById('re-name').value = _routineEditorState.title;
+  document.getElementById('re-time').value = _routineEditorState.time;
+  updateRoutinePauseDisplay();
+  renderRoutineCategories();
+  renderRoutineIconGrid();
   renderRoutineStepsList();
+  renderRoutineAddStepPicker();
+  updateRoutineActiveSwitch();
   document.getElementById('routine-editor-overlay').classList.add('open');
 }
 function closeRoutineEditor() {
   document.getElementById('routine-editor-overlay').classList.remove('open');
-  _routineEditorId = null;
+  _routineEditorState = null;
   buildSetRoutineList();
+  buildRoutineList();
 }
-async function saveRoutineTime() {
-  const g = getGoal(_routineEditorId);
-  if (!g) return;
-  g.time = document.getElementById('re-time').value || null;
-  await saveGoal(g);
-  buildHeuteScreen();
+function renderRoutineCategories() {
+  const el = document.getElementById('re-categories');
+  el.innerHTML = GOAL_CATEGORIES.map(c => `
+    <button type="button" class="h-pill ${_routineEditorState.category === c.id ? '' : 'h-pill--outline'}" style="min-height:40px;padding:0 16px;font-size:14px" onclick="setRoutineCategory('${c.id}')">${c.label}</button>
+  `).join('');
+}
+function setRoutineCategory(cat) {
+  _routineEditorState.category = cat;
+  renderRoutineCategories();
+}
+function renderRoutineIconGrid() {
+  const el = document.getElementById('re-icon-grid');
+  el.innerHTML = Object.keys(BADGE_ICONS).map(iconKey => {
+    const selected = _routineEditorState.icon === iconKey;
+    return `<button type="button" class="h-circle-btn h-circle-btn--sm" style="${selected ? 'background:var(--ink)' : ''}" onclick="setRoutineIcon('${iconKey}')" aria-label="${iconKey}" aria-pressed="${selected}">
+      <svg viewBox="0 0 24 24" width="20" height="20"><g style="fill:none;stroke:${selected ? 'var(--paper)' : 'var(--ink)'};stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round">${BADGE_ICONS[iconKey]}</g></svg>
+    </button>`;
+  }).join('');
+}
+function setRoutineIcon(iconKey) {
+  _routineEditorState.icon = iconKey;
+  renderRoutineIconGrid();
+}
+function updateRoutinePauseDisplay() {
+  document.getElementById('re-pause-display').textContent = _routineEditorState.pauseSec + 's';
+}
+function adjustRoutinePause(delta) {
+  _routineEditorState.pauseSec = Math.max(0, _routineEditorState.pauseSec + delta);
+  updateRoutinePauseDisplay();
+}
+function toggleRoutineActive() {
+  _routineEditorState.active = !_routineEditorState.active;
+  updateRoutineActiveSwitch();
+}
+function updateRoutineActiveSwitch() {
+  document.getElementById('re-active-switch').classList.toggle('on', _routineEditorState.active);
+}
+function renderRoutineAddStepPicker() {
+  const el = document.getElementById('re-add-step-select');
+  const exercises = getItems({ type: 'exercise', activeOnly: true });
+  el.innerHTML = `<option value="">+ Schritt wählen …</option>` + exercises.map(ex => `<option value="${ex.id}">${escapeHtml(ex.title)}</option>`).join('');
+}
+function addRoutineStepFromExercise(exerciseId) {
+  if (!exerciseId) return;
+  const ex = getItems({ type: 'exercise' }).find(e => e.id === exerciseId);
+  if (!ex) return;
+  _routineEditorState.steps.push({ title: ex.title, exerciseId: ex.id, sec: ex.details.durationSec || 60, mini: false });
+  renderRoutineStepsList();
 }
 function renderRoutineStepsList() {
-  const g = getGoal(_routineEditorId);
+  const steps = _routineEditorState.steps;
   const el = document.getElementById('re-steps-list');
-  if (!g || !el) return;
-  el.innerHTML = g.steps.map((s, i) => `
+  el.innerHTML = steps.length ? steps.map((s, i) => `
     <div class="h-row">
       <button type="button" class="h-circle-btn h-circle-btn--sm" style="width:28px;height:28px;flex-shrink:0" ${i === 0 ? 'disabled' : ''} onclick="moveRoutineStep(${i},-1)" aria-label="Nach oben">
         <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
       </button>
-      <div class="h-row-body">${escapeHtml(s.title)}</div>
+      <div class="h-row-body">${escapeHtml(s.title)}<div class="h-row-meta">${formatMMSS(s.sec)} min</div></div>
       <div class="h-row-trail"><span class="h-meta">Mini</span><button type="button" class="h-switch${s.mini ? ' on' : ''}" onclick="toggleRoutineStepMini(${i})" aria-label="Mini-Version ${escapeHtml(s.title)}"></button></div>
+      <button type="button" class="h-circle-btn h-circle-btn--sm" style="width:28px;height:28px;flex-shrink:0" onclick="removeRoutineStep(${i})" aria-label="Schritt entfernen">✕</button>
     </div>
-  `).join('');
+  `).join('') : `<div class="h-meta">Noch keine Schritte.</div>`;
 }
-async function moveRoutineStep(idx, dir) {
-  const g = getGoal(_routineEditorId);
-  if (!g) return;
+function moveRoutineStep(idx, dir) {
+  const steps = _routineEditorState.steps;
   const swapIdx = idx + dir;
-  if (swapIdx < 0 || swapIdx >= g.steps.length) return;
-  [g.steps[idx], g.steps[swapIdx]] = [g.steps[swapIdx], g.steps[idx]];
-  await saveGoal(g);
+  if (swapIdx < 0 || swapIdx >= steps.length) return;
+  [steps[idx], steps[swapIdx]] = [steps[swapIdx], steps[idx]];
   renderRoutineStepsList();
 }
-async function toggleRoutineStepMini(idx) {
-  const g = getGoal(_routineEditorId);
-  if (!g) return;
-  g.steps[idx].mini = !g.steps[idx].mini;
-  await saveGoal(g);
+function toggleRoutineStepMini(idx) {
+  _routineEditorState.steps[idx].mini = !_routineEditorState.steps[idx].mini;
   renderRoutineStepsList();
+}
+function removeRoutineStep(idx) {
+  _routineEditorState.steps.splice(idx, 1);
+  renderRoutineStepsList();
+}
+async function saveRoutineFromEditor() {
+  const name = document.getElementById('re-name').value.trim();
+  if (!name) { toast('Bitte einen Namen eingeben'); return; }
+  const st = _routineEditorState;
+  const prior = st.id ? getGoal(st.id) : null;
+  const goal = {
+    id: st.id,
+    title: name,
+    category: st.category,
+    icon: st.icon,
+    drawing: null,
+    rhythm: prior ? prior.rhythm : 'taeglich',
+    time: document.getElementById('re-time').value || null,
+    xp: prior ? prior.xp : 20,
+    notify: prior ? prior.notify : false,
+    archived: prior ? prior.archived : false,
+    paused: !st.active,
+    kind: 'routine',
+    steps: st.steps,
+    pauseSec: st.pauseSec,
+    createdAt: prior ? prior.createdAt : undefined,
+  };
+  await saveGoal(goal);
+  closeRoutineEditor();
+  buildHeuteScreen();
+  toast(prior ? 'Routine aktualisiert' : 'Routine angelegt');
 }
 
 function confirmResetAll() {
