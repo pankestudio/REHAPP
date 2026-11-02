@@ -1912,6 +1912,18 @@ input[type="range"] { accent-color: #f0f0f0; }
 
 .h-badge-lock { color: var(--lock); }
 
+/* ── Heute-Screen (Phase 4): eingebettet in pg-home, oberhalb des
+   bestehenden Fasten-Timers. Kein .h-screen hier — das würde Seitenweite
+   Hintergrund/Padding erzwingen, die den umgebenden Altbereich stören. ── */
+.h-embed { color: var(--ink); font-family: var(--ui); margin: 0 14px 20px; }
+.h-counters { display: flex; gap: 32px; margin-bottom: 20px; }
+.h-counter { flex: 1; }
+.h-ring-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto 20px; }
+.h-ring-wrap svg.h-ring { width: 160px; height: 160px; }
+.h-ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.h-ring-label .h-num-xl { font-size: 44px; }
+.h-templates:empty { display: none; }
+
 @media (prefers-reduced-motion: reduce) {
   .h-screen, .h-screen *, .h-pen-draw {
     animation-duration: 0.01ms !important;
@@ -1942,6 +1954,43 @@ input[type="range"] { accent-color: #f0f0f0; }
 
 <!-- ══════════════════════════════════════ HOME ══ -->
 <div id="pg-home" class="page active scroll-page">
+
+  <!-- HEUTE (Hybrid Phase 4): Ziele-Screen oberhalb des bestehenden
+       Fasten-Timers — siehe CLAUDE.md, Umbau läuft phasenweise. -->
+  <div class="h-embed" id="h-heute" style="padding-top:calc(16px + var(--safe-top))">
+    <div class="h-header">
+      <div class="h-header-left">
+        <div class="h-brand">REHAPP</div>
+        <div class="h-screen-name">Heute</div>
+      </div>
+      <div class="h-header-right">
+        <div class="h-clock" id="h-clock">--:--</div>
+        <div class="h-date" id="h-date"></div>
+      </div>
+    </div>
+
+    <div class="h-counters" id="h-counters"></div>
+
+    <div class="h-ring-wrap">
+      <svg class="h-ring" viewBox="0 0 160 160">
+        <circle cx="80" cy="80" r="70" stroke="var(--line)" stroke-width="2" fill="none"/>
+        <circle class="h-ring-progress" cx="80" cy="80" r="70" stroke="var(--ink)" stroke-width="3" fill="none"
+          stroke-linecap="round" id="h-ring-progress"
+          stroke-dasharray="439.8" stroke-dashoffset="439.8"
+          transform="rotate(-90 80 80)"/>
+      </svg>
+      <div class="h-ring-label">
+        <div class="h-num-xl" id="h-ring-count">0/0</div>
+        <div class="h-meta" id="h-overcome-chip" style="display:none;margin-top:4px">Mit Überwindung ✓</div>
+      </div>
+    </div>
+
+    <div class="h-line-list" id="h-goal-list"></div>
+    <div id="h-goal-empty" style="display:none"></div>
+
+    <div class="h-sep"></div>
+    <div class="h-templates" id="h-templates"></div>
+  </div>
 
   <!-- HEADER -->
   <div class="page-header" style="padding-bottom:10px">
@@ -3920,6 +3969,184 @@ async function initGoalsStore() {
   checkNewUnlocks();
 }
 
+// ══════════════════════════════════════════════════════════════════════
+// HEUTE-SCREEN — Hybrid Phase 4
+// ══════════════════════════════════════════════════════════════════════
+// Sitzt oberhalb des bestehenden Fasten-Timers in pg-home (siehe
+// AskUserQuestion-Entscheidung: Timer bleibt, Ziele kommen darüber).
+
+let _overcomeChipGoalId = null;
+let _overcomeChipTimeout = null;
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+function updateHeuteClock() {
+  const clockEl = document.getElementById('h-clock');
+  const dateEl = document.getElementById('h-date');
+  if (!clockEl) return;
+  const now = new Date();
+  clockEl.textContent = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  if (dateEl) dateEl.textContent = now.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+
+// rAF-getriebene Ring-Animation statt CSS-Transition — konsistent mit der
+// Bewegungsregel "nur transform/opacity/stroke-dashoffset", keine
+// setInterval-Drift.
+function animateRingTo(el, targetOffset) {
+  if (!el) return;
+  const startOffset = parseFloat(el.getAttribute('stroke-dashoffset')) || 0;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || startOffset === targetOffset) {
+    el.setAttribute('stroke-dashoffset', targetOffset);
+    return;
+  }
+  const duration = 450;
+  const startTime = performance.now();
+  function step(now) {
+    const t = Math.min(1, (now - startTime) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.setAttribute('stroke-dashoffset', startOffset + (targetOffset - startOffset) * eased);
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function computeHeuteCounters() {
+  const dailyGoals = getGoals({ archived: false }).filter(g => g.rhythm === 'taeglich');
+  const bestStreak = dailyGoals.reduce((m, g) => Math.max(m, computeDailyStreak(g.id)), 0);
+  const badgeCount = getAllEarned().filter(e => e.tier && e.tier !== 'gesperrt').length;
+  return { bestStreak, badgeCount };
+}
+
+function sortGoalsForHeute(goals, doneToday) {
+  return goals.slice().sort((a, b) => {
+    const aDone = doneToday.has(a.id), bDone = doneToday.has(b.id);
+    if (aDone !== bDone) return aDone ? 1 : -1;
+    const at = a.time || '99:99', bt = b.time || '99:99';
+    if (at !== bt) return at < bt ? -1 : 1;
+    return (a.createdAt || 0) - (b.createdAt || 0);
+  });
+}
+
+function renderGoalRow(g, done, todayKey) {
+  const tier = computeTier(g);
+  const log = getLog(g.id, todayKey);
+  const alreadyMut = !!(log && log.mut);
+  const showChip = _overcomeChipGoalId === g.id && !alreadyMut;
+  return `
+    <div class="h-line-row" data-goal-id="${g.id}" style="justify-content:space-between">
+      <div onclick="onGoalRowTap('${g.id}')" style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;cursor:pointer">
+        <div style="flex-shrink:0">${renderBadge({ cat: g.category, tier, icon: g.icon, drawing: g.drawing, size: 32 })}</div>
+        <div style="flex:1;min-width:0">
+          <div style="position:relative;display:inline-block;max-width:100%">
+            <span class="h-text">${escapeHtml(g.title)}</span>
+            ${done ? `<svg class="h-strike-shaft" style="position:absolute;left:-3%;top:38%;width:106%;overflow:visible" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M2 7 Q 30 3, 50 6 T 98 5" stroke-width="3"/></svg>` : ''}
+          </div>
+          ${g.time ? `<div class="h-meta">${escapeHtml(g.time)}</div>` : ''}
+        </div>
+      </div>
+      ${showChip ? `<button class="h-pill h-pill--outline" style="min-height:36px;padding:0 14px;font-size:13px;flex-shrink:0" onclick="onOvercomeChipTap(event,'${g.id}')">Mit Überwindung?</button>` : ''}
+    </div>
+  `;
+}
+
+function showUnlockToast(unlocked) {
+  if (!unlocked.length) return;
+  const names = unlocked.map(u => u.goal ? u.goal.title : 'Überwunden');
+  toast('NEUES ABZEICHEN: ' + names.join(', ').toUpperCase());
+}
+
+function buildHeuteScreen() {
+  const root = document.getElementById('h-heute');
+  if (!root) return;
+  updateHeuteClock();
+
+  const todayKey = getLocalDateKey();
+  const goals = getGoals({ archived: false });
+  const doneToday = new Set(goals.filter(g => isLogged(g.id, todayKey)).map(g => g.id));
+  const total = goals.length;
+  const done = doneToday.size;
+
+  const { bestStreak, badgeCount } = computeHeuteCounters();
+  const countersEl = document.getElementById('h-counters');
+  if (countersEl) {
+    countersEl.innerHTML = `
+      <div class="h-counter"><div class="h-num-lg" style="font-size:56px">${bestStreak}</div><div class="h-meta">Serie</div></div>
+      <div class="h-counter"><div class="h-num-lg" style="font-size:56px">${badgeCount}</div><div class="h-meta">Abzeichen</div></div>
+    `;
+  }
+
+  const ring = document.getElementById('h-ring-progress');
+  const ringCount = document.getElementById('h-ring-count');
+  if (ring && ringCount) {
+    const circumference = 439.8; // 2 * PI * 70
+    const pct = total ? done / total : 0;
+    animateRingTo(ring, circumference * (1 - pct));
+    ringCount.textContent = `${done}/${total}`;
+  }
+  const overcomeChip = document.getElementById('h-overcome-chip');
+  if (overcomeChip) overcomeChip.style.display = _logsCache.some(l => l.date === todayKey && l.mut) ? '' : 'none';
+
+  const listEl = document.getElementById('h-goal-list');
+  const emptyEl = document.getElementById('h-goal-empty');
+  if (listEl && emptyEl) {
+    if (total && done === total) {
+      listEl.innerHTML = '';
+      listEl.style.display = 'none';
+      emptyEl.style.display = '';
+      emptyEl.innerHTML = `<div class="h-title" style="margin:40px 0 8px;text-align:center">Alles geschafft.</div><div class="h-meta" style="text-align:center">Komm morgen wieder.</div>`;
+    } else {
+      emptyEl.style.display = 'none';
+      listEl.style.display = '';
+      listEl.innerHTML = sortGoalsForHeute(goals, doneToday).map(g => renderGoalRow(g, doneToday.has(g.id), todayKey)).join('');
+    }
+  }
+
+  const templatesEl = document.getElementById('h-templates');
+  if (templatesEl) {
+    const existingTitles = new Set(goals.map(g => g.title));
+    const available = GOAL_TEMPLATES.filter(t => !existingTitles.has(t.title));
+    templatesEl.innerHTML = available.length
+      ? `<div class="h-meta" style="margin-bottom:10px">Vorlagen</div><div style="display:flex;flex-wrap:wrap;gap:8px">${available.map(t => `<button class="h-pill h-pill--outline" style="min-height:40px;padding:0 18px;font-size:14px" onclick="addGoalFromTemplate('${slugifyId(t.title)}')">${escapeHtml(t.title)}</button>`).join('')}</div>`
+      : '';
+  }
+}
+
+async function onGoalRowTap(goalId) {
+  const todayKey = getLocalDateKey();
+  const wasLogged = isLogged(goalId, todayKey);
+  const { unlocked } = await toggleLog(goalId, todayKey, false);
+  if (navigator.vibrate) navigator.vibrate(20);
+  clearTimeout(_overcomeChipTimeout);
+  if (!wasLogged) {
+    playTone(523, 0.08);
+    setTimeout(() => playTone(659, 0.1), 100);
+    _overcomeChipGoalId = goalId;
+    _overcomeChipTimeout = setTimeout(() => { _overcomeChipGoalId = null; buildHeuteScreen(); }, 5000);
+  } else {
+    _overcomeChipGoalId = null;
+  }
+  buildHeuteScreen();
+  showUnlockToast(unlocked);
+}
+
+async function onOvercomeChipTap(e, goalId) {
+  e.stopPropagation();
+  clearTimeout(_overcomeChipTimeout);
+  _overcomeChipGoalId = null;
+  const { unlocked } = await setLogMut(goalId, getLocalDateKey(), true);
+  buildHeuteScreen();
+  showUnlockToast(unlocked);
+}
+
+async function addGoalFromTemplate(slug) {
+  const tpl = GOAL_TEMPLATES.find(t => slugifyId(t.title) === slug);
+  if (!tpl) return;
+  await saveGoal({ ...tpl, id: 'goal-' + slugifyId(tpl.title) + '-' + Date.now().toString(36), drawing: null, time: null });
+  buildHeuteScreen();
+}
+
 function toggleHabitWhy(id, e) {
   e.stopPropagation();
   const el = document.getElementById('why-' + id);
@@ -5107,6 +5334,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await initContentStore();
   await initGoalsStore();
+  buildHeuteScreen();
   buildWater(); buildSupplements(); buildRecipes(); buildMLD();
   buildHabitsSection();
   buildVagus(); buildBFR(); buildMasterplan();
@@ -5132,6 +5360,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Midnight day-change watcher — rebuilds daily UI when date rolls over
   _watchedDate = new Date().toDateString();
   setInterval(() => {
+    updateHeuteClock();
     const nowDate = new Date().toDateString();
     if (nowDate !== _watchedDate) {
       _watchedDate = nowDate;
@@ -5141,6 +5370,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderDailyQuote();
       initSuppTab();
       buildBudapestFilter();
+      buildHeuteScreen();
       toast('NEUER TAG — PROTOKOLL ZURÜCKGESETZT');
     }
   }, 30000); // check every 30 seconds
