@@ -2072,6 +2072,61 @@ input[type="range"] { accent-color: #f0f0f0; }
           <button class="btn btn-cx" id="timer-start-btn" onclick="timerAction()">Fasten starten</button>
           <button class="btn" id="timer-reset-btn" onclick="confirmReset()" style="display:none">Reset</button>
         </div>
+
+        <div class="phase-bar" style="margin-top:16px">
+          <div class="phase-seg" id="ps0"><div class="ps-name">Start</div><div class="ps-h">0-18h</div></div>
+          <div class="phase-seg" id="ps1"><div class="ps-name">Ketose</div><div class="ps-h">18-48h</div></div>
+          <div class="phase-seg" id="ps2"><div class="ps-name">Autophagie</div><div class="ps-h">48-72h</div></div>
+          <div class="phase-seg" id="ps3"><div class="ps-name">Stammzellen</div><div class="ps-h">72-100h</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-label">Aktuelle Phase</div>
+          <div id="phase-description" style="padding:12px 14px;font-size:12px;color:var(--text2);line-height:1.75;letter-spacing:.02em">
+            Timer starten, um den Fortschritt zu tracken.
+          </div>
+        </div>
+        <div class="panel refeed-card" id="refeed-panel" style="display:none">
+          <div class="panel-label">Refeed-Fenster</div>
+          <div style="padding:12px 14px 14px">
+            <div class="refeed-time" id="refeed-display">06:00:00</div>
+            <div class="mini-note" id="refeed-copy">Nach 100h startet automatisch ein 6h-Fenster mit Schonkost-Hinweis.</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+              <button class="btn btn-sm" onclick="stopRefeedWindow()">Refeed beenden</button>
+              <button class="btn btn-sm btn-cx" onclick="start16_8Mode()">16:8 starten</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:4px">
+          <div class="panel-collapse-header" data-collapse-id="fasten-info" onclick="toggleCollapse('fasten-info')" style="padding:10px 0;border-bottom:none">
+            <div class="panel-collapse-title" style="font-size:var(--fs-xs)">Erlaubt // Verboten // Meilensteine</div>
+            <div class="panel-collapse-arrow" id="collapse-arrow-fasten-info">▼</div>
+          </div>
+          <div id="collapse-body-fasten-info" class="closed">
+            <div class="panel" style="margin-top:10px">
+              <div class="panel-label">Erlaubt</div>
+              <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">H2O</div><div class="check-label">Wasser 2,5-3L täglich + Prise Meersalz</div></div>
+              <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">KFEE</div><div class="check-label">Schwarzer Kaffee max. 2 Tassen — foerdert Autophagie</div></div>
+              <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">ELK</div><div class="check-label">Elektrolyte: Mg, K, Na — kein Einfluss auf Ketose</div></div>
+              <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">VIT C</div><div class="check-label">Vitamin C 500mg + Heparin-Injektion</div></div>
+            </div>
+            <div class="panel">
+              <div class="panel-label">Stoppt Autophagie</div>
+              <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--red);width:40px;flex-shrink:0;letter-spacing:.1em">PROT</div><div class="check-label" style="color:var(--text2)">Kollagen / Protein — aktiviert mTOR sofort</div></div>
+              <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--red);width:40px;flex-shrink:0;letter-spacing:.1em">KAL</div><div class="check-label" style="color:var(--text2)">Alles Kalorische inkl. Säfte, Milch, Brühe mit Fett</div></div>
+              <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--red);width:40px;flex-shrink:0;letter-spacing:.1em">SUPP</div><div class="check-label" style="color:var(--text2)">Alle Supplements ausser Vit C + Elektrolyte</div></div>
+            </div>
+            <div class="panel">
+              <div class="panel-label">Meilensteine</div>
+              <div class="check-row"><div class="tag tc" style="min-width:36px;text-align:center">18h</div><div class="check-label">Ketose — Körper wechselt auf Fettverbrennung</div></div>
+              <div class="check-row"><div class="tag ta" style="min-width:36px;text-align:center">24h</div><div class="check-label">Glykogen erschöpft — Hunger lässt nach</div></div>
+              <div class="check-row"><div class="tag tc" style="min-width:36px;text-align:center">48h</div><div class="check-label">Autophagie-Peak — Knochenmatrix wird aufgeräumt</div></div>
+              <div class="check-row"><div class="tag tg" style="min-width:36px;text-align:center">72h</div><div class="check-label">Stammzellaktivierung — Gewebereparatur maximal</div></div>
+              <div class="check-row"><div class="tag tg" style="min-width:36px;text-align:center">100h</div><div class="check-label">Fastenende — Refeed mit Knochenbrühe starten</div></div>
+            </div>
+          </div>
+        </div>
+
         <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:4px">
           <div class="panel-collapse-header" data-collapse-id="timer-adjust" onclick="toggleCollapse('timer-adjust')" style="padding:10px 0;border-bottom:none">
             <div class="panel-collapse-title" style="font-size:var(--fs-xs)">Timer anpassen</div>
@@ -2352,150 +2407,6 @@ input[type="range"] { accent-color: #f0f0f0; }
     </div>
   </div>
 
-
-<!-- ══════════════════════════════════════ FASTEN ══ -->
-<div id="pg-fast" class="page scroll-page">
-  <div class="page-header">
-    <div class="page-title">Fasten</div>
-    <div class="page-sub">100h Fokus // 16:8 Rhythmus</div>
-  </div>
-
-  <div class="phase-bar">
-    <div class="phase-seg" id="ps0"><div class="ps-name">Start</div><div class="ps-h">0-18h</div></div>
-    <div class="phase-seg" id="ps1"><div class="ps-name">Ketose</div><div class="ps-h">18-48h</div></div>
-    <div class="phase-seg" id="ps2"><div class="ps-name">Autophagie</div><div class="ps-h">48-72h</div></div>
-    <div class="phase-seg" id="ps3"><div class="ps-name">Stammzellen</div><div class="ps-h">72-100h</div></div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-label">Aktuelle Phase</div>
-    <div id="phase-description" style="padding:12px 14px;font-size:12px;color:var(--text2);line-height:1.75;letter-spacing:.02em">
-      Timer auf Home starten, um den Fortschritt zu tracken.
-    </div>
-  </div>
-
-  <div class="panel refeed-card" id="refeed-panel" style="display:none">
-    <div class="panel-label">Refeed-Fenster</div>
-    <div style="padding:12px 14px 14px">
-      <div class="refeed-time" id="refeed-display">06:00:00</div>
-      <div class="mini-note" id="refeed-copy">Nach 100h startet automatisch ein 6h-Fenster mit Schonkost-Hinweis.</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
-        <button class="btn btn-sm" onclick="stopRefeedWindow()">Refeed beenden</button>
-        <button class="btn btn-sm btn-cx" onclick="start16_8Mode()">16:8 starten</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-label">Erlaubt</div>
-    <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">H2O</div><div class="check-label">Wasser 2,5-3L täglich + Prise Meersalz</div></div>
-    <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">KFEE</div><div class="check-label">Schwarzer Kaffee max. 2 Tassen — foerdert Autophagie</div></div>
-    <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">ELK</div><div class="check-label">Elektrolyte: Mg, K, Na — kein Einfluss auf Ketose</div></div>
-    <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--cx);width:40px;flex-shrink:0;letter-spacing:.1em">VIT C</div><div class="check-label">Vitamin C 500mg + Heparin-Injektion</div></div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-label">Stoppt Autophagie</div>
-    <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--red);width:40px;flex-shrink:0;letter-spacing:.1em">PROT</div><div class="check-label" style="color:var(--text2)">Kollagen / Protein — aktiviert mTOR sofort</div></div>
-    <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--red);width:40px;flex-shrink:0;letter-spacing:.1em">KAL</div><div class="check-label" style="color:var(--text2)">Alles Kalorische inkl. Säfte, Milch, Brühe mit Fett</div></div>
-    <div class="check-row"><div style="font-family:var(--mono);font-size:12px;color:var(--red);width:40px;flex-shrink:0;letter-spacing:.1em">SUPP</div><div class="check-label" style="color:var(--text2)">Alle Supplements ausser Vit C + Elektrolyte</div></div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-label">Meilensteine</div>
-    <div class="check-row"><div class="tag tc" style="min-width:36px;text-align:center">18h</div><div class="check-label">Ketose — Körper wechselt auf Fettverbrennung</div></div>
-    <div class="check-row"><div class="tag ta" style="min-width:36px;text-align:center">24h</div><div class="check-label">Glykogen erschöpft — Hunger lässt nach</div></div>
-    <div class="check-row"><div class="tag tc" style="min-width:36px;text-align:center">48h</div><div class="check-label">Autophagie-Peak — Knochenmatrix wird aufgeräumt</div></div>
-    <div class="check-row"><div class="tag tg" style="min-width:36px;text-align:center">72h</div><div class="check-label">Stammzellaktivierung — Gewebereparatur maximal</div></div>
-    <div class="check-row"><div class="tag tg" style="min-width:36px;text-align:center">100h</div><div class="check-label">Fastenende — Refeed mit Knochenbrühe starten</div></div>
-  </div>
-
-  <!-- 16:8 CONFIG -->
-  <div class="panel">
-    <div class="panel-label">16:8 Regime // Folgeprotokoll</div>
-    <div style="padding:12px 14px;font-size:12px;color:var(--text2);line-height:1.7">
-      Nach dem 100h-Fasten täglich. Erhält Autophagie dauerhaft ohne Muskelabbau.
-    </div>
-    <div style="padding:0 14px 14px;display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap">
-      <div>
-        <div style="font-family:var(--mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Essfenster Start</div>
-        <input type="time" id="eat-start" value="12:00" aria-label="Essfenster Start">
-      </div>
-      <div>
-        <div style="font-family:var(--mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Essfenster Ende</div>
-        <input type="time" id="eat-end" value="20:00" aria-label="Essfenster Ende">
-      </div>
-      <button class="btn btn-sm btn-cx" onclick="save16_8()">Aktivieren</button>
-    </div>
-  </div>
-
-  <!-- CALENDAR -->
-  <div class="panel">
-    <div class="panel-label">Erinnerungen exportieren</div>
-    <div style="padding:10px 14px;font-size:12px;color:var(--text2);letter-spacing:.03em">
-      Generiert täglich wiederkehrende Einträge für alle Massnahmen.
-    </div>
-    <div class="cal-grid">
-      <div class="cal-btn" onclick="exportCalendar('apple')">
-        <div class="cal-btn-lbl">Apple Kalender</div>
-        <div class="cal-btn-sub">.ics Download</div>
-      </div>
-      <div class="cal-btn" onclick="exportCalendar('google')">
-        <div class="cal-btn-lbl">Google Kalender</div>
-        <div class="cal-btn-sub">Link oeffnen</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 14-TAGE MASTERPLAN -->
-  <div class="panel">
-    <div class="panel-collapse-header" data-collapse-id="masterplan" onclick="toggleCollapse('masterplan')">
-      <div class="panel-collapse-title">14-Tage Masterplan // Phasenübersicht</div>
-      <div class="panel-collapse-arrow" id="collapse-arrow-masterplan">▼</div>
-    </div>
-    <div id="collapse-body-masterplan" class="closed">
-      <div id="masterplan-container"></div>
-      <div style="padding:0 16px 14px">
-        <button class="btn btn-sm btn-cx" onclick="completeMasterplanPhase()">Phase als erledigt markieren</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 14-TAGE CRPS-KALENDER -->
-  <div class="panel">
-    <div class="panel-collapse-header" data-collapse-id="crpscal" onclick="toggleCollapse('crpscal')">
-      <div class="panel-collapse-title">14-Tage CRPS-Kalender // Tagesmodule</div>
-      <div class="panel-collapse-arrow open" id="collapse-arrow-crpscal">▲</div>
-    </div>
-    <div id="collapse-body-crpscal">
-      <div style="padding:8px 16px 6px;font-size:var(--fs-sm);color:var(--text2);line-height:1.6">
-        Tippe auf einen Tag um Modul, philosophischen Anker und Reha-Fokus zu sehen.
-      </div>
-      <div id="crps-calendar-container"></div>
-    </div>
-  </div>
-
-  <!-- FASTING RECIPES -->
-  <div class="panel" style="overflow:visible">
-    <div class="panel-collapse-header" data-collapse-id="recipes" onclick="toggleCollapse('recipes')">
-      <div class="panel-collapse-title">Rezepte // Antiinflammatorisch & Refeed</div>
-      <div class="panel-collapse-arrow" id="collapse-arrow-recipes">▼</div>
-    </div>
-    <div id="collapse-body-recipes" class="closed">
-      <div class="recipe-filters" style="padding:8px 14px 4px">
-        <button class="fpill active" onclick="filterRecipes('all',this)">Alle</button>
-        <button class="fpill" onclick="filterRecipes('knochen',this)">Knochen</button>
-        <button class="fpill" onclick="filterRecipes('entzu',this)">Entzündung</button>
-        <button class="fpill" onclick="filterRecipes('kollagen',this)">Kollagen</button>
-        <button class="fpill" onclick="filterRecipes('refeed',this)">Refeed</button>
-        <button class="fpill" onclick="filterRecipes('schnell',this)">Schnell</button>
-      </div>
-      <div id="recipes-container"></div>
-    </div>
-  </div>
-
-  <div class="spacer"></div>
-</div>
 
 <!-- ══════════════════════════════════════ BEWEGUNG ══ -->
 <div id="pg-move" class="page scroll-page">
@@ -2791,6 +2702,74 @@ input[type="range"] { accent-color: #f0f0f0; }
         <strong style="color:var(--text)">Box 4×4:</strong> 4-4-4-4 — direkteste Methode zur Parasympathikus-Aktivierung bei Stress und Schmerzspitzen.<br>
         <strong style="color:var(--text)">4-7-8 Schlaf:</strong> stimuliert den Vagusnerv, senkt Herzfrequenz und Entzündungsmarker.<br>
         <strong style="color:var(--text)">Wim Hof:</strong> kontrollierte Hyperventilation + Retention, stärkt die Stressregulation. Alle Techniken laufen geführt in Übungen → Atmung.
+      </div>
+    </div>
+  </div>
+
+  <div class="h-sep" style="margin:20px 14px"></div>
+  <div class="h-meta" style="margin:0 14px 10px">Fasten</div>
+
+  <!-- 14-TAGE MASTERPLAN -->
+  <div class="panel">
+    <div class="panel-collapse-header" data-collapse-id="masterplan" onclick="toggleCollapse('masterplan')">
+      <div class="panel-collapse-title">14-Tage Masterplan — Phasenübersicht</div>
+      <div class="panel-collapse-arrow" id="collapse-arrow-masterplan">▼</div>
+    </div>
+    <div id="collapse-body-masterplan" class="closed">
+      <div id="masterplan-container"></div>
+      <div style="padding:0 16px 14px">
+        <button class="btn btn-sm btn-cx" onclick="completeMasterplanPhase()">Phase als erledigt markieren</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 14-TAGE CRPS-KALENDER -->
+  <div class="panel">
+    <div class="panel-collapse-header" data-collapse-id="crpscal" onclick="toggleCollapse('crpscal')">
+      <div class="panel-collapse-title">14-Tage CRPS-Kalender — Tagesmodule</div>
+      <div class="panel-collapse-arrow" id="collapse-arrow-crpscal">▼</div>
+    </div>
+    <div id="collapse-body-crpscal" class="closed">
+      <div style="padding:8px 16px 6px;font-size:var(--fs-sm);color:var(--text2);line-height:1.6">
+        Tippe auf einen Tag um Modul, philosophischen Anker und Reha-Fokus zu sehen.
+      </div>
+      <div id="crps-calendar-container"></div>
+    </div>
+  </div>
+
+  <!-- FASTING RECIPES -->
+  <div class="panel" style="overflow:visible">
+    <div class="panel-collapse-header" data-collapse-id="recipes" onclick="toggleCollapse('recipes')">
+      <div class="panel-collapse-title">Rezepte — Antiinflammatorisch &amp; Refeed</div>
+      <div class="panel-collapse-arrow" id="collapse-arrow-recipes">▼</div>
+    </div>
+    <div id="collapse-body-recipes" class="closed">
+      <div class="recipe-filters" style="padding:8px 14px 4px">
+        <button class="fpill active" onclick="filterRecipes('all',this)">Alle</button>
+        <button class="fpill" onclick="filterRecipes('knochen',this)">Knochen</button>
+        <button class="fpill" onclick="filterRecipes('entzu',this)">Entzündung</button>
+        <button class="fpill" onclick="filterRecipes('kollagen',this)">Kollagen</button>
+        <button class="fpill" onclick="filterRecipes('refeed',this)">Refeed</button>
+        <button class="fpill" onclick="filterRecipes('schnell',this)">Schnell</button>
+      </div>
+      <div id="recipes-container"></div>
+    </div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="panel">
+    <div class="panel-label">Erinnerungen exportieren</div>
+    <div style="padding:10px 14px;font-size:12px;color:var(--text2);letter-spacing:.03em">
+      Generiert täglich wiederkehrende Einträge für alle Massnahmen.
+    </div>
+    <div class="cal-grid">
+      <div class="cal-btn" onclick="exportCalendar('apple')">
+        <div class="cal-btn-lbl">Apple Kalender</div>
+        <div class="cal-btn-sub">.ics Download</div>
+      </div>
+      <div class="cal-btn" onclick="exportCalendar('google')">
+        <div class="cal-btn-lbl">Google Kalender</div>
+        <div class="cal-btn-sub">Link oeffnen</div>
       </div>
     </div>
   </div>
@@ -7128,16 +7107,6 @@ function updateTimer() {
 }
 
 // ══════════════ 16:8 ══════════════
-
-function save16_8() {
-  const start = document.getElementById('eat-start').value;
-  const end = document.getElementById('eat-end').value;
-  if (!start || !end || start === end) { toast('16:8 ZEITEN PRUEFEN'); return; }
-  storageSet('eat16_8', JSON.stringify({ start, end }));
-  awardXP('schedule_16_8', 10, '16:8 Zeitfenster gesetzt', { scope: 'day' });
-  toast(`16:8 — ${start} bis ${end} Uhr`);
-  if (timerMode === '16_8') start16_8Mode();
-}
 
 function start16_8Mode() {
   stopRefeedWindow(true);
