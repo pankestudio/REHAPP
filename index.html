@@ -2023,9 +2023,12 @@ input[type="range"] { accent-color: #f0f0f0; }
     <div class="h-line-list" id="h-goal-list"></div>
     <div id="h-goal-empty" style="display:none"></div>
 
-    <div style="display:flex;justify-content:center;margin:24px 0">
+    <div style="display:flex;justify-content:center;gap:16px;margin:24px 0">
       <button type="button" class="h-circle-btn" onclick="openGoalSheet()" aria-label="Neues Ziel">
         <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
+      </button>
+      <button type="button" class="h-circle-btn" onclick="openUebungen()" aria-label="Übungen">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
       </button>
     </div>
 
@@ -2126,6 +2129,38 @@ input[type="range"] { accent-color: #f0f0f0; }
     <div class="h-meta" id="unlock-meta" style="margin-bottom:28px"></div>
     <button type="button" class="h-pill" id="unlock-next-btn" onclick="advanceUnlockQueue()">Weiter</button>
     <button type="button" class="h-pill h-pill--outline" style="margin-top:12px" onclick="replayUnlockCelebration()">Nochmal</button>
+  </div>
+
+  <!-- ÜBUNGEN-LISTE (Phase 7) -->
+  <div class="h-sheet-overlay" id="uebungen-overlay" role="dialog" aria-modal="true" aria-label="Übungen">
+    <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
+      <div class="h-header">
+        <div class="h-title" style="font-size:24px">Übungen</div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeUebungen()" aria-label="Schließen">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        </button>
+      </div>
+      <div class="h-line-list" id="ue-list"></div>
+    </div>
+  </div>
+
+  <!-- ÜBUNGS-PLAYER (Phase 7): invertiert ink/paper über lokale Custom
+       Properties für einen ablenkungsfreien, dunklen Fokus-Screen. -->
+  <div class="h-sheet-overlay" id="player-overlay" role="dialog" aria-modal="true" aria-label="Übungs-Player" style="z-index:610">
+    <div style="--ink:#F4F3EF;--paper:#14140F;background:var(--paper);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;position:relative">
+      <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closePlayer()" aria-label="Schließen" style="position:absolute;top:calc(16px + var(--safe-top));right:20px">
+        <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+      </button>
+      <div class="h-meta" id="player-exercise-title" style="color:var(--faint)"></div>
+      <div class="h-num-xxl" id="player-countdown" style="font-size:120px">00:00</div>
+      <div class="h-title" id="player-cue" style="font-size:28px;margin-top:4px;min-height:34px"></div>
+      <div style="margin-top:48px;display:flex;gap:16px;align-items:center">
+        <button type="button" class="h-pill" id="player-start-btn" onclick="togglePlayerRun()">Start</button>
+        <button type="button" class="h-circle-btn" id="player-reset-btn" onclick="resetPlayer()" aria-label="Zurücksetzen">
+          <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- HEADER -->
@@ -4469,6 +4504,258 @@ function replayUnlockCelebration() {
 }
 
 // ══════════════════════════════════════════════════════════════════════
+// ÜBUNGEN + PLAYER — Hybrid Phase 7
+// ══════════════════════════════════════════════════════════════════════
+// Kein Routinen-Modell mehr (Entscheidung: komplett frisch aus main
+// aufgebaut, siehe CLAUDE.md) — eine Übung ist eigenständig und kann
+// optional an ein Ziel gekoppelt sein (details.linkedGoalId): Abschluss im
+// Player loggt dann automatisch die heutige Erledigung dieses Ziels und
+// läuft durch checkNewUnlocks()/den Feiermoment aus Phase 6.
+//
+// Zeitgebung bewusst nicht über setInterval (driftet): der sichtbare
+// Countdown liest bei jedem rAF-Frame ctx.currentTime, alle Zähltöne
+// werden im Voraus exakt auf der AudioContext-Zeitachse geplant.
+
+function seedExercisesIfNeeded() {
+  if (storageGet('exercises_seeded_v1') === '1') return Promise.resolve();
+  const seeds = [
+    { id: 'exercise-box-breathing', title: 'Box Breathing', xp: 10, details: {
+      durationSec: 128, cue: null,
+      pattern: [{ label: 'Einatmen', sec: 4 }, { label: 'Halten', sec: 4 }, { label: 'Ausatmen', sec: 4 }, { label: 'Halten', sec: 4 }],
+      linkedGoalId: 'goal-from-box',
+    } },
+    { id: 'exercise-478', title: '4-7-8 Atmung', xp: 8, details: {
+      durationSec: 57, cue: null,
+      pattern: [{ label: 'Einatmen', sec: 4 }, { label: 'Halten', sec: 7 }, { label: 'Ausatmen', sec: 8 }],
+      linkedGoalId: 'goal-from-breath',
+    } },
+    { id: 'exercise-foot-activation', title: 'Fuß-Aktivierung', xp: 12, details: {
+      durationSec: 180, cue: 'Kreisen, wippen, Zehen spreizen', pattern: null, linkedGoalId: 'goal-from-foot_am',
+    } },
+    { id: 'exercise-stretch', title: 'Dehnung', xp: 10, details: {
+      durationSec: 600, cue: 'Faszien & Gelenke lockern', pattern: null, linkedGoalId: 'goal-from-stretch',
+    } },
+    { id: 'exercise-vagus', title: 'Vagus-Stimulation', xp: 15, details: {
+      durationSec: 300, cue: 'Tief & langsam atmen, summen', pattern: null, linkedGoalId: 'goal-from-vagus_eve',
+    } },
+  ];
+  const existingIds = new Set(getItems({ type: 'exercise' }).map(i => i.id));
+  const toCreate = seeds.filter(s => !existingIds.has(s.id));
+  return Promise.all(toCreate.map((s, i) => saveItem({
+    id: s.id, type: 'exercise', title: s.title, dose: null, time: null, block: null,
+    schedule: { days: [] }, xp: s.xp, notify: false, active: true, details: s.details, order: 9000 + i,
+  }))).then(() => { storageSet('exercises_seeded_v1', '1'); });
+}
+
+function formatMMSS(sec) {
+  const s = Math.max(0, Math.ceil(sec));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
+function buildUebungenList() {
+  const el = document.getElementById('ue-list');
+  if (!el) return;
+  const exercises = getItems({ type: 'exercise', activeOnly: true });
+  el.innerHTML = exercises.length ? exercises.map(ex => `
+    <div class="h-line-row">
+      <div style="flex:1">
+        <div class="h-text">${escapeHtml(ex.title)}</div>
+        <div class="h-meta">${formatMMSS(ex.details.durationSec || 0)} min${ex.details.pattern ? ' · ' + ex.details.pattern.map(p => p.label).join('/') : ''}</div>
+      </div>
+      <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="openPlayer('${ex.id}')" aria-label="${escapeHtml(ex.title)} starten">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+    </div>
+  `).join('') : `<div class="h-meta">Noch keine Übungen angelegt.</div>`;
+}
+function openUebungen() { buildUebungenList(); document.getElementById('uebungen-overlay').classList.add('open'); }
+function closeUebungen() { document.getElementById('uebungen-overlay').classList.remove('open'); }
+
+// ── Sound-Pakete: 4 kurze, per Web Audio synthetisierte Zähltöne.
+// "stumm" erzeugt bewusst keinen Node. Lautstärke/Vorschau-UI kommt mit
+// der Einstellungen-Seite in Phase 8 — hier nur die Erzeugung + Nutzung.
+const SOUND_PACKS = {
+  glas:   { type: 'sine',     freq: 1760, dur: 0.12 },
+  holz:   { type: 'square',   freq: 220,  dur: 0.05 },
+  analog: { type: 'triangle', freq: 440,  dur: 0.09 },
+};
+function getSoundPack() { return storageGet('exercise_sound_pack') || 'glas'; }
+function setSoundPack(pack) { storageSet('exercise_sound_pack', pack); }
+
+let _playerAudioCtx = null;
+let _playerState = null;
+let _wakeLock = null;
+
+function ensurePlayerAudioCtx() {
+  if (!_playerAudioCtx) _playerAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return _playerAudioCtx;
+}
+
+function scheduleTick(when, pack) {
+  if (pack === 'stumm' || !SOUND_PACKS[pack]) return;
+  const ctx = _playerAudioCtx;
+  const s = SOUND_PACKS[pack];
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.type = s.type;
+  osc.frequency.setValueAtTime(s.freq, when);
+  gain.gain.setValueAtTime(0.0001, when);
+  gain.gain.exponentialRampToValueAtTime(0.22, when + 0.005);
+  gain.gain.exponentialRampToValueAtTime(0.0001, when + s.dur);
+  osc.start(when);
+  osc.stop(when + s.dur + 0.02);
+  _playerState.scheduledNodes.push(osc);
+}
+function scheduleCompletionChord(when, pack) {
+  [0, 0.08, 0.16].forEach(offset => scheduleTick(when + offset, pack));
+}
+function clearScheduledTicks() {
+  if (!_playerState || !_playerState.scheduledNodes.length) return;
+  const now = _playerAudioCtx ? _playerAudioCtx.currentTime : 0;
+  _playerState.scheduledNodes.forEach(osc => { try { osc.stop(now); } catch (err) {} });
+  _playerState.scheduledNodes = [];
+}
+
+// Plant ab dem nächsten vollen Sekunden-Tick (von elapsedAtStart an) bis
+// zum Ende alle Zähltöne + den Abschluss-Akkord auf einen Schlag — Web
+// Audio-Scheduling ist sample-genau und driftet nicht wie setTimeout-Ketten.
+function scheduleTicksFrom(audioNow, elapsedAtStart) {
+  const total = _playerState.totalSec;
+  const pack = _playerState.soundPack;
+  for (let s = Math.ceil(elapsedAtStart); s < total; s++) {
+    if (s === 0) continue;
+    scheduleTick(audioNow + (s - elapsedAtStart), pack);
+  }
+  scheduleCompletionChord(audioNow + (total - elapsedAtStart), pack);
+}
+
+async function requestWakeLock() {
+  try { if ('wakeLock' in navigator) _wakeLock = await navigator.wakeLock.request('screen'); }
+  catch (err) { console.warn('Wake Lock nicht verfügbar', err); }
+}
+function releaseWakeLock() {
+  if (_wakeLock) { _wakeLock.release().catch(() => {}); _wakeLock = null; }
+}
+
+function updatePlayerDisplay(elapsed) {
+  const ex = _playerState.exercise;
+  const pattern = ex.details.pattern;
+  const countdownEl = document.getElementById('player-countdown');
+  const cueEl = document.getElementById('player-cue');
+  if (pattern && pattern.length) {
+    const cycleLen = pattern.reduce((sum, p) => sum + p.sec, 0);
+    let t = elapsed % cycleLen;
+    let phase = pattern[0], phaseRemaining = pattern[0].sec;
+    for (const p of pattern) {
+      if (t < p.sec) { phase = p; phaseRemaining = p.sec - t; break; }
+      t -= p.sec;
+    }
+    countdownEl.textContent = String(Math.ceil(phaseRemaining));
+    cueEl.textContent = phase.label;
+  } else {
+    const remaining = Math.max(0, _playerState.totalSec - elapsed);
+    countdownEl.textContent = formatMMSS(remaining);
+    cueEl.textContent = ex.details.cue || '';
+  }
+}
+
+function playerTick() {
+  if (!_playerState || !_playerState.running) return;
+  const elapsed = _playerAudioCtx.currentTime - _playerState.startAudioTime;
+  if (elapsed >= _playerState.totalSec) {
+    updatePlayerDisplay(_playerState.totalSec);
+    finishPlayerExercise();
+    return;
+  }
+  updatePlayerDisplay(elapsed);
+  _playerState.rafId = requestAnimationFrame(playerTick);
+}
+
+async function resumePlayer() {
+  const ctx = ensurePlayerAudioCtx();
+  if (ctx.state === 'suspended') await ctx.resume();
+  const now = ctx.currentTime;
+  _playerState.startAudioTime = now - _playerState.elapsedAtPause;
+  scheduleTicksFrom(now, _playerState.elapsedAtPause);
+  _playerState.running = true;
+  document.getElementById('player-start-btn').textContent = 'Pause';
+  requestWakeLock();
+  _playerState.rafId = requestAnimationFrame(playerTick);
+}
+function pausePlayer() {
+  if (!_playerState) return;
+  cancelAnimationFrame(_playerState.rafId);
+  _playerState.elapsedAtPause = _playerAudioCtx.currentTime - _playerState.startAudioTime;
+  clearScheduledTicks();
+  _playerState.running = false;
+  document.getElementById('player-start-btn').textContent = 'Weiter';
+  releaseWakeLock();
+}
+async function togglePlayerRun() {
+  if (!_playerState) return;
+  if (_playerState.running) pausePlayer(); else await resumePlayer();
+}
+
+function resetPlayer() {
+  if (!_playerState) return;
+  cancelAnimationFrame(_playerState.rafId);
+  clearScheduledTicks();
+  releaseWakeLock();
+  _playerState.running = false;
+  _playerState.elapsedAtPause = 0;
+  document.getElementById('player-start-btn').textContent = 'Start';
+  document.getElementById('player-start-btn').style.display = '';
+  document.getElementById('player-reset-btn').style.display = '';
+  updatePlayerDisplay(0);
+}
+
+async function finishPlayerExercise() {
+  _playerState.running = false;
+  cancelAnimationFrame(_playerState.rafId);
+  clearScheduledTicks();
+  releaseWakeLock();
+  document.getElementById('player-cue').textContent = 'Fertig.';
+  document.getElementById('player-start-btn').style.display = 'none';
+  document.getElementById('player-reset-btn').style.display = 'none';
+
+  const ex = _playerState.exercise;
+  const linkedGoalId = ex.details && ex.details.linkedGoalId;
+  let unlocked = [];
+  const todayKey = getLocalDateKey();
+  if (linkedGoalId && getGoal(linkedGoalId) && !isLogged(linkedGoalId, todayKey)) {
+    const res = await toggleLog(linkedGoalId, todayKey, false);
+    unlocked = res.unlocked;
+  }
+  awardXP('exercise_' + ex.id, ex.xp || 10, ex.title, { scope: 'day', silent: true });
+
+  setTimeout(() => {
+    closePlayer();
+    buildHeuteScreen();
+    enqueueUnlocks(unlocked);
+  }, 2000);
+}
+
+function openPlayer(exerciseId) {
+  const ex = getItems({ type: 'exercise' }).find(i => i.id === exerciseId);
+  if (!ex) return;
+  _playerState = {
+    exercise: ex, totalSec: ex.details.durationSec || 60, soundPack: getSoundPack(),
+    running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null,
+  };
+  document.getElementById('player-exercise-title').textContent = ex.title;
+  document.getElementById('player-start-btn').textContent = 'Start';
+  document.getElementById('player-start-btn').style.display = '';
+  document.getElementById('player-reset-btn').style.display = '';
+  updatePlayerDisplay(0);
+  document.getElementById('player-overlay').classList.add('open');
+}
+function closePlayer() {
+  if (_playerState) { cancelAnimationFrame(_playerState.rafId); clearScheduledTicks(); releaseWakeLock(); _playerState = null; }
+  document.getElementById('player-overlay').classList.remove('open');
+}
+
+// ══════════════════════════════════════════════════════════════════════
 // ZIEL-SHEET — Hybrid Phase 5 (Erstellen/Bearbeiten, Freihand-Zeichnen)
 // ══════════════════════════════════════════════════════════════════════
 // Einstiegspunkt für NEUE Ziele ist der "+"-Button im Heute-Screen. Das
@@ -5925,6 +6212,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await initContentStore();
   await initGoalsStore();
+  await seedExercisesIfNeeded();
   buildHeuteScreen();
   buildWater(); buildSupplements(); buildRecipes(); buildMLD();
   buildHabitsSection();
