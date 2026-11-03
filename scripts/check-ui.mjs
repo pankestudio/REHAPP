@@ -183,7 +183,7 @@ async function main() {
   await page.click('#nav-move');
   await page.waitForTimeout(300);
   await auditState(page, 'uebungen');
-  await page.evaluate(() => { const g = getActiveHeuteGoals().find(g => g.kind === 'routine'); if (g) onGoalRowTap(g.id); });
+  await page.evaluate(() => { const g = getActiveHeuteGoals().find(g => g.kind === 'routine'); if (g) openRoutinePlayer(g.id); });
   await page.waitForTimeout(300);
   await auditState(page, 'uebungen-player');
   await page.evaluate(() => closePlayer());
@@ -198,11 +198,6 @@ async function main() {
   await page.click('#nav-supp');
   await page.waitForTimeout(300);
   await auditState(page, 'wissen');
-  await page.click('#pg-supp .h-notice');
-  await page.waitForTimeout(200);
-  await auditState(page, 'wissen-notfall-sheet');
-  await page.click('#emergency-sheet-overlay .h-circle-btn');
-  await page.waitForTimeout(200);
 
   await page.click('#nav-settings');
   await page.waitForTimeout(300);
