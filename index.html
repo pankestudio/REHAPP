@@ -283,6 +283,10 @@ body {
 .h-pill--outline { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
 .h-pill:active { transform: scale(.95); }
 .h-pill[disabled] { opacity: .4; cursor: default; }
+/* Gelber Schatten (Runde 5 Punkt 3) — nur für die eine Hauptaktion pro
+   Screen (Starten, Ziel anlegen, Zur Sammlung, Ziel öffnen, ...). */
+.h-pill--shadow { box-shadow: 4px 4px 0 var(--yellow); transition: transform 100ms ease, box-shadow 100ms ease; }
+.h-pill--shadow:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--yellow); }
 
 .h-circle-btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -409,9 +413,12 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 #player-ring-progress { transition: stroke-width 90ms ease; }
 .h-player-head { display: flex; align-items: flex-start; justify-content: space-between; width: 100%; margin-bottom: 8px; }
 .h-player-step-wrap { position: relative; min-height: 38px; overflow: hidden; text-align: right; }
-.h-player-step-wrap > div { transition: transform 240ms ease, opacity 240ms ease; }
-.h-player-step-wrap.h-step-out > div { transform: translateX(-24px); opacity: 0; }
-.h-player-step-wrap.h-step-in > div { transform: translateX(0); opacity: 1; }
+.h-player-step-wrap > div, .h-player-title-wrap > div { transition: transform 240ms ease, opacity 240ms ease; }
+.h-player-step-wrap.h-step-out > div, .h-player-title-wrap.h-step-out > div { transform: translateX(-24px); opacity: 0; }
+.h-player-step-wrap.h-step-in > div, .h-player-title-wrap.h-step-in > div { transform: translateX(0); opacity: 1; }
+.h-player-title-wrap { position: relative; overflow: hidden; width: 100%; text-align: center; margin-bottom: 4px; }
+.h-player-steps-bar { display: flex; gap: 6px; width: 100%; max-width: 300px; margin: 4px auto 10px; }
+.h-player-steps-bar .h-bar { flex: 1; }
 .h-phasebar { width: 100%; max-width: 300px; margin: 4px auto 0; }
 .h-phasebar-track { position: relative; }
 .h-phasebar-segs { display: flex; gap: 4px; }
@@ -420,6 +427,16 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 .h-phasebar-marker { position: absolute; top: -2px; width: 3px; height: 12px; background: var(--ink); border-radius: 2px; transform: translateX(-50%); transition: left 90ms linear; pointer-events: none; }
 .h-phasebar-labels { display: flex; justify-content: space-between; margin-top: 8px; }
 .h-phasebar-labels span { font-size: 13px; color: var(--muted); }
+
+/* ════════════════ BAR — Runde 5 Punkt 3 ════════════════
+   Pillenform, ink-Rahmen (2.5px bei 20px Höhe, sonst 2px), Füllung gelb mit
+   ink-Kante rechts, leichtes Displacement (Filter wb). Einsatz: Abzeichen-
+   Detail (groß), Heute-noch-Zeilen, Player-Schrittanzeige (klein/Segmente). */
+.h-bar { position: relative; height: 13px; border: 2px solid var(--ink); border-radius: 999px; background: var(--paper); overflow: hidden; }
+.h-bar--lg { height: 20px; border-width: 2.5px; }
+.h-bar--row { height: 12px; }
+.h-bar--sm { height: 10px; }
+.h-bar-fill { position: absolute; top: 0; left: 0; bottom: 0; background: var(--yellow); border-right: 2px solid var(--ink); filter: url(#wb); }
 
 /* ════════════════ STIFT-ELEMENTE ════════════════ */
 .h-pen { stroke: var(--ink); fill: none; stroke-linecap: round; }
@@ -799,7 +816,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         <button type="button" class="h-pill h-pill--outline" id="gs-notify-btn" style="min-height:40px;padding:0 16px;font-size:14px;flex-shrink:0" onclick="toggleGoalSheetNotify()">Aus</button>
       </div>
 
-      <button type="button" class="h-pill" style="width:100%" onclick="saveGoalFromSheet()">Speichern</button>
+      <button type="button" class="h-pill h-pill--shadow" style="width:100%" onclick="saveGoalFromSheet()">Speichern</button>
       <button type="button" class="h-pill h-pill--outline" id="gs-archive-btn" style="width:100%;margin-top:12px;display:none" onclick="archiveGoalFromSheet()">Archivieren</button>
     </div>
   </div>
@@ -824,7 +841,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 
     <!-- ABZEICHEN-DETAIL (Phase 6): mobil ein Sheet, ab 1024px ein festes
          Panel rechts statt eines Sheets — siehe desktop-sammlung.png. -->
-    <div class="h-sheet-overlay" id="badge-detail-overlay" role="dialog" aria-modal="true" aria-label="Abzeichen-Detail" style="z-index:620">
+    <div class="h-sheet-overlay" id="badge-detail-overlay" role="dialog" aria-modal="true" aria-label="Abzeichen-Detail" style="z-index:620;border-top:1px solid var(--ink)">
       <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot));text-align:center">
         <div class="h-meta h-sm-detail-label">Ausgewählt</div>
         <div style="display:flex;justify-content:flex-end" class="h-sm-detail-close">
@@ -834,7 +851,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         </div>
         <div id="bd-badge" style="margin:12px 0 20px"></div>
         <div class="h-title" id="bd-title" style="font-size:28px;margin-bottom:8px"></div>
-        <div class="h-meta" id="bd-meta"></div>
+        <div class="h-meta" id="bd-meta" style="margin-bottom:12px"></div>
+        <div id="bd-bar" style="display:none;margin-bottom:20px;text-align:left"></div>
+        <button type="button" class="h-pill h-pill--shadow" id="bd-open-goal-btn" style="width:100%;display:none" onclick="openGoalFromBadgeDetail()">Ziel öffnen</button>
       </div>
     </div>
   </div>
@@ -845,8 +864,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     <div id="unlock-badge" class="h-unlock-badge-in"></div>
     <div class="h-title" style="font-size:28px;margin:20px 0 6px" id="unlock-title">Neues Abzeichen</div>
     <div class="h-meta" id="unlock-meta" style="margin-bottom:28px"></div>
-    <button type="button" class="h-pill" id="unlock-next-btn" onclick="advanceUnlockQueue()">Weiter</button>
+    <button type="button" class="h-pill h-pill--shadow" id="unlock-next-btn" onclick="advanceUnlockQueue()">Zur Sammlung</button>
     <button type="button" class="h-pill h-pill--outline" style="margin-top:12px" onclick="replayUnlockCelebration()">Nochmal</button>
+    <div class="h-meta" id="unlock-queue-note" style="margin-top:14px"></div>
   </div>
 
   <!-- ÜBUNGS-PLAYER (Phase 7): invertiert ink/paper über lokale Custom
@@ -858,12 +878,17 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
           <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
         <div class="h-player-step-wrap" id="player-step-wrap">
-          <div style="position:relative;display:inline-block">
-            <div class="h-meta" id="player-exercise-title" style="font-weight:700;color:var(--ink)"></div>
-            <svg class="h-strike-shaft" id="player-title-strike" style="position:absolute;left:-3%;top:38%;width:106%;overflow:visible;display:none" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen" pathLength="1" d="M2 7 Q 30 3, 50 6 T 98 5" stroke-width="3"/></svg>
-          </div>
+          <div class="h-meta" id="player-ctx-label" style="font-weight:700;color:var(--ink)"></div>
           <div class="h-meta" id="player-step-label" style="color:var(--faint);min-height:16px"></div>
         </div>
+      </div>
+      <div class="h-player-steps-bar" id="player-steps-bar" style="display:none"></div>
+      <div class="h-player-title-wrap" id="player-title-wrap">
+        <div style="position:relative;display:inline-block">
+          <div class="h-title" id="player-exercise-title"></div>
+          <svg class="h-strike-shaft" id="player-title-strike" style="position:absolute;left:-3%;top:38%;width:106%;overflow:visible;display:none" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen" pathLength="1" d="M2 7 Q 30 3, 50 6 T 98 5" stroke-width="3"/></svg>
+        </div>
+        <div class="h-meta" id="player-exercise-meta" style="margin-bottom:4px"></div>
       </div>
       <div class="h-player-stack">
         <svg class="h-player-ring-svg" viewBox="0 0 300 300" aria-hidden="true">
@@ -889,7 +914,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         <div class="h-phasebar-labels" id="player-phasebar-labels"></div>
       </div>
       <div style="display:flex;gap:16px;align-items:center;margin-top:8px">
-        <button type="button" class="h-pill" id="player-start-btn" onclick="togglePlayerRun()">Start</button>
+        <button type="button" class="h-pill h-pill--shadow" id="player-start-btn" onclick="togglePlayerRun()">Start</button>
         <button type="button" class="h-circle-btn" id="player-reset-btn" onclick="resetPlayer()" aria-label="Zurücksetzen">
           <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
         </button>
@@ -974,7 +999,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         <button type="button" class="h-switch" id="ee-active-switch" onclick="toggleExerciseActive()" aria-label="Aktiv"></button>
       </div>
 
-      <button type="button" class="h-pill" style="width:100%" onclick="saveExerciseFromEditor()">Übung sichern</button>
+      <button type="button" class="h-pill h-pill--shadow" style="width:100%" onclick="saveExerciseFromEditor()">Übung sichern</button>
       <button type="button" class="h-pill h-pill--outline" id="ee-delete-btn" style="width:100%;margin-top:12px" onclick="deleteExerciseFromEditor()">Übung löschen</button>
     </div>
   </div>
@@ -1541,7 +1566,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         <button type="button" class="h-switch" id="re-active-switch" onclick="toggleRoutineActive()" aria-label="Aktiv"></button>
       </div>
 
-      <button type="button" class="h-pill" style="width:100%" onclick="saveRoutineFromEditor()">Routine sichern</button>
+      <button type="button" class="h-pill h-pill--shadow" style="width:100%" onclick="saveRoutineFromEditor()">Routine sichern</button>
     </div>
   </div>
 
@@ -1998,8 +2023,19 @@ function renderBadge({ cat, tier, icon = null, drawing = null, size = 84 }) {
   const konturColor = tier === 'gesperrt' ? 'var(--lock)' : 'var(--ink)';
   const konturDash = tier === 'gesperrt' ? 'stroke-dasharray:6 7;' : '';
   const symbolColor = tier === 'tusche' ? 'var(--paper)' : tier === 'gesperrt' ? 'var(--lock)' : 'var(--ink)';
+  // Schatten in der Gegenfarbe (Runde 5 Punkt 3): Skizze/Tusche -> gelb,
+  // Glanz -> ink, gesperrt -> kein Schatten. Direkt darüber eine
+  // Papierfläche in Badge-Form, damit die Schraffur der Skizze (teil-
+  // transparent) den versetzten Schatten nicht durchscheinen lässt.
+  const schattenFarbe = tier === 'glanz' ? 'var(--ink)' : (tier === 'skizze' || tier === 'tusche') ? 'var(--yellow)' : null;
 
   let svg = `<svg viewBox="0 0 100 100" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">`;
+
+  // 0. Schatten + Papierfläche
+  if (schattenFarbe) {
+    svg += `<path d="${shape}" transform="translate(6 6)" style="fill:${schattenFarbe}" filter="url(#w1)"/>`;
+    svg += `<path d="${shape}" style="fill:var(--paper)"/>`;
+  }
 
   // 1. Fläche
   svg += `<path d="${shape}" style="fill:${flaecheFill};fill-opacity:${flaecheOpacity}" filter="url(#w1)"/>`;
@@ -3112,7 +3148,7 @@ function buildHeuteScreen() {
     const existingTitles = new Set(goals.map(g => g.title));
     const available = GOAL_TEMPLATES.filter(t => !existingTitles.has(t.title));
     templatesEl.innerHTML = `<div class="h-meta" style="margin-bottom:10px">Vorlagen</div><div style="display:flex;flex-wrap:wrap;gap:8px">` +
-      `<button class="h-pill" style="min-height:40px;padding:0 18px;font-size:14px" onclick="openGoalSheet()">+ Eigenes Ziel</button>` +
+      `<button class="h-pill h-pill--shadow" style="min-height:40px;padding:0 18px;font-size:14px" onclick="openGoalSheet()">+ Eigenes Ziel</button>` +
       available.map(t => `<button class="h-pill h-pill--outline" style="min-height:40px;padding:0 18px;font-size:14px" onclick="addGoalFromTemplate('${slugifyId(t.title)}')">${escapeHtml(t.title)}</button>`).join('') +
       `</div>`;
   }
@@ -3145,6 +3181,24 @@ function renderHeuteLastBadge() {
 
 // Fasten/Wasser/Supplemente-Zeilen unter den Zielen — Module statt eigene
 // Dauerblöcke, siehe Hybrid-Aufräumen-Mapping-Tabelle.
+// Bar-Komponente (Runde 5 Punkt 3): Pillenform mit gelber Füllung.
+function renderBar(pct, sizeClass = '') {
+  const p = Math.max(0, Math.min(100, pct || 0));
+  return `<div class="h-bar ${sizeClass}"><div class="h-bar-fill" style="width:${p}%"></div></div>`;
+}
+// Fortschritt zur nächsten Stufe als {current,total,unit,nextTierLabel} für
+// die Bar im Abzeichen-Detail — dieselbe Schwellen-Logik wie describeNextTier().
+function computeBadgeBarFraction(goal, tier) {
+  if (!goal || tier === 'glanz' || tier === 'gesperrt') return null;
+  const th = GOAL_TIER_THRESHOLDS[goal.rhythm];
+  if (!th) return null;
+  const streak = goal.rhythm === 'taeglich' ? computeDailyStreak(goal.id) : computeWeekStreak(goal.id, goal.rhythm);
+  const nextTier = tier === 'skizze' ? 'tusche' : 'glanz';
+  const total = th[nextTier];
+  const unit = goal.rhythm === 'taeglich' ? (total === 1 ? 'Tag' : 'Tage') : (total === 1 ? 'Woche' : 'Wochen');
+  return { current: Math.min(streak, total), total, unit, nextTierLabel: nextTier === 'tusche' ? 'Tusche' : 'Glanz' };
+}
+
 function renderHeuteModuleList() {
   const el = document.getElementById('h-module-list');
   if (!el) return;
@@ -3164,18 +3218,36 @@ function renderHeuteModuleList() {
   const doneToday = getItemsDoneToday();
   const suppDone = suppItems.filter(s => doneToday.has(s.id)).length;
 
+  let fastenPct = 0;
+  if (timerStart && timerRunning) {
+    const elapsedH = (Date.now() - timerStart) / 3600000;
+    const targetH = timerMode === '16_8' ? 16 : 100;
+    fastenPct = Math.min(100, elapsedH / targetH * 100);
+  }
+  const waterPct = Math.min(100, parseFloat(waterL.replace(',', '.')) / 3 * 100);
+  const suppPct = suppItems.length ? suppDone / suppItems.length * 100 : 0;
+
   el.innerHTML = `
-    <div class="h-row" onclick="openFastenSheet()" style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer">
-      <div class="h-meta">Fasten · ${escapeHtml(fastenSub)}</div>
-      <div class="h-meta" style="color:var(--text)">${escapeHtml(fastenVal)} →</div>
+    <div class="h-row" onclick="openFastenSheet()" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="h-meta">Fasten · ${escapeHtml(fastenSub)}</div>
+        <div class="h-meta" style="color:var(--text)">${escapeHtml(fastenVal)} →</div>
+      </div>
+      ${renderBar(fastenPct, 'h-bar--row')}
     </div>
-    <div class="h-row" onclick="openWasserSheet()" style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer">
-      <div class="h-meta">Wasser</div>
-      <div class="h-meta" style="color:var(--text)">${waterL} / 3 L →</div>
+    <div class="h-row" onclick="openWasserSheet()" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="h-meta">Wasser</div>
+        <div class="h-meta" style="color:var(--text)">${waterL} / 3 L →</div>
+      </div>
+      ${renderBar(waterPct, 'h-bar--row')}
     </div>
-    <div class="h-row" onclick="openSupplementeSheet()" style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;cursor:pointer">
-      <div class="h-meta">Supplemente · ${suppLabel}</div>
-      <div class="h-meta" style="color:var(--text)">${suppDone}/${suppItems.length} →</div>
+    <div class="h-row" onclick="openSupplementeSheet()" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;cursor:pointer">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="h-meta">Supplemente · ${suppLabel}</div>
+        <div class="h-meta" style="color:var(--text)">${suppDone}/${suppItems.length} →</div>
+      </div>
+      ${renderBar(suppPct, 'h-bar--row')}
     </div>
   `;
 }
@@ -3286,7 +3358,7 @@ function openGoalDetailSheet(goalId) {
           </div>
         `).join('')}
       </div>
-      <button type="button" class="h-pill" style="width:100%;margin-bottom:12px" onclick="closeGoalDetailSheet();openRoutinePlayer('${g.id}')">Starten</button>
+      <button type="button" class="h-pill h-pill--shadow" style="width:100%;margin-bottom:12px" onclick="closeGoalDetailSheet();openRoutinePlayer('${g.id}')">Starten</button>
       <button type="button" class="h-pill h-pill--outline" style="width:100%" onclick="closeGoalDetailSheet();openRoutinePlayer('${g.id}', true)">Mini starten</button>
     `;
   } else {
@@ -3542,6 +3614,16 @@ function openBadgeDetail(badgeId) {
   });
   document.getElementById('bd-title').textContent = goal ? goal.title : 'Überwunden';
   document.getElementById('bd-meta').textContent = describeBadgeProgress(goal, tier);
+  const barEl = document.getElementById('bd-bar');
+  const frac = goal ? computeBadgeBarFraction(goal, tier) : null;
+  if (frac) {
+    barEl.style.display = '';
+    barEl.innerHTML = `<div class="h-meta" style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Weg zu ${frac.nextTierLabel}</span><span>${frac.current} von ${frac.total} ${frac.unit}</span></div>${renderBar(frac.current / frac.total * 100, 'h-bar--lg')}`;
+  } else {
+    barEl.style.display = 'none';
+    barEl.innerHTML = '';
+  }
+  document.getElementById('bd-open-goal-btn').style.display = (goal && goal.kind !== 'counter') ? '' : 'none';
   document.getElementById('badge-detail-overlay').classList.add('open');
   _smSelectedBadge = badgeId;
   document.querySelectorAll('#sm-badges-view .h-badge-grid button').forEach(b => {
@@ -3550,6 +3632,11 @@ function openBadgeDetail(badgeId) {
 }
 function closeBadgeDetail() {
   document.getElementById('badge-detail-overlay').classList.remove('open');
+}
+function openGoalFromBadgeDetail() {
+  if (!_smSelectedBadge) return;
+  closeBadgeDetail();
+  openGoalDetailSheet(_smSelectedBadge);
 }
 
 // Einfache, handgezeichnete Strichfigur mit erhobenen Armen — kein
@@ -3630,9 +3717,9 @@ function maybeShowNextCelebration() {
 }
 
 function updateUnlockNextLabel() {
-  const btn = document.getElementById('unlock-next-btn');
   const remaining = getPersistedUnlockQueue().length;
-  if (btn) btn.textContent = remaining ? `Fertig (+${remaining} beim nächsten Öffnen)` : 'Fertig';
+  const note = document.getElementById('unlock-queue-note');
+  if (note) note.textContent = remaining ? `+${remaining} beim nächsten Öffnen` : '';
 }
 
 function renderUnlockCelebration() {
@@ -3647,12 +3734,14 @@ function renderUnlockCelebration() {
   document.getElementById('unlock-character').innerHTML = renderUnlockCharacter();
 }
 
-// Nur noch ein einfaches Schließen — maximal ein Screen pro App-Öffnung,
-// weitere bleiben in der persistenten Warteschlange fürs nächste Mal.
+// "Zur Sammlung" (Runde 5 Punkt 3) schließt den Feiermoment und führt
+// direkt zum neuen Abzeichen — maximal ein Screen pro App-Öffnung, weitere
+// bleiben in der persistenten Warteschlange fürs nächste Mal.
 function advanceUnlockQueue() {
   _unlockCurrent = null;
   document.getElementById('unlock-overlay').classList.remove('open');
   buildHeuteScreen();
+  showPage('pg-sammlung');
 }
 
 function replayUnlockCelebration() {
@@ -3782,7 +3871,7 @@ function renderUebungDetailPanel() {
     <div class="h-ue-detail-title">${escapeHtml(g.title)}</div>
     <div class="h-meta" style="margin-bottom:20px">${g.time ? escapeHtml(g.time) + ' · ' : ''}${g.steps.length} Schritte · ca. ${Math.round(totalSec / 60)} Min</div>
     <div style="display:flex;gap:10px;margin-bottom:28px">
-      <button type="button" class="h-pill" onclick="openRoutinePlayer('${g.id}')">Starten</button>
+      <button type="button" class="h-pill h-pill--shadow" onclick="openRoutinePlayer('${g.id}')">Starten</button>
       <button type="button" class="h-pill h-pill--outline" onclick="openRoutinePlayer('${g.id}', true)">Mini${miniSec ? ' · ' + Math.round(miniSec / 60) + ' Min' : ''}</button>
     </div>
     <div class="h-ue-detail-steps">
@@ -3976,6 +4065,8 @@ function updatePlayerDisplay(elapsed) {
       if (ring) ring.animate([{ strokeWidth: 3.5 }, { strokeWidth: 5 }, { strokeWidth: 3.5 }], { duration: 180, easing: 'ease-out' });
     }
   }
+
+  if (_playerState.sequence) updatePlayerStepsBar(_playerState.sequence, elapsed, _playerState.totalSec);
 }
 
 // Phasenbalken (Runde 5 Punkt 2): Segmente im Verhältnis der Phasendauern,
@@ -3997,6 +4088,26 @@ function updatePlayerPhasebarMarker(cycleElapsed, cycleLen) {
   const marker = document.getElementById('player-phasebar-marker');
   if (!marker || !cycleLen) return;
   marker.style.left = (cycleElapsed / cycleLen * 100) + '%';
+}
+
+// Schrittanzeige (Runde 5 Punkt 3): eine Bar pro Routinen-/Protokoll-Schritt,
+// erledigte Schritte ganz gefüllt, der laufende Schritt füllt sich live mit.
+function setupPlayerStepsBar(seq) {
+  const bar = document.getElementById('player-steps-bar');
+  if (!bar) return;
+  if (!seq || seq.steps.length < 2) { bar.style.display = 'none'; bar.innerHTML = ''; return; }
+  bar.style.display = '';
+  bar.innerHTML = seq.steps.map(() => renderBar(0, 'h-bar--sm')).join('');
+  updatePlayerStepsBar(seq, 0, seq.steps[seq.idx].sec);
+}
+function updatePlayerStepsBar(seq, elapsed, totalSec) {
+  if (!seq) return;
+  const fills = document.querySelectorAll('#player-steps-bar .h-bar-fill');
+  if (!fills.length) return;
+  fills.forEach((fill, i) => {
+    const pct = i < seq.idx ? 100 : i > seq.idx ? 0 : Math.min(100, (elapsed / totalSec) * 100);
+    fill.style.width = pct + '%';
+  });
 }
 
 function playerTick() {
@@ -4165,8 +4276,14 @@ function openPlayer(exerciseId) {
     exercise: ex, totalSec: ex.details.durationSec || 60, soundPack: getSoundPack(),
     running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null, sequence: null, lastPopRemaining: null,
   };
+  const isAtmung = !!(ex.details.pattern && ex.details.pattern.length);
+  document.getElementById('player-ctx-label').textContent = isAtmung ? 'Atmung' : ex.title;
   document.getElementById('player-step-label').textContent = '';
   document.getElementById('player-exercise-title').textContent = ex.title;
+  document.getElementById('player-exercise-meta').textContent = isAtmung
+    ? ex.details.pattern.map(p => `${p.sec} s ${p.label.toLowerCase()}`).join(', ')
+    : Math.max(1, Math.round((ex.details.durationSec || 60) / 60)) + ' Min';
+  document.getElementById('player-steps-bar').style.display = 'none';
   document.getElementById('player-start-btn').textContent = 'Start';
   document.getElementById('player-start-btn').style.display = '';
   document.getElementById('player-reset-btn').style.display = '';
@@ -4230,18 +4347,25 @@ function loadPlayerStep(idx) {
 
   // Alter Schritt gleitet nach links raus, neuer kommt von rechts rein (240ms).
   const stepWrap = document.getElementById('player-step-wrap');
+  const titleWrap = document.getElementById('player-title-wrap');
+  const applyStepText = () => {
+    document.getElementById('player-ctx-label').textContent = seq.title;
+    document.getElementById('player-step-label').textContent = `Schritt ${idx + 1} von ${seq.steps.length}`;
+    document.getElementById('player-exercise-title').textContent = step.title;
+    document.getElementById('player-exercise-meta').textContent = Math.max(1, Math.round(step.sec / 60)) + ' Min';
+  };
   if (stepWrap && !_reducedMotion) {
     stepWrap.classList.add('h-step-out');
+    if (titleWrap) titleWrap.classList.add('h-step-out');
     setTimeout(() => {
-      document.getElementById('player-step-label').textContent = `${seq.title} · Schritt ${idx + 1} von ${seq.steps.length}`;
-      document.getElementById('player-exercise-title').textContent = step.title;
+      applyStepText();
       stepWrap.classList.remove('h-step-out');
       stepWrap.classList.add('h-step-in');
-      setTimeout(() => stepWrap.classList.remove('h-step-in'), 240);
+      if (titleWrap) { titleWrap.classList.remove('h-step-out'); titleWrap.classList.add('h-step-in'); }
+      setTimeout(() => { stepWrap.classList.remove('h-step-in'); if (titleWrap) titleWrap.classList.remove('h-step-in'); }, 240);
     }, 180);
   } else {
-    document.getElementById('player-step-label').textContent = `${seq.title} · Schritt ${idx + 1} von ${seq.steps.length}`;
-    document.getElementById('player-exercise-title').textContent = step.title;
+    applyStepText();
   }
 
   document.getElementById('player-start-btn').textContent = 'Start';
@@ -4253,6 +4377,7 @@ function loadPlayerStep(idx) {
   const ring = document.getElementById('player-ring-progress');
   if (ring) ring.setAttribute('stroke-dashoffset', '1');
   setupPlayerPhasebar(null);
+  setupPlayerStepsBar(seq);
   updatePlayerDisplay(0);
 }
 function closePlayer() {
