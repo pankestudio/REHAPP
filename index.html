@@ -573,11 +573,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 
       <div style="margin-bottom:20px">
         <div class="h-meta" style="margin-bottom:8px">Zeichen</div>
-        <div style="display:flex;gap:8px;margin-bottom:14px">
-          <button type="button" class="h-pill h-pill--outline" id="gs-mode-icon" style="min-height:40px;padding:0 18px;font-size:14px" onclick="setGoalSheetDrawMode(false)">Symbol</button>
-          <button type="button" class="h-pill h-pill--outline" id="gs-mode-draw" style="min-height:40px;padding:0 18px;font-size:14px" onclick="setGoalSheetDrawMode(true)">Selbst zeichnen</button>
-        </div>
-        <div id="gs-icon-grid" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+        <div class="h-seg" id="gs-icon-group-seg" style="margin-bottom:12px"></div>
+        <input type="search" id="gs-icon-search" placeholder="Suchen …" autocomplete="off" oninput="filterGoalIconSearch(this.value)" style="width:100%;margin-bottom:12px">
+        <div id="gs-icon-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px"></div>
         <div id="gs-draw-wrap" style="display:none">
           <canvas id="gs-draw-canvas" width="280" height="280" style="width:100%;max-width:280px;aspect-ratio:1;border:1px solid var(--line);touch-action:none;display:block;margin:0 auto"></canvas>
           <div style="display:flex;justify-content:center;margin-top:10px">
@@ -1304,7 +1302,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 
       <div style="margin-bottom:24px">
         <div class="h-meta" style="margin-bottom:8px">Symbol</div>
-        <div id="re-icon-grid" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+        <div class="h-seg" id="re-icon-group-seg" style="margin-bottom:12px"></div>
+        <input type="search" id="re-icon-search" placeholder="Suchen …" autocomplete="off" oninput="filterRoutineIconSearch(this.value)" style="width:100%;margin-bottom:12px">
+        <div id="re-icon-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px"></div>
       </div>
 
       <div style="margin-bottom:20px">
@@ -1665,31 +1665,109 @@ const BADGE_SHAPES = {
 // 24er-Viewbox, Strich-Icons (nur Kindelemente — Stroke/Fill kommen von
 // der umschließenden <g> beim Rendern, damit Stufenfarbe zentral bleibt).
 const BADGE_ICONS = {
+  // Körper
   schritte:    '<path d="M4 18l8-6 8 6M4 12l8-6 8 6"/>',
-  sonne:       '<circle cx="12" cy="12" r="5"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8l2.8-2.8M17 7l2.8-2.8"/>',
+  laufen:      '<circle cx="14" cy="4" r="1.8"/><path d="M9 21l2-6-3-2 1-5 4 1 2 3h3M8 15l-3 3M13 10l4 2-1 5"/>',
+  fahrrad:     '<circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17l5-9h4l3 9M11 8h3M9 17h6l-2-5"/>',
+  schwimmen:   '<path d="M2 19c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><circle cx="16" cy="6" r="1.8"/><path d="M4 12l5-3 3 2 4-3 3 2"/>',
+  hantel:      '<path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"/>',
+  yoga:        '<circle cx="12" cy="5" r="1.8"/><path d="M12 7v5l-5 4M12 12l5 4M7 16h10"/>',
+  dehnen:      '<circle cx="12" cy="4" r="1.8"/><path d="M12 6v7M12 8l-6-2M12 8l6-2M12 13l-4 7M12 13l4 7"/>',
+  fuss:        '<path d="M9 2c-2 0-3 2-3 5 0 2 1 3 1 5 0 3-2 4-2 7a3 3 0 0 0 3 3c3 0 5-2 7-2 2 0 3 1 4 1a1 1 0 0 0 0-2c-2-1-2-3-2-6 0-5-3-11-8-11z"/>',
+  knie:        '<path d="M9 2l-1 8-3 12M9 10h4M13 10l2 12"/><circle cx="9" cy="10" r="1.3"/>',
+  puls:        '<path d="M2 12h5l2-7 3 14 2-7h8"/>',
   tropfen:     '<path d="M12 2C8 8 4 12 4 16a8 8 0 0 0 16 0c0-4-4-8-8-14z"/>',
+  wasserglas:  '<path d="M7 3h10l-1 16a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2z"/><path d="M6.5 11h11"/>',
+  apfel:       '<path d="M12 8c-3-3-7-1-7 3 0 5 4 9 7 9s7-4 7-9c0-4-4-6-7-3z"/><path d="M12 8V4M10 3c1 1 1 2 2 2"/>',
+  karotte:     '<path d="M20 4c-2-2-5-2-8 1L5 12l3 3 7-7c3-3 3-6 1-8z"/><path d="M4 20l1-4 3 3z"/>',
+  pfanne:      '<circle cx="10" cy="12" r="7"/><path d="M17 11h5"/>',
+  ei:          '<path d="M12 2C8 8 6 13 6 16a6 6 0 0 0 12 0c0-3-2-8-6-14z"/>',
+  fisch:       '<path d="M3 12c4-5 10-6 14-3 2-2 4-2 4-2s-1 3-1 5 1 5 1 5-2 0-4-2c-4 3-10 2-14-3z"/><circle cx="16" cy="11" r=".8"/>',
+  bett:        '<path d="M3 18v-7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7M3 14h18M6 14v-3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3"/>',
+  zahnbuerste: '<path d="M3 21l6-6M9 15l9-9a2 2 0 0 1 3 3l-9 9z"/><path d="M15 6l3 3"/>',
+  dusche:      '<path d="M4 9a8 8 0 0 1 16 0"/><path d="M6 13v2M10 13v2M14 13v2M18 13v2M8 17v2M12 17v2M16 17v2"/>',
+  // Menschen
   telefon:     '<path d="M6 2h4l2 5-3 2a14 14 0 0 0 6 6l2-3 5 2v4a2 2 0 0 1-2 2C10 20 4 14 4 4a2 2 0 0 1 2-2z"/>',
+  sprechblase: '<path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/>',
+  brief:       '<path d="M3 5h18v14H3z"/><path d="M3 5l9 7 9-7"/>',
   herz:        '<path d="M12 21C7 16 3 12.5 3 8.5 3 5.5 5.5 3 8.5 3c1.7 0 3.1.8 3.5 2 .4-1.2 1.8-2 3.5-2C18.5 3 21 5.5 21 8.5 21 12.5 17 16 12 21z"/>',
-  verbindung:  '<circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8.5 8.5l7 7"/>',
+  haende:      '<path d="M7 11V5a2 2 0 0 1 4 0v5M11 10V4a2 2 0 0 1 4 0v7M15 11V6a2 2 0 0 1 4 0v8c0 4-2 7-6 7H9c-2 0-3-1-4-3l-2-4a1.5 1.5 0 0 1 2.5-1.5L7 14"/>',
+  umarmung:    '<circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M3 21c0-4 2-7 5-7M21 21c0-4-2-7-5-7"/>',
+  geschenk:    '<path d="M3 9h18v4H3z"/><path d="M5 13h14v8H5z"/><path d="M12 9v12"/><path d="M12 9c-2-5-7-5-7-2 0 2 3 2 7 2zM12 9c2-5 7-5 7-2 0 2-3 2-7 2z"/>',
+  gruppe:      '<circle cx="6" cy="8" r="2.3"/><circle cx="18" cy="8" r="2.3"/><circle cx="12" cy="7" r="2.6"/><path d="M2 20c0-3 1.8-5 4-5s4 2 4 5M22 20c0-3-1.8-5-4-5s-4 2-4 5M7 21c0-3.5 2.2-6 5-6s5 2.5 5 6"/>',
+  zuhause:     '<path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>',
+  hund:        '<path d="M4 10c0-3 2-5 5-5 1 0 2 .5 3 1 1-.5 2-1 3-1 3 0 5 2 5 5 0 5-3 9-8 9s-8-4-8-9z"/><circle cx="9" cy="11" r=".8"/><circle cx="15" cy="11" r=".8"/><path d="M10 14h4"/>',
+  blume:       '<circle cx="12" cy="12" r="2.3"/><circle cx="12" cy="6" r="2.3"/><circle cx="12" cy="18" r="2.3"/><circle cx="6" cy="12" r="2.3"/><circle cx="18" cy="12" r="2.3"/>',
+  tasse:       '<path d="M5 4h11v9a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/><path d="M16 7h2a2 2 0 0 1 0 4h-2"/>',
+  // Mut
   flamme:      '<path d="M12 2c3 4 6 7 6 11a6 6 0 0 1-12 0c0-1.5.5-2.5 1.5-3.5-.3 2 .7 3 1.5 3C8 11 9 7 12 2z"/>',
   berg:        '<path d="M3 20l6-10 4 6 2-3 6 7z"/>',
+  blitz:       '<path d="M13 2L4 14h6l-1 8 9-12h-6z"/>',
+  schild:      '<path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/>',
+  tuer:        '<path d="M6 21V4a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v17"/><path d="M4 21h16"/><circle cx="13" cy="12" r=".7"/>',
+  leiter:      '<path d="M7 2v20M17 2v20M7 6h10M7 12h10M7 18h10"/>',
+  fahne:       '<path d="M6 21V3"/><path d="M6 4c3-2 5 2 8 0v8c-3 2-5-2-8 0z"/>',
+  schluessel:  '<circle cx="7" cy="15" r="4"/><path d="M10 12l10-10M17 5l3 3M14 8l2 2"/>',
+  sprungbrett: '<path d="M3 16h12M15 16V8M5 16l3-8"/><circle cx="19" cy="6" r="1.8"/><path d="M19 8l-3 5 2 1-1 4"/>',
+  wellekalt:   '<path d="M2 12c3-6 6-6 9 0s6 6 9 0"/><path d="M12 4v2M9 3l1 2M15 3l-1 2"/>',
+  pfeiloben:   '<path d="M12 20V4M5 11l7-7 7 7"/>',
+  stern:       '<path d="M12 2l2.9 6.5 7.1.6-5.4 4.7 1.7 7-6.3-3.8-6.3 3.8 1.7-7-5.4-4.7 7.1-.6z"/>',
+  // Geist
+  atemwelle:   '<path d="M2 9c3-4 6-4 9 0s6 4 9 0M2 15c3-4 6-4 9 0s6 4 9 0"/>',
+  blatt:       '<path d="M4 20C4 10 10 4 20 4c0 10-6 16-16 16z"/><path d="M6 18C10 14 14 10 18 6"/>',
+  buch:        '<path d="M4 4h7a3 3 0 0 1 3 3v13a3 3 0 0 0-3-3H4z"/><path d="M20 4h-7a3 3 0 0 0-3 3v13a3 3 0 0 1 3-3h7z"/>',
+  stift:       '<path d="M3 21l4-1 12-12-3-3L4 17z"/><path d="M14 6l3 3"/>',
+  musik:       '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
+  kerze:       '<path d="M9 10h6v10a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/><path d="M12 10V5"/><path d="M12 2c1 1 1 2 0 3-1-1-1-2 0-3z"/>',
+  auge:        '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+  gluehbirne:  '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.3 1 2.1h5c0-.8.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
+  lotus:       '<path d="M12 21c-5 0-8-3-8-7 3 0 6 2 8 5 2-3 5-5 8-5 0 4-3 7-8 7z"/><path d="M12 19c-1-5 0-9 0-13M12 6c-2 1-4 4-4 7M12 6c2 1 4 4 4 7"/>',
+  mond:        '<path d="M15 3a9 9 0 1 0 6 15 9 9 0 0 1-6-15z"/>',
+  sonne:       '<circle cx="12" cy="12" r="5"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8l2.8-2.8M17 7l2.8-2.8"/>',
+  wolke:       '<path d="M7 18a4 4 0 0 1 0-8 5 5 0 0 1 9.6-1.5A4.5 4.5 0 0 1 17 18z"/>',
+  // Verzicht
+  zigarette:   '<path d="M2 15h14v3H2z"/><path d="M16 15h3v3h-3z"/><path d="M20 13v2M20 17v2"/><path d="M3 22L21 2"/>',
+  glasdurch:   '<path d="M7 3h10l-1.5 17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1z"/><path d="M4 21L20 3"/>',
+  zuckerdurch: '<rect x="5" y="5" width="14" height="14" rx="1"/><path d="M3 21L21 3"/>',
+  handyaus:    '<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/><path d="M3 21L21 3"/>',
+  bildschirmaus: '<rect x="3" y="4" width="18" height="12" rx="1"/><path d="M8 20h8M12 16v4"/><path d="M3 21L21 3"/>',
+  pilledurch:  '<path d="M5 14L14 5a4 4 0 0 1 6 6l-9 9a4 4 0 0 1-6-6z"/><path d="M9 10l5 5"/><path d="M3 21L21 3"/>',
+  teller:      '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/>',
+  uhr:         '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/>',
+  // sonstige (bereits vergebene Abzeichen behalten ihre Icons)
+  verbindung:  '<circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8.5 8.5l7 7"/>',
   haken:       '<path d="M4 12l5 5L20 6"/>',
   welle:       '<path d="M2 12c3-6 6-6 9 0s6 6 9 0"/>',
-  mond:        '<path d="M15 3a9 9 0 1 0 6 15 9 9 0 0 1-6-15z"/>',
   funke:       '<path d="M12 2l1.5 7L21 11l-7.5 2L12 22l-1.5-9L3 11l7.5-2z"/>',
-  blatt:       '<path d="M4 20C4 10 10 4 20 4c0 10-6 16-16 16z"/><path d="M6 18C10 14 14 10 18 6"/>',
   glas:        '<path d="M7 3h10l-1.5 17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1z"/><path d="M7.5 10h9"/>',
-  buch:        '<path d="M4 4h7a3 3 0 0 1 3 3v13a3 3 0 0 0-3-3H4z"/><path d="M20 4h-7a3 3 0 0 0-3 3v13a3 3 0 0 1 3-3h7z"/>',
-  bett:        '<path d="M3 18v-7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7M3 14h18M6 14v-3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3"/>',
-  tasse:       '<path d="M5 4h11v9a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/><path d="M16 7h2a2 2 0 0 1 0 4h-2"/>',
-  hantel:      '<path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"/>',
-  musik:       '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
   pflanze:     '<path d="M12 21V10"/><path d="M12 10C7 10 5 7 5 3c5 0 7 3 7 7z"/><path d="M12 10c5 0 7-3 7-7-5 0-7 3-7 7z"/>',
-  sprechblase: '<path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/>',
   kamera:      '<path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="14" r="4"/>',
-  stift:       '<path d="M3 21l4-1 12-12-3-3L4 17z"/><path d="M14 6l3 3"/>',
-  zuhause:     '<path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>',
 };
+
+const ICON_GROUPS = {
+  koerper:  { label: 'Körper', icons: ['schritte','laufen','fahrrad','schwimmen','hantel','yoga','dehnen','fuss','knie','puls','tropfen','wasserglas','apfel','karotte','pfanne','ei','fisch','bett','zahnbuerste','dusche'] },
+  menschen: { label: 'Menschen', icons: ['telefon','sprechblase','brief','herz','haende','umarmung','geschenk','gruppe','zuhause','hund','blume','tasse'] },
+  mut:      { label: 'Mut', icons: ['flamme','berg','blitz','schild','tuer','leiter','fahne','schluessel','sprungbrett','wellekalt','pfeiloben','stern'] },
+  geist:    { label: 'Geist', icons: ['atemwelle','blatt','buch','stift','musik','kerze','auge','gluehbirne','lotus','mond','sonne','wolke'] },
+  verzicht: { label: 'Verzicht', icons: ['zigarette','glasdurch','zuckerdurch','handyaus','bildschirmaus','pilledurch','teller','uhr'] },
+};
+const ICON_LABELS = {
+  schritte: 'Schritte', laufen: 'Laufen', fahrrad: 'Fahrrad', schwimmen: 'Schwimmen', hantel: 'Hantel', yoga: 'Yoga', dehnen: 'Dehnen',
+  fuss: 'Fuß', knie: 'Knie', puls: 'Puls', tropfen: 'Tropfen', wasserglas: 'Wasserglas', apfel: 'Apfel', karotte: 'Karotte', pfanne: 'Pfanne',
+  ei: 'Ei', fisch: 'Fisch', bett: 'Bett', zahnbuerste: 'Zahnbürste', dusche: 'Dusche',
+  telefon: 'Telefon', sprechblase: 'Sprechblase', brief: 'Brief', herz: 'Herz', haende: 'Hände', umarmung: 'Umarmung', geschenk: 'Geschenk',
+  gruppe: 'Gruppe', zuhause: 'Haus', hund: 'Hund', blume: 'Blume', tasse: 'Tasse',
+  flamme: 'Flamme', berg: 'Berg', blitz: 'Blitz', schild: 'Schild', tuer: 'Tür', leiter: 'Leiter', fahne: 'Fahne', schluessel: 'Schlüssel',
+  sprungbrett: 'Sprungbrett', wellekalt: 'Welle (kalt)', pfeiloben: 'Pfeil nach oben', stern: 'Stern',
+  atemwelle: 'Atem-Welle', blatt: 'Blatt', buch: 'Buch', stift: 'Tagebuch', musik: 'Musik', kerze: 'Kerze', auge: 'Auge', gluehbirne: 'Glühbirne',
+  lotus: 'Lotus', mond: 'Mond', sonne: 'Sonne', wolke: 'Wolke',
+  zigarette: 'Zigarette', glasdurch: 'Glas', zuckerdurch: 'Zuckerwürfel', handyaus: 'Handy aus', bildschirmaus: 'Bildschirm aus',
+  pilledurch: 'Pille', teller: 'Teller', uhr: 'Uhr',
+  verbindung: 'Verbindung', haken: 'Haken', welle: 'Welle', funke: 'Funke', glas: 'Glas (voll)', pflanze: 'Pflanze', kamera: 'Kamera',
+};
+function iconGroupFor(cat) {
+  return { koerper: 'koerper', menschen: 'menschen', mut: 'mut', geist: 'geist', verzicht: 'verzicht' }[cat] || 'koerper';
+}
 
 function renderBadge({ cat, tier, icon = null, drawing = null, size = 84 }) {
   const shape = BADGE_SHAPES[cat] || BADGE_SHAPES.koerper;
@@ -1721,7 +1799,7 @@ function renderBadge({ cat, tier, icon = null, drawing = null, size = 84 }) {
   if (drawing && drawing.length) {
     svg += drawing.map(d => `<path d="${d}" style="fill:none;stroke:${symbolColor};stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round" filter="url(#w3)"/>`).join('');
   } else if (icon && BADGE_ICONS[icon]) {
-    svg += `<g transform="translate(32 32) scale(1.5)" style="fill:none;stroke:${symbolColor};stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" filter="url(#w3)">${BADGE_ICONS[icon]}</g>`;
+    svg += `<g transform="translate(32 32) scale(1.5)" style="fill:none;stroke:${symbolColor};stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round" filter="url(#w3)">${BADGE_ICONS[icon]}</g>`;
   }
 
   // 6. Nur Glanz: Glanzstern oben rechts
@@ -2444,7 +2522,7 @@ const ROUTINE_DEFS = [
     ],
   },
   {
-    id: 'goal-mittagsroutine', title: 'Mittagsroutine', category: 'koerper', icon: 'schritte',
+    id: 'goal-mittagsroutine', title: 'Mittagsroutine', category: 'koerper', icon: 'puls',
     time: '12:00', xp: 20, mergeHabitIds: ['movement', 'foot_noon', 'box', 'strength', 'estim_noon'],
     steps: [
       { title: 'Bewegungspause', sourceHabitId: 'movement', sec: 120, mini: true },
@@ -2469,9 +2547,9 @@ const ROUTINE_DEFS = [
 const COUNTER_HABIT_IDS = ['no_alcohol', 'no_sugar', 'no_drugs', 'no_meat', 'no_carbs', 'gluten_free'];
 const PAUSED_HABIT_IDS = ['sleep', 'noscreen_am', 'teeth', 'learning', 'protein', 'social', 'meal_order', 'post_meal_walk'];
 const ACTIVE_RENAME_V2 = [
-  { sourceHabitId: 'sunlight', title: 'Draußen' },
-  { sourceHabitId: 'cooking', title: 'Selbst gekocht' },
-  { sourceHabitId: 'others', title: 'Etwas für jemanden tun', rhythm: 'drei' },
+  { sourceHabitId: 'sunlight', title: 'Draußen', icon: 'schritte' },
+  { sourceHabitId: 'cooking', title: 'Selbst gekocht', icon: 'pfanne' },
+  { sourceHabitId: 'others', title: 'Etwas für jemanden tun', rhythm: 'drei', icon: 'haende' },
 ];
 
 function writeGoalsMigrationBackupV2() {
@@ -2558,6 +2636,7 @@ async function migrateGoalsToV2() {
     if (!g) continue;
     g.title = r.title;
     if (r.rhythm) g.rhythm = r.rhythm;
+    if (r.icon) g.icon = r.icon;
     g.paused = false; g.archived = false;
     await saveGoal(g);
   }
@@ -2570,7 +2649,7 @@ async function migrateGoalsToV2() {
   // 4) Abend-Check-in — übernimmt die Logs von "Dankbarkeit" (gratitude),
   //    öffnet beim Abhaken ein Sheet mit Status + "Was war dein Up heute?".
   if (!getGoal('goal-abend-checkin')) {
-    await saveGoal({ id: 'goal-abend-checkin', title: 'Abend-Check-in', category: 'geist', icon: 'mond', rhythm: 'taeglich', time: '22:30', xp: 15, drawing: null, archived: false, paused: false, kind: 'checkin', createdAt: Date.now() });
+    await saveGoal({ id: 'goal-abend-checkin', title: 'Abend-Check-in', category: 'geist', icon: 'stift', rhythm: 'taeglich', time: '22:30', xp: 15, drawing: null, archived: false, paused: false, kind: 'checkin', createdAt: Date.now() });
   }
   await mergeLogsIntoGoal('goal-abend-checkin', ['gratitude']);
 
@@ -4208,8 +4287,6 @@ function clearGoalSheetDrawing() {
 
 function setGoalSheetDrawMode(isDraw) {
   _goalSheetState.isDrawMode = isDraw;
-  document.getElementById('gs-mode-icon').classList.toggle('h-pill--outline', isDraw);
-  document.getElementById('gs-mode-draw').classList.toggle('h-pill--outline', !isDraw);
   document.getElementById('gs-icon-grid').style.display = isDraw ? 'none' : '';
   document.getElementById('gs-draw-wrap').style.display = isDraw ? '' : 'none';
   if (isDraw) {
@@ -4228,7 +4305,9 @@ function renderGoalSheetCategories() {
 }
 function setGoalSheetCategory(cat) {
   _goalSheetState.category = cat;
+  _goalSheetState.iconGroup = iconGroupFor(cat);
   renderGoalSheetCategories();
+  renderGoalSheetIconGroupSeg();
   renderGoalSheetIconGrid();
   renderGoalSheetPreview();
 }
@@ -4244,19 +4323,61 @@ function setGoalSheetRhythm(r) {
   renderGoalSheetRhythms();
 }
 
-function renderGoalSheetIconGrid() {
-  const el = document.getElementById('gs-icon-grid');
-  el.innerHTML = Object.keys(BADGE_ICONS).map(iconKey => {
-    const selected = !_goalSheetState.isDrawMode && _goalSheetState.icon === iconKey;
-    return `<button type="button" class="h-circle-btn h-circle-btn--sm" style="${selected ? 'background:var(--ink)' : ''}" onclick="setGoalSheetIcon('${iconKey}')" aria-label="${iconKey}" aria-pressed="${selected}">
-      <svg viewBox="0 0 24 24" width="20" height="20"><g style="fill:none;stroke:${selected ? 'var(--paper)' : 'var(--ink)'};stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round">${BADGE_ICONS[iconKey]}</g></svg>
+// Gemeinsame Symbol-Auswahl für Ziel-, Routinen- (und perspektivisch
+// Übungs-)Editor: Segmented nach Gruppe (Standard = Gruppe der gewählten
+// Kategorie), 6-Spalten-Raster mit 46px-Zellen, Hand-Kreis um die Auswahl,
+// Suchfeld filtert nach deutschen Namen. renderIconGrid() ist der geteilte
+// Kern — jeder Editor ruft ihn mit seinen eigenen Element-Ids/Callbacks auf.
+function renderIconGroupSeg(segId, currentGroup, onPick) {
+  const el = document.getElementById(segId);
+  if (!el) return;
+  el.innerHTML = Object.keys(ICON_GROUPS).map(g => `
+    <button type="button" class="h-seg-btn ${g === currentGroup ? 'active' : ''}" onclick="${onPick}('${g}')">${ICON_GROUPS[g].label}<svg class="h-seg-ellipse" viewBox="0 0 80 16" aria-hidden="true"><path d="M3 8 Q 20 2, 40 8 T 77 8"/></svg></button>
+  `).join('');
+}
+function renderIconGrid({ gridId, group, query, selected, showDrawCell, drawActive, onPick, onDrawPick }) {
+  const el = document.getElementById(gridId);
+  if (!el) return;
+  let keys = query
+    ? Object.keys(ICON_LABELS).filter(k => (ICON_LABELS[k] || k).toLowerCase().includes(query.toLowerCase()))
+    : (ICON_GROUPS[group] ? ICON_GROUPS[group].icons : Object.keys(BADGE_ICONS));
+  const cell = (iconKey, isSel, onclickCall, label) => `
+    <button type="button" style="position:relative;width:46px;height:46px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="${onclickCall}" aria-label="${escapeHtml(label)}" aria-pressed="${isSel}">
+      ${isSel ? `<svg width="46" height="46" viewBox="0 0 46 46" style="position:absolute;inset:0" aria-hidden="true"><ellipse cx="23" cy="23" rx="20" ry="20" fill="none" stroke="var(--ink)" stroke-width="1.6" filter="url(#w2)"/></svg>` : ''}
+      <svg viewBox="0 0 24 24" width="20" height="20" style="position:relative"><g style="fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round">${BADGE_ICONS[iconKey]}</g></svg>
     </button>`;
-  }).join('');
+  let html = keys.map(k => cell(k, selected === k && !drawActive, `${onPick}('${k}')`, ICON_LABELS[k] || k)).join('');
+  if (showDrawCell && !query) {
+    html += `<button type="button" style="position:relative;width:46px;height:46px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="${onDrawPick}()" aria-label="Selbst zeichnen" aria-pressed="${drawActive}">
+      ${drawActive ? `<svg width="46" height="46" viewBox="0 0 46 46" style="position:absolute;inset:0" aria-hidden="true"><ellipse cx="23" cy="23" rx="20" ry="20" fill="none" stroke="var(--ink)" stroke-width="1.6" filter="url(#w2)"/></svg>` : ''}
+      <svg viewBox="0 0 24 24" width="20" height="20" style="position:relative"><g style="fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><path d="M3 21l4-1 12-12-3-3L4 17z"/><path d="M14 6l3 3"/></g></svg>
+    </button>`;
+  }
+  el.innerHTML = html;
+}
+
+function renderGoalSheetIconGroupSeg() { renderIconGroupSeg('gs-icon-group-seg', _goalSheetState.iconGroup, 'setGoalIconGroup'); }
+function setGoalIconGroup(group) {
+  _goalSheetState.iconGroup = group;
+  document.getElementById('gs-icon-search').value = '';
+  renderGoalSheetIconGroupSeg();
+  renderGoalSheetIconGrid();
+}
+function filterGoalIconSearch(query) {
+  renderGoalSheetIconGrid(query);
+}
+function renderGoalSheetIconGrid(query = '') {
+  renderIconGrid({
+    gridId: 'gs-icon-grid', group: _goalSheetState.iconGroup, query, selected: _goalSheetState.icon,
+    showDrawCell: true, drawActive: _goalSheetState.isDrawMode,
+    onPick: 'setGoalSheetIcon', onDrawPick: 'setGoalSheetDrawModeOn',
+  });
 }
 function setGoalSheetIcon(iconKey) {
   _goalSheetState.icon = iconKey;
   setGoalSheetDrawMode(false);
 }
+function setGoalSheetDrawModeOn() { setGoalSheetDrawMode(true); }
 
 function renderGoalSheetPreview() {
   const el = document.getElementById('gs-badge-preview');
@@ -4284,13 +4405,16 @@ function openGoalSheet(goalId = null) {
         rhythm: existing.rhythm, time: existing.time || '', xp: existing.xp || 10, notify: !!existing.notify,
       }
     : { id: null, title: '', category: 'koerper', icon: 'schritte', drawing: null, isDrawMode: false, rhythm: 'taeglich', time: '', xp: 10, notify: false };
+  _goalSheetState.iconGroup = iconGroupFor(_goalSheetState.category);
 
   document.getElementById('gs-title').textContent = existing ? 'Ziel bearbeiten' : 'Neues Ziel';
   document.getElementById('gs-name').value = _goalSheetState.title;
   document.getElementById('gs-time').value = _goalSheetState.time;
   document.getElementById('gs-archive-btn').style.display = existing ? '' : 'none';
+  document.getElementById('gs-icon-search').value = '';
   updateGoalSheetNotifyBtn();
 
+  renderGoalSheetIconGroupSeg();
   renderGoalSheetCategories();
   renderGoalSheetRhythms();
   setGoalSheetDrawMode(_goalSheetState.isDrawMode);
@@ -4583,11 +4707,14 @@ function openRoutineEditor(id) {
   _routineEditorState = g
     ? { id: g.id, title: g.title, time: g.time || '', category: g.category || 'koerper', icon: g.icon || 'schritte', pauseSec: g.pauseSec || 5, steps: (g.steps || []).map(s => ({ ...s })), active: !g.paused }
     : { id: null, title: '', time: '', category: 'koerper', icon: 'schritte', pauseSec: 5, steps: [], active: true };
+  _routineEditorState.iconGroup = iconGroupFor(_routineEditorState.category);
   document.getElementById('re-title').textContent = g ? 'Routine bearbeiten' : 'Neue Routine';
   document.getElementById('re-name').value = _routineEditorState.title;
   document.getElementById('re-time').value = _routineEditorState.time;
+  document.getElementById('re-icon-search').value = '';
   updateRoutinePauseDisplay();
   renderRoutineCategories();
+  renderRoutineIconGroupSeg();
   renderRoutineIconGrid();
   renderRoutineStepsList();
   renderRoutineAddStepPicker();
@@ -4608,16 +4735,24 @@ function renderRoutineCategories() {
 }
 function setRoutineCategory(cat) {
   _routineEditorState.category = cat;
+  _routineEditorState.iconGroup = iconGroupFor(cat);
   renderRoutineCategories();
+  renderRoutineIconGroupSeg();
+  renderRoutineIconGrid();
 }
-function renderRoutineIconGrid() {
-  const el = document.getElementById('re-icon-grid');
-  el.innerHTML = Object.keys(BADGE_ICONS).map(iconKey => {
-    const selected = _routineEditorState.icon === iconKey;
-    return `<button type="button" class="h-circle-btn h-circle-btn--sm" style="${selected ? 'background:var(--ink)' : ''}" onclick="setRoutineIcon('${iconKey}')" aria-label="${iconKey}" aria-pressed="${selected}">
-      <svg viewBox="0 0 24 24" width="20" height="20"><g style="fill:none;stroke:${selected ? 'var(--paper)' : 'var(--ink)'};stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round">${BADGE_ICONS[iconKey]}</g></svg>
-    </button>`;
-  }).join('');
+function renderRoutineIconGroupSeg() { renderIconGroupSeg('re-icon-group-seg', _routineEditorState.iconGroup, 'setRoutineIconGroup'); }
+function setRoutineIconGroup(group) {
+  _routineEditorState.iconGroup = group;
+  document.getElementById('re-icon-search').value = '';
+  renderRoutineIconGroupSeg();
+  renderRoutineIconGrid();
+}
+function filterRoutineIconSearch(query) { renderRoutineIconGrid(query); }
+function renderRoutineIconGrid(query = '') {
+  renderIconGrid({
+    gridId: 're-icon-grid', group: _routineEditorState.iconGroup, query, selected: _routineEditorState.icon,
+    showDrawCell: false, drawActive: false, onPick: 'setRoutineIcon', onDrawPick: '',
+  });
 }
 function setRoutineIcon(iconKey) {
   _routineEditorState.icon = iconKey;
