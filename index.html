@@ -418,6 +418,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 .h-player-step-wrap.h-step-in > div, .h-player-title-wrap.h-step-in > div { transform: translateX(0); opacity: 1; }
 .h-player-title-wrap { position: relative; overflow: hidden; width: 100%; text-align: center; margin-bottom: 4px; }
 .h-player-steps-bar { display: flex; gap: 6px; width: 100%; max-width: 300px; margin: 4px auto 10px; }
+.h-player-howto { width: 100%; max-width: 340px; margin: 12px auto 0; text-align: left; }
 .h-player-steps-bar .h-bar { flex: 1; }
 .h-phasebar { width: 100%; max-width: 300px; margin: 4px auto 0; }
 .h-phasebar-track { position: relative; }
@@ -913,8 +914,19 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         </div>
         <div class="h-phasebar-labels" id="player-phasebar-labels"></div>
       </div>
-      <div style="display:flex;gap:16px;align-items:center;margin-top:8px">
+      <div class="h-player-howto" id="player-howto" style="display:none">
+        <div class="h-meta" style="font-weight:700;color:var(--ink);font-size:14px">So geht's</div>
+        <div style="font-size:15px;line-height:1.5;margin-top:4px" id="player-howto-text"></div>
+        <div class="h-meta" id="player-next-preview" style="margin-top:8px"></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+        <button type="button" class="h-circle-btn" id="player-prev-btn" onclick="prevPlayerStep()" aria-label="Vorheriger Schritt" style="display:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+        </button>
         <button type="button" class="h-pill h-pill--shadow" id="player-start-btn" onclick="togglePlayerRun()">Start</button>
+        <button type="button" class="h-circle-btn" id="player-next-btn" onclick="nextPlayerStep()" aria-label="Nächster Schritt" style="display:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+        </button>
         <button type="button" class="h-circle-btn" id="player-reset-btn" onclick="resetPlayer()" aria-label="Zurücksetzen">
           <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
         </button>
@@ -985,8 +997,8 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
       </div>
 
       <div style="margin-bottom:20px">
-        <div class="h-meta" style="margin-bottom:6px">Beschreibung (optional)</div>
-        <textarea id="ee-description" rows="3" style="width:100%;background:transparent;border:1px solid var(--line);padding:10px;color:var(--ink);font-family:var(--ui);font-size:15px;box-sizing:border-box;resize:vertical"></textarea>
+        <div class="h-meta" style="margin-bottom:6px">Anleitung</div>
+        <textarea id="ee-anleitung" rows="4" style="width:100%;background:transparent;border:1px solid var(--line);padding:10px;color:var(--ink);font-family:var(--ui);font-size:15px;box-sizing:border-box;resize:vertical" placeholder="So geht's — erscheint im Player unter dem Ring."></textarea>
       </div>
 
       <div style="margin-bottom:20px">
@@ -1170,6 +1182,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
       </div>
     </div>
   </div></div></div>
+  <div class="h-meta" id="ue-disclaimer" style="font-size:13px;margin:20px 0 4px">Diese Anleitungen ersetzen keine Therapie. Was dir verordnet wurde, geht vor.</div>
 </div>
 
 <!-- ══════════════════════════════════════ XP / GAMIFICATION ══ -->
@@ -2769,6 +2782,40 @@ async function migrateHabitsToGoals() {
 // Kein Ziel/Log wird gelöscht ohne dass seine Tage in ein Nachfolge-Ziel
 // übernommen wurden — siehe mergeLogsIntoGoal().
 
+// Übungs-Anleitungen (Runde 5 Punkt 6) — wörtlich aus der Vorlage, Zuordnung
+// läuft über den Namen der Übung/des Schritts (siehe getAnleitungFor()).
+// Mehrere Namen für dieselbe Übung (Routine-Schritt vs. eigenständige
+// Übung) zeigen bewusst denselben Text.
+const ANLEITUNG_BY_NAME = {
+  'Fuß-Aktivierung': 'Guten Morgen, Füße. Zehen 10× spreizen und einrollen, den Fuß 10× sanft kreisen lassen, die Fußspitze 10× zu dir ziehen und strecken. Wir wecken, wir zwingen nicht.',
+  'Morgenroutine': 'Einmal durchstarten, ohne Turbo. Schultern kreisen, Arme über den Kopf strecken und tief einatmen, den Oberkörper langsam zu beiden Seiten drehen. Wackeln erlaubt, Hetzen nicht.',
+  'Körper aufwecken': 'Einmal durchstarten, ohne Turbo. Schultern kreisen, Arme über den Kopf strecken und tief einatmen, den Oberkörper langsam zu beiden Seiten drehen. Wackeln erlaubt, Hetzen nicht.',
+  'Atemübung 4-7-8': '4 Sekunden durch die Nase ein, 7 halten, 8 langsam durch den Mund aus. Der gelbe Kreis gibt den Takt vor. Wird dir schwindelig, einfach normal weiteratmen.',
+  '4-7-8 Atmung': '4 Sekunden durch die Nase ein, 7 halten, 8 langsam durch den Mund aus. Der gelbe Kreis gibt den Takt vor. Wird dir schwindelig, einfach normal weiteratmen.',
+  '4–6 Lymph-Atmung': 'Wächst der Kreis, atmest du durch die Nase ein. Schrumpft er, lässt du die Luft langsam durch den Mund raus. Das lange Ausatmen bremst den Puls und schiebt Lymphe Richtung Herz.',
+  '4-6 Lymph': 'Wächst der Kreis, atmest du durch die Nase ein. Schrumpft er, lässt du die Luft langsam durch den Mund raus. Das lange Ausatmen bremst den Puls und schiebt Lymphe Richtung Herz.',
+  'Bewegungspause': 'Kurz raus aus dem Sitz-Modus. Aufstehen, strecken, ein paar Schritte gehen, Schultern lockern. Zwei Minuten, für die dein Rücken dir dankt.',
+  'Gangschulung': 'Langsam gehen und bewusst abrollen: Ferse, Fußmitte, Zehen. Kurze Schritte, Blick nach vorn. Kein Wettrennen, sondern Feinmechanik.',
+  'Kräftigung': 'Fünf ruhige Übungen nach deinem Plan, je 10 Wiederholungen. Hör auf, wenn es zieht. Stark wird man nicht an einem Tag, aber an vielen.',
+  'Elektrostimulation': 'Elektroden so anlegen, wie es dir gezeigt wurde, Programm starten. Die Intensität darf kribbeln, aber nicht weh tun. Heute arbeitet der Strom, du darfst dich zurücklehnen.',
+  'Fuß-Regeneration': 'Bein hochlegen, Fuß über Herzhöhe. Zehen 20× langsam anziehen und strecken, dann den Fuß locker kreisen lassen. Die Pumpe läuft, du darfst liegen bleiben.',
+  'Dehnung': 'Wade, Oberschenkel, Hüfte, Rücken: jede Dehnung 30 Sekunden halten, ruhig weiteratmen, nicht wippen. Dehnen heißt nicht ziehen, bis es quietscht.',
+  'Vagus': 'Summen, gurgeln, lange ausatmen: drei kleine Tricks für den Ruhenerv. Tief und brummig summen, als hättest du gute Laune. Irgendwann stimmt das sogar.',
+  'Vagus-Stimulation': 'Summen, gurgeln, lange ausatmen: drei kleine Tricks für den Ruhenerv. Tief und brummig summen, als hättest du gute Laune. Irgendwann stimmt das sogar.',
+  'Box Breathing': '4 ein, 4 halten, 4 aus, 4 halten. Ein Quadrat aus Luft, der Kreis zeigt dir, wo du gerade bist.',
+  'Meditation': 'Hinsetzen, Augen zu, dem Atem zuschauen. Gedanken dürfen kommen. Lass sie vorbeiziehen wie Busse, in die du nicht einsteigen musst.',
+};
+// Reihenfolge: eigenes details.anleitung-Feld (Übungs-Editor) zuerst, sonst
+// die Vorlagen-Tabelle nach Namen (für Routinen-/Protokoll-Schritte ohne
+// eigenes Datenfeld), sonst als letzter Rückfall der kurze Hinweistext
+// (details.cue bzw. s.desc) — MLD/BFR/Vagus-Unterschritte behalten so ihre
+// eigenen Texte, die Tabelle greift nur, wo kein spezifischer Text existiert.
+function getAnleitungFor(title, ownAnleitung, fallbackCue) {
+  if (ownAnleitung) return ownAnleitung;
+  if (ANLEITUNG_BY_NAME[title]) return ANLEITUNG_BY_NAME[title];
+  return fallbackCue || null;
+}
+
 const ROUTINE_DEFS = [
   {
     id: 'goal-from-morning', title: 'Morgenroutine', category: 'koerper', icon: 'sonne',
@@ -3901,21 +3948,24 @@ function seedExercisesIfNeeded() {
     { id: 'exercise-box-breathing', title: 'Box Breathing', xp: 10, details: {
       kind: 'atmung', durationSec: 128, cue: null, rounds: 8,
       pattern: [{ label: 'Einatmen', sec: 4 }, { label: 'Halten', sec: 4 }, { label: 'Ausatmen', sec: 4 }, { label: 'Halten', sec: 4 }],
-      linkedGoalId: 'goal-from-box',
+      linkedGoalId: 'goal-from-box', anleitung: ANLEITUNG_BY_NAME['Box Breathing'],
     } },
     { id: 'exercise-478', title: '4-7-8 Atmung', xp: 8, details: {
       kind: 'atmung', durationSec: 57, cue: null, rounds: 3,
       pattern: [{ label: 'Einatmen', sec: 4 }, { label: 'Halten', sec: 7 }, { label: 'Ausatmen', sec: 8 }],
-      linkedGoalId: 'goal-from-breath',
+      linkedGoalId: 'goal-from-breath', anleitung: ANLEITUNG_BY_NAME['4-7-8 Atmung'],
     } },
     { id: 'exercise-foot-activation', title: 'Fuß-Aktivierung', xp: 12, details: {
       kind: 'timer', durationSec: 180, cue: 'Kreisen, wippen, Zehen spreizen', pattern: null, linkedGoalId: 'goal-from-foot_am',
+      anleitung: ANLEITUNG_BY_NAME['Fuß-Aktivierung'],
     } },
     { id: 'exercise-stretch', title: 'Dehnung', xp: 10, details: {
       kind: 'timer', durationSec: 600, cue: 'Faszien & Gelenke lockern', pattern: null, linkedGoalId: 'goal-from-stretch',
+      anleitung: ANLEITUNG_BY_NAME['Dehnung'],
     } },
     { id: 'exercise-vagus', title: 'Vagus-Stimulation', xp: 15, details: {
       kind: 'timer', durationSec: 300, cue: 'Tief & langsam atmen, summen', pattern: null, linkedGoalId: 'goal-from-vagus_eve',
+      anleitung: ANLEITUNG_BY_NAME['Vagus-Stimulation'],
     } },
   ];
   const existingIds = new Set(getItems({ type: 'exercise' }).map(i => i.id));
@@ -4009,6 +4059,7 @@ function renderUebungDetailPanel() {
           <div class="h-ue-detail-step-n">${i + 1}</div>
           <div class="h-ue-detail-step-body">
             <div class="h-text" style="font-weight:700">${escapeHtml(s.title)}</div>
+            ${getAnleitungFor(s.title, null, s.cue) ? `<div class="h-meta" style="margin-top:4px;line-height:1.5">${escapeHtml(getAnleitungFor(s.title, null, s.cue))}</div>` : ''}
           </div>
           <div class="h-meta">${formatMMSS(s.sec)}</div>
         </div>
@@ -4021,6 +4072,7 @@ function renderUebungDetailPanel() {
         <div class="h-meta">${describeBadgeProgress(g, tier)}</div>
       </div>
     </div>
+    <div class="h-meta" style="font-size:13px;margin-top:20px">Diese Anleitungen ersetzen keine Therapie. Was dir verordnet wurde, geht vor.</div>
   `;
 }
 function openUebungen() { buildRoutineList(); buildUebungenList(); }
@@ -4171,8 +4223,7 @@ function updatePlayerDisplay(elapsed) {
     if (blobSvg) blobSvg.style.display = 'none';
     const remaining = Math.max(0, _playerState.totalSec - elapsed);
     countdownEl.textContent = formatMMSS(remaining);
-    const cueText = ex.details.cue || 'noch';
-    if (cueEl.textContent !== cueText) cueEl.textContent = cueText;
+    if (cueEl.textContent !== 'noch') cueEl.textContent = 'noch';
   }
 
   const blob = document.getElementById('player-blob-circle');
@@ -4202,6 +4253,42 @@ function updatePlayerDisplay(elapsed) {
 // eine Markierung wandert linear über die komplette Breite. Wird einmal pro
 // Übung aufgebaut (nicht pro Frame) — nur updatePlayerPhasebarMarker() läuft
 // mit dem rAF-Tick mit.
+// "So geht's" (Runde 5 Punkt 6): Anleitung unter dem Ring, "Gleich: {nächster
+// Schritt} · {Dauer}" darunter, Vorheriger/Nächster-Buttons nur bei Sequenzen.
+function setupPlayerHowto() {
+  const box = document.getElementById('player-howto');
+  const textEl = document.getElementById('player-howto-text');
+  const nextEl = document.getElementById('player-next-preview');
+  const prevBtn = document.getElementById('player-prev-btn');
+  const nextBtn = document.getElementById('player-next-btn');
+  if (!box) return;
+  const ex = _playerState.exercise;
+  const seq = _playerState.sequence;
+  const howto = ex ? getAnleitungFor(ex.title, ex.details.anleitung, ex.details.cue) : null;
+  if (howto) { box.style.display = ''; textEl.textContent = howto; } else { box.style.display = 'none'; }
+
+  if (seq && seq.idx + 1 < seq.steps.length) {
+    const next = seq.steps[seq.idx + 1];
+    nextEl.textContent = `Gleich: ${next.title} · ${Math.max(1, Math.round(next.sec / 60))} Min`;
+    nextEl.style.display = '';
+  } else if (nextEl) {
+    nextEl.style.display = 'none';
+  }
+
+  if (prevBtn) prevBtn.style.display = (seq && seq.idx > 0) ? '' : 'none';
+  if (nextBtn) nextBtn.style.display = (seq && seq.idx + 1 < seq.steps.length) ? '' : 'none';
+}
+function prevPlayerStep() {
+  const seq = _playerState && _playerState.sequence;
+  if (!seq || seq.idx <= 0) return;
+  loadPlayerStep(seq.idx - 1);
+}
+function nextPlayerStep() {
+  const seq = _playerState && _playerState.sequence;
+  if (!seq || seq.idx + 1 >= seq.steps.length) return;
+  loadPlayerStep(seq.idx + 1);
+}
+
 function setupPlayerPhasebar(pattern) {
   const bar = document.getElementById('player-phasebar');
   if (!bar) return;
@@ -4421,6 +4508,7 @@ function openPlayer(exerciseId) {
   if (titleStrike) titleStrike.style.display = 'none';
   renderSoundPackPicker();
   setupPlayerPhasebar(ex.details.pattern);
+  setupPlayerHowto();
   updatePlayerDisplay(0);
   document.getElementById('player-overlay').classList.add('open');
 }
@@ -4507,6 +4595,7 @@ function loadPlayerStep(idx) {
   if (ring) ring.setAttribute('stroke-dashoffset', '1');
   setupPlayerPhasebar(null);
   setupPlayerStepsBar(seq);
+  setupPlayerHowto();
   updatePlayerDisplay(0);
 }
 function closePlayer() {
@@ -4637,14 +4726,14 @@ function openExerciseEditor(id) {
     rounds: d.rounds || 1,
     steps: (d.steps || []).map(s => ({ ...s })),
     cue: d.cue || '',
-    description: d.description || '',
+    anleitung: d.anleitung || '',
     linkedGoalId: d.linkedGoalId || '',
     active: ex ? ex.active : true,
   };
   document.getElementById('ee-sheet-title').textContent = ex ? 'Übung bearbeiten' : 'Neue Übung';
   document.getElementById('ee-name').value = _exerciseEditorState.title;
   document.getElementById('ee-cue').value = _exerciseEditorState.cue;
-  document.getElementById('ee-description').value = _exerciseEditorState.description;
+  document.getElementById('ee-anleitung').value = _exerciseEditorState.anleitung;
   document.getElementById('ee-delete-btn').style.display = ex ? '' : 'none';
   setExerciseEditorKind(_exerciseEditorState.kind);
   updateExerciseDurationDisplay();
@@ -4766,14 +4855,14 @@ async function saveExerciseFromEditor() {
   const name = document.getElementById('ee-name').value.trim();
   if (!name) { toast('Bitte einen Namen eingeben'); return; }
   const cue = document.getElementById('ee-cue').value.trim() || null;
-  const description = document.getElementById('ee-description').value.trim() || null;
+  const anleitung = document.getElementById('ee-anleitung').value.trim() || null;
   const linkedGoalId = document.getElementById('ee-goal').value || null;
   const st = _exerciseEditorState;
   const isNew = !st.id;
   const existing = isNew ? null : getItems({ type: 'exercise' }).find(e => e.id === st.id);
   if (!isNew && !existing) return;
 
-  const details = { kind: st.kind, cue, description, linkedGoalId };
+  const details = { kind: st.kind, cue, anleitung, linkedGoalId };
   if (st.kind === 'timer') {
     details.durationSec = st.durationSec;
     details.pattern = null;
