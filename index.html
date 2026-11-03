@@ -252,16 +252,23 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 .h-notice-title { font-size: 17px; font-weight: 700; }
 .h-notice-text { font-size: 15px; margin-top: 2px; line-height: 1.4; }
 
-/* ════════════════ PLAYER ════════════════ */
-.h-player-ring-wrap { position: relative; width: 300px; height: 300px; margin: 24px auto; }
-.h-player-ring-wrap svg.h-ring { width: 300px; height: 300px; }
-.h-player-blob {
-  position: absolute; inset: 0; margin: auto; width: 180px; height: 180px; border-radius: 50% !important;
-  background: var(--yellow); opacity: 0.35; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(1);
-  animation: hPlayerBreathe 4s ease-in-out infinite;
-}
-@keyframes hPlayerBreathe { 0%,100% { transform: translate(-50%,-50%) scale(0.85); } 50% { transform: translate(-50%,-50%) scale(1.08); } }
-.h-player-ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+/* ════════════════ PLAYER ════════════════
+   Ring, Blob und Zahl liegen als Geschwister in einem einzigen Grid-Stack
+   (alle Ebenen grid-area:1/1) statt über absolute Positionierung mit
+   Margin-Tricks — ihre Mittelpunkte können dadurch nie auseinanderlaufen. */
+.h-player-stack { display: grid; place-items: center; width: 300px; height: 300px; margin: 24px auto; }
+.h-player-stack > * { grid-area: 1 / 1; width: 300px; height: 300px; }
+.h-player-ring-svg, .h-player-blob-svg { pointer-events: none; }
+#player-blob-circle { transform-box: fill-box; transform-origin: center; transform: scale(0.6); }
+.h-player-ring-label { display: flex; align-items: center; justify-content: center; text-align: center; pointer-events: none; position: relative; }
+#player-cue { position: absolute; top: calc(50% + 28px); left: 50%; transform: translateX(-50%); white-space: nowrap; }
+#player-countdown { font-variant-numeric: tabular-nums; line-height: 1; transform: translateY(-0.04em); }
+#player-cue { transition: opacity 150ms ease; }
+#player-ring-progress { transition: stroke-width 90ms ease; }
+.h-player-step-wrap { position: relative; min-height: 38px; overflow: hidden; width: 100%; }
+.h-player-step-wrap > div { transition: transform 240ms ease, opacity 240ms ease; }
+.h-player-step-wrap.h-step-out > div { transform: translateX(-24px); opacity: 0; }
+.h-player-step-wrap.h-step-in > div { transform: translateX(0); opacity: 1; }
 
 /* ════════════════ STIFT-ELEMENTE ════════════════ */
 .h-pen { stroke: var(--ink); fill: none; stroke-linecap: round; }
@@ -316,9 +323,6 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 #timer-milestone .h-row.reached .h-text, #timer-milestone .h-row.reached .h-meta { color: var(--ink); font-weight: 700; }
 .phase-seg.active { background: var(--grid); }
 
-@media (prefers-reduced-motion: reduce) {
-  .h-player-blob { animation: none; }
-}
 </style>
 </head>
 <body>
@@ -327,6 +331,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
   <filter id="w1" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.4" xChannelSelector="R" yChannelSelector="G"/></filter>
   <filter id="w2" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="11" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>
   <filter id="w3" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.3" xChannelSelector="R" yChannelSelector="G"/></filter>
+  <filter id="w4" x="-40%" y="-40%" width="180%" height="180%"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/></filter>
   <pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" stroke="#14140F" stroke-width="1.2"/></pattern>
 </defs></svg>
 <div class="app">
@@ -654,16 +659,23 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
       <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closePlayer()" aria-label="Schließen" style="position:absolute;top:calc(16px + var(--safe-top));right:20px">
         <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
       </button>
-      <div class="h-meta" id="player-step-label" style="color:var(--faint);min-height:16px"></div>
-      <div class="h-meta" id="player-exercise-title" style="margin-top:2px"></div>
-      <div class="h-player-ring-wrap">
-        <div class="h-player-blob" id="player-blob"></div>
-        <svg class="h-ring" viewBox="0 0 160 160">
-          <circle cx="80" cy="80" r="70" stroke="var(--line)" stroke-width="2" fill="none"/>
-          <circle cx="80" cy="80" r="70" stroke="var(--ink)" stroke-width="3" fill="none"
-            stroke-linecap="round" id="player-ring-progress"
-            stroke-dasharray="439.8" stroke-dashoffset="439.8"
-            transform="rotate(-90 80 80)"/>
+      <div class="h-player-step-wrap" id="player-step-wrap">
+        <div class="h-meta" id="player-step-label" style="color:var(--faint);min-height:16px"></div>
+        <div style="position:relative;display:inline-block;margin-top:2px">
+          <div class="h-meta" id="player-exercise-title"></div>
+          <svg class="h-strike-shaft" id="player-title-strike" style="position:absolute;left:-3%;top:38%;width:106%;overflow:visible;display:none" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen" pathLength="1" d="M2 7 Q 30 3, 50 6 T 98 5" stroke-width="3"/></svg>
+        </div>
+      </div>
+      <div class="h-player-stack">
+        <svg class="h-player-ring-svg" viewBox="0 0 300 300" aria-hidden="true">
+          <circle cx="150" cy="150" r="130" stroke="var(--line)" stroke-width="2" fill="none" class="h-pen-draw" id="player-ring-base" pathLength="1"/>
+          <circle cx="150" cy="150" r="130" stroke="var(--ink)" stroke-width="3" fill="none"
+            stroke-linecap="round" id="player-ring-progress" pathLength="1"
+            stroke-dasharray="1" stroke-dashoffset="1"
+            transform="rotate(-90 150 150)" filter="url(#w1)"/>
+        </svg>
+        <svg class="h-player-blob-svg" viewBox="0 0 300 300" aria-hidden="true">
+          <circle cx="150" cy="150" r="115" fill="var(--yellow)" opacity="0.35" filter="url(#w4)" id="player-blob-circle"/>
         </svg>
         <div class="h-player-ring-label">
           <div class="h-num-xxl" id="player-countdown" style="font-size:72px">00:00</div>
@@ -675,6 +687,10 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         <button type="button" class="h-circle-btn" id="player-reset-btn" onclick="resetPlayer()" aria-label="Zurücksetzen">
           <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
         </button>
+      </div>
+      <div style="display:none;gap:12px;align-items:center;margin-top:8px" id="player-done-btns">
+        <button type="button" class="h-pill" onclick="closePlayerDone()">Fertig</button>
+        <button type="button" class="h-pill h-pill--outline" onclick="restartPlayerExercise()">Nochmal</button>
       </div>
       <div style="display:flex;gap:8px;margin-top:28px" id="player-sound-picker"></div>
     </div>
@@ -3290,6 +3306,7 @@ function setSoundVolume(v) {
 let _playerAudioCtx = null;
 let _masterGain = null;
 let _playerState = null;
+const _reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let _wakeLock = null;
 
 // Ein AudioContext + eine Master-GainNode für die ganze App (Player, Abhaken,
@@ -3312,7 +3329,7 @@ function ensurePlayerAudioCtx() {
   return _playerAudioCtx;
 }
 
-function scheduleTick(when, pack) {
+function scheduleTick(when, pack, highPitch = false) {
   if (pack === 'stumm' || !SOUND_PACKS[pack]) return;
   const ctx = _playerAudioCtx;
   const s = SOUND_PACKS[pack];
@@ -3320,7 +3337,7 @@ function scheduleTick(when, pack) {
   const gain = ctx.createGain();
   osc.connect(gain); gain.connect(_masterGain);
   osc.type = s.type;
-  osc.frequency.setValueAtTime(s.freq, when);
+  osc.frequency.setValueAtTime(highPitch ? s.freq * 1.5 : s.freq, when);
   gain.gain.setValueAtTime(0.0001, when);
   gain.gain.exponentialRampToValueAtTime(0.22, when + 0.005);
   gain.gain.exponentialRampToValueAtTime(0.0001, when + s.dur);
@@ -3338,16 +3355,19 @@ function clearScheduledTicks() {
   _playerState.scheduledNodes = [];
 }
 
-// Plant ab dem nächsten vollen Sekunden-Tick (von elapsedAtStart an) bis
-// zum Ende alle Zähltöne + den Abschluss-Akkord auf einen Schlag — Web
-// Audio-Scheduling ist sample-genau und driftet nicht wie setTimeout-Ketten.
+// Nur noch Ticks bei genau 5-4-3-2 (tief) und 1 (hoch) Sekunden Rest, dann
+// der Akkord bei 0 — nicht mehr jede Sekunde. elapsedAtStart filtert bereits
+// verstrichene Tick-Zeitpunkte heraus, damit nach Pause/Fortsetzen nichts
+// doppelt oder an falscher Stelle tickt. Web-Audio-Scheduling ist
+// sample-genau und driftet nicht wie setTimeout-Ketten.
 function scheduleTicksFrom(audioNow, elapsedAtStart) {
   const total = _playerState.totalSec;
   const pack = _playerState.soundPack;
-  for (let s = Math.ceil(elapsedAtStart); s < total; s++) {
-    if (s === 0) continue;
-    scheduleTick(audioNow + (s - elapsedAtStart), pack);
-  }
+  [5, 4, 3, 2, 1].forEach(remaining => {
+    const tAbs = total - remaining;
+    if (tAbs <= elapsedAtStart || tAbs < 0) return;
+    scheduleTick(audioNow + (tAbs - elapsedAtStart), pack, remaining === 1);
+  });
   scheduleCompletionChord(audioNow + (total - elapsedAtStart), pack);
 }
 
@@ -3359,30 +3379,66 @@ function releaseWakeLock() {
   if (_wakeLock) { _wakeLock.release().catch(() => {}); _wakeLock = null; }
 }
 
+// Sanftes Ease-in-out, optisch sehr nah an cubic-bezier(.45,0,.55,1) — ohne
+// eigenen Bezier-Solver, aber symmetrisch und seitengleich ab/beschleunigend.
+function easePlayer(t) { return 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, Math.max(0, t))); }
+
+// Blob skaliert exakt im Phasentakt: Einatmen = wachsen, Halten = stehen mit
+// leichtem Pulsieren (±1%), Ausatmen = schrumpfen. Ohne Pattern (Timer/
+// Schritte) atmet der Blob in einem neutralen 4s-Takt mit, rein dekorativ.
+function playerBlobScale(phase, phaseT, elapsed) {
+  if (!phase) return 0.85 + 0.12 * (0.5 - 0.5 * Math.cos((elapsed / 4) * 2 * Math.PI));
+  const label = (phase.label || '').toLowerCase();
+  if (label.startsWith('ein')) return 0.78 + 0.22 * easePlayer(phaseT);
+  if (label.startsWith('aus')) return 1.0 - 0.22 * easePlayer(phaseT);
+  if (label.startsWith('halt')) return 1.0 + 0.01 * Math.sin(phaseT * Math.PI * 2);
+  return 0.9;
+}
+
 function updatePlayerDisplay(elapsed) {
   const ex = _playerState.exercise;
   const pattern = ex.details.pattern;
   const countdownEl = document.getElementById('player-countdown');
   const cueEl = document.getElementById('player-cue');
+  let phase = null, phaseT = 0;
   if (pattern && pattern.length) {
     const cycleLen = pattern.reduce((sum, p) => sum + p.sec, 0);
     let t = elapsed % cycleLen;
-    let phase = pattern[0], phaseRemaining = pattern[0].sec;
+    let phaseRemaining = pattern[0].sec;
+    phase = pattern[0];
     for (const p of pattern) {
-      if (t < p.sec) { phase = p; phaseRemaining = p.sec - t; break; }
+      if (t < p.sec) { phase = p; phaseRemaining = p.sec - t; phaseT = t / p.sec; break; }
       t -= p.sec;
     }
     countdownEl.textContent = String(Math.ceil(phaseRemaining));
-    cueEl.textContent = phase.label;
+    if (cueEl.textContent !== phase.label) {
+      cueEl.style.opacity = '0';
+      setTimeout(() => { cueEl.textContent = phase.label; cueEl.style.opacity = '1'; }, 150);
+    }
   } else {
     const remaining = Math.max(0, _playerState.totalSec - elapsed);
     countdownEl.textContent = formatMMSS(remaining);
-    cueEl.textContent = ex.details.cue || '';
+    if (cueEl.textContent !== (ex.details.cue || '')) cueEl.textContent = ex.details.cue || '';
   }
+
+  const blob = document.getElementById('player-blob-circle');
+  if (blob && !_reducedMotion) blob.style.transform = `scale(${playerBlobScale(phase, phaseT, elapsed).toFixed(3)})`;
+
   const ring = document.getElementById('player-ring-progress');
   if (ring) {
     const pct = _playerState.totalSec ? Math.min(1, elapsed / _playerState.totalSec) : 0;
-    ring.setAttribute('stroke-dashoffset', String(439.8 * (1 - pct)));
+    ring.setAttribute('stroke-dashoffset', String(1 - pct));
+  }
+
+  // Countdown-Pop (Zahl) + Ring-Pulse bei genau 5-4-3-2-1 Sekunden Rest,
+  // bezogen auf die Gesamtdauer (dieselbe Zeitachse wie die Zähltöne).
+  const overallRemaining = Math.ceil(_playerState.totalSec - elapsed);
+  if (overallRemaining <= 5 && overallRemaining >= 1 && overallRemaining !== _playerState.lastPopRemaining) {
+    _playerState.lastPopRemaining = overallRemaining;
+    if (!_reducedMotion) {
+      countdownEl.animate([{ transform: 'scale(1.12)', opacity: 0.4 }, { transform: 'scale(1)', opacity: 1 }], { duration: 180, easing: 'ease-out' });
+      if (ring) ring.animate([{ strokeWidth: 3.5 }, { strokeWidth: 5 }, { strokeWidth: 3.5 }], { duration: 180, easing: 'ease-out' });
+    }
   }
 }
 
@@ -3402,11 +3458,18 @@ async function resumePlayer() {
   const ctx = ensurePlayerAudioCtx();
   if (ctx.state === 'suspended') await ctx.resume();
   const now = ctx.currentTime;
+  const freshStart = _playerState.elapsedAtPause === 0;
   _playerState.startAudioTime = now - _playerState.elapsedAtPause;
   scheduleTicksFrom(now, _playerState.elapsedAtPause);
   _playerState.running = true;
   document.getElementById('player-start-btn').textContent = 'Pause';
   requestWakeLock();
+  if (freshStart && !_reducedMotion) {
+    const blob = document.getElementById('player-blob-circle');
+    if (blob) blob.animate([{ transform: 'scale(.6)' }, { transform: 'scale(.85)' }], { duration: 600, easing: 'cubic-bezier(.45,0,.55,1)' });
+    const ringBase = document.getElementById('player-ring-base');
+    if (ringBase) { ringBase.classList.remove('h-pen-draw'); void ringBase.getBBox(); ringBase.classList.add('h-pen-draw'); }
+  }
   _playerState.rafId = requestAnimationFrame(playerTick);
 }
 function pausePlayer() {
@@ -3459,9 +3522,13 @@ function resetPlayer() {
   releaseWakeLock();
   _playerState.running = false;
   _playerState.elapsedAtPause = 0;
+  _playerState.lastPopRemaining = null;
   document.getElementById('player-start-btn').textContent = 'Start';
   document.getElementById('player-start-btn').style.display = '';
   document.getElementById('player-reset-btn').style.display = '';
+  document.getElementById('player-done-btns').style.display = 'none';
+  const strike = document.getElementById('player-title-strike');
+  if (strike) strike.style.display = 'none';
   updatePlayerDisplay(0);
 }
 
@@ -3481,6 +3548,22 @@ async function finishPlayerExercise() {
   document.getElementById('player-cue').textContent = 'Fertig.';
   document.getElementById('player-start-btn').style.display = 'none';
   document.getElementById('player-reset-btn').style.display = 'none';
+  if (seq) document.getElementById('player-exercise-title').textContent = seq.title;
+
+  // Abschluss-Choreografie: Ring ist bereits zu (dashoffset 0 aus dem letzten
+  // Tick), dann der Pfeil quer durch den Titel (wie in Heute), dann der
+  // Akkord, danach erst Fertig/Nochmal.
+  const strike = document.getElementById('player-title-strike');
+  if (strike && !_reducedMotion) {
+    strike.style.display = 'block';
+    strike.classList.remove('h-pen-draw'); void strike.getBoundingClientRect(); strike.classList.add('h-pen-draw');
+  } else if (strike) {
+    strike.style.display = 'block';
+  }
+  await new Promise(r => setTimeout(r, _reducedMotion ? 0 : 650));
+
+  const chordPack = _playerState.soundPack;
+  if (chordPack !== 'stumm') scheduleCompletionChord(_playerAudioCtx.currentTime, chordPack);
 
   const ex = _playerState.exercise;
   const linkedGoalId = seq ? seq.routineGoalId : (ex.details && ex.details.linkedGoalId);
@@ -3493,11 +3576,24 @@ async function finishPlayerExercise() {
   if (!seq) awardXP('exercise_' + ex.id, ex.xp || 10, ex.title, { scope: 'day', silent: true });
   else if (seq.completionAward) awardXP(seq.completionAward.key, seq.completionAward.amount, seq.completionAward.label, { scope: 'day', silent: true });
 
-  setTimeout(() => {
-    closePlayer();
-    buildHeuteScreen();
-    enqueueUnlocks(unlocked);
-  }, 2000);
+  _playerState.pendingUnlocks = unlocked;
+  document.getElementById('player-done-btns').style.display = 'flex';
+}
+
+function closePlayerDone() {
+  const unlocked = _playerState ? _playerState.pendingUnlocks : [];
+  closePlayer();
+  buildHeuteScreen();
+  enqueueUnlocks(unlocked);
+}
+function restartPlayerExercise() {
+  const seq = _playerState.sequence;
+  const strike = document.getElementById('player-title-strike');
+  if (strike) strike.style.display = 'none';
+  document.getElementById('player-done-btns').style.display = 'none';
+  document.getElementById('player-start-btn').style.display = '';
+  document.getElementById('player-reset-btn').style.display = '';
+  if (seq) { loadPlayerStep(0); } else { resetPlayer(); }
 }
 
 function openPlayer(exerciseId) {
@@ -3510,13 +3606,16 @@ function openPlayer(exerciseId) {
   }
   _playerState = {
     exercise: ex, totalSec: ex.details.durationSec || 60, soundPack: getSoundPack(),
-    running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null, sequence: null,
+    running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null, sequence: null, lastPopRemaining: null,
   };
   document.getElementById('player-step-label').textContent = '';
   document.getElementById('player-exercise-title').textContent = ex.title;
   document.getElementById('player-start-btn').textContent = 'Start';
   document.getElementById('player-start-btn').style.display = '';
   document.getElementById('player-reset-btn').style.display = '';
+  document.getElementById('player-done-btns').style.display = 'none';
+  const titleStrike = document.getElementById('player-title-strike');
+  if (titleStrike) titleStrike.style.display = 'none';
   renderSoundPackPicker();
   updatePlayerDisplay(0);
   document.getElementById('player-overlay').classList.add('open');
@@ -3532,7 +3631,7 @@ function openRoutinePlayer(routineGoalId, mini = false) {
   if (!steps.length) return;
   _playerState = {
     exercise: null, totalSec: 0, soundPack: getSoundPack(),
-    running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null,
+    running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null, lastPopRemaining: null,
     sequence: { steps, idx: 0, routineGoalId, title: goal.title, pauseSec: goal.pauseSec || 5 },
   };
   renderSoundPackPicker();
@@ -3547,7 +3646,7 @@ function openProtocolPlayer(stepsRaw, title, completionAward) {
   const steps = stepsRaw.map(s => ({ title: s.title, cue: s.desc, sec: s.sec }));
   _playerState = {
     exercise: null, totalSec: 0, soundPack: getSoundPack(),
-    running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null,
+    running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null, lastPopRemaining: null,
     sequence: { steps, idx: 0, routineGoalId: null, title, completionAward },
   };
   renderSoundPackPicker();
@@ -3569,11 +3668,32 @@ function loadPlayerStep(idx) {
   _playerState.totalSec = step.sec;
   _playerState.elapsedAtPause = 0;
   _playerState.running = false;
-  document.getElementById('player-step-label').textContent = `${seq.title} · Schritt ${idx + 1} von ${seq.steps.length}`;
-  document.getElementById('player-exercise-title').textContent = step.title;
+  _playerState.lastPopRemaining = null;
+
+  // Alter Schritt gleitet nach links raus, neuer kommt von rechts rein (240ms).
+  const stepWrap = document.getElementById('player-step-wrap');
+  if (stepWrap && !_reducedMotion) {
+    stepWrap.classList.add('h-step-out');
+    setTimeout(() => {
+      document.getElementById('player-step-label').textContent = `${seq.title} · Schritt ${idx + 1} von ${seq.steps.length}`;
+      document.getElementById('player-exercise-title').textContent = step.title;
+      stepWrap.classList.remove('h-step-out');
+      stepWrap.classList.add('h-step-in');
+      setTimeout(() => stepWrap.classList.remove('h-step-in'), 240);
+    }, 180);
+  } else {
+    document.getElementById('player-step-label').textContent = `${seq.title} · Schritt ${idx + 1} von ${seq.steps.length}`;
+    document.getElementById('player-exercise-title').textContent = step.title;
+  }
+
   document.getElementById('player-start-btn').textContent = 'Start';
   document.getElementById('player-start-btn').style.display = '';
   document.getElementById('player-reset-btn').style.display = '';
+  document.getElementById('player-done-btns').style.display = 'none';
+  const titleStrike = document.getElementById('player-title-strike');
+  if (titleStrike) titleStrike.style.display = 'none';
+  const ring = document.getElementById('player-ring-progress');
+  if (ring) ring.setAttribute('stroke-dashoffset', '1');
   updatePlayerDisplay(0);
 }
 function closePlayer() {
