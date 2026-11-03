@@ -76,9 +76,128 @@ body {
 }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
+.h-shell { display: block; }
 .app { max-width: 430px; margin: 0 auto; min-height: 100vh; position: relative; }
 .page { display: none; padding: 0 20px calc(110px + var(--safe-bot)); overflow-y: auto; }
 .page.active { display: block; }
+
+/* ════════════════ RESPONSIVE SHELL — Runde 5 Punkt 1 ════════════════
+   < 768px: BottomNav, eine Spalte (unverändert).
+   768–1023px: Icon-Leiste links (h-rail, 80px) + eine Inhaltsspalte bis 720px.
+   ≥ 1024px: Seitenleiste links (h-sidenav, 248px) + mehrspaltiger Inhalt. */
+.h-rail, .h-sidenav { display: none; }
+
+@media (min-width: 768px) {
+  .h-shell { display: flex; align-items: stretch; }
+  .h-shell .h-nav { display: none; }
+  .app { flex: 1; min-width: 0; max-width: none; margin: 0; }
+  .page { max-width: 720px; margin: 0 auto; padding: 0 32px 64px; }
+  .h-rail {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    width: 80px; flex-shrink: 0; padding-top: calc(28px + var(--safe-top));
+    border-right: 1px solid var(--line);
+  }
+  .h-rail-item { width: 100%; padding: 10px 4px; gap: 6px; }
+  .h-rail-item .h-nav-label { font-size: 11px; text-align: center; }
+}
+
+@media (min-width: 1024px) {
+  .h-rail { display: none; }
+  .h-sidenav {
+    display: flex; flex-direction: column;
+    width: 248px; flex-shrink: 0; box-sizing: border-box;
+    padding: calc(24px + var(--safe-top)) 20px 24px;
+    border-right: 1px solid var(--line);
+    position: sticky; top: 0; height: 100vh;
+  }
+  .h-sidenav-brand { margin-bottom: 32px; }
+  .h-sidenav-brand-svg { width: 150px; height: 32px; }
+  .h-sidenav-brand-svg text { fill: var(--ink); }
+  .h-sidenav-items { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+  .h-side-item { flex-direction: row; justify-content: flex-start; align-items: center; height: 48px; padding: 0 10px; gap: 10px; border-radius: 2px; position: relative; }
+  .h-side-item .h-nav-icon { width: 20px; height: 20px; }
+  .h-side-item .h-nav-icon svg { width: 20px; height: 20px; }
+  .h-side-item .h-nav-label { font-size: 15px; }
+  .h-side-underline { position: absolute; left: 40px; bottom: 6px; width: 24px; height: 6px; margin-top: 0; }
+  .h-side-item.active { background: var(--grid); }
+  .h-sidenav-foot { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .h-sidenav-foot > div:first-child { margin-bottom: 2px; }
+
+  .app { flex: 1; min-width: 0; }
+  .page { max-width: none; margin: 0; padding: calc(28px + var(--safe-top)) 48px 48px; }
+
+  /* Heute — zwei Spalten, siehe desktop-heute.png (Runde 5 Punkt 1) */
+  #h-heute { display: grid; grid-template-columns: 1fr 420px; column-gap: 48px; align-content: start; padding-top: 0; max-width: 1240px; }
+  #h-heute > .h-header { display: none; }
+  #h-heute .h-heute-title-desktop { display: block; grid-column: 1; grid-row: 10; }
+  #h-heute .h-heute-clock-desktop { display: block; grid-column: 2; grid-row: 10; justify-self: end; }
+  #h-heute > #h-backup-notice { grid-column: 1; grid-row: 20; }
+  #h-heute > .h-section[data-section-key="home:ziele"] { grid-column: 1; grid-row: 30; }
+  #h-heute > #h-goal-list { grid-column: 1; grid-row: 40; }
+  #h-heute > #h-goal-empty { grid-column: 1; grid-row: 40; }
+  #h-heute > .h-templates { grid-column: 1; grid-row: 50; }
+  #h-heute > #h-counters { grid-column: 2; grid-row: 20; }
+  #h-heute > #h-heute-sep1 { grid-column: 2; grid-row: 25; }
+  #h-heute > .h-heute-ringrow { grid-column: 2; grid-row: 35; }
+  #h-heute > #h-heute-sep2 { grid-column: 2; grid-row: 45; }
+  #h-heute > .h-section[data-section-key="home:heute-noch"] { grid-column: 2; grid-row: 55; }
+  #h-heute > #h-module-list { grid-column: 2; grid-row: 65; }
+  #h-heute > .h-heute-last { grid-column: 2; grid-row: 75; }
+
+  /* Übungen — Liste links, Detail rechts, siehe desktop-uebungen.png */
+  #pg-move.active { display: grid; grid-template-columns: 440px 1fr; column-gap: 48px; align-content: start; }
+  #pg-move > .h-header { display: none; }
+  #pg-move > .h-uebung-title-desktop { display: block; grid-column: 1; grid-row: 10; font-weight: 300; font-size: 54px; letter-spacing: -0.02em; line-height: 1; margin-bottom: 8px; }
+  #pg-move > .h-section { grid-column: 1; }
+  #pg-move > .h-section[data-section-key="move:routinen"] { grid-row: 20; }
+  #pg-move > .h-section[data-section-key="move:atmung"] { grid-row: 30; }
+  #pg-move > .h-section[data-section-key="move:protokolle"] { grid-row: 40; }
+  #pg-move > .h-section[data-section-key="move:einzeluebungen"] { grid-row: 50; }
+  #pg-move > .h-ue-detail { display: block; grid-column: 2; grid-row: 10 / 60; position: sticky; top: calc(28px + var(--safe-top)); align-self: start; border-left: 1px solid var(--line); padding-left: 48px; }
+  .h-ue-detail-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px; }
+  .h-ue-detail-title { font-weight: 300; font-size: 64px; letter-spacing: -0.02em; line-height: 1; margin-bottom: 10px; }
+  .h-ue-detail-steps { display: flex; flex-direction: column; }
+  .h-ue-detail-step { display: flex; align-items: baseline; gap: 20px; padding: 18px 0; border-top: 1px solid var(--line); }
+  .h-ue-detail-step-n { font-size: 18px; color: var(--muted); width: 20px; flex-shrink: 0; }
+  .h-ue-detail-step-body { flex: 1; }
+
+  /* Sammlung — Kategorien als Spalten, festes Detail-Panel statt Sheet,
+     siehe desktop-sammlung.png */
+  #pg-sammlung.active { display: grid; grid-template-columns: 1fr 380px; column-gap: 48px; align-content: start; }
+  #pg-sammlung > .h-header,
+  #pg-sammlung > .h-num-row,
+  #pg-sammlung > .h-meta,
+  #pg-sammlung > .h-seg,
+  #pg-sammlung > #sm-badges-view,
+  #pg-sammlung > #sm-history-view { grid-column: 1; }
+  #sm-badges-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); column-gap: 24px; align-items: start; }
+  #sm-badges-view > div:first-child { grid-column: 1 / -1; } /* Legende */
+  #sm-badges-view .h-section--sm { margin-top: 0 !important; }
+  #sm-badges-view .h-section-chevron { display: none; }
+  #sm-badges-view .h-section.collapsed .h-section-body { grid-template-rows: 1fr !important; }
+  #sm-badges-view .h-badge-grid { grid-template-columns: 1fr; gap: 20px; justify-items: start; }
+
+  #pg-sammlung > #badge-detail-overlay {
+    display: block; position: sticky; top: calc(28px + var(--safe-top)); align-self: start;
+    grid-column: 2; inset: auto; background: transparent; overflow: visible; z-index: auto;
+  }
+  #pg-sammlung > #badge-detail-overlay .h-embed { max-width: none; text-align: left; padding: 0; }
+  #pg-sammlung .h-sm-detail-label { display: block; margin-bottom: 8px; }
+  #pg-sammlung .h-sm-detail-close { display: none !important; }
+
+  /* Wissen/Setup — Inhaltsverzeichnis links (sticky, 280px), Inhalt rechts
+     mit max. 70ch Zeilenlänge (Wissen). Kein eigenes PNG vorgegeben, daher
+     nur ein funktionaler, ruhiger Zweispalter statt Pixel-Nachbau. */
+  #pg-supp.active, #pg-settings.active { display: grid; grid-template-columns: 280px 1fr; column-gap: 48px; align-content: start; }
+  #pg-supp.active > .h-header, #pg-settings.active > .h-header { grid-column: 1 / -1; }
+  .h-toc-desktop { display: none; }
+  #pg-supp.active > .h-toc-desktop, #pg-settings.active > .h-toc-desktop {
+    display: block; grid-column: 1; position: sticky; top: calc(28px + var(--safe-top)); align-self: start;
+  }
+  .h-toc-item { padding: 10px 0; font-size: 14px; color: var(--muted); cursor: pointer; border-bottom: 1px solid var(--line); }
+  .h-toc-item:hover { color: var(--ink); }
+  #pg-supp.active > .h-section, #pg-settings.active > .h-section { grid-column: 2; max-width: 70ch; }
+}
 
 /* ════════════════ APPHEADER ════════════════ */
 .h-header { display: flex; justify-content: space-between; align-items: flex-start; padding-top: calc(16px + var(--safe-top)); margin-bottom: 28px; }
@@ -88,6 +207,18 @@ body {
 .h-screen-name { font-size: 14px; color: var(--muted); margin-top: 2px; }
 .h-clock { font-weight: 700; font-size: 15px; }
 .h-date { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.h-heute-title-desktop, .h-heute-clock-desktop { display: none; }
+.h-heute-title-desktop-h { font-weight: 300; font-size: 54px; letter-spacing: -0.02em; line-height: 1; margin-bottom: 8px; }
+.h-heute-clock-desktop { font-size: 15px; }
+.h-heute-last-row { display: flex; align-items: center; gap: 14px; padding: 16px 0; cursor: pointer; border-top: 1px solid var(--line); margin-top: 8px; }
+.h-heute-last-badge { flex-shrink: 0; }
+.h-heute-last-text { flex: 1; min-width: 0; }
+.h-heute-last-row .h-row-chevron { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.h-uebung-title-desktop { display: none; }
+.h-ue-detail { display: none; }
+.h-ue-row-active { background: var(--grid); }
+.h-sm-detail-label { display: none; }
+.h-sm-badge-selected { background: var(--grid); }
 
 /* ════════════════ BOTTOMNAV ════════════════ */
 .h-nav {
@@ -341,6 +472,18 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
   <filter id="w4" x="-40%" y="-40%" width="180%" height="180%"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/></filter>
   <pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" stroke="#14140F" stroke-width="1.2"/></pattern>
 </defs></svg>
+<div class="h-shell">
+<nav class="h-rail" id="h-rail" aria-label="Navigation"></nav>
+<nav class="h-sidenav" id="h-sidenav" aria-label="Navigation">
+  <div class="h-sidenav-brand" aria-hidden="true">
+    <svg viewBox="0 0 160 34" class="h-sidenav-brand-svg"><text x="2" y="26" font-family="var(--ui)" font-weight="300" font-size="30">REHAPP</text><path class="h-pen h-pen-draw" pathLength="1" d="M4 17 L150 17" stroke="var(--ink)" stroke-width="2" fill="none" stroke-linecap="round"/><path class="h-pen h-pen-draw" pathLength="1" d="M138 9 L152 17 L138 25" stroke="var(--ink)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <div class="h-sidenav-items" id="h-sidenav-items"></div>
+  <div class="h-sidenav-foot">
+    <div id="h-sidenav-date"></div>
+    <div id="h-sidenav-eatwindow"></div>
+  </div>
+</nav>
 <div class="app">
 
 <!-- ══════════════════════════════════════ HOME ══ -->
@@ -359,11 +502,16 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         <div class="h-date" id="h-date"></div>
       </div>
     </div>
+    <div class="h-heute-title-desktop">
+      <div class="h-heute-title-desktop-h">Heute</div>
+      <div class="h-meta" id="h-heute-title-date"></div>
+    </div>
+    <div class="h-clock h-heute-clock-desktop" id="h-heute-clock-desktop"></div>
 
     <div class="h-counters" id="h-counters"></div>
 
-    <div class="h-sep"></div>
-    <div style="display:flex;align-items:center;gap:20px;padding:4px 0">
+    <div class="h-sep" id="h-heute-sep1"></div>
+    <div class="h-heute-ringrow" style="display:flex;align-items:center;gap:20px;padding:4px 0">
       <div class="h-ring-wrap" style="width:112px;height:112px;margin:0;flex-shrink:0">
         <svg class="h-ring" viewBox="0 0 160 160" style="width:112px;height:112px">
           <circle cx="80" cy="80" r="70" stroke="var(--line)" stroke-width="2" fill="none"/>
@@ -382,7 +530,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         <div class="h-meta" id="h-overcome-chip">Überwindung · 0 heute</div>
       </div>
     </div>
-    <div class="h-sep"></div>
+    <div class="h-sep" id="h-heute-sep2"></div>
 
     <div id="h-backup-notice"></div>
     <div class="h-section" data-section-key="home:ziele" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('home:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count" id="h-goal-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:ziele"><div>
@@ -393,6 +541,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     <div class="h-section" data-section-key="home:heute-noch"><div class="h-section-row" onclick="toggleSection('home:heute-noch')"><div class="h-section-title" style="font-size:28px">Heute noch</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:heute-noch"><div>
     </div></div></div>
     <div class="h-list" id="h-module-list" style="margin-top:4px"></div>
+    <div class="h-heute-last" id="h-heute-last"></div>
 
     <div class="h-templates" id="h-templates"></div>
   </div>
@@ -658,19 +807,21 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     </div>
     <div id="sm-badges-view" style="margin-top:20px"></div>
     <div id="sm-history-view" style="display:none;margin-top:20px"></div>
-  </div>
 
-  <!-- ABZEICHEN-DETAIL (Phase 6): Sheet über der Sammlung -->
-  <div class="h-sheet-overlay" id="badge-detail-overlay" role="dialog" aria-modal="true" aria-label="Abzeichen-Detail" style="z-index:620">
-    <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot));text-align:center">
-      <div style="display:flex;justify-content:flex-end">
-        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeBadgeDetail()" aria-label="Schließen">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
-        </button>
+    <!-- ABZEICHEN-DETAIL (Phase 6): mobil ein Sheet, ab 1024px ein festes
+         Panel rechts statt eines Sheets — siehe desktop-sammlung.png. -->
+    <div class="h-sheet-overlay" id="badge-detail-overlay" role="dialog" aria-modal="true" aria-label="Abzeichen-Detail" style="z-index:620">
+      <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot));text-align:center">
+        <div class="h-meta h-sm-detail-label">Ausgewählt</div>
+        <div style="display:flex;justify-content:flex-end" class="h-sm-detail-close">
+          <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeBadgeDetail()" aria-label="Schließen">
+            <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+          </button>
+        </div>
+        <div id="bd-badge" style="margin:12px 0 20px"></div>
+        <div class="h-title" id="bd-title" style="font-size:28px;margin-bottom:8px"></div>
+        <div class="h-meta" id="bd-meta"></div>
       </div>
-      <div id="bd-badge" style="margin:12px 0 20px"></div>
-      <div class="h-title" id="bd-title" style="font-size:28px;margin-bottom:8px"></div>
-      <div class="h-meta" id="bd-meta"></div>
     </div>
   </div>
 
@@ -812,6 +963,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     <div class="h-header-left"><div class="h-brand">REHAPP</div><div class="h-screen-name">Übungen</div></div>
     <div class="h-header-right"><div class="h-clock" id="h-clock-move">--:--</div><div class="h-date" id="h-date-move"></div></div>
   </div>
+  <div class="h-uebung-title-desktop">Übungen</div>
+
+  <div class="h-ue-detail" id="ue-detail-panel"></div>
 
   <div class="h-section" data-section-key="move:routinen" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('move:routinen')"><div class="h-section-title">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:routinen"><div>
     <div class="h-list" id="ue-routine-list" style="margin-top:12px"></div>
@@ -978,6 +1132,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     <div class="h-header-left"><div class="h-brand">REHAPP</div><div class="h-screen-name">Wissen</div></div>
     <div class="h-header-right"><div class="h-clock" id="h-clock-supp">--:--</div><div class="h-date" id="h-date-supp"></div></div>
   </div>
+  <div class="h-toc-desktop" id="supp-toc"></div>
 
   <div class="h-section" data-section-key="supp:supplemente" style="margin-top:20px"><div class="h-section-row" onclick="toggleSection('supp:supplemente')"><div class="h-section-title" style="font-size:28px">Supplemente</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:supplemente"><div>
     <div class="h-list" style="margin-top:12px" id="supp-wissen-list"></div>
@@ -1218,6 +1373,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     <div class="h-header-left"><div class="h-brand">REHAPP</div><div class="h-screen-name">Setup</div></div>
     <div class="h-header-right"><div class="h-clock" id="h-clock-settings">--:--</div><div class="h-date" id="h-date-settings"></div></div>
   </div>
+  <div class="h-toc-desktop" id="settings-toc"></div>
 
   <div class="h-section" data-section-key="settings:klang" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('settings:klang')"><div class="h-section-title" style="font-size:28px">Klang</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:klang"><div>
     <div style="display:flex;align-items:center;gap:12px;margin:16px 0 24px">
@@ -1366,39 +1522,48 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     </div>
   </div>
 
-<!-- ══ BOTTOM NAV ══ -->
-<nav class="h-nav">
-  <div class="h-nav-item active" onclick="showPage('pg-home')" id="nav-home">
-    <div class="h-nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
-    <div class="h-nav-label">Heute</div>
-    <svg class="h-nav-underline" viewBox="0 0 40 8" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M2 4 Q 10 2, 20 4 T 38 4"/></svg>
-  </div>
-  <div class="h-nav-item" onclick="showPage('pg-move')" id="nav-move">
-    <div class="h-nav-icon"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></div>
-    <div class="h-nav-label">Übungen</div>
-    <svg class="h-nav-underline" viewBox="0 0 40 8" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M2 4 Q 10 2, 20 4 T 38 4"/></svg>
-  </div>
-  <div class="h-nav-item" onclick="showPage('pg-sammlung')" id="nav-sammlung">
-    <div class="h-nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M8.7 13.7 7 22l5-3 5 3-1.7-8.3"/></svg></div>
-    <div class="h-nav-label">Sammlung</div>
-    <svg class="h-nav-underline" viewBox="0 0 40 8" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M2 4 Q 10 2, 20 4 T 38 4"/></svg>
-  </div>
-  <div class="h-nav-item" onclick="showPage('pg-supp')" id="nav-supp">
-    <div class="h-nav-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
-    <div class="h-nav-label">Wissen</div>
-    <svg class="h-nav-underline" viewBox="0 0 40 8" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M2 4 Q 10 2, 20 4 T 38 4"/></svg>
-  </div>
-  <div class="h-nav-item" onclick="showPage('pg-settings')" id="nav-settings">
-    <div class="h-nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
-    <div class="h-nav-label">Setup</div>
-    <svg class="h-nav-underline" viewBox="0 0 40 8" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M2 4 Q 10 2, 20 4 T 38 4"/></svg>
-  </div>
-</nav>
+<!-- ══ BOTTOM NAV — Inhalt aus NAV_ITEMS via renderNavChrome(), Runde 5 Punkt 1 ══ -->
+<nav class="h-nav" id="h-nav-bottom"></nav>
 
 <div class="h-toast" id="toast" role="status" aria-live="polite"></div>
 </div>
+</div><!-- /.h-shell -->
 
 <script>
+// ══════════════ NAV ITEMS — eine Liste für BottomNav/Rail/SideNav (Runde 5 Punkt 1) ══════════════
+const NAV_ITEMS = [
+  { page: 'pg-home', slug: 'home', label: 'Heute', svgAttrs: '', inner: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/>' },
+  { page: 'pg-move', slug: 'move', label: 'Übungen', svgAttrs: ' fill="currentColor" stroke="none"', inner: '<path d="M8 5v14l11-7z"/>' },
+  { page: 'pg-sammlung', slug: 'sammlung', label: 'Sammlung', svgAttrs: '', inner: '<circle cx="12" cy="8" r="6"/><path d="M8.7 13.7 7 22l5-3 5 3-1.7-8.3"/>' },
+  { page: 'pg-supp', slug: 'supp', label: 'Wissen', svgAttrs: '', inner: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>' },
+  { page: 'pg-settings', slug: 'settings', label: 'Setup', svgAttrs: '', inner: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>' },
+];
+function renderNavChrome() {
+  const bottom = document.getElementById('h-nav-bottom');
+  if (bottom) bottom.innerHTML = NAV_ITEMS.map(n => `
+    <div class="h-nav-item" data-page="${n.page}" id="nav-${n.slug}" onclick="showPage('${n.page}')">
+      <div class="h-nav-icon"><svg viewBox="0 0 24 24"${n.svgAttrs}>${n.inner}</svg></div>
+      <div class="h-nav-label">${n.label}</div>
+      <svg class="h-nav-underline" viewBox="0 0 60 8" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M3 4.5C18 3.6 40 5.2 57 4"/></svg>
+    </div>`).join('');
+  const rail = document.getElementById('h-rail');
+  if (rail) rail.innerHTML = NAV_ITEMS.map(n => `
+    <div class="h-nav-item h-rail-item" data-page="${n.page}" id="rail-${n.slug}" onclick="showPage('${n.page}')">
+      <div class="h-nav-icon"><svg viewBox="0 0 24 24"${n.svgAttrs}>${n.inner}</svg></div>
+      <div class="h-nav-label">${n.label}</div>
+    </div>`).join('');
+  const side = document.getElementById('h-sidenav-items');
+  if (side) side.innerHTML = NAV_ITEMS.map(n => `
+    <div class="h-nav-item h-side-item" data-page="${n.page}" id="side-${n.slug}" onclick="showPage('${n.page}')">
+      <div class="h-nav-icon"><svg viewBox="0 0 24 24"${n.svgAttrs}>${n.inner}</svg></div>
+      <div class="h-nav-label">${n.label}</div>
+      <svg class="h-nav-underline h-side-underline" viewBox="0 0 60 8" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M3 4.5C18 3.6 40 5.2 57 4"/></svg>
+    </div>`).join('');
+}
+function syncNavActive(id) {
+  document.querySelectorAll('.h-nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === id));
+}
+
 // ══════════════ DATA ══════════════
 
 const SUPP_DATA = {
@@ -2770,6 +2935,28 @@ function updateHeuteClock() {
     if (clockEl) clockEl.textContent = time;
     if (dateEl) dateEl.textContent = date;
   });
+  const deskClock = document.getElementById('h-heute-clock-desktop');
+  if (deskClock) deskClock.textContent = time;
+  const deskDate = document.getElementById('h-heute-title-date');
+  if (deskDate) deskDate.textContent = now.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^(\w)/, c => c.toUpperCase());
+  updateSidenavFoot(now);
+}
+
+// Seitenleiste (≥1024px): Datum + Essfenster unten, siehe desktop-heute.png
+function updateSidenavFoot(now) {
+  const dateEl = document.getElementById('h-sidenav-date');
+  const windowEl = document.getElementById('h-sidenav-eatwindow');
+  if (dateEl) {
+    dateEl.textContent = (now || new Date()).toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'long' }).replace(/^(\w)/, c => c.toUpperCase());
+  }
+  if (windowEl) {
+    let text = '';
+    try {
+      const raw = storageGet('eat16_8');
+      if (raw) { const w = JSON.parse(raw); if (w && w.start) text = `Essfenster ab ${w.start}`; }
+    } catch (err) {}
+    windowEl.textContent = text;
+  }
 }
 
 // rAF-getriebene Ring-Animation statt CSS-Transition — konsistent mit der
@@ -2909,6 +3096,28 @@ function buildHeuteScreen() {
 
   renderHeuteModuleList();
   renderBackupNotice();
+  renderHeuteLastBadge();
+}
+
+// "Zuletzt verdient" — rechte Spalte Desktop (desktop-heute.png), zeigt den
+// zuletzt erreichten Stufensprung eines Abzeichens.
+function renderHeuteLastBadge() {
+  const el = document.getElementById('h-heute-last');
+  if (!el) return;
+  const earned = getAllEarned().filter(e => e.tier && e.tier !== 'gesperrt').sort((a, b) => (b.at || 0) - (a.at || 0))[0];
+  const g = earned ? getGoal(earned.id) : null;
+  if (!earned || !g) { el.innerHTML = ''; return; }
+  const tierLabel = { skizze: 'Skizze', tusche: 'Tusche', glanz: 'Glanz' }[earned.tier] || '';
+  const badgeSvg = renderBadge({ cat: g.category, tier: earned.tier, icon: g.icon, drawing: g.drawing, size: 56 });
+  el.innerHTML = `
+    <div class="h-heute-last-row" onclick="showPage('pg-sammlung')">
+      <div class="h-heute-last-badge">${badgeSvg}</div>
+      <div class="h-heute-last-text">
+        <div class="h-meta">Zuletzt verdient</div>
+        <div class="h-text" style="font-weight:700">${escapeHtml(g.title)} · ${tierLabel}</div>
+      </div>
+      <div class="h-row-chevron">Sammlung ›</div>
+    </div>`;
 }
 
 // Fasten/Wasser/Supplemente-Zeilen unter den Zielen — Module statt eigene
@@ -3220,7 +3429,14 @@ function buildSammlungBadges() {
 
   el.innerHTML = html;
   restoreSectionCollapseState();
+  // Desktop (≥1024px): rechts ein festes Detail-Panel statt eines Sheets —
+  // siehe desktop-sammlung.png. Ohne Auswahl das erste Abzeichen zeigen.
+  if (window.matchMedia('(min-width: 1024px)').matches) {
+    const firstId = goals[0] ? goals[0].id : (counters[0] ? counters[0].id : null);
+    openBadgeDetail(_smSelectedBadge || firstId);
+  }
 }
+let _smSelectedBadge = null;
 
 async function resetCounter(id) {
   const c = getGoal(id);
@@ -3293,6 +3509,7 @@ function describeBadgeProgress(goal, tier) {
 }
 
 function openBadgeDetail(badgeId) {
+  if (!badgeId) return;
   const goal = getGoal(badgeId);
   const earned = getEarned(badgeId);
   const tier = goal ? (goal.kind === 'counter' ? computeCounterTier(goal) : (goal.paused || goal.archived ? ((earned && earned.tier) || 'gesperrt') : computeTier(goal))) : (earned ? earned.tier : 'gesperrt');
@@ -3303,6 +3520,10 @@ function openBadgeDetail(badgeId) {
   document.getElementById('bd-title').textContent = goal ? goal.title : 'Überwunden';
   document.getElementById('bd-meta').textContent = describeBadgeProgress(goal, tier);
   document.getElementById('badge-detail-overlay').classList.add('open');
+  _smSelectedBadge = badgeId;
+  document.querySelectorAll('#sm-badges-view .h-badge-grid button').forEach(b => {
+    b.classList.toggle('h-sm-badge-selected', b.getAttribute('onclick') === `openBadgeDetail('${badgeId}')`);
+  });
 }
 function closeBadgeDetail() {
   document.getElementById('badge-detail-overlay').classList.remove('open');
@@ -3485,13 +3706,14 @@ function buildUebungenList() {
     </div>
   `).join('') : `<div class="h-meta">Noch keine Übungen angelegt.</div>`;
 }
+let _ueSelectedRoutine = null;
 function buildRoutineList() {
   const el = document.getElementById('ue-routine-list');
   if (!el) return;
   const routines = getActiveHeuteGoals().filter(g => g.kind === 'routine');
   el.innerHTML = routines.map(g => `
-    <div class="h-row">
-      <div style="flex:1;cursor:pointer" onclick="openRoutinePlayer('${g.id}')">
+    <div class="h-row${g.id === _ueSelectedRoutine ? ' h-ue-row-active' : ''}" data-routine-id="${g.id}">
+      <div style="flex:1;cursor:pointer" onclick="onUebungRoutineRowTap('${g.id}')">
         <div class="h-text">${escapeHtml(g.title)}</div>
         <div class="h-meta">${g.steps.length} Schritte${g.time ? ' · ' + escapeHtml(g.time) : ''}</div>
       </div>
@@ -3501,6 +3723,64 @@ function buildRoutineList() {
       </button>
     </div>
   `).join('');
+  // Desktop (≥1024px): Liste links, Detail rechts — siehe desktop-uebungen.png.
+  // Ohne Auswahl die erste Routine vorauswählen, damit das Panel nicht leer ist.
+  if (window.matchMedia('(min-width: 1024px)').matches) {
+    if (!_ueSelectedRoutine || !routines.some(g => g.id === _ueSelectedRoutine)) {
+      _ueSelectedRoutine = routines[0] ? routines[0].id : null;
+    }
+    renderUebungDetailPanel();
+  }
+}
+// Mobil/Tablet startet ein Zeilen-Tap direkt den Player (bestehendes Verhalten).
+// Ab 1024px wählt ein Tap nur aus und zeigt die Details rechts (desktop-uebungen.png).
+function onUebungRoutineRowTap(id) {
+  if (window.matchMedia('(min-width: 1024px)').matches) {
+    _ueSelectedRoutine = id;
+    document.querySelectorAll('#ue-routine-list .h-row').forEach(r => r.classList.toggle('h-ue-row-active', r.dataset.routineId === id));
+    renderUebungDetailPanel();
+  } else {
+    openRoutinePlayer(id);
+  }
+}
+function renderUebungDetailPanel() {
+  const el = document.getElementById('ue-detail-panel');
+  if (!el) return;
+  const g = _ueSelectedRoutine ? getGoal(_ueSelectedRoutine) : null;
+  if (!g) { el.innerHTML = ''; return; }
+  const tier = computeTier(g);
+  const totalSec = (g.steps || []).reduce((sum, s) => sum + (s.sec || 0), 0);
+  const miniSec = (g.steps || []).filter(s => s.mini).reduce((sum, s) => sum + (s.sec || 0), 0);
+  el.innerHTML = `
+    <div class="h-ue-detail-head">
+      <div class="h-meta">Routinen · ${escapeHtml(g.title)}</div>
+      <a class="h-row-chevron" style="cursor:pointer" onclick="navigateTo('setup/routine/${g.id}')">In Einstellungen ändern ›</a>
+    </div>
+    <div class="h-ue-detail-title">${escapeHtml(g.title)}</div>
+    <div class="h-meta" style="margin-bottom:20px">${g.time ? escapeHtml(g.time) + ' · ' : ''}${g.steps.length} Schritte · ca. ${Math.round(totalSec / 60)} Min</div>
+    <div style="display:flex;gap:10px;margin-bottom:28px">
+      <button type="button" class="h-pill" onclick="openRoutinePlayer('${g.id}')">Starten</button>
+      <button type="button" class="h-pill h-pill--outline" onclick="openRoutinePlayer('${g.id}', true)">Mini${miniSec ? ' · ' + Math.round(miniSec / 60) + ' Min' : ''}</button>
+    </div>
+    <div class="h-ue-detail-steps">
+      ${(g.steps || []).map((s, i) => `
+        <div class="h-ue-detail-step">
+          <div class="h-ue-detail-step-n">${i + 1}</div>
+          <div class="h-ue-detail-step-body">
+            <div class="h-text" style="font-weight:700">${escapeHtml(s.title)}</div>
+          </div>
+          <div class="h-meta">${formatMMSS(s.sec)}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="h-heute-last-row" style="cursor:default;border-top:1px solid var(--line)">
+      <div class="h-heute-last-badge">${renderBadge({ cat: g.category, tier, icon: g.icon, drawing: g.drawing, size: 48 })}</div>
+      <div class="h-heute-last-text">
+        <div class="h-text" style="font-weight:700">${escapeHtml(g.title)}</div>
+        <div class="h-meta">${describeBadgeProgress(g, tier)}</div>
+      </div>
+    </div>
+  `;
 }
 function openUebungen() { buildRoutineList(); buildUebungenList(); }
 
@@ -4280,6 +4560,7 @@ function openEinstellungen() {
   buildSetGoalsList();
   updateInstallStatus();
   updateNotificationStatus();
+  buildSectionTOC('pg-settings', 'settings-toc');
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -5744,6 +6025,8 @@ function enhanceAccessibility() {
 // ══════════════ INIT ══════════════
 
 document.addEventListener('DOMContentLoaded', async () => {
+  renderNavChrome();
+  syncNavActive('pg-home');
   // Gespeicherte Einstellungen sofort anwenden
   const savedFs = storageGet('settings_fontsize');
   if (savedFs) applyFontSize(parseInt(savedFs, 10));
@@ -5822,18 +6105,17 @@ function openWissen() {
   buildCRPSCalendar();
   buildBudapestFilter();
   renderOedemTrend();
+  buildSectionTOC('pg-supp', 'supp-toc');
 }
 
 function showPage(id) {
   ['pg-home','pg-move','pg-sammlung','pg-supp','pg-settings'].forEach(p => { const e = document.getElementById(p); if(e) e.classList.remove('active'); });
-  document.querySelectorAll('.h-nav-item').forEach(n => n.classList.remove('active'));
   const t = document.getElementById(id); if (t) t.classList.add('active');
   if (id === 'pg-settings') { buildSettings(); openEinstellungen(); }
   if (id === 'pg-move') openUebungen();
   if (id === 'pg-sammlung') openSammlung();
   if (id === 'pg-supp') openWissen();
-  const nm = {'pg-home':'nav-home','pg-move':'nav-move','pg-sammlung':'nav-sammlung','pg-supp':'nav-supp','pg-settings':'nav-settings'};
-  const ne = document.getElementById(nm[id]); if (ne) ne.classList.add('active');
+  syncNavActive(id);
   currentPage = id;
   window.scrollTo(0, 0);
   restoreSectionCollapseState();
@@ -6701,6 +6983,28 @@ function restoreSectionCollapseState() {
     const key = section.dataset.sectionKey;
     applySectionCollapseVisual(section, storageGet('collapsed:' + key) === '1');
   });
+}
+
+// Inhaltsverzeichnis für Wissen/Setup ab 1024px (sticky, links) — siehe
+// Runde 5 Punkt 1. Baut sich aus den vorhandenen .h-section-Titeln der
+// Seite, kein eigenes Datenmodell nötig.
+function buildSectionTOC(pageId, tocId) {
+  const toc = document.getElementById(tocId);
+  const page = document.getElementById(pageId);
+  if (!toc || !page) return;
+  const sections = Array.from(page.querySelectorAll(':scope > .h-section[data-section-key]'));
+  toc.innerHTML = sections.map(s => {
+    const key = s.dataset.sectionKey;
+    const title = s.querySelector('.h-section-title');
+    return `<div class="h-toc-item" onclick="scrollToSection('${key}')">${title ? escapeHtml(title.textContent) : ''}</div>`;
+  }).join('');
+}
+function scrollToSection(key) {
+  const section = document.querySelector(`.h-section[data-section-key="${CSS.escape(key)}"]`);
+  if (!section) return;
+  applySectionCollapseVisual(section, false);
+  storageSet('collapsed:' + key, '0');
+  section.scrollIntoView({ block: 'start', behavior: 'smooth' });
 }
 
 // ══════════════ TOAST ══════════════
