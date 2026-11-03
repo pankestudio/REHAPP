@@ -399,14 +399,27 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 .h-player-ring-svg, .h-player-blob-svg { pointer-events: none; }
 #player-blob-circle { transform-box: fill-box; transform-origin: center; transform: scale(0.6); }
 .h-player-ring-label { display: flex; align-items: center; justify-content: center; text-align: center; pointer-events: none; position: relative; }
-#player-cue { position: absolute; top: calc(50% + 28px); left: 50%; transform: translateX(-50%); white-space: nowrap; }
+#player-cue { position: absolute; top: calc(50% + 28px); left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 13px; color: var(--muted); margin-top: 4px; min-height: 16px; }
 #player-countdown { font-variant-numeric: tabular-nums; line-height: 1; transform: translateY(-0.04em); }
 #player-cue { transition: opacity 150ms ease; }
+/* Atmung (Runde 5 Punkt 2): Zahl entfällt, stattdessen die Phase groß und
+   zentriert im Grid-Stack — #player-cue verlässt dafür die absolute
+   Positionierung und wird selbst der einzige Flex-Child (siehe JS). */
+#player-cue.h-player-cue-phase { position: static; transform: none; top: auto; left: auto; font-family: var(--ui); font-weight: 300; font-size: 34px; color: var(--ink); min-height: 0; }
 #player-ring-progress { transition: stroke-width 90ms ease; }
-.h-player-step-wrap { position: relative; min-height: 38px; overflow: hidden; width: 100%; }
+.h-player-head { display: flex; align-items: flex-start; justify-content: space-between; width: 100%; margin-bottom: 8px; }
+.h-player-step-wrap { position: relative; min-height: 38px; overflow: hidden; text-align: right; }
 .h-player-step-wrap > div { transition: transform 240ms ease, opacity 240ms ease; }
 .h-player-step-wrap.h-step-out > div { transform: translateX(-24px); opacity: 0; }
 .h-player-step-wrap.h-step-in > div { transform: translateX(0); opacity: 1; }
+.h-phasebar { width: 100%; max-width: 300px; margin: 4px auto 0; }
+.h-phasebar-track { position: relative; }
+.h-phasebar-segs { display: flex; gap: 4px; }
+.h-phasebar-seg { height: 8px; border: 2px solid var(--ink); border-radius: 999px; background: var(--paper); overflow: hidden; position: relative; }
+.h-phasebar-seg-fill { position: absolute; inset: 0; background: var(--yellow); filter: url(#wb); transform-origin: left center; }
+.h-phasebar-marker { position: absolute; top: -2px; width: 3px; height: 12px; background: var(--ink); border-radius: 2px; transform: translateX(-50%); transition: left 90ms linear; pointer-events: none; }
+.h-phasebar-labels { display: flex; justify-content: space-between; margin-top: 8px; }
+.h-phasebar-labels span { font-size: 13px; color: var(--muted); }
 
 /* ════════════════ STIFT-ELEMENTE ════════════════ */
 .h-pen { stroke: var(--ink); fill: none; stroke-linecap: round; }
@@ -470,6 +483,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
   <filter id="w2" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="11" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>
   <filter id="w3" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.3" xChannelSelector="R" yChannelSelector="G"/></filter>
   <filter id="w4" x="-40%" y="-40%" width="180%" height="180%"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/></filter>
+  <filter id="wb" x="-20%" y="-60%" width="140%" height="220%"><feTurbulence type="fractalNoise" baseFrequency="0.15" numOctaves="1" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2" xChannelSelector="R" yChannelSelector="G"/></filter>
   <pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" stroke="#14140F" stroke-width="1.2"/></pattern>
 </defs></svg>
 <div class="h-shell">
@@ -514,11 +528,11 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     <div class="h-heute-ringrow" style="display:flex;align-items:center;gap:20px;padding:4px 0">
       <div class="h-ring-wrap" style="width:112px;height:112px;margin:0;flex-shrink:0">
         <svg class="h-ring" viewBox="0 0 160 160" style="width:112px;height:112px">
-          <circle cx="80" cy="80" r="70" stroke="var(--line)" stroke-width="2" fill="none"/>
-          <circle class="h-ring-progress" cx="80" cy="80" r="70" stroke="var(--ink)" stroke-width="3" fill="none"
+          <circle cx="80" cy="80" r="70" stroke="var(--line)" stroke-width="3" fill="none" filter="url(#w1)"/>
+          <circle class="h-ring-progress" cx="80" cy="80" r="70" stroke="var(--ink)" stroke-width="4" fill="none"
             stroke-linecap="round" id="h-ring-progress"
             stroke-dasharray="439.8" stroke-dashoffset="439.8"
-            transform="rotate(-90 80 80)"/>
+            transform="rotate(-90 80 80)" filter="url(#w1)"/>
         </svg>
         <div class="h-ring-label">
           <div class="h-num-xl" id="h-ring-count" style="font-size:28px">0/0</div>
@@ -839,31 +853,40 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
        Properties für einen ablenkungsfreien, dunklen Fokus-Screen. -->
   <div class="h-sheet-overlay" id="player-overlay" role="dialog" aria-modal="true" aria-label="Übungs-Player" style="z-index:610">
     <div class="h-embed" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;position:relative;box-sizing:border-box">
-      <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closePlayer()" aria-label="Schließen" style="position:absolute;top:calc(16px + var(--safe-top));right:20px">
-        <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
-      </button>
-      <div class="h-player-step-wrap" id="player-step-wrap">
-        <div class="h-meta" id="player-step-label" style="color:var(--faint);min-height:16px"></div>
-        <div style="position:relative;display:inline-block;margin-top:2px">
-          <div class="h-meta" id="player-exercise-title"></div>
-          <svg class="h-strike-shaft" id="player-title-strike" style="position:absolute;left:-3%;top:38%;width:106%;overflow:visible;display:none" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen" pathLength="1" d="M2 7 Q 30 3, 50 6 T 98 5" stroke-width="3"/></svg>
+      <div class="h-player-head">
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closePlayer()" aria-label="Zurück">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="h-player-step-wrap" id="player-step-wrap">
+          <div style="position:relative;display:inline-block">
+            <div class="h-meta" id="player-exercise-title" style="font-weight:700;color:var(--ink)"></div>
+            <svg class="h-strike-shaft" id="player-title-strike" style="position:absolute;left:-3%;top:38%;width:106%;overflow:visible;display:none" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen" pathLength="1" d="M2 7 Q 30 3, 50 6 T 98 5" stroke-width="3"/></svg>
+          </div>
+          <div class="h-meta" id="player-step-label" style="color:var(--faint);min-height:16px"></div>
         </div>
       </div>
       <div class="h-player-stack">
         <svg class="h-player-ring-svg" viewBox="0 0 300 300" aria-hidden="true">
-          <circle cx="150" cy="150" r="130" stroke="var(--line)" stroke-width="2" fill="none" class="h-pen-draw" id="player-ring-base" pathLength="1"/>
-          <circle cx="150" cy="150" r="130" stroke="var(--ink)" stroke-width="3" fill="none"
+          <circle cx="150" cy="150" r="130" stroke="var(--line)" stroke-width="3" fill="none" class="h-pen-draw" id="player-ring-base" pathLength="1" filter="url(#w1)"/>
+          <circle cx="150" cy="150" r="130" stroke="var(--ink)" stroke-width="4" fill="none"
             stroke-linecap="round" id="player-ring-progress" pathLength="1"
             stroke-dasharray="1" stroke-dashoffset="1"
             transform="rotate(-90 150 150)" filter="url(#w1)"/>
         </svg>
-        <svg class="h-player-blob-svg" viewBox="0 0 300 300" aria-hidden="true">
-          <circle cx="150" cy="150" r="115" fill="var(--yellow)" opacity="0.35" filter="url(#w4)" id="player-blob-circle"/>
+        <svg class="h-player-blob-svg" id="player-blob-svg" viewBox="0 0 300 300" aria-hidden="true" style="display:none">
+          <circle cx="150" cy="150" r="115" fill="var(--yellow)" filter="url(#w4)" id="player-blob-circle"/>
         </svg>
         <div class="h-player-ring-label">
-          <div class="h-num-xxl" id="player-countdown" style="font-size:72px">00:00</div>
-          <div class="h-title" id="player-cue" style="font-size:20px;margin-top:4px;min-height:26px"></div>
+          <div class="h-num-xxl" id="player-countdown" style="font-size:96px">00:00</div>
+          <div class="h-title" id="player-cue"></div>
         </div>
+      </div>
+      <div class="h-phasebar" id="player-phasebar" style="display:none">
+        <div class="h-phasebar-track" id="player-phasebar-track">
+          <div class="h-phasebar-segs" id="player-phasebar-segs"></div>
+          <div class="h-phasebar-marker" id="player-phasebar-marker"></div>
+        </div>
+        <div class="h-phasebar-labels" id="player-phasebar-labels"></div>
       </div>
       <div style="display:flex;gap:16px;align-items:center;margin-top:8px">
         <button type="button" class="h-pill" id="player-start-btn" onclick="togglePlayerRun()">Start</button>
@@ -3897,29 +3920,45 @@ function updatePlayerDisplay(elapsed) {
   const pattern = ex.details.pattern;
   const countdownEl = document.getElementById('player-countdown');
   const cueEl = document.getElementById('player-cue');
-  let phase = null, phaseT = 0;
+  const stepLabelEl = document.getElementById('player-step-label');
+  let phase = null, phaseT = 0, cycleLen = 0, cycleElapsed = 0;
   if (pattern && pattern.length) {
-    const cycleLen = pattern.reduce((sum, p) => sum + p.sec, 0);
-    let t = elapsed % cycleLen;
-    let phaseRemaining = pattern[0].sec;
+    // Atmung (Runde 5 Punkt 2): keine Zahl mehr, stattdessen die Phase groß
+    // zentriert; der gelbe Atem-Kreis existiert nur in diesem Zweig.
+    countdownEl.style.display = 'none';
+    cueEl.classList.add('h-player-cue-phase');
+    const blobSvg = document.getElementById('player-blob-svg');
+    if (blobSvg) blobSvg.style.display = '';
+    cycleLen = pattern.reduce((sum, p) => sum + p.sec, 0);
+    cycleElapsed = elapsed % cycleLen;
+    let t = cycleElapsed;
     phase = pattern[0];
     for (const p of pattern) {
-      if (t < p.sec) { phase = p; phaseRemaining = p.sec - t; phaseT = t / p.sec; break; }
+      if (t < p.sec) { phase = p; phaseT = t / p.sec; break; }
       t -= p.sec;
     }
-    countdownEl.textContent = String(Math.ceil(phaseRemaining));
     if (cueEl.textContent !== phase.label) {
       cueEl.style.opacity = '0';
       setTimeout(() => { cueEl.textContent = phase.label; cueEl.style.opacity = '1'; }, 150);
     }
+    if (ex.details.rounds) {
+      const round = Math.min(ex.details.rounds, Math.floor(elapsed / cycleLen) + 1);
+      stepLabelEl.textContent = `Runde ${round} von ${ex.details.rounds}`;
+    }
+    updatePlayerPhasebarMarker(cycleElapsed, cycleLen);
   } else {
+    countdownEl.style.display = '';
+    cueEl.classList.remove('h-player-cue-phase');
+    const blobSvg = document.getElementById('player-blob-svg');
+    if (blobSvg) blobSvg.style.display = 'none';
     const remaining = Math.max(0, _playerState.totalSec - elapsed);
     countdownEl.textContent = formatMMSS(remaining);
-    if (cueEl.textContent !== (ex.details.cue || '')) cueEl.textContent = ex.details.cue || '';
+    const cueText = ex.details.cue || 'noch';
+    if (cueEl.textContent !== cueText) cueEl.textContent = cueText;
   }
 
   const blob = document.getElementById('player-blob-circle');
-  if (blob && !_reducedMotion) blob.style.transform = `scale(${playerBlobScale(phase, phaseT, elapsed).toFixed(3)})`;
+  if (blob && pattern && !_reducedMotion) blob.style.transform = `scale(${playerBlobScale(phase, phaseT, elapsed).toFixed(3)})`;
 
   const ring = document.getElementById('player-ring-progress');
   if (ring) {
@@ -3937,6 +3976,27 @@ function updatePlayerDisplay(elapsed) {
       if (ring) ring.animate([{ strokeWidth: 3.5 }, { strokeWidth: 5 }, { strokeWidth: 3.5 }], { duration: 180, easing: 'ease-out' });
     }
   }
+}
+
+// Phasenbalken (Runde 5 Punkt 2): Segmente im Verhältnis der Phasendauern,
+// eine Markierung wandert linear über die komplette Breite. Wird einmal pro
+// Übung aufgebaut (nicht pro Frame) — nur updatePlayerPhasebarMarker() läuft
+// mit dem rAF-Tick mit.
+function setupPlayerPhasebar(pattern) {
+  const bar = document.getElementById('player-phasebar');
+  if (!bar) return;
+  if (!pattern || !pattern.length) { bar.style.display = 'none'; return; }
+  bar.style.display = '';
+  const segs = document.getElementById('player-phasebar-segs');
+  const labels = document.getElementById('player-phasebar-labels');
+  const shortLabel = l => (l || '').replace(/^Einatmen$/, 'Ein').replace(/^Ausatmen$/, 'Aus').replace(/^Halten$/, 'Halt');
+  segs.innerHTML = pattern.map(p => `<div class="h-phasebar-seg" style="flex:${p.sec} 0 0"><div class="h-phasebar-seg-fill"></div></div>`).join('');
+  labels.innerHTML = pattern.map(p => `<span>${escapeHtml(shortLabel(p.label))} · ${p.sec} s</span>`).join('');
+}
+function updatePlayerPhasebarMarker(cycleElapsed, cycleLen) {
+  const marker = document.getElementById('player-phasebar-marker');
+  if (!marker || !cycleLen) return;
+  marker.style.left = (cycleElapsed / cycleLen * 100) + '%';
 }
 
 function playerTick() {
@@ -4114,6 +4174,7 @@ function openPlayer(exerciseId) {
   const titleStrike = document.getElementById('player-title-strike');
   if (titleStrike) titleStrike.style.display = 'none';
   renderSoundPackPicker();
+  setupPlayerPhasebar(ex.details.pattern);
   updatePlayerDisplay(0);
   document.getElementById('player-overlay').classList.add('open');
 }
@@ -4191,6 +4252,7 @@ function loadPlayerStep(idx) {
   if (titleStrike) titleStrike.style.display = 'none';
   const ring = document.getElementById('player-ring-progress');
   if (ring) ring.setAttribute('stroke-dashoffset', '1');
+  setupPlayerPhasebar(null);
   updatePlayerDisplay(0);
 }
 function closePlayer() {
