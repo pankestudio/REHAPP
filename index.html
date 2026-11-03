@@ -114,36 +114,32 @@ body {
   .h-sidenav-brand-svg { width: 150px; height: 32px; }
   .h-sidenav-brand-svg text { fill: var(--ink); }
   .h-sidenav-items { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-  .h-side-item { flex-direction: row; justify-content: flex-start; align-items: center; height: 48px; padding: 0 10px; gap: 10px; border-radius: 2px; position: relative; }
-  .h-side-item .h-nav-icon { width: 20px; height: 20px; }
-  .h-side-item .h-nav-icon svg { width: 20px; height: 20px; }
-  .h-side-item .h-nav-label { font-size: 15px; }
-  .h-side-underline { position: absolute; left: 40px; bottom: 6px; width: 24px; height: 6px; margin-top: 0; }
-  .h-side-item.active { background: var(--grid); }
+  /* #h-sidenav-Scope statt bloßer .h-side-item-Klasse: .h-nav-item{flex-
+     direction:column} ist eine Basisregel mit derselben Spezifität (0,1,0)
+     und steht später im Stylesheet, würde bei Gleichstand sonst gewinnen —
+     Icon/Label standen deshalb trotz dieser Regel übereinander. */
+  #h-sidenav .h-side-item { flex-direction: row; justify-content: flex-start; align-items: center; height: 48px; padding: 0 10px; gap: 14px; border-radius: 999px; position: relative; }
+  #h-sidenav .h-side-item .h-nav-icon { width: 22px; height: 22px; }
+  #h-sidenav .h-side-item .h-nav-icon svg { width: 22px; height: 22px; }
+  #h-sidenav .h-side-item .h-nav-label { font-size: 16px; }
+  #h-sidenav .h-side-underline { position: absolute; left: 46px; bottom: 2px; width: 24px; height: 6px; margin-top: 0; }
+  #h-sidenav .h-side-item.active { background: var(--grid); }
   .h-sidenav-foot { font-size: 12px; color: var(--muted); line-height: 1.5; }
   .h-sidenav-foot > div:first-child { margin-bottom: 2px; }
 
   .app { flex: 1; min-width: 0; }
   .page { max-width: none; margin: 0; padding: calc(28px + var(--safe-top)) 48px 48px; }
 
-  /* Heute — zwei Spalten, siehe desktop-heute.png (Runde 5 Punkt 1) */
-  #h-heute { display: grid; grid-template-columns: 1fr 420px; column-gap: 48px; align-content: start; padding-top: 0; max-width: 1240px; }
+  /* Heute — zwei wirklich unabhängige Spalten (layoutHeuteColumns()
+     verschiebt die Elemente per JS in h-heute-left/-right), siehe
+     desktop-heute.png (Runde 5 Punkt 1, Spalten-Fix in 5b Punkt 10) */
+  #h-heute { display: flex; align-items: flex-start; gap: 48px; padding-top: 0; max-width: 1240px; }
   #h-heute > .h-header { display: none; }
-  #h-heute .h-heute-title-desktop { display: block; grid-column: 1; grid-row: 10; }
-  #h-heute .h-heute-clock-desktop { display: block; grid-column: 2; grid-row: 10; justify-self: end; }
-  #h-heute > #h-backup-notice { grid-column: 1; grid-row: 20; }
-  #h-heute > .h-section[data-section-key="home:ziele"] { grid-column: 1; grid-row: 30; }
-  #h-heute > #h-goal-list { grid-column: 1; grid-row: 40; }
-  #h-heute > #h-goal-empty { grid-column: 1; grid-row: 40; }
-  #h-heute > #h-gelegenheit-list { grid-column: 1; grid-row: 42; }
-  #h-heute > .h-templates { grid-column: 1; grid-row: 50; }
-  #h-heute > #h-counters { grid-column: 2; grid-row: 20; }
-  #h-heute > #h-heute-sep1 { grid-column: 2; grid-row: 25; }
-  #h-heute > .h-heute-ringrow { grid-column: 2; grid-row: 35; }
-  #h-heute > #h-heute-sep2 { grid-column: 2; grid-row: 45; }
-  #h-heute > .h-section[data-section-key="home:heute-noch"] { grid-column: 2; grid-row: 55; }
-  #h-heute > #h-module-list { grid-column: 2; grid-row: 65; }
-  #h-heute > .h-heute-last { grid-column: 2; grid-row: 75; }
+  .h-heute-col { display: flex; flex-direction: column; }
+  #h-heute-left { flex: 1; min-width: 0; }
+  #h-heute-right { width: 420px; flex-shrink: 0; }
+  #h-heute .h-heute-title-desktop { display: block; }
+  #h-heute .h-heute-clock-desktop { display: block; align-self: flex-end; }
 
   /* Übungen — Liste links, Detail rechts, siehe desktop-uebungen.png */
   #pg-move.active { display: grid; grid-template-columns: 440px 1fr; column-gap: 48px; align-content: start; }
@@ -154,6 +150,11 @@ body {
   #pg-move > .h-section[data-section-key="move:atmung"] { grid-row: 30; }
   #pg-move > .h-section[data-section-key="move:protokolle"] { grid-row: 40; }
   #pg-move > .h-section[data-section-key="move:einzeluebungen"] { grid-row: 50; }
+  #pg-move > #ue-disclaimer { grid-column: 1; grid-row: 60; }
+  /* Punkt 11: der "Übungen"-Seitentitel UND die Sektions-Überschriften in
+     fast gleicher Größe sahen wie ein doppelter Titel aus — Sektionen auf
+     dem Desktop kleiner, wie in desktop-uebungen.png. */
+  #pg-move.active .h-section-title { font-size: 22px !important; font-weight: 300; }
   #pg-move > .h-ue-detail { display: block; grid-column: 2; grid-row: 10 / 60; position: sticky; top: calc(28px + var(--safe-top)); align-self: start; border-left: 1px solid var(--line); padding-left: 48px; }
   .h-ue-detail-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px; }
   .h-ue-detail-title { font-weight: 300; font-size: 64px; letter-spacing: -0.02em; line-height: 1; margin-bottom: 10px; }
@@ -165,12 +166,16 @@ body {
   /* Sammlung — Kategorien als Spalten, festes Detail-Panel statt Sheet,
      siehe desktop-sammlung.png */
   #pg-sammlung.active { display: grid; grid-template-columns: 1fr 380px; column-gap: 48px; align-content: start; }
-  #pg-sammlung > .h-header,
+  /* Punkt 12: kein mobiler AppHeader (REHAPP/Sammlung/Uhrzeit) auf dem
+     Desktop — die große "N /M"-Zahl ist hier bereits der Seitenkopf,
+     genau wie in desktop-sammlung.png. */
+  #pg-sammlung > .h-header { display: none; }
   #pg-sammlung > .h-num-row,
   #pg-sammlung > .h-meta,
   #pg-sammlung > .h-seg,
   #pg-sammlung > #sm-badges-view,
-  #pg-sammlung > #sm-history-view { grid-column: 1; }
+  #pg-sammlung > #sm-history-view,
+  #pg-sammlung > #sm-history-extras { grid-column: 1; }
   #sm-badges-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); column-gap: 24px; align-items: start; }
   #sm-badges-view > div:first-child { grid-column: 1 / -1; } /* Legende */
   #sm-badges-view .h-section--sm { margin-top: 0 !important; }
@@ -181,8 +186,13 @@ body {
   #pg-sammlung > #badge-detail-overlay {
     display: block; position: sticky; top: calc(28px + var(--safe-top)); align-self: start;
     grid-column: 2; inset: auto; background: transparent; overflow: visible; z-index: auto;
+    border-top: none !important; /* Punkt 12: keine "schwebende Linie" oben */
   }
-  #pg-sammlung > #badge-detail-overlay .h-embed { max-width: none; text-align: left; padding: 0; }
+  /* !important nötig: .h-embed trägt inline text-align:center fürs Mobil-Sheet */
+  #pg-sammlung > #badge-detail-overlay .h-embed { max-width: none; text-align: left !important; padding: 0; }
+  #pg-sammlung #bd-badge svg { display: block; }
+  #pg-sammlung #bd-title { font-size: 34px !important; }
+  #pg-sammlung #bd-open-goal-btn { width: auto !important; min-width: 180px; }
   #pg-sammlung .h-sm-detail-label { display: block; margin-bottom: 8px; }
   #pg-sammlung .h-sm-detail-close { display: none !important; }
 
@@ -191,7 +201,6 @@ body {
      nur ein funktionaler, ruhiger Zweispalter statt Pixel-Nachbau. */
   #pg-supp.active, #pg-settings.active { display: grid; grid-template-columns: 280px 1fr; column-gap: 48px; align-content: start; }
   #pg-supp.active > .h-header, #pg-settings.active > .h-header { grid-column: 1 / -1; }
-  .h-toc-desktop { display: none; }
   #pg-supp.active > .h-toc-desktop, #pg-settings.active > .h-toc-desktop {
     display: block; grid-column: 1; position: sticky; top: calc(28px + var(--safe-top)); align-self: start;
   }
@@ -217,6 +226,7 @@ body {
 .h-heute-last-row .h-row-chevron { font-size: 13px; color: var(--muted); white-space: nowrap; }
 .h-uebung-title-desktop { display: none; }
 .h-ue-detail { display: none; }
+.h-toc-desktop { display: none; }
 .h-ue-row-active { background: var(--grid); }
 .h-sm-detail-label { display: none; }
 .h-sm-badge-selected { background: var(--grid); }
@@ -399,12 +409,12 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
    Ring, Blob und Zahl liegen als Geschwister in einem einzigen Grid-Stack
    (alle Ebenen grid-area:1/1) statt über absolute Positionierung mit
    Margin-Tricks — ihre Mittelpunkte können dadurch nie auseinanderlaufen. */
-.h-player-stack { display: grid; place-items: center; width: 300px; height: 300px; margin: 24px auto; }
-.h-player-stack > * { grid-area: 1 / 1; width: 300px; height: 300px; }
+.h-player-stack { display: grid; place-items: center; width: 250px; height: 250px; margin: 24px auto; }
+.h-player-stack > * { grid-area: 1 / 1; width: 250px; height: 250px; }
 .h-player-ring-svg, .h-player-blob-svg { pointer-events: none; }
 #player-blob-circle { transform-box: fill-box; transform-origin: center; transform: scale(0.6); }
 .h-player-ring-label { display: flex; align-items: center; justify-content: center; text-align: center; pointer-events: none; position: relative; }
-#player-cue { position: absolute; top: calc(50% + 28px); left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 13px; color: var(--muted); margin-top: 4px; min-height: 16px; }
+#player-cue { position: absolute; top: calc(50% + 54px); left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 13px; color: var(--muted); min-height: 16px; }
 #player-countdown { font-variant-numeric: tabular-nums; line-height: 1; transform: translateY(-0.04em); }
 #player-cue { transition: opacity 150ms ease; }
 /* Atmung (Runde 5 Punkt 2): Zahl entfällt, stattdessen die Phase groß und
@@ -417,9 +427,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 .h-player-step-wrap > div, .h-player-title-wrap > div { transition: transform 240ms ease, opacity 240ms ease; }
 .h-player-step-wrap.h-step-out > div, .h-player-title-wrap.h-step-out > div { transform: translateX(-24px); opacity: 0; }
 .h-player-step-wrap.h-step-in > div, .h-player-title-wrap.h-step-in > div { transform: translateX(0); opacity: 1; }
-.h-player-title-wrap { position: relative; overflow: hidden; width: 100%; text-align: center; margin-bottom: 4px; }
-.h-player-steps-bar { display: flex; gap: 6px; width: 100%; max-width: 300px; margin: 4px auto 10px; }
-.h-player-howto { width: 100%; max-width: 340px; margin: 12px auto 0; text-align: left; }
+.h-player-title-wrap { position: relative; overflow: hidden; width: 100%; max-width: 340px; text-align: left; margin: 4px auto; }
+.h-player-steps-bar { display: flex; gap: 6px; width: 100%; margin: 4px 0 10px; }
+.h-player-howto { width: 100%; max-width: 340px; margin: 4px auto 0; text-align: left; }
 .h-player-steps-bar .h-bar { flex: 1; }
 .h-phasebar { width: 100%; max-width: 300px; margin: 4px auto 0; }
 .h-phasebar-track { position: relative; }
@@ -488,7 +498,6 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 .h-modal-btns { display: flex; gap: 10px; }
 .h-modal-btns .h-pill { flex: 1; }
 .h-chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
-#breath-ring.active { border-color: var(--ink); }
 .h-row-title.current { font-weight: 700; }
 #timer-milestone .h-row.reached .h-text, #timer-milestone .h-row.reached .h-meta { color: var(--ink); font-weight: 700; }
 .phase-seg.active { background: var(--grid); }
@@ -525,6 +534,13 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
   <!-- HEUTE (Hybrid Phase 4): Ziele-Screen oberhalb des bestehenden
        Fasten-Timers — siehe CLAUDE.md, Umbau läuft phasenweise. -->
   <div class="h-embed" id="h-heute" style="padding-top:calc(16px + var(--safe-top))">
+    <!-- Nur auf dem Desktop befüllt (layoutHeuteColumns() verschiebt die
+         echten Elemente hierher) — zwei wirklich unabhängig fließende
+         Spalten, weil ein einziges Grid mit geteilten Zeilennummern bei
+         unterschiedlich hohem Inhalt (z.B. eine lange Ziele-Liste) Löcher
+         in der jeweils anderen Spalte reißt. Auf Mobil bleiben sie leer. -->
+    <div class="h-heute-col" id="h-heute-left"></div>
+    <div class="h-heute-col" id="h-heute-right"></div>
     <div class="h-header">
       <div class="h-header-left">
         <div class="h-brand">REHAPP</div>
@@ -716,7 +732,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
   </div>
 
   <!-- ABEND-CHECK-IN (Hybrid Aufräumen): Status + Dankbarkeit statt eigenem Panel -->
-  <div class="h-sheet-overlay" id="abend-checkin-overlay" role="dialog" aria-modal="true" aria-label="Abend-Check-in">
+  <div class="h-sheet-overlay" id="abend-checkin-overlay" role="dialog" aria-modal="true" aria-label="Abend-Check-in" tabindex="-1">
     <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
       <div class="h-header">
         <div class="h-title" style="font-size:24px">Abend-Check-in</div>
@@ -725,19 +741,19 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         </button>
       </div>
       <div class="h-meta" style="margin-bottom:10px">Wie war der Tag?</div>
-      <div class="h-chip-row" style="margin-bottom:24px">
-        <button type="button" class="h-pill h-pill--outline mood-btn" style="min-height:44px;padding:0 18px;font-size:14px" onclick="selectMood(this,'Gut')">Gut</button>
-        <button type="button" class="h-pill h-pill--outline mood-btn" style="min-height:44px;padding:0 18px;font-size:14px" onclick="selectMood(this,'Ok')">Ok</button>
-        <button type="button" class="h-pill h-pill--outline mood-btn" style="min-height:44px;padding:0 18px;font-size:14px" onclick="selectMood(this,'Müde')">Müde</button>
-        <button type="button" class="h-pill h-pill--outline mood-btn" style="min-height:44px;padding:0 18px;font-size:14px" onclick="selectMood(this,'Schmerzen')">Schmerzen</button>
-        <button type="button" class="h-pill h-pill--outline mood-btn" style="min-height:44px;padding:0 18px;font-size:14px" onclick="selectMood(this,'Stark')">Stark</button>
+      <div class="h-seg" style="margin-bottom:24px">
+        <button type="button" class="h-seg-btn mood-btn" onclick="selectMood(this,'Gut')">Gut<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
+        <button type="button" class="h-seg-btn mood-btn" onclick="selectMood(this,'Ok')">Ok<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
+        <button type="button" class="h-seg-btn mood-btn" onclick="selectMood(this,'Müde')">Müde<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
+        <button type="button" class="h-seg-btn mood-btn" onclick="selectMood(this,'Schmerzen')">Schmerzen<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
+        <button type="button" class="h-seg-btn mood-btn" onclick="selectMood(this,'Stark')">Stark<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
       </div>
 
       <div class="h-meta" style="margin-bottom:10px">Alkohol</div>
-      <div class="h-chip-row" style="margin-bottom:24px">
-        <button type="button" class="h-pill h-pill--outline alcohol-btn" data-val="kein" style="min-height:44px;padding:0 18px;font-size:14px" onclick="selectAlcohol(this,'kein')">Kein Alkohol</button>
-        <button type="button" class="h-pill h-pill--outline alcohol-btn" data-val="rahmen" style="min-height:44px;padding:0 18px;font-size:14px" onclick="selectAlcohol(this,'rahmen')">Höchstens 2 Gläser</button>
-        <button type="button" class="h-pill h-pill--outline alcohol-btn" data-val="mehr" style="min-height:44px;padding:0 18px;font-size:14px" onclick="selectAlcohol(this,'mehr')">Mehr</button>
+      <div class="h-seg" style="margin-bottom:24px">
+        <button type="button" class="h-seg-btn alcohol-btn" data-val="kein" onclick="selectAlcohol(this,'kein')">Kein Alkohol<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
+        <button type="button" class="h-seg-btn alcohol-btn" data-val="rahmen" onclick="selectAlcohol(this,'rahmen')">Höchstens 2 Gläser<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
+        <button type="button" class="h-seg-btn alcohol-btn" data-val="mehr" onclick="selectAlcohol(this,'mehr')">Mehr<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
       </div>
 
       <div class="h-meta" style="margin-bottom:6px">Heute gehalten</div>
@@ -849,6 +865,19 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     </div>
   </div>
 
+  <!-- ALLE VORLAGEN (Runde 5b Punkt 5): alle 12 Vorlagen nach Kategorie -->
+  <div class="h-sheet-overlay" id="all-templates-overlay" role="dialog" aria-modal="true" aria-label="Alle Vorlagen">
+    <div class="h-sheet-body">
+      <div class="h-header">
+        <div class="h-title" style="font-size:24px">Alle Vorlagen</div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeAllTemplatesSheet()" aria-label="Schließen">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        </button>
+      </div>
+      <div id="all-templates-body"></div>
+    </div>
+  </div>
+
   <!-- SAMMLUNG (Phase 6): Abzeichen + Verlauf, Vollbild-Overlay -->
   <div id="pg-sammlung" class="page">
     <div class="h-header">
@@ -865,6 +894,43 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
       <button type="button" class="h-seg-btn" id="sm-seg-history" onclick="setSammlungSegment('history')">Verlauf<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
     </div>
     <div id="sm-badges-view" style="margin-top:20px"></div>
+    <!-- Budapest-Filter + Ödem-Sensor (Runde 5b Punkt 8): aus Wissen hierher
+         verschoben — medizinisches Tracking gehört zum Verlauf, nicht zu
+         Wissen. Eigenständiges Element (nicht in sm-history-view), damit
+         buildSammlungHistory()'s innerHTML-Ersetzung es nicht mitlöscht. -->
+    <div id="sm-history-extras" style="display:none;margin-top:20px">
+      <div class="h-list">
+        <div class="h-row" data-collapse-id="budapest" onclick="toggleCollapse('budapest')">
+          <div class="h-row-body"><div class="h-row-title">Budapest-Filter</div><div class="h-row-meta">CRPS-Indikator-Tracking</div></div>
+          <div class="h-row-chevron" id="collapse-arrow-budapest">›</div>
+        </div>
+        <div id="collapse-body-budapest" class="closed">
+          <div class="h-expand-copy" style="padding-bottom:6px">Die Budapest-Kriterien sind der klinische Standard zur CRPS-Diagnose. Täglich tracken um den Verlauf zu dokumentieren.</div>
+          <div id="budapest-container"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:16px;gap:12px">
+            <button type="button" class="h-pill h-pill--outline" onclick="saveBudapest()">Eintrag speichern</button>
+            <span class="h-meta" id="budapest-score-display"></span>
+          </div>
+        </div>
+
+        <div class="h-row" data-collapse-id="oedem" onclick="toggleCollapse('oedem')">
+          <div class="h-row-body"><div class="h-row-title">Ödem-Sensor</div><div class="h-row-meta">Knöchelumfang, täglich morgens</div></div>
+          <div class="h-row-chevron" id="collapse-arrow-oedem">›</div>
+        </div>
+        <div id="collapse-body-oedem" class="closed">
+          <div style="display:flex;align-items:center;gap:10px;margin:8px 0 16px">
+            <input type="number" id="oedem-cm" min="10" max="40" step="0.1" placeholder="23.5" inputmode="decimal" style="width:90px;text-align:center;font-size:17px">
+            <span class="h-meta">cm</span>
+            <button type="button" class="h-pill h-pill--outline" onclick="saveOedem()">Speichern</button>
+          </div>
+          <div style="padding-bottom:16px">
+            <div class="h-meta" style="margin-bottom:8px">Verlauf 7 Tage</div>
+            <div style="display:flex;gap:4px;align-items:flex-end;height:48px" id="oedem-trend-bars"></div>
+            <div class="h-meta" style="margin-top:6px" id="oedem-trend-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="sm-history-view" style="display:none;margin-top:20px"></div>
 
     <!-- ABZEICHEN-DETAIL (Phase 6): mobil ein Sheet, ab 1024px ein festes
@@ -1060,29 +1126,8 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
   </div></div></div>
 
   <div class="h-section" data-section-key="move:atmung"><div class="h-section-row" onclick="toggleSection('move:atmung')"><div class="h-section-title">Atmung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:atmung"><div>
-    <div style="margin-top:16px">
-      <div class="h-seg" id="breath-mode-seg">
-        <button type="button" class="h-seg-btn active" onclick="setBreathMode('4-6',this)">4–6 Lymph<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-        <button type="button" class="h-seg-btn" onclick="setBreathMode('box',this)">Box 4×4<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-        <button type="button" class="h-seg-btn" onclick="setBreathMode('478',this)">4-7-8 Schlaf<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-        <button type="button" class="h-seg-btn" onclick="setBreathMode('wimhof',this)">Wim Hof<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-      </div>
-      <div style="margin:18px 0" id="breath-mode-info">
-        <div class="h-meta" id="breath-mode-title" style="margin-bottom:4px">4–6 Lymph-Atem</div>
-        <div class="h-row-meta" id="breath-mode-desc" style="font-size:14px;line-height:1.6">Einatmen 4 Sek · Ausatmen 6 Sek. Das verlängerte Ausatmen aktiviert den Parasympathikus und erzeugt eine Unterdruckpumpe im Brustkorb, die Lymphfluss aus dem Bein Richtung Herz beschleunigt. Ideal 10 Min täglich, besonders nach MLD.</div>
-      </div>
-      <div style="width:150px;height:150px;border:1px solid var(--line);border-radius:50%;margin:0 auto 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:border-color .3s" id="breath-ring">
-        <div class="h-text" id="breath-phase-text">Bereit</div>
-        <div class="h-meta" id="breath-count-text"></div>
-      </div>
-      <div class="h-meta" id="breath-instruction" style="text-align:center;margin-bottom:16px">Technik wählen — dann Start</div>
-      <div style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap">
-        <button type="button" class="h-pill" id="breath-btn" onclick="toggleBreath()">Start</button>
-        <button type="button" class="h-pill h-pill--outline" onclick="startQuickBoxBreath()">2 Min Box</button>
-      </div>
-      <div class="h-meta" id="breath-cycles-display" style="text-align:center;margin-top:10px"></div>
-      <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:16px" onclick="openExerciseEditor(null)">+ Übung</button>
-    </div>
+    <div class="h-list" id="ue-atmung-list" style="margin-top:12px"></div>
+    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="openExerciseEditor(null)">+ Übung</button>
   </div></div></div>
 
   <div class="h-section" data-section-key="move:protokolle"><div class="h-section-row" onclick="toggleSection('move:protokolle')"><div class="h-section-title">Protokolle</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:protokolle"><div>
@@ -1308,39 +1353,6 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     <div class="h-list" id="recipes-container"></div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="supp:verlauf"><div class="h-section-row" onclick="toggleSection('supp:verlauf')"><div class="h-section-title" style="font-size:28px">Verlauf</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:verlauf"><div>
-    <div class="h-list" style="margin-top:12px">
-      <div class="h-row" data-collapse-id="budapest" onclick="toggleCollapse('budapest')">
-        <div class="h-row-body"><div class="h-row-title">Budapest-Filter</div><div class="h-row-meta">CRPS-Indikator-Tracking</div></div>
-        <div class="h-row-chevron" id="collapse-arrow-budapest">›</div>
-      </div>
-      <div id="collapse-body-budapest" class="closed">
-        <div class="h-expand-copy" style="padding-bottom:6px">Die Budapest-Kriterien sind der klinische Standard zur CRPS-Diagnose. Täglich tracken um den Verlauf zu dokumentieren.</div>
-        <div id="budapest-container"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:16px;gap:12px">
-          <button type="button" class="h-pill h-pill--outline" onclick="saveBudapest()">Eintrag speichern</button>
-          <span class="h-meta" id="budapest-score-display"></span>
-        </div>
-      </div>
-
-      <div class="h-row" data-collapse-id="oedem" onclick="toggleCollapse('oedem')">
-        <div class="h-row-body"><div class="h-row-title">Ödem-Sensor</div><div class="h-row-meta">Knöchelumfang, täglich morgens</div></div>
-        <div class="h-row-chevron" id="collapse-arrow-oedem">›</div>
-      </div>
-      <div id="collapse-body-oedem" class="closed">
-        <div style="display:flex;align-items:center;gap:10px;margin:8px 0 16px">
-          <input type="number" id="oedem-cm" min="10" max="40" step="0.1" placeholder="23.5" inputmode="decimal" style="width:90px;text-align:center;font-size:17px">
-          <span class="h-meta">cm</span>
-          <button type="button" class="h-pill h-pill--outline" onclick="saveOedem()">Speichern</button>
-        </div>
-        <div style="padding-bottom:16px">
-          <div class="h-meta" style="margin-bottom:8px">Verlauf 7 Tage</div>
-          <div style="display:flex;gap:4px;align-items:flex-end;height:48px" id="oedem-trend-bars"></div>
-          <div class="h-meta" style="margin-top:6px" id="oedem-trend-text"></div>
-        </div>
-      </div>
-    </div>
-  </div></div></div>
 
 </div>
 
@@ -1852,8 +1864,6 @@ const DAILY_CHECKS = [
 // ══════════════ STATE ══════════════
 
 let timerInterval = null, timerStart = null, timerPausedAt = null, timerRunning = false, timerMode = '100h';
-let breathRunning = false, breathMode = '4-6', breathCycles = 0, breathPhaseIdx = 0;
-let breathPhaseTimeout = null, wimhofCount = 0;
 let mldTimerInterval = null, mldCurrentStep = -1;
 let timer16_8Interval = null, currentPage = 'pg-home';
 let installMode = 'singlefile';
@@ -2838,12 +2848,9 @@ const HABIT_TO_GOAL_ICON = {
 
 // 5 Start-Ziele — Fallback-Seed, falls jemand (noch) keine aktiven Habits
 // hat, und Quelle für die "Vorlagen"-Quick-Add-Pills aus Phase 4.
+// Runde 5b Punkt 5: die fünf alten Vorlagen entfernt — übrig bleiben nur
+// die 12 aus Runde 5 Punkt 7.6.
 const GOAL_TEMPLATES = [
-  { title: 'Spaziergang',      category: 'koerper',  icon: 'schritte',  rhythm: 'taeglich', xp: 15 },
-  { title: 'Wasser trinken',   category: 'koerper',  icon: 'tropfen',   rhythm: 'taeglich', xp: 10 },
-  { title: 'Atemübung',        category: 'geist',    icon: 'welle',     rhythm: 'taeglich', xp: 10 },
-  { title: 'Jemanden anrufen', category: 'menschen', icon: 'telefon',   rhythm: 'woche',    xp: 15 },
-  { title: 'Etwas Neues wagen',category: 'mut',      icon: 'funke',     rhythm: 'einmal',   xp: 25 },
   // Runde 5 Punkt 7.6 — nicht automatisch aktiv, erscheinen als Kontur-Pills
   { title: 'Ohne Fertigessen',        category: 'verzicht', icon: 'teller',         rhythm: 'checkin',     xp: 10 },
   { title: 'Ohne Social Media',       category: 'verzicht', icon: 'handyaus',       rhythm: 'checkin',     xp: 10 },
@@ -3258,10 +3265,19 @@ function computeCounterDays(counter, today = new Date()) {
 
 // Die zwei Verzicht-Zähler mit der längsten laufenden Serie — ersetzen
 // "Serie"/"Abzeichen" als große Zahlen im Heute-Kopf (Design-Korrektur).
+// Runde 5b Punkt 2: bei Gleichstand gilt eine feste Reihenfolge (Ohne
+// Alkohol, Im Rahmen, dann der Rest) statt einer zufälligen Cache-Reihenfolge.
+const COUNTER_TIEBREAK_ORDER = ['goal-from-no_alcohol', 'goal-im-rahmen'];
 function computeHeuteCounters() {
   const counters = getCounters()
     .map(c => ({ counter: c, days: computeCounterDays(c) }))
-    .sort((a, b) => b.days - a.days)
+    .sort((a, b) => {
+      if (b.days !== a.days) return b.days - a.days;
+      const ai = COUNTER_TIEBREAK_ORDER.indexOf(a.counter.id);
+      const bi = COUNTER_TIEBREAK_ORDER.indexOf(b.counter.id);
+      if (ai !== bi) return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+      return 0;
+    })
     .slice(0, 2);
   return { counters };
 }
@@ -3312,9 +3328,11 @@ function computeHeuteHeaderInfos() {
     const h = Math.floor((Date.now() - timerStart) / 3600000);
     infos.push({ value: String(h), label: 'Stunden gefastet' });
   } else {
+    // Punkt 2: oben steht immer eine Zahl — die Essfenster-Startzeit ist eine
+    // Uhrzeit, kein Wort, und passt damit in den 104px-Zahlen-Slot.
     let eatFrom = '';
     try { const w = JSON.parse(storageGet('eat16_8') || 'null'); if (w && w.start) eatFrom = w.start; } catch (err) {}
-    infos.push({ value: 'Essfenster', label: eatFrom ? `ab ${eatFrom}` : 'noch nicht geplant' });
+    infos.push(eatFrom ? { value: eatFrom, label: 'Essfenster ab' } : { value: '–', label: 'Essfenster noch nicht geplant' });
   }
 
   let bestGoal = null, bestStreak = 0, bestUnit = 'Tage';
@@ -3356,14 +3374,14 @@ function buildHeuteHeaderInfo() {
     el.dataset.built = '1';
     el.style.cssText = 'display:flex;align-items:flex-start;justify-content:space-between;gap:16px';
     el.innerHTML = `
-      <div class="h-heute-info" onclick="advanceHeuteInfo()" style="cursor:pointer">
-        <div class="h-num-lg" id="h-info-value" style="font-size:56px;transition:opacity 300ms ease"></div>
+      <div class="h-heute-info" onclick="advanceHeuteInfo()" style="cursor:pointer;flex:1;min-width:0">
+        <div class="h-num-lg" id="h-info-value" style="font-size:56px;transition:opacity 300ms ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
         <div class="h-meta" id="h-info-label" style="transition:opacity 300ms ease"></div>
         <div class="h-heute-dots" id="h-heute-dots" style="display:flex;gap:6px;margin-top:10px"></div>
       </div>
-      <div style="text-align:right;border-left:1px solid var(--line);padding-left:16px;flex-shrink:0">
+      <div style="text-align:left;border-left:1px solid var(--line);padding-left:16px;flex-shrink:0;max-width:140px">
         <div class="h-num-lg" id="h-info-xp-today" style="font-size:56px"></div>
-        <div class="h-meta" id="h-info-xp-label"></div>
+        <div class="h-meta" id="h-info-xp-label" style="white-space:normal"></div>
       </div>`;
     if (!_reducedMotion) {
       _heuteInfoTimer = setInterval(() => advanceHeuteInfo(), 4000);
@@ -3439,9 +3457,46 @@ function renderGoalRow(g, done, todayKey) {
 }
 
 
+// Runde 5b Punkt 10: zwei wirklich unabhängige Spalten statt eines
+// einzigen Grids mit geteilten Zeilennummern (das riss Löcher, sobald eine
+// Spalte an einer "leeren" gemeinsamen Zeile hing, z.B. eine lange Ziele-
+// Liste zwischen "Ziele"-Titel und "Heute noch"). appendChild() auf ein
+// bereits im DOM stehendes Element verschiebt es nur (keine Zustands-/
+// Listener-Verluste) — bei jedem Aufruf idempotent in die Zielreihenfolge.
+const HEUTE_LEFT_SELECTORS = [
+  '.h-heute-title-desktop', '#h-backup-notice', '.h-section[data-section-key="home:ziele"]',
+  '#h-goal-list', '#h-goal-empty', '#h-gelegenheit-list', '.h-templates',
+];
+const HEUTE_RIGHT_SELECTORS = [
+  '.h-heute-clock-desktop', '#h-counters', '#h-heute-sep1', '.h-heute-ringrow', '#h-heute-sep2',
+  '.h-section[data-section-key="home:heute-noch"]', '#h-module-list', '.h-heute-last',
+];
+function layoutHeuteColumns() {
+  const root = document.getElementById('h-heute');
+  if (!root) return;
+  const desktop = window.matchMedia('(min-width: 1024px)').matches;
+  if (desktop) {
+    const left = document.getElementById('h-heute-left');
+    const right = document.getElementById('h-heute-right');
+    HEUTE_LEFT_SELECTORS.forEach(sel => { const el = root.querySelector(sel); if (el) left.appendChild(el); });
+    HEUTE_RIGHT_SELECTORS.forEach(sel => { const el = root.querySelector(sel); if (el) right.appendChild(el); });
+  } else {
+    // Exakte ursprüngliche Quelltext-Reihenfolge (Mobil-Lesefluss).
+    const order = [
+      '.h-header', '.h-heute-title-desktop', '.h-heute-clock-desktop', '#h-counters',
+      '#h-heute-sep1', '.h-heute-ringrow', '#h-heute-sep2', '#h-backup-notice',
+      '.h-section[data-section-key="home:ziele"]', '#h-goal-list', '#h-goal-empty', '#h-gelegenheit-list',
+      '.h-section[data-section-key="home:heute-noch"]', '#h-module-list', '.h-heute-last', '.h-templates',
+    ];
+    order.forEach(sel => { const el = root.querySelector(sel); if (el) root.appendChild(el); });
+  }
+}
+window.addEventListener('resize', () => { if (currentPage === 'pg-home') layoutHeuteColumns(); });
+
 function buildHeuteScreen() {
   const root = document.getElementById('h-heute');
   if (!root) return;
+  layoutHeuteColumns();
   updateHeuteClock();
 
   const todayKey = getLocalDateKey();
@@ -3487,12 +3542,15 @@ function buildHeuteScreen() {
 
   const templatesEl = document.getElementById('h-templates');
   if (templatesEl) {
+    // Punkt 5: in Heute nur "+ Eigenes Ziel" + vier Vorlagen, Rest hinter
+    // "Alle Vorlagen ›" (Sheet, nach Kategorie gruppiert).
     const existingTitles = new Set(goals.map(g => g.title));
     const available = GOAL_TEMPLATES.filter(t => !existingTitles.has(t.title));
     templatesEl.innerHTML = `<div class="h-meta" style="margin-bottom:10px">Vorlagen</div><div style="display:flex;flex-wrap:wrap;gap:8px">` +
       `<button class="h-pill h-pill--shadow" style="min-height:40px;padding:0 18px;font-size:14px" onclick="openGoalSheet()">+ Eigenes Ziel</button>` +
-      available.map(t => `<button class="h-pill h-pill--outline" style="min-height:40px;padding:0 18px;font-size:14px" onclick="addGoalFromTemplate('${slugifyId(t.title)}')">${escapeHtml(t.title)}</button>`).join('') +
-      `</div>`;
+      available.slice(0, 4).map(t => `<button class="h-pill h-pill--outline" style="min-height:40px;padding:0 18px;font-size:14px" onclick="addGoalFromTemplate('${slugifyId(t.title)}')">${escapeHtml(t.title)}</button>`).join('') +
+      `</div>` +
+      (available.length > 4 ? `<div class="h-row" style="cursor:pointer;border-bottom:none;padding:10px 0 0" onclick="openAllTemplatesSheet()"><div class="h-row-body"><div class="h-meta">Alle Vorlagen ›</div></div></div>` : '');
   }
 
   renderHeuteModuleList();
@@ -3613,25 +3671,27 @@ function renderHeuteModuleList() {
   const waterPct = Math.min(100, parseFloat(waterL.replace(',', '.')) / 3 * 100);
   const suppPct = suppItems.length ? suppDone / suppItems.length * 100 : 0;
 
+  // Punkt 6: Titel (Fasten/Wasser/Supplemente) 17px ink, Meta-Zeile 13.5px
+  // muted — vorher war alles klein und grau (nur .h-meta).
   el.innerHTML = `
     <div class="h-row" onclick="openFastenSheet()" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <div class="h-meta">Fasten · ${escapeHtml(fastenSub)}</div>
-        <div class="h-meta" style="color:var(--text)">${escapeHtml(fastenVal)} →</div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between">
+        <div><div class="h-text" style="font-size:17px">Fasten</div><div class="h-meta" style="font-size:13.5px">${escapeHtml(fastenSub)}</div></div>
+        <div class="h-meta" style="font-size:13.5px;color:var(--text)">${escapeHtml(fastenVal)} →</div>
       </div>
       ${renderBar(fastenPct, 'h-bar--row')}
     </div>
     <div class="h-row" onclick="openWasserSheet()" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <div class="h-meta">Wasser</div>
-        <div class="h-meta" style="color:var(--text)">${waterL} / 3 L →</div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between">
+        <div class="h-text" style="font-size:17px">Wasser</div>
+        <div class="h-meta" style="font-size:13.5px;color:var(--text)">${waterL} / 3 L →</div>
       </div>
       ${renderBar(waterPct, 'h-bar--row')}
     </div>
     <div class="h-row" onclick="openSupplementeSheet()" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;cursor:pointer">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <div class="h-meta">Supplemente · ${suppLabel}</div>
-        <div class="h-meta" style="color:var(--text)">${suppDone}/${suppItems.length} →</div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between">
+        <div><div class="h-text" style="font-size:17px">Supplemente</div><div class="h-meta" style="font-size:13.5px">${suppLabel}</div></div>
+        <div class="h-meta" style="font-size:13.5px;color:var(--text)">${suppDone}/${suppItems.length} →</div>
       </div>
       ${renderBar(suppPct, 'h-bar--row')}
     </div>
@@ -3645,16 +3705,42 @@ function closeWasserSheet() { document.getElementById('wasser-sheet-overlay').cl
 function openSupplementeSheet() { initSuppTab(); document.getElementById('supplemente-sheet-overlay').classList.add('open'); }
 function closeSupplementeSheet() { document.getElementById('supplemente-sheet-overlay').classList.remove('open'); renderHeuteModuleList(); }
 
+// Fokus-Management (Runde 5b Punkt 4): beim Öffnen springt der Fokus ins
+// Sheet, beim Schließen zurück auf die auslösende Zeile. Escape und
+// Wischen nach unten schließen zusätzlich zum ×-Button.
+let _checkinTriggerEl = null;
 function openAbendCheckin() {
   const todayKey = getLocalDateKey();
-  document.querySelectorAll('#abend-checkin-overlay .mood-btn').forEach(b => b.classList.toggle('selected', b.textContent === storageGet('mood_' + new Date().toDateString())));
+  document.querySelectorAll('#abend-checkin-overlay .mood-btn').forEach(b => b.classList.toggle('active', b.textContent === storageGet('mood_' + new Date().toDateString())));
   const savedAlcohol = storageGet('alcohol_' + todayKey);
-  document.querySelectorAll('#abend-checkin-overlay .alcohol-btn').forEach(b => b.classList.toggle('selected', b.dataset.val === savedAlcohol));
+  document.querySelectorAll('#abend-checkin-overlay .alcohol-btn').forEach(b => b.classList.toggle('active', b.dataset.val === savedAlcohol));
   document.getElementById('checkin-up-text').value = storageGet('gratitude_' + todayKey) || '';
   renderCheckinHeldList();
-  document.getElementById('abend-checkin-overlay').classList.add('open');
+  _checkinTriggerEl = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
+  const overlay = document.getElementById('abend-checkin-overlay');
+  overlay.classList.add('open');
+  overlay.focus({ preventScroll: true });
 }
-function closeAbendCheckin() { document.getElementById('abend-checkin-overlay').classList.remove('open'); }
+function closeAbendCheckin() {
+  document.getElementById('abend-checkin-overlay').classList.remove('open');
+  if (_checkinTriggerEl && document.contains(_checkinTriggerEl)) _checkinTriggerEl.focus({ preventScroll: true });
+  _checkinTriggerEl = null;
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('abend-checkin-overlay').classList.contains('open')) closeAbendCheckin();
+});
+(() => {
+  const overlay = document.getElementById('abend-checkin-overlay');
+  if (!overlay) return;
+  let startY = null;
+  overlay.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+  overlay.addEventListener('touchmove', e => {
+    if (startY === null || overlay.scrollTop > 0) return;
+    const dy = e.touches[0].clientY - startY;
+    if (dy > 80) { closeAbendCheckin(); startY = null; }
+  }, { passive: true });
+  overlay.addEventListener('touchend', () => { startY = null; });
+})();
 
 // Alkohol (Runde 5 Punkt 7.4): zwei Zähler. "Ohne Alkohol" (bestehend,
 // goal-from-no_alcohol) bricht bei "Höchstens 2 Gläser" ODER "Mehr".
@@ -3664,8 +3750,8 @@ function closeAbendCheckin() { document.getElementById('abend-checkin-overlay').
 // (resetCounter()). Bei "Mehr"/"Höchstens 2 Gläser" gibt es bewusst keinen
 // Kommentar und keinen Warnton — die Serie endet einfach still.
 async function selectAlcohol(btn, val) {
-  document.querySelectorAll('#abend-checkin-overlay .alcohol-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
+  document.querySelectorAll('#abend-checkin-overlay .alcohol-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
   const todayKey = getLocalDateKey();
   storageSet('alcohol_' + todayKey, val);
   const noAlc = getGoal('goal-from-no_alcohol');
@@ -3679,14 +3765,32 @@ async function selectAlcohol(btn, val) {
   buildHeuteScreen();
 }
 
-// "Heute gehalten" (Punkt 7.4): eine Zeile pro aktivem Verzicht- oder
-// Check-in-Ziel. Switch an = gehalten (Default, kein Log nötig — ein Tag
-// ohne geöffneten Check-in zählt automatisch als gehalten). Ausschalten
-// schreibt einen Log-Eintrag, der für diese Ziele als Ausnahme gilt
-// (computeCheckinStreak() wertet Abwesenheit als Erfolg).
+// "Heute gehalten" (Punkt 7.4, erweitert in 5b): eine Zeile pro aktivem
+// Verzicht-Zähler (außer den beiden Alkohol-Zählern, die über die
+// Alkohol-Frage laufen) und pro Check-in-Ziel. Switch an = gehalten
+// (Default). Bei normalen Zielen genügt die Abwesenheit eines Logs
+// (computeCheckinStreak() wertet das als Erfolg); bei Verzicht-Zählern
+// (kind='counter', einfaches seit-Datum-Modell) bedeutet "gehalten", dass
+// since nicht auf heute zurückgesetzt wurde — Ausschalten bricht den
+// Zähler wie der bestehende "Neu beginnen"-Button, ohne Undo (dieselbe
+// Grenze wie bei der Alkohol-Frage: die Serie endet einfach still).
+const CHECKIN_HELD_EXCLUDE_IDS = new Set(['goal-from-no_alcohol', 'goal-im-rahmen']);
 function getCheckinHeldGoals() {
-  return getGoals({ archived: false, paused: false }).filter(g =>
-    g.kind !== 'counter' && g.kind !== 'checkin' && (g.category === 'verzicht' || g.rhythm === 'checkin'));
+  return getGoals({ archived: false, paused: false }).filter(g => {
+    if (CHECKIN_HELD_EXCLUDE_IDS.has(g.id)) return false;
+    if (g.kind === 'counter') return g.category === 'verzicht';
+    if (g.kind === 'checkin') return false;
+    return g.rhythm === 'checkin';
+  });
+}
+function isCheckinGoalHeld(g, todayKey) {
+  if (g.kind !== 'counter') return !isLogged(g.id, todayKey);
+  if (g.checkinBrokenToday === todayKey) return false;
+  if (g.since !== todayKey) return true;
+  // since===heute ist nur "gebrochen", wenn der Zähler nicht erst heute
+  // angelegt wurde (frisch erstellte Zähler starten bei Tag 1, ungebrochen).
+  const createdKey = g.createdAt ? getLocalDateKey(new Date(g.createdAt)) : todayKey;
+  return createdKey === todayKey;
 }
 function renderCheckinHeldList() {
   const el = document.getElementById('checkin-held-list');
@@ -3695,7 +3799,7 @@ function renderCheckinHeldList() {
   const goals = getCheckinHeldGoals();
   if (!goals.length) { el.innerHTML = '<div class="h-meta">Keine Verzicht- oder Check-in-Ziele aktiv.</div>'; return; }
   el.innerHTML = goals.map(g => {
-    const held = !isLogged(g.id, todayKey);
+    const held = isCheckinGoalHeld(g, todayKey);
     return `<div class="h-row" style="cursor:default">
       <div class="h-row-body"><div class="h-row-title">${escapeHtml(g.title)}</div></div>
       <button type="button" class="h-switch${held ? ' on' : ''}" onclick="toggleCheckinHeld('${g.id}')" aria-label="${escapeHtml(g.title)} heute gehalten"></button>
@@ -3703,7 +3807,16 @@ function renderCheckinHeldList() {
   }).join('');
 }
 async function toggleCheckinHeld(goalId) {
-  await toggleLog(goalId, getLocalDateKey(), false);
+  const g = getGoal(goalId);
+  if (!g) return;
+  const todayKey = getLocalDateKey();
+  if (g.kind === 'counter') {
+    g.since = todayKey;
+    g.checkinBrokenToday = todayKey;
+    await saveGoal(g);
+  } else {
+    await toggleLog(goalId, todayKey, false);
+  }
   renderCheckinHeldList();
 }
 
@@ -3872,7 +3985,31 @@ async function addGoalFromTemplate(slug) {
   if (!tpl) return;
   await saveGoal({ ...tpl, id: 'goal-' + slugifyId(tpl.title) + '-' + Date.now().toString(36), drawing: null, time: null });
   buildHeuteScreen();
+  if (document.getElementById('all-templates-overlay').classList.contains('open')) renderAllTemplatesSheet();
 }
+
+// "Alle Vorlagen" (Runde 5b Punkt 5): alle 12, nach Kategorie gruppiert,
+// bereits aktive Vorlagen werden nicht mehr angeboten.
+function renderAllTemplatesSheet() {
+  const body = document.getElementById('all-templates-body');
+  if (!body) return;
+  const existingTitles = new Set(getGoals({ archived: false }).map(g => g.title));
+  const available = GOAL_TEMPLATES.filter(t => !existingTitles.has(t.title));
+  const byCat = {};
+  available.forEach(t => { (byCat[t.category] = byCat[t.category] || []).push(t); });
+  const groups = GOAL_CATEGORIES.filter(c => byCat[c.id] && byCat[c.id].length);
+  body.innerHTML = groups.length ? groups.map(c => `
+    <div class="h-meta" style="margin:20px 0 10px">${escapeHtml(c.label)}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      ${byCat[c.id].map(t => `<button class="h-pill h-pill--outline" style="min-height:40px;padding:0 18px;font-size:14px" onclick="addGoalFromTemplate('${slugifyId(t.title)}');closeAllTemplatesSheet()">${escapeHtml(t.title)}</button>`).join('')}
+    </div>
+  `).join('') : `<div class="h-meta" style="margin-top:20px">Alle Vorlagen sind schon als Ziel aktiv.</div>`;
+}
+function openAllTemplatesSheet() {
+  renderAllTemplatesSheet();
+  document.getElementById('all-templates-overlay').classList.add('open');
+}
+function closeAllTemplatesSheet() { document.getElementById('all-templates-overlay').classList.remove('open'); }
 
 // ══════════════════════════════════════════════════════════════════════
 // SAMMLUNG + UNLOCK-FEIERMOMENT — Hybrid Phase 6
@@ -3945,15 +4082,18 @@ function buildSammlungBadges() {
     </div>`;
 
   let html = legend;
+  // Punkt 12: alle Kategorien zeigen, auch leere — vorher verschwanden
+  // Werk/Geld/Mut/Verzicht komplett, sobald niemand dort ein Ziel hatte.
   GOAL_CATEGORIES.forEach(c => {
     const list = byCat[c.id] || [];
-    if (!list.length) return;
-    const body = `<div class="h-badge-grid">` + list.map(g => `
-      <button type="button" onclick="openBadgeDetail('${g.id}')">
-        ${renderBadge({ cat: g.category, tier: badgeTierFor(g), icon: g.icon, drawing: g.drawing, size: 84 })}
-        <span class="h-meta" style="font-size:11px;text-align:center">${escapeHtml(g.title)}${g.paused ? ' · pausiert' : ''}</span>
-      </button>
-    `).join('') + `</div>`;
+    const body = list.length
+      ? `<div class="h-badge-grid">` + list.map(g => `
+          <button type="button" onclick="openBadgeDetail('${g.id}')">
+            ${renderBadge({ cat: g.category, tier: badgeTierFor(g), icon: g.icon, drawing: g.drawing, size: 84 })}
+            <span class="h-meta" style="font-size:11px;text-align:center">${escapeHtml(g.title)}${g.paused ? ' · pausiert' : ''}</span>
+          </button>
+        `).join('') + `</div>`
+      : `<div class="h-meta" style="margin:16px 0">Noch keine Ziele.</div>`;
     html += sammlungSection(c.id, c.label, body);
   });
 
@@ -4040,7 +4180,8 @@ function setSammlungSegment(seg) {
   document.getElementById('sm-seg-history').classList.toggle('active', seg === 'history');
   document.getElementById('sm-badges-view').style.display = seg === 'badges' ? '' : 'none';
   document.getElementById('sm-history-view').style.display = seg === 'history' ? '' : 'none';
-  if (seg === 'badges') buildSammlungBadges(); else buildSammlungHistory();
+  document.getElementById('sm-history-extras').style.display = seg === 'history' ? '' : 'none';
+  if (seg === 'badges') { buildSammlungBadges(); } else { buildSammlungHistory(); buildBudapestFilter(); renderOedemTrend(); }
 }
 
 function openSammlung() {
@@ -4066,9 +4207,10 @@ function openBadgeDetail(badgeId) {
   const goal = getGoal(badgeId);
   const earned = getEarned(badgeId);
   const tier = goal ? (goal.kind === 'counter' ? computeCounterTier(goal) : (goal.paused || goal.archived ? ((earned && earned.tier) || 'gesperrt') : computeTier(goal))) : (earned ? earned.tier : 'gesperrt');
+  const badgeSize = window.matchMedia('(min-width: 1024px)').matches ? 150 : 120;
   document.getElementById('bd-badge').innerHTML = renderBadge({
     cat: goal ? goal.category : 'mut', tier,
-    icon: goal ? goal.icon : 'funke', drawing: goal ? goal.drawing : null, size: 120,
+    icon: goal ? goal.icon : 'funke', drawing: goal ? goal.drawing : null, size: badgeSize,
   });
   document.getElementById('bd-title').textContent = goal ? goal.title : 'Überwunden';
   document.getElementById('bd-meta').textContent = describeBadgeProgress(goal, tier);
@@ -4271,6 +4413,32 @@ function seedExercisesIfNeeded() {
   }))).then(() => { storageSet('exercises_seeded_v1', '1'); });
 }
 
+// Runde 5b Punkt 1: die restlichen zwei Atemformen aus dem alten Inline-
+// Trainer als eigene Übungen, damit auch sie über den neuen Player laufen.
+// Wim Hof hat keine fixe Retentionsdauer — als fester Takt (30 Runden à
+// 2s/1s) angenähert, die Retention/15s-Halten-Phase ist im Pattern-Player
+// nicht abbildbar und bewusst weggelassen.
+function seedAtmungExercisesV2() {
+  if (storageGet('exercises_seeded_v2') === '1') return Promise.resolve();
+  const seeds = [
+    { id: 'exercise-4-6-lymph', title: '4–6 Lymph-Atmung', xp: 10, details: {
+      kind: 'atmung', durationSec: 600, cue: null, rounds: 60,
+      pattern: [{ label: 'Einatmen', sec: 4 }, { label: 'Ausatmen', sec: 6 }],
+      anleitung: ANLEITUNG_BY_NAME['4–6 Lymph-Atmung'],
+    } },
+    { id: 'exercise-wimhof', title: 'Wim Hof', xp: 12, details: {
+      kind: 'atmung', durationSec: 90, cue: '30 schnelle tiefe Atemzüge, dann ausatmen und die Luft so lange halten, wie es angenehm ist. Danach einmal tief einatmen und 15 Sekunden halten. Nur morgens, liegend, niemals im Wasser.', rounds: 30,
+      pattern: [{ label: 'Tief ein', sec: 2 }, { label: 'Loslassen', sec: 1 }],
+    } },
+  ];
+  const existingIds = new Set(getItems({ type: 'exercise' }).map(i => i.id));
+  const toCreate = seeds.filter(s => !existingIds.has(s.id));
+  return Promise.all(toCreate.map((s, i) => saveItem({
+    id: s.id, type: 'exercise', title: s.title, dose: null, time: null, block: null,
+    schedule: { days: [] }, xp: s.xp, notify: false, active: true, details: s.details, order: 9010 + i,
+  }))).then(() => { storageSet('exercises_seeded_v2', '1'); });
+}
+
 function formatMMSS(sec) {
   const s = Math.max(0, Math.ceil(sec));
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
@@ -4279,7 +4447,9 @@ function formatMMSS(sec) {
 function buildUebungenList() {
   const el = document.getElementById('ue-list');
   if (!el) return;
-  const exercises = getItems({ type: 'exercise', activeOnly: true });
+  // Atmung-Übungen laufen in ihrer eigenen Sektion (buildAtmungList()),
+  // nicht doppelt hier unter Einzelübungen — Runde 5b Punkt 1.
+  const exercises = getItems({ type: 'exercise', activeOnly: true }).filter(ex => ex.details.kind !== 'atmung');
   el.innerHTML = exercises.length ? exercises.map(ex => `
     <div class="h-row">
       <div style="flex:1">
@@ -4292,11 +4462,32 @@ function buildUebungenList() {
     </div>
   `).join('') : `<div class="h-meta">Noch keine Übungen angelegt.</div>`;
 }
+// Atmung-Sektion (Runde 5b Punkt 1): einfache Zeilen statt des alten
+// Inline-Trainers, jede startet den neuen Player im Atem-Modus.
+function buildAtmungList() {
+  const el = document.getElementById('ue-atmung-list');
+  if (!el) return;
+  const order = ['exercise-4-6-lymph', 'exercise-box-breathing', 'exercise-478', 'exercise-wimhof'];
+  const exercises = order.map(id => getItems({ type: 'exercise' }).find(e => e.id === id && e.active)).filter(Boolean);
+  el.innerHTML = exercises.map(ex => `
+    <div class="h-row">
+      <div style="flex:1;cursor:pointer" onclick="openPlayer('${ex.id}')">
+        <div class="h-text">${escapeHtml(ex.title)}</div>
+        <div class="h-meta">${ex.details.rounds} Runden</div>
+      </div>
+      ${ex.id === 'exercise-box-breathing' ? `<button type="button" class="h-pill h-pill--outline" style="min-height:32px;padding:0 12px;font-size:12px;flex-shrink:0" onclick="event.stopPropagation();openPlayer('${ex.id}')">2 Min Box</button>` : ''}
+      <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="openPlayer('${ex.id}')" aria-label="${escapeHtml(ex.title)} starten">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
 let _ueSelectedRoutine = null;
 function buildRoutineList() {
   const el = document.getElementById('ue-routine-list');
   if (!el) return;
-  const routines = getActiveHeuteGoals().filter(g => g.kind === 'routine');
+  // Punkt 7: nach Uhrzeit sortiert (Morgen/Mittag/Abend), nicht alphabetisch.
+  const routines = sortGoalsForHeute(getActiveHeuteGoals().filter(g => g.kind === 'routine'));
   el.innerHTML = routines.map(g => `
     <div class="h-row${g.id === _ueSelectedRoutine ? ' h-ue-row-active' : ''}" data-routine-id="${g.id}">
       <div style="flex:1;cursor:pointer" onclick="onUebungRoutineRowTap('${g.id}')">
@@ -4370,7 +4561,7 @@ function renderUebungDetailPanel() {
     <div class="h-meta" style="font-size:13px;margin-top:20px">Diese Anleitungen ersetzen keine Therapie. Was dir verordnet wurde, geht vor.</div>
   `;
 }
-function openUebungen() { buildRoutineList(); buildUebungenList(); }
+function openUebungen() { buildRoutineList(); buildAtmungList(); buildUebungenList(); }
 
 // ── Sound-Pakete: 4 kurze, per Web Audio synthetisierte Zähltöne.
 // "stumm" erzeugt bewusst keinen Node. Lautstärke/Vorschau-UI kommt mit
@@ -4794,6 +4985,7 @@ function startStandaloneExercise(ex) {
     running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null, sequence: null, lastPopRemaining: null,
   };
   const isAtmung = !!(ex.details.pattern && ex.details.pattern.length);
+  if (isAtmung) awardXP('breath_start', 15, 'Atemübung gestartet', { scope: 'day', silent: true });
   document.getElementById('player-ctx-label').textContent = isAtmung ? 'Atmung' : ex.title;
   document.getElementById('player-step-label').textContent = '';
   document.getElementById('player-exercise-title').textContent = ex.title;
@@ -5861,7 +6053,7 @@ async function toggleGoalNotify(id) {
 function buildSetRoutineList() {
   const el = document.getElementById('set-routine-list');
   if (!el) return;
-  const routines = getActiveHeuteGoals().filter(g => g.kind === 'routine');
+  const routines = sortGoalsForHeute(getActiveHeuteGoals().filter(g => g.kind === 'routine'));
   el.innerHTML = routines.map(g => `
     <div class="h-row" id="setrow-routine-${g.id}" onclick="openRoutineEditor('${g.id}')">
       <div class="h-row-body"><div class="h-row-title">${escapeHtml(g.title)}</div><div class="h-row-meta">${escapeHtml(g.time || '—')} · ${g.steps.length} Schritte</div></div>
@@ -6743,7 +6935,7 @@ function restorePreferences() {
   if (end && schedule.end) end.value = schedule.end;
   const savedMood = storageGet('mood_' + new Date().toDateString());
   if (savedMood) {
-    document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.toggle('selected', btn.textContent.trim().toLowerCase() === savedMood.toLowerCase()));
+    document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === savedMood.toLowerCase()));
   }
 }
 function makeKeyboardClickable(el) {
@@ -6787,6 +6979,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await initContentStore();
   await initGoalsStore();
   await seedExercisesIfNeeded();
+  await seedAtmungExercisesV2();
   buildHeuteScreen();
   maybeShowNextCelebration();
   buildWater(); buildSupplements(); buildRecipes();
@@ -6844,8 +7037,6 @@ function openWissen() {
   buildSupplements();
   buildMasterplan();
   buildCRPSCalendar();
-  buildBudapestFilter();
-  renderOedemTrend();
   buildSectionTOC('pg-supp', 'supp-toc');
 }
 
@@ -7166,103 +7357,12 @@ function filterRecipes(tag, btn) {
 
 // ══════════════ BREATHING ══════════════
 
-const BREATH_MODES = {
-  '4-6': { phases: [{n:'Einatmen',d:4000},{n:'Ausatmen',d:6000}], desc: 'Zwerchfell — aktiviert Lymphfluss. 10 Min täglich.' },
-  'box':  { phases: [{n:'Einatmen',d:4000},{n:'Halten',d:4000},{n:'Ausatmen',d:4000},{n:'Halten',d:4000}], desc: 'Stressreduktion — Kortisol senken. Parasympathikus.' },
-  '478':  { phases: [{n:'Einatmen',d:4000},{n:'Halten',d:7000},{n:'Ausatmen',d:8000}], desc: 'Schlafvorbereitung — abends. Nervensystem beruhigen.' },
-  'wimhof': { phases: [{n:'Tief ein',d:1500},{n:'Loslassen',d:1000}], desc: '30 Atemzüge dann Retention. Immunsystem + Energie.' }
-};
-
-const BREATH_MODE_INFO = {
-  '4-6':    { title: '4–6 Lymph-Atem', desc: 'Einatmen 4 Sek · Ausatmen 6 Sek. Das verlängerte Ausatmen aktiviert den Parasympathikus und erzeugt eine Unterdruckpumpe im Brustkorb, die Lymphfluss aus dem Bein Richtung Herz beschleunigt. Ideal 10 Min täglich, besonders nach MLD.' },
-  'box':    { title: 'Box-Atmung 4×4', desc: 'Einatmen 4 Sek · Halten 4 Sek · Ausatmen 4 Sek · Halten 4 Sek. Aktiviert den präfrontalen Kortex, senkt Cortisol und Adrenalin. Klinisch validiertes Akutstress-Protokoll. Ideal bei Schmerzspitzen oder Aufregung.' },
-  '478':    { title: '4-7-8 Schlaf-Atem', desc: 'Einatmen 4 Sek · Halten 7 Sek · Ausatmen 8 Sek. Stimuliert den Vagus über langen Ausatem. GABA-ähnliche Wirkung auf den Schlaf-Wach-Rhythmus. Abends, liegend, mindestens 4 Zyklen für Wirkung.' },
-  'wimhof': { title: 'Wim Hof Methode', desc: '30 schnelle tiefe Atemzüge · Ausatmen · Retention (so lange wie möglich) · Einatmen 15 Sek halten. Erhöht O₂-Sättigung, aktiviert Immunsystem und Nebennierenrinde. Nur morgens, liegend, niemals im Wasser.' },
-};
-
-function setBreathMode(mode, btn) {
-  stopBreath(); breathMode = mode;
-  document.querySelectorAll('#breath-mode-seg .h-seg-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('breath-instruction').textContent = BREATH_MODES[mode].desc;
-  document.getElementById('breath-phase-text').textContent = 'Bereit';
-  document.getElementById('breath-count-text').textContent = '';
-  const info = BREATH_MODE_INFO[mode];
-  if (info) {
-    const t = document.getElementById('breath-mode-title');
-    const d = document.getElementById('breath-mode-desc');
-    if (t) { t.textContent = info.title; t.classList.add('text-fade-in'); }
-    if (d) { d.textContent = info.desc; d.classList.add('text-fade-in'); setTimeout(() => { d.classList.remove('text-fade-in'); }, 400); }
-  }
-}
-
-function toggleBreath() {
-  if (breathRunning) { stopBreath(); document.getElementById('breath-btn').textContent = 'Start'; }
-  else { startBreath(); document.getElementById('breath-btn').textContent = 'Stop'; }
-}
-
-function startBreath() {
-  breathRunning = true; breathCycles = 0; wimhofCount = 0; breathPhaseIdx = 0;
-  awardXP('breath_start', 15, 'Atemübung gestartet', { scope: 'day' });
-  document.getElementById('breath-ring').classList.add('active');
-  runBreathPhase();
-}
-
-function stopBreath() {
-  breathRunning = false; clearTimeout(breathPhaseTimeout);
-  const ring = document.getElementById('breath-ring');
-  ring.style.transform = ''; ring.classList.remove('active');
-  document.getElementById('breath-phase-text').textContent = 'BEREIT';
-  document.getElementById('breath-count-text').textContent = '';
-  document.getElementById('breath-instruction').textContent = BREATH_MODES[breathMode].desc;
-  if (breathCycles > 0) {
-    awardXP('breath_cycles_' + getLocalDateKey(), Math.min(24, breathCycles * 3), 'Atemzyklen', { scope: 'day', silent: true });
-    document.getElementById('breath-cycles-display').textContent = `${breathCycles} ZYKLEN`;
-  }
-}
-
-function runBreathPhase() {
-  if (!breathRunning) return;
-  const phases = BREATH_MODES[breathMode].phases;
-  const phase = phases[breathPhaseIdx % phases.length];
-  const ring = document.getElementById('breath-ring');
-
-  document.getElementById('breath-phase-text').textContent = phase.n;
-  document.getElementById('breath-count-text').textContent = breathMode === 'wimhof' ? `${wimhofCount}/30` : `ZYK ${breathCycles+1}`;
-  document.getElementById('breath-instruction').textContent = phase.n + '...';
-
-  ring.style.transition = `transform ${phase.d}ms ${phase.n.includes('EIN')||phase.n.includes('TIEF')?'ease-out':'ease-in'}`;
-  ring.style.transform = (phase.n.includes('EIN')||phase.n.includes('TIEF')||phase.n==='HALTEN') ? 'scale(1.2)' : 'scale(1)';
-
-  if (breathMode === 'wimhof') {
-    wimhofCount++;
-    if (wimhofCount >= 30) {
-      breathCycles++; wimhofCount = 0;
-      document.getElementById('breath-instruction').textContent = 'Ausatmen — so lange halten wie möglich';
-      ring.style.transition = 'transform 2s ease-in'; ring.style.transform = 'scale(0.88)';
-      breathPhaseTimeout = setTimeout(() => {
-        if (!breathRunning) return;
-        document.getElementById('breath-instruction').textContent = 'Einatmen — 15 Sek halten';
-        ring.style.transition = 'transform 1.5s ease-out'; ring.style.transform = 'scale(1.2)';
-        breathPhaseTimeout = setTimeout(() => {
-          if (breathRunning) { breathPhaseIdx = 0; runBreathPhase(); }
-        }, 15000);
-      }, 3000);
-      return;
-    }
-    breathPhaseTimeout = setTimeout(() => { if (breathRunning) runBreathPhase(); }, phase.d);
-    return;
-  }
-  breathPhaseIdx++;
-  if (breathPhaseIdx % phases.length === 0) breathCycles++;
-  breathPhaseTimeout = setTimeout(() => { if (breathRunning) runBreathPhase(); }, phase.d);
-}
 
 // ══════════════ MOOD ══════════════
 
 function selectMood(btn, mood) {
-  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
   storageSet('mood_'+new Date().toDateString(), mood);
   awardXP('mood_' + getLocalDateKey(), 8, 'Status gewählt', { scope: 'day', silent: true });
   if (navigator.vibrate) navigator.vibrate(20);
@@ -8034,23 +8134,6 @@ function updateRefeedWindow() {
     : 'Refeed läuft aus. Danach 16:8 oder normale Kost behutsam fortsetzen.';
   popElement(panel);
   updateDynamicFavicon();
-}
-
-function startQuickBoxBreath() {
-  const btn = Array.from(document.querySelectorAll('#breath-mode-seg .h-seg-btn')).find(el => el.textContent.toLowerCase().includes('box'));
-  setBreathMode('box', btn || document.querySelector('#breath-mode-seg .h-seg-btn'));
-  if (!breathRunning) toggleBreath();
-  clearTimeout(startQuickBoxBreath._timer);
-  startQuickBoxBreath._timer = setTimeout(() => {
-    if (breathRunning && breathMode === 'box') {
-      stopBreath();
-      const breathBtn = document.getElementById('breath-btn');
-      if (breathBtn) breathBtn.textContent = 'Start';
-      toast('2 MIN BOX BREATHING ABGESCHLOSSEN');
-      safeVibrate([20, 20, 40]);
-    }
-  }, 120000);
-  toast('2 MIN BOX BREATHING GESTARTET');
 }
 
 </script>
