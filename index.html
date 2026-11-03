@@ -174,6 +174,13 @@ body {
   cursor: pointer;
 }
 .h-row-lead { width: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.h-goalrow-arrow {
+  width: 56px; flex-shrink: 0; align-self: stretch; background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 120ms ease;
+}
+.h-goalrow-arrow:active { transform: scale(.9); }
+.h-goalrow-arrow svg { width: 32px; height: 32px; }
 .h-row-body { flex: 1; min-width: 0; }
 .h-row-title { font-size: 17px; color: var(--ink); }
 .h-row-meta { font-size: 13.5px; color: var(--muted); margin-top: 2px; }
@@ -548,6 +555,28 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     </div>
   </div>
 
+  <!-- DETAIL-SHEET (Runde 4 Punkt 1): öffnet sich beim Tippen auf die Zeile
+       (nicht die Pfeil-Zone) für Ziele, Routinen und Supplemente. -->
+  <div class="h-sheet-overlay" id="goal-detail-overlay" role="dialog" aria-modal="true" aria-label="Detail" style="z-index:612">
+    <div class="h-sheet-body">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">
+        <div id="gd-badge"></div>
+        <div style="flex:1;min-width:0">
+          <div class="h-title" id="gd-title" style="font-size:26px"></div>
+          <div class="h-meta" id="gd-meta"></div>
+        </div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeGoalDetailSheet()" aria-label="Schließen">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        </button>
+      </div>
+      <div id="gd-body"></div>
+      <div class="h-row" id="gd-setup-link" style="cursor:pointer;margin-top:24px;border-top:1px solid var(--line);border-bottom:none">
+        <div class="h-row-body"><div class="h-meta" style="font-size:14px">In Einstellungen ändern</div></div>
+        <div class="h-row-chevron">›</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ZIEL-SHEET (Phase 5): Erstellen + Bearbeiten, Vollbild-Overlay -->
   <div class="h-sheet-overlay" id="goal-sheet-overlay" role="dialog" aria-modal="true" aria-label="Ziel bearbeiten" style="z-index:615">
     <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
@@ -556,6 +585,11 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeGoalSheet()" aria-label="Schließen">
           <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
         </button>
+      </div>
+
+      <div id="gs-active-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div class="h-meta">Aktiv</div>
+        <button type="button" class="h-switch" id="gs-active-switch" onclick="toggleGoalSheetActive()" aria-label="Aktiv"></button>
       </div>
 
       <div id="gs-badge-preview" style="display:flex;justify-content:center;gap:20px;margin-bottom:28px"></div>
@@ -2785,15 +2819,20 @@ function sortGoalsForHeute(goals, doneToday) {
   });
 }
 
+// GoalRow hat zwei Tippzonen: die Pfeil-Zone (linke 56px, voller Zeilenhöhe)
+// hakt direkt ab/wieder auf, der Rest der Zeile öffnet das Detail-Sheet.
+// Routinen bekommen dabei nur noch einen Log-Eintrag über die Pfeil-Zone,
+// ohne dass der Player startet — der startet jetzt aus dem Detail-Sheet.
 function renderGoalRow(g, done, todayKey) {
-  const tier = computeTier(g);
   const log = getLog(g.id, todayKey);
   const alreadyMut = !!(log && log.mut);
   const showChip = _overcomeChipGoalId === g.id && !alreadyMut;
   return `
-    <div class="h-row" data-goal-id="${g.id}" style="justify-content:space-between">
-      <div onclick="onGoalRowTap('${g.id}')" style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;cursor:pointer">
-        <div style="flex-shrink:0;width:32px;height:32px">${done ? '' : `<svg class="h-arrow-open" viewBox="0 0 32 32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M7 16 H24 M17 9 L24 16 L17 23"/></svg>`}</div>
+    <div class="h-row" data-goal-id="${g.id}" style="padding:0;align-items:stretch;justify-content:space-between">
+      <button type="button" class="h-goalrow-arrow" onclick="onGoalRowArrowTap(event,'${g.id}')" aria-label="„${escapeHtml(g.title)}“ abhaken">
+        ${done ? '' : `<svg class="h-arrow-open" viewBox="0 0 32 32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M7 16 H24 M17 9 L24 16 L17 23"/></svg>`}
+      </button>
+      <div onclick="openGoalDetailSheet('${g.id}')" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;padding:13px 16px 13px 0;cursor:pointer">
         <div style="flex:1;min-width:0">
           <div style="position:relative;display:inline-block;max-width:100%">
             <span class="h-text" ${done ? 'style="color:var(--faint)"' : ''}>${escapeHtml(g.title)}</span>
@@ -2801,8 +2840,8 @@ function renderGoalRow(g, done, todayKey) {
           </div>
           ${g.time ? `<div class="h-meta">${escapeHtml(g.time)}</div>` : ''}
         </div>
+        ${showChip ? `<button class="h-pill h-pill--outline" style="min-height:36px;padding:0 14px;font-size:13px;flex-shrink:0" onclick="onOvercomeChipTap(event,'${g.id}')">Mit Überwindung?</button>` : '<span class="h-row-chevron">›</span>'}
       </div>
-      ${showChip ? `<button class="h-pill h-pill--outline" style="min-height:36px;padding:0 14px;font-size:13px;flex-shrink:0" onclick="onOvercomeChipTap(event,'${g.id}')">Mit Überwindung?</button>` : ''}
     </div>
   `;
 }
@@ -2934,9 +2973,13 @@ async function saveAbendCheckin() {
   toast('CHECK-IN GESPEICHERT');
 }
 
-async function onGoalRowTap(goalId) {
+// Pfeil-Zone: hakt direkt ab/wieder auf, bei Routinen entsteht dabei nur ein
+// Log-Eintrag — der Player startet jetzt ausschließlich aus dem Detail-Sheet
+// (Rest der Zeile). Check-in bleibt ein Sonderfall: ohne Eintrag öffnet die
+// Pfeil-Zone das Status-Sheet, weil dort Stimmung/Text erfasst werden müssen.
+async function onGoalRowArrowTap(e, goalId) {
+  if (e) e.stopPropagation();
   const g = getGoal(goalId);
-  if (g && g.kind === 'routine') { openRoutinePlayer(goalId); return; }
   if (g && g.kind === 'checkin') {
     if (isLogged(goalId, getLocalDateKey())) { await toggleLog(goalId, getLocalDateKey(), false); buildHeuteScreen(); return; }
     openAbendCheckin(goalId); return;
@@ -2965,6 +3008,101 @@ async function onOvercomeChipTap(e, goalId) {
   const { unlocked } = await setLogMut(goalId, getLocalDateKey(), true);
   buildHeuteScreen();
   enqueueUnlocks(unlocked);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DETAIL-SHEET — Runde 4 Punkt 1 (öffnen statt abhaken: Rest der Zeile)
+// ══════════════════════════════════════════════════════════════════════
+
+// "Tusche in 4 Tagen" — Restweg bis zur nächsten Stufe, nur für Ziele mit
+// Serie (täglich/drei/woche). Einmalige Ziele und die höchste Stufe (Glanz)
+// haben keinen Restweg mehr.
+function describeNextTier(goal, tier) {
+  const th = GOAL_TIER_THRESHOLDS[goal.rhythm];
+  if (!th || tier === 'glanz') return null;
+  const streak = goal.rhythm === 'taeglich' ? computeDailyStreak(goal.id) : computeWeekStreak(goal.id, goal.rhythm);
+  const nextTier = (tier === 'gesperrt' || tier === 'skizze') ? 'tusche' : 'glanz';
+  const need = th[nextTier] - streak;
+  if (need <= 0) return null;
+  const unit = goal.rhythm === 'taeglich' ? (need === 1 ? 'Tag' : 'Tagen') : (need === 1 ? 'Woche' : 'Wochen');
+  return `${nextTier === 'tusche' ? 'Tusche' : 'Glanz'} in ${need} ${unit}`;
+}
+
+let _goalDetailCurrent = null;
+
+function openGoalDetailSheet(goalId) {
+  const g = getGoal(goalId);
+  if (!g) return;
+  _goalDetailCurrent = { type: 'goal', id: goalId };
+  const tier = g.kind === 'routine' ? computeTier(g) : computeTier(g);
+  document.getElementById('gd-badge').innerHTML = renderBadge({ cat: g.category, tier, icon: g.icon, drawing: g.drawing, size: 40 });
+  document.getElementById('gd-title').textContent = g.title;
+  const rhythmLabel = (GOAL_RHYTHMS.find(r => r.id === g.rhythm) || {}).label || '';
+  document.getElementById('gd-meta').textContent = [rhythmLabel, g.time].filter(Boolean).join(' · ');
+
+  const todayKey = getLocalDateKey();
+  const done = isLogged(goalId, todayKey);
+  const body = document.getElementById('gd-body');
+
+  if (g.kind === 'routine') {
+    body.innerHTML = `
+      <div class="h-list" style="margin-bottom:20px">
+        ${(g.steps || []).map(s => `
+          <div class="h-row" style="cursor:default">
+            <div class="h-row-body"><div class="h-row-title">${escapeHtml(s.title)}</div></div>
+            <div class="h-row-trail">${formatMMSS(s.sec)} min</div>
+          </div>
+        `).join('')}
+      </div>
+      <button type="button" class="h-pill" style="width:100%;margin-bottom:12px" onclick="closeGoalDetailSheet();openRoutinePlayer('${g.id}')">Starten</button>
+      <button type="button" class="h-pill h-pill--outline" style="width:100%" onclick="closeGoalDetailSheet();openRoutinePlayer('${g.id}', true)">Mini starten</button>
+    `;
+  } else {
+    const progress = describeBadgeProgress(g, tier);
+    const next = describeNextTier(g, tier);
+    body.innerHTML = `
+      <div class="h-meta" style="margin-bottom:20px;line-height:1.5">${progress}${next ? ' · ' + next : ''}</div>
+      <button type="button" class="h-pill" style="width:100%" onclick="toggleGoalDetailDone('${g.id}')">${done ? 'Rückgängig' : 'Erledigt'}</button>
+    `;
+  }
+
+  document.getElementById('gd-setup-link').onclick = () => { closeGoalDetailSheet(); navigateTo(`setup/${g.kind === 'routine' ? 'routine' : 'ziel'}/${g.id}`); };
+  document.getElementById('goal-detail-overlay').classList.add('open');
+}
+async function toggleGoalDetailDone(goalId) {
+  const { unlocked } = await toggleLog(goalId, getLocalDateKey(), false);
+  closeGoalDetailSheet();
+  buildHeuteScreen();
+  enqueueUnlocks(unlocked);
+}
+function closeGoalDetailSheet() {
+  document.getElementById('goal-detail-overlay').classList.remove('open');
+  _goalDetailCurrent = null;
+}
+
+function openSupplementDetailSheet(suppId) {
+  const s = _contentCache.find(it => it.id === suppId);
+  if (!s) return;
+  _goalDetailCurrent = { type: 'supplement', id: suppId };
+  const d = s.details || {};
+  document.getElementById('gd-badge').innerHTML = `<div class="h-circle-btn h-circle-btn--sm" style="pointer-events:none"><svg width="18" height="18" viewBox="0 0 24 24" stroke="var(--ink)" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-1.5 17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1z"/><path d="M7.5 10h9"/></svg></div>`;
+  document.getElementById('gd-title').textContent = s.title;
+  const timeLabel = { morning: 'Morgens', midday: 'Mittags', evening: 'Abends' }[s.time] || '';
+  document.getElementById('gd-meta').textContent = [s.dose, timeLabel].filter(Boolean).join(' · ');
+
+  const doneToday = getItemsDoneToday().has(suppId);
+  document.getElementById('gd-body').innerHTML = `
+    <div class="h-meta" style="margin-bottom:20px;line-height:1.5">${escapeHtml((d.mechanism || '').split('.')[0])}.</div>
+    <button type="button" class="h-pill" style="width:100%" onclick="toggleSupplementDetailDone('${suppId}')">${doneToday ? 'Rückgängig' : 'Genommen'}</button>
+  `;
+  document.getElementById('gd-setup-link').onclick = () => { closeGoalDetailSheet(); navigateTo(`setup/supplement/${suppId}`); };
+  document.getElementById('goal-detail-overlay').classList.add('open');
+}
+function toggleSupplementDetailDone(suppId) {
+  toggleItemDone(suppId);
+  closeGoalDetailSheet();
+  buildHomeSuppList();
+  buildSupplements();
 }
 
 async function addGoalFromTemplate(slug) {
@@ -3869,7 +4007,7 @@ function buildSetExerciseList() {
   if (!el) return;
   const exercises = getItems({ type: 'exercise' });
   el.innerHTML = exercises.length ? exercises.map((ex) => `
-    <div class="h-row" onclick="openExerciseEditor('${ex.id}')">
+    <div class="h-row" id="setrow-uebung-${ex.id}" onclick="openExerciseEditor('${ex.id}')">
       <div class="h-row-body">
         <div class="h-row-title">${escapeHtml(ex.title)}${ex.active ? '' : ' (inaktiv)'}</div>
         <div class="h-row-meta">${formatMMSS(ex.details.durationSec || 0)} min</div>
@@ -4084,7 +4222,7 @@ function buildSetGoalsList() {
   const archived = getGoals({ archived: true });
   const counters = getCounters();
   let html = active.length ? active.map(g => `
-    <div class="h-row" ${g.kind ? '' : `onclick="openGoalSheet('${g.id}')"`}>
+    <div class="h-row" id="setrow-ziel-${g.id}" ${g.kind ? '' : `onclick="openGoalSheet('${g.id}')"`}>
       <div style="flex-shrink:0">${renderBadge({ cat: g.category, tier: computeTier(g), icon: g.icon, drawing: g.drawing, size: 28 })}</div>
       <div style="flex:1">${escapeHtml(g.title)}${g.kind === 'routine' ? ' · Routine' : g.kind === 'checkin' ? ' · Check-in' : ''}</div>
       ${!g.kind ? `<button type="button" class="h-pill h-pill--outline" style="min-height:32px;padding:0 14px;font-size:12px;flex-shrink:0" onclick="event.stopPropagation();pauseGoal('${g.id}')">Pausieren</button>` : ''}
@@ -4403,14 +4541,17 @@ function openGoalSheet(goalId = null) {
         icon: existing.icon || 'funke', drawing: existing.drawing ? existing.drawing.slice() : null,
         isDrawMode: !!(existing.drawing && existing.drawing.length),
         rhythm: existing.rhythm, time: existing.time || '', xp: existing.xp || 10, notify: !!existing.notify,
+        active: !existing.paused,
       }
-    : { id: null, title: '', category: 'koerper', icon: 'schritte', drawing: null, isDrawMode: false, rhythm: 'taeglich', time: '', xp: 10, notify: false };
+    : { id: null, title: '', category: 'koerper', icon: 'schritte', drawing: null, isDrawMode: false, rhythm: 'taeglich', time: '', xp: 10, notify: false, active: true };
   _goalSheetState.iconGroup = iconGroupFor(_goalSheetState.category);
 
   document.getElementById('gs-title').textContent = existing ? 'Ziel bearbeiten' : 'Neues Ziel';
   document.getElementById('gs-name').value = _goalSheetState.title;
   document.getElementById('gs-time').value = _goalSheetState.time;
   document.getElementById('gs-archive-btn').style.display = existing ? '' : 'none';
+  document.getElementById('gs-active-row').style.display = existing ? '' : 'none';
+  updateGoalSheetActiveSwitch();
   document.getElementById('gs-icon-search').value = '';
   updateGoalSheetNotifyBtn();
 
@@ -4431,6 +4572,13 @@ function updateGoalSheetNotifyBtn() {
 function toggleGoalSheetNotify() {
   _goalSheetState.notify = !_goalSheetState.notify;
   updateGoalSheetNotifyBtn();
+}
+function updateGoalSheetActiveSwitch() {
+  document.getElementById('gs-active-switch').classList.toggle('on', _goalSheetState.active);
+}
+function toggleGoalSheetActive() {
+  _goalSheetState.active = !_goalSheetState.active;
+  updateGoalSheetActiveSwitch();
 }
 
 function closeGoalSheet() {
@@ -4453,7 +4601,7 @@ async function saveGoalFromSheet() {
     xp: _goalSheetState.xp || 10,
     notify: !!_goalSheetState.notify,
     archived: prior ? prior.archived : false,
-    paused: prior ? prior.paused : false,
+    paused: _goalSheetState.id ? !_goalSheetState.active : false,
     createdAt: prior ? prior.createdAt : undefined,
     sourceHabitId: prior ? prior.sourceHabitId : undefined,
     kind: prior ? prior.kind : undefined,
@@ -4493,7 +4641,7 @@ function buildContentEditorPanel() {
   const sections = CONTENT_TYPE_DEFS.map(({ type, label }) => {
     const rows = getItems({ type });
     const rowsHtml = rows.length ? `<div class="h-list">` + rows.map(it => `
-      <div class="h-row" onclick="openItemEditor('${it.id}')" style="${it.active ? '' : 'opacity:.5'}">
+      <div class="h-row" id="setrow-${type === 'supplement' ? 'supplement' : type}-${it.id}" onclick="openItemEditor('${it.id}')" style="${it.active ? '' : 'opacity:.5'}">
         <div class="h-row-body">
           <div class="h-row-title">${escapeHtml(it.title)}</div>
           <div class="h-row-meta">${it.active ? '' : 'Inaktiv'}${it.dose ? (it.active ? '' : ' · ') + escapeHtml(it.dose) : ''}</div>
@@ -4694,7 +4842,7 @@ function buildSetRoutineList() {
   if (!el) return;
   const routines = getActiveHeuteGoals().filter(g => g.kind === 'routine');
   el.innerHTML = routines.map(g => `
-    <div class="h-row" onclick="openRoutineEditor('${g.id}')">
+    <div class="h-row" id="setrow-routine-${g.id}" onclick="openRoutineEditor('${g.id}')">
       <div class="h-row-body"><div class="h-row-title">${escapeHtml(g.title)}</div><div class="h-row-meta">${escapeHtml(g.time || '—')} · ${g.steps.length} Schritte</div></div>
       <div class="h-row-chevron">›</div>
     </div>
@@ -5243,19 +5391,22 @@ function buildHomeSuppList() {
     const mechanism = (s.details && s.details.mechanism) || '';
     const row = document.createElement('div');
     row.className = 'h-row';
+    row.style.cssText = 'padding:0;align-items:stretch';
     row.innerHTML = `
-      <div class="h-row-lead">${isDone ? '' : `<svg class="h-arrow-open" viewBox="0 0 32 32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M7 16 H24 M17 9 L24 16 L17 23"/></svg>`}</div>
-      <div class="h-row-body">
+      <button type="button" class="h-goalrow-arrow" aria-label="„${escapeHtml(s.title)}“ abhaken">${isDone ? '' : `<svg class="h-arrow-open" viewBox="0 0 32 32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M7 16 H24 M17 9 L24 16 L17 23"/></svg>`}</button>
+      <div class="h-row-body" style="padding:13px 16px 13px 0;cursor:pointer">
         <div class="h-row-title" ${isDone ? 'style="color:var(--faint)"' : ''}>${escapeHtml(s.title)}${s.dose ? ' — ' + escapeHtml(s.dose) : ''}</div>
         <div class="h-row-meta">${escapeHtml(mechanism.split('.')[0])}.</div>
       </div>`;
-    row.onclick = () => {
+    row.querySelector('.h-goalrow-arrow').onclick = (e) => {
+      e.stopPropagation();
       const wasDone = getItemsDoneToday().has(s.id);
       toggleItemDone(s.id);
       buildHomeSuppList();
       buildSupplements();
       toast(wasDone ? s.title : '+ ' + s.title);
     };
+    row.querySelector('.h-row-body').onclick = () => openSupplementDetailSheet(s.id);
     root.appendChild(row);
   });
   if (items.length > 4) {
@@ -5687,6 +5838,49 @@ function showPage(id) {
   window.scrollTo(0, 0);
   restoreSectionCollapseState();
 }
+
+// ══════════════ DEEP-LINKS — Runde 4 Punkt 1 ══════════════
+// #setup/ziel/{id} · #setup/routine/{id} · #setup/uebung/{id} ·
+// #setup/supplement/{id} — öffnet Setup, klappt die passende Sektion auf,
+// scrollt zur Zeile, hebt sie 1,2s hervor (Hintergrund --grid, Fade) und
+// öffnet danach den Editor. Der Zurück-Button (Browser/Wischer) landet über
+// den normalen hashchange wieder bei Heute, weil die App sonst ohne Hash
+// läuft.
+const DEEP_LINK_ROUTES = {
+  ziel:       { sectionKey: 'settings:ziele',     rowPrefix: 'setrow-ziel',       open: id => openGoalSheet(id) },
+  routine:    { sectionKey: 'settings:routinen',  rowPrefix: 'setrow-routine',    open: id => openRoutineEditor(id) },
+  uebung:     { sectionKey: 'settings:uebungen',  rowPrefix: 'setrow-uebung',     open: id => openExerciseEditor(id) },
+  supplement: { sectionKey: 'settings:inhalte',   rowPrefix: 'setrow-supplement', open: id => openItemEditor(id) },
+};
+
+function navigateTo(path) { window.location.hash = path; }
+
+function handleHashRoute() {
+  const hash = window.location.hash.replace(/^#/, '');
+  if (!hash) { if (currentPage !== 'pg-home') showPage('pg-home'); return; }
+  const parts = hash.split('/');
+  if (parts[0] !== 'setup' || parts.length !== 3) return;
+  const route = DEEP_LINK_ROUTES[parts[1]];
+  const id = parts[2];
+  if (!route) return;
+  showPage('pg-settings');
+  setTimeout(() => {
+    const section = document.querySelector(`.h-section[data-section-key="${route.sectionKey}"]`);
+    if (section) {
+      applySectionCollapseVisual(section, false);
+      storageSet('collapsed:' + route.sectionKey, '0');
+    }
+    const row = document.getElementById(`${route.rowPrefix}-${id}`);
+    if (row) {
+      row.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      row.style.transition = 'background 1.2s ease';
+      row.style.background = 'var(--grid)';
+      setTimeout(() => { row.style.background = ''; }, 1200);
+    }
+    setTimeout(() => route.open(id), row ? 300 : 0);
+  }, 50);
+}
+window.addEventListener('hashchange', handleHashRoute);
 
 // ══════════════ TIMER ══════════════
 
