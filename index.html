@@ -135,6 +135,7 @@ body {
   #h-heute > .h-section[data-section-key="home:ziele"] { grid-column: 1; grid-row: 30; }
   #h-heute > #h-goal-list { grid-column: 1; grid-row: 40; }
   #h-heute > #h-goal-empty { grid-column: 1; grid-row: 40; }
+  #h-heute > #h-gelegenheit-list { grid-column: 1; grid-row: 42; }
   #h-heute > .h-templates { grid-column: 1; grid-row: 50; }
   #h-heute > #h-counters { grid-column: 2; grid-row: 20; }
   #h-heute > #h-heute-sep1 { grid-column: 2; grid-row: 25; }
@@ -569,6 +570,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     </div></div></div>
     <div class="h-list" id="h-goal-list" style="margin-top:4px"></div>
     <div id="h-goal-empty" style="display:none"></div>
+    <div id="h-gelegenheit-list"></div>
 
     <div class="h-section" data-section-key="home:heute-noch"><div class="h-section-row" onclick="toggleSection('home:heute-noch')"><div class="h-section-title" style="font-size:28px">Heute noch</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:heute-noch"><div>
     </div></div></div>
@@ -722,7 +724,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
           <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
         </button>
       </div>
-      <div class="h-meta" style="margin-bottom:10px">Status</div>
+      <div class="h-meta" style="margin-bottom:10px">Wie war der Tag?</div>
       <div class="h-chip-row" style="margin-bottom:24px">
         <button type="button" class="h-pill h-pill--outline mood-btn" style="min-height:44px;padding:0 18px;font-size:14px" onclick="selectMood(this,'Gut')">Gut</button>
         <button type="button" class="h-pill h-pill--outline mood-btn" style="min-height:44px;padding:0 18px;font-size:14px" onclick="selectMood(this,'Ok')">Ok</button>
@@ -730,9 +732,21 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         <button type="button" class="h-pill h-pill--outline mood-btn" style="min-height:44px;padding:0 18px;font-size:14px" onclick="selectMood(this,'Schmerzen')">Schmerzen</button>
         <button type="button" class="h-pill h-pill--outline mood-btn" style="min-height:44px;padding:0 18px;font-size:14px" onclick="selectMood(this,'Stark')">Stark</button>
       </div>
-      <div class="h-meta" style="margin-bottom:6px">Was war dein Up heute?</div>
+
+      <div class="h-meta" style="margin-bottom:10px">Alkohol</div>
+      <div class="h-chip-row" style="margin-bottom:24px">
+        <button type="button" class="h-pill h-pill--outline alcohol-btn" data-val="kein" style="min-height:44px;padding:0 18px;font-size:14px" onclick="selectAlcohol(this,'kein')">Kein Alkohol</button>
+        <button type="button" class="h-pill h-pill--outline alcohol-btn" data-val="rahmen" style="min-height:44px;padding:0 18px;font-size:14px" onclick="selectAlcohol(this,'rahmen')">Höchstens 2 Gläser</button>
+        <button type="button" class="h-pill h-pill--outline alcohol-btn" data-val="mehr" style="min-height:44px;padding:0 18px;font-size:14px" onclick="selectAlcohol(this,'mehr')">Mehr</button>
+      </div>
+
+      <div class="h-meta" style="margin-bottom:6px">Heute gehalten</div>
+      <div class="h-list" id="checkin-held-list" style="margin-bottom:24px"></div>
+
+      <div class="h-meta" style="margin-bottom:6px">Up des Tages</div>
+      <div class="h-meta" style="color:var(--faint);font-size:12px;margin-bottom:6px">Was war heute gut?</div>
       <textarea id="checkin-up-text" rows="3" style="width:100%;background:transparent;border:1px solid var(--line);padding:10px;color:var(--ink);font-family:var(--ui);font-size:15px;box-sizing:border-box;resize:vertical;margin-bottom:24px"></textarea>
-      <button type="button" class="h-pill" style="width:100%" onclick="saveAbendCheckin()">Fertig</button>
+      <button type="button" class="h-pill h-pill--shadow" style="width:100%" onclick="saveAbendCheckin()">Check-in abschließen</button>
     </div>
   </div>
 
@@ -807,6 +821,19 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
       <div style="margin-bottom:24px">
         <div class="h-meta" style="margin-bottom:6px">Uhrzeit (optional)</div>
         <input type="time" id="gs-time" style="background:transparent;border:1px solid var(--line);padding:8px 10px;color:var(--ink);font-family:var(--ui);font-size:14px">
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:16px">
+        <div class="h-meta">Mit Timer</div>
+        <button type="button" class="h-switch" id="gs-timer-switch" onclick="toggleGoalSheetTimer()" aria-label="Mit Timer"></button>
+      </div>
+      <div id="gs-timer-stepper-row" style="display:none;align-items:center;justify-content:space-between;margin-bottom:24px">
+        <div class="h-meta">Minuten</div>
+        <div class="h-stepper">
+          <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustGoalSheetTimerMin(-1)" aria-label="Weniger Minuten">−</button>
+          <div class="h-stepper-val" id="gs-timer-min-display">5</div>
+          <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustGoalSheetTimerMin(1)" aria-label="Mehr Minuten">+</button>
+        </div>
       </div>
 
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;gap:16px">
@@ -1920,6 +1947,9 @@ const BADGE_SHAPES = {
   mut:      'M50 5L93 17V55L50 95L7 55V17z',
   geist:    'M28 8H72L95 50L72 92H28L5 50z',
   verzicht: 'M33 6H67L94 33V67L67 94H33L6 67V33z',
+  // Runde 5 Punkt 7.1 — neue Kategorien
+  werk:     'M26 5h48a5 5 0 0 1 5 5v80a5 5 0 0 1-5 5H26a5 5 0 0 1-5-5V10a5 5 0 0 1 5-5z',
+  geld:     'M50 4L96 50L50 96L4 50z',
 };
 
 // 24er-Viewbox, Strich-Icons (nur Kindelemente — Stroke/Fill kommen von
@@ -1994,6 +2024,13 @@ const BADGE_ICONS = {
   pilledurch:  '<path d="M5 14L14 5a4 4 0 0 1 6 6l-9 9a4 4 0 0 1-6-6z"/><path d="M9 10l5 5"/><path d="M3 21L21 3"/>',
   teller:      '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/>',
   uhr:         '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/>',
+  // Werk/Geld (Runde 5 Punkt 7.1/7.6)
+  einkaufstasche: '<path d="M6 8h12l-1 12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+  muenze:      '<circle cx="12" cy="12" r="8"/><path d="M14 9.3c-.6-.7-1.5-1-2.3-1-1.3 0-2.4.7-2.4 1.7 0 2.1 4.7.8 4.7 2.9 0 1-1.1 1.7-2.4 1.7-1 0-1.9-.4-2.4-1.1M12 6.8v1.3M12 15.9v1.3"/>',
+  kurve:       '<path d="M3 16l5-6 4 3 8-9"/><path d="M14 4h6v6"/>',
+  besen:       '<path d="M20 3l-8 8"/><path d="M12 11l-6 3 2 6 6-6"/><path d="M7 16l-4 4"/>',
+  spruehflasche: '<rect x="6" y="10" width="7" height="11" rx="1.5"/><path d="M9 10V6h4l2-2"/><path d="M17.5 2.5l1 1.3M19.5 5h2M17.5 7l1-1.3"/>',
+  fotostapel:  '<rect x="4" y="6" width="13" height="13" rx="1"/><path d="M9 3h13v13"/>',
   // sonstige (bereits vergebene Abzeichen behalten ihre Icons)
   verbindung:  '<circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8.5 8.5l7 7"/>',
   haken:       '<path d="M4 12l5 5L20 6"/>',
@@ -2010,6 +2047,8 @@ const ICON_GROUPS = {
   mut:      { label: 'Mut', icons: ['flamme','berg','blitz','schild','tuer','leiter','fahne','schluessel','sprungbrett','wellekalt','pfeiloben','stern'] },
   geist:    { label: 'Geist', icons: ['atemwelle','blatt','buch','stift','musik','kerze','auge','gluehbirne','lotus','mond','sonne','wolke'] },
   verzicht: { label: 'Verzicht', icons: ['zigarette','glasdurch','zuckerdurch','handyaus','bildschirmaus','pilledurch','teller','uhr'] },
+  werk:     { label: 'Werk', icons: ['kamera','stift','fotostapel','buch'] },
+  geld:     { label: 'Geld', icons: ['muenze','einkaufstasche','kurve'] },
 };
 const ICON_LABELS = {
   schritte: 'Schritte', laufen: 'Laufen', fahrrad: 'Fahrrad', schwimmen: 'Schwimmen', hantel: 'Hantel', yoga: 'Yoga', dehnen: 'Dehnen',
@@ -2024,9 +2063,10 @@ const ICON_LABELS = {
   zigarette: 'Zigarette', glasdurch: 'Glas', zuckerdurch: 'Zuckerwürfel', handyaus: 'Handy aus', bildschirmaus: 'Bildschirm aus',
   pilledurch: 'Pille', teller: 'Teller', uhr: 'Uhr',
   verbindung: 'Verbindung', haken: 'Haken', welle: 'Welle', funke: 'Funke', glas: 'Glas (voll)', pflanze: 'Pflanze', kamera: 'Kamera',
+  einkaufstasche: 'Einkaufstasche', muenze: 'Münze', kurve: 'Kurve nach oben', besen: 'Besen', spruehflasche: 'Sprühflasche', fotostapel: 'Fotostapel',
 };
 function iconGroupFor(cat) {
-  return { koerper: 'koerper', menschen: 'menschen', mut: 'mut', geist: 'geist', verzicht: 'verzicht' }[cat] || 'koerper';
+  return { koerper: 'koerper', menschen: 'menschen', mut: 'mut', geist: 'geist', verzicht: 'verzicht', werk: 'werk', geld: 'geld' }[cat] || 'koerper';
 }
 
 function renderBadge({ cat, tier, icon = null, drawing = null, size = 84 }) {
@@ -2517,9 +2557,12 @@ let _pendingUnlocks = [];
 
 const GOAL_TIER_RANK = { gesperrt: 0, skizze: 1, tusche: 2, glanz: 3 };
 const GOAL_TIER_THRESHOLDS = {
-  taeglich: { tusche: 7, glanz: 30 },
-  drei:     { tusche: 4, glanz: 12 },
-  woche:    { tusche: 4, glanz: 12 },
+  taeglich:    { tusche: 7, glanz: 30 },
+  drei:        { tusche: 4, glanz: 12 },
+  woche:       { tusche: 4, glanz: 12 },
+  monatlich:   { tusche: 3, glanz: 12 },
+  gelegenheit: { tusche: 10, glanz: 50 },
+  checkin:     { tusche: 7, glanz: 30 },
 };
 
 function getGoals(filter = {}) {
@@ -2533,7 +2576,17 @@ function getGoals(filter = {}) {
 // Die 8 aktiven Ziele für Heute/Ring: weder archiviert noch pausiert, und
 // keine Verzicht-Zähler (die laufen separat, siehe computeCounterDays).
 function getActiveHeuteGoals() {
-  return getGoals({ archived: false, paused: false }).filter(g => g.kind !== 'counter');
+  // Gelegenheiten (eigene Pill-Liste) und Check-in-Rhythmus-Ziele (nur im
+  // Abend-Check-in) stehen nicht in der normalen Ziele-Liste — Runde 5
+  // Punkt 7.2/7.4. Die Kind='checkin'-Einstiegszeile (Abend-Check-in
+  // selbst) bleibt, die ist über rhythm nicht betroffen.
+  return getGoals({ archived: false, paused: false }).filter(g => g.kind !== 'counter' && g.rhythm !== 'gelegenheit' && g.rhythm !== 'checkin');
+}
+function getGelegenheitGoals() {
+  return getGoals({ archived: false, paused: false }).filter(g => g.rhythm === 'gelegenheit');
+}
+function getCheckinRhythmGoals() {
+  return getGoals({ archived: false, paused: false }).filter(g => g.rhythm === 'checkin');
 }
 function getCounters() {
   return getGoals({ archived: false }).filter(g => g.kind === 'counter');
@@ -2571,7 +2624,9 @@ async function toggleLog(goalId, dateKey, mut = false) {
     if (_contentDB) { try { await idbDelete(_contentDB, existing.id, LOG_STORE); } catch (err) { console.warn('toggleLog delete fehlgeschlagen', err); } }
     return { log: null, unlocked: [] };
   }
-  const log = { id: goalId + '__' + dateKey, goalId, date: dateKey, mut: !!mut, at: Date.now() };
+  // attachments/updatedAt/deviceId (Runde 5 Punkt 7.7): reine Datenmodell-
+  // Vorbereitung für den Geräte-Sync aus Runde 6, noch ohne eigene UI.
+  const log = { id: goalId + '__' + dateKey, goalId, date: dateKey, mut: !!mut, at: Date.now(), attachments: [], updatedAt: Date.now(), deviceId: getPushDeviceId() };
   _logsCache.push(log);
   if (_contentDB) { try { await idbPutAll(_contentDB, [log], LOG_STORE); } catch (err) { console.warn('toggleLog persist fehlgeschlagen', err); } }
   return { log, unlocked: checkNewUnlocks() };
@@ -2581,6 +2636,9 @@ async function setLogMut(goalId, dateKey, mut) {
   const existing = getLog(goalId, dateKey);
   if (!existing) return { log: null, unlocked: [] };
   existing.mut = !!mut;
+  existing.updatedAt = Date.now();
+  existing.deviceId = getPushDeviceId();
+  if (!existing.attachments) existing.attachments = [];
   if (_contentDB) { try { await idbPutAll(_contentDB, [existing], LOG_STORE); } catch (err) { console.warn('setLogMut persist fehlgeschlagen', err); } }
   return { log: existing, unlocked: checkNewUnlocks() };
 }
@@ -2635,12 +2693,65 @@ function computeWeekStreak(goalId, rhythm, today = new Date()) {
   return streak;
 }
 
+// Serie in Monaten (rhythm 'monatlich', Runde 5 Punkt 7.2): Monat erfüllt bei
+// ≥1 Log, ein verpasster Monat bricht die Serie nicht (dieselbe Kulanz wie
+// bei Tages-/Wochen-Serien — erst der zweite verpasste Monat in Folge).
+function computeMonthStreak(goalId, today = new Date()) {
+  const countInMonth = (y, m) => getLogsForGoal(goalId).filter(l => {
+    const d = new Date(l.date + 'T00:00:00');
+    return d.getFullYear() === y && d.getMonth() === m;
+  }).length;
+  let y = today.getFullYear(), m = today.getMonth();
+  if (countInMonth(y, m) < 1) { m--; if (m < 0) { m = 11; y--; } }
+  let streak = 0, misses = 0;
+  for (let steps = 0; steps < 48; steps++) {
+    if (countInMonth(y, m) >= 1) { streak++; misses = 0; }
+    else { misses++; if (misses >= 2) break; }
+    m--; if (m < 0) { m = 11; y--; }
+  }
+  return streak;
+}
+// Gelegenheit (Runde 5 Punkt 7.2): keine Serie, zählt nur die Gesamtanzahl.
+function computeGelegenheitCount(goalId) {
+  return getLogsForGoal(goalId).length;
+}
+
+// Check-in-Rhythmus (Runde 5 Punkt 7.4): invertierte Logik — ein Log-Eintrag
+// bedeutet "Ausnahme an diesem Tag" (im Check-in explizit als nicht
+// gehalten markiert), Abwesenheit eines Logs zählt als gehalten. Serie
+// bricht erst beim zweiten Ausnahme-Tag in Folge (dieselbe Kulanz wie bei
+// normalen Tages-Serien), zählt aber nur ab Anlage des Ziels.
+function computeCheckinStreak(goal, today = new Date()) {
+  let streak = 0, misses = 0;
+  const d = new Date(today);
+  d.setHours(0, 0, 0, 0);
+  const created = goal.createdAt ? new Date(goal.createdAt) : null;
+  if (created) created.setHours(0, 0, 0, 0);
+  for (let steps = 0; steps < 400; steps++) {
+    if (created && d < created) break;
+    const key = getLocalDateKey(d);
+    if (!isLogged(goal.id, key)) { streak++; misses = 0; }
+    else { misses++; if (misses >= 2) break; }
+    d.setDate(d.getDate() - 1);
+  }
+  return streak;
+}
+
 function computeTier(goal, today = new Date()) {
   const logs = getLogsForGoal(goal.id);
   if (goal.rhythm === 'einmal') {
     const done = logs[0];
     if (!done) return 'skizze'; // angelegt
     return done.mut ? 'glanz' : 'tusche';
+  }
+  // Check-in-Rhythmus (Punkt 7.4): invertiert — Abwesenheit eines Logs IST
+  // der Erfolgsfall, daher vor dem "noch nie erledigt"-Rückfall behandelt.
+  if (goal.rhythm === 'checkin') {
+    const streak = computeCheckinStreak(goal, today);
+    const th = GOAL_TIER_THRESHOLDS.taeglich;
+    if (streak >= th.glanz) return 'glanz';
+    if (streak >= th.tusche) return 'tusche';
+    return streak > 0 ? 'skizze' : 'gesperrt';
   }
   if (!logs.length) return 'gesperrt'; // noch nie erledigt
   if (goal.rhythm === 'taeglich') {
@@ -2654,6 +2765,20 @@ function computeTier(goal, today = new Date()) {
     const th = GOAL_TIER_THRESHOLDS[goal.rhythm];
     if (streak >= th.glanz) return 'glanz';
     if (streak >= th.tusche) return 'tusche';
+    return 'skizze';
+  }
+  if (goal.rhythm === 'monatlich') {
+    const streak = computeMonthStreak(goal.id, today);
+    const th = GOAL_TIER_THRESHOLDS.monatlich;
+    if (streak >= th.glanz) return 'glanz';
+    if (streak >= th.tusche) return 'tusche';
+    return 'skizze';
+  }
+  if (goal.rhythm === 'gelegenheit') {
+    const count = computeGelegenheitCount(goal.id);
+    const th = GOAL_TIER_THRESHOLDS.gelegenheit;
+    if (count >= th.glanz) return 'glanz';
+    if (count >= th.tusche) return 'tusche';
     return 'skizze';
   }
   return 'gesperrt';
@@ -2719,6 +2844,19 @@ const GOAL_TEMPLATES = [
   { title: 'Atemübung',        category: 'geist',    icon: 'welle',     rhythm: 'taeglich', xp: 10 },
   { title: 'Jemanden anrufen', category: 'menschen', icon: 'telefon',   rhythm: 'woche',    xp: 15 },
   { title: 'Etwas Neues wagen',category: 'mut',      icon: 'funke',     rhythm: 'einmal',   xp: 25 },
+  // Runde 5 Punkt 7.6 — nicht automatisch aktiv, erscheinen als Kontur-Pills
+  { title: 'Ohne Fertigessen',        category: 'verzicht', icon: 'teller',         rhythm: 'checkin',     xp: 10 },
+  { title: 'Ohne Social Media',       category: 'verzicht', icon: 'handyaus',       rhythm: 'checkin',     xp: 10 },
+  { title: 'Nur Geplantes kaufen',    category: 'geld',     icon: 'einkaufstasche', rhythm: 'checkin',     xp: 10 },
+  { title: 'Investieren',             category: 'geld',     icon: 'kurve',          rhythm: 'monatlich',   xp: 20 },
+  { title: 'Monat ohne neue Schulden',category: 'geld',     icon: 'muenze',         rhythm: 'monatlich',   xp: 20 },
+  { title: '10 Seiten lesen',         category: 'geist',    icon: 'buch',           rhythm: 'taeglich',    xp: 10 },
+  { title: '30 Min Ordnung',          category: 'geist',    icon: 'besen',          rhythm: 'drei',        xp: 15, hasTimer: true, timerMin: 30 },
+  { title: 'Einen Ort putzen',        category: 'geist',    icon: 'spruehflasche',  rhythm: 'woche',       xp: 15 },
+  { title: 'Etwas für uns tun',       category: 'menschen', icon: 'herz',           rhythm: 'drei',        xp: 15 },
+  { title: 'Ein gutes Foto machen',   category: 'werk',     icon: 'kamera',         rhythm: 'gelegenheit', xp: 10 },
+  { title: 'Notieren oder skizzieren',category: 'werk',     icon: 'stift',          rhythm: 'gelegenheit', xp: 10 },
+  { title: '30 Min Fotos sortieren',  category: 'werk',     icon: 'fotostapel',     rhythm: 'woche',       xp: 15, hasTimer: true, timerMin: 30 },
 ];
 
 // Bestehende Nutzerdaten dürfen nicht verloren gehen: vor der einmaligen
@@ -3011,7 +3149,33 @@ async function initGoalsStore() {
     verifyGoalsMigrationV2();
     storageSet('goals_migrated_v2', '1');
   }
+  if (storageGet('goals_migrated_v3') !== '1') {
+    await migrateGoalsToV3();
+    storageSet('goals_migrated_v3', '1');
+  }
   checkNewUnlocks();
+}
+
+// Runde 5 Punkt 7.4/7.5: neuer "Im Rahmen"-Zähler (startet mit den
+// bisherigen alkoholfreien Tagen) + die zwei Umbenennungen — Logs und
+// bereits verdiente Abzeichen bleiben erhalten, nur title/rhythm/icon
+// ändern sich auf derselben Goal-ID.
+async function migrateGoalsToV3() {
+  if (!getGoal('goal-im-rahmen')) {
+    const noAlc = getGoal('goal-from-no_alcohol');
+    await saveGoal({
+      id: 'goal-im-rahmen', title: 'Im Rahmen', category: 'verzicht', icon: 'glasdurch',
+      kind: 'counter', since: noAlc ? noAlc.since : getLocalDateKey(),
+      archived: false, paused: false, createdAt: Date.now(),
+    });
+  }
+  const cooking = getGoal('goal-from-cooking');
+  if (cooking && cooking.title === 'Selbst gekocht') { cooking.title = 'Selbst kochen'; await saveGoal(cooking); }
+  const others = getGoal('goal-from-others');
+  if (others && others.title === 'Etwas für jemanden tun') {
+    others.title = 'Random Act of Kindness'; others.rhythm = 'gelegenheit'; delete others.time;
+    await saveGoal(others);
+  }
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -3155,9 +3319,9 @@ function computeHeuteHeaderInfos() {
 
   let bestGoal = null, bestStreak = 0, bestUnit = 'Tage';
   getGoals({ archived: false, paused: false }).filter(g => g.kind !== 'counter' && g.kind !== 'checkin').forEach(g => {
-    if (g.rhythm !== 'taeglich' && g.rhythm !== 'drei' && g.rhythm !== 'woche') return;
-    const streak = g.rhythm === 'taeglich' ? computeDailyStreak(g.id) : computeWeekStreak(g.id, g.rhythm);
-    if (streak > bestStreak) { bestStreak = streak; bestGoal = g; bestUnit = g.rhythm === 'taeglich' ? 'Tage' : 'Wochen'; }
+    if (g.rhythm !== 'taeglich' && g.rhythm !== 'drei' && g.rhythm !== 'woche' && g.rhythm !== 'monatlich') return;
+    const sc = computeStreakOrCount(g);
+    if (sc && sc.value > bestStreak) { bestStreak = sc.value; bestGoal = g; bestUnit = sc.unitPlural; }
   });
   if (bestGoal) {
     infos.push({ value: String(bestStreak), label: `${bestUnit} ${bestGoal.title} in Folge` });
@@ -3260,7 +3424,7 @@ function renderGoalRow(g, done, todayKey) {
       <button type="button" class="h-goalrow-arrow" onclick="onGoalRowArrowTap(event,'${g.id}')" aria-label="„${escapeHtml(g.title)}“ abhaken">
         ${done ? '' : `<svg class="h-arrow-open" viewBox="0 0 32 32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M7 16 H24 M17 9 L24 16 L17 23"/></svg>`}
       </button>
-      <div onclick="openGoalDetailSheet('${g.id}')" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;padding:13px 16px 13px 0;cursor:pointer">
+      <div onclick="onGoalRowBodyTap('${g.id}')" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;padding:13px 16px 13px 0;cursor:pointer">
         <div style="flex:1;min-width:0">
           <div style="position:relative;display:inline-block;max-width:100%">
             <span class="h-text" ${done ? 'style="color:var(--faint)"' : ''}>${escapeHtml(g.title)}</span>
@@ -3319,6 +3483,8 @@ function buildHeuteScreen() {
     }
   }
 
+  renderGelegenheitPills();
+
   const templatesEl = document.getElementById('h-templates');
   if (templatesEl) {
     const existingTitles = new Set(goals.map(g => g.title));
@@ -3332,6 +3498,37 @@ function buildHeuteScreen() {
   renderHeuteModuleList();
   renderBackupNotice();
   renderHeuteLastBadge();
+}
+
+// Gelegenheiten (Runde 5 Punkt 7.2): eigene Kontur-Pill-Zeile statt Ziele-
+// Liste, zählen nicht im Ring "n/8". Tap = +1 (toggleLog fürs heutige
+// Datum — ein zweiter Tap am selben Tag ist das Rückgängig).
+function renderGelegenheitPills() {
+  const el = document.getElementById('h-gelegenheit-list');
+  if (!el) return;
+  const goals = getGelegenheitGoals();
+  if (!goals.length) { el.innerHTML = ''; return; }
+  const todayKey = getLocalDateKey();
+  el.innerHTML = `<div class="h-meta" style="margin:16px 0 8px">Gelegenheiten</div><div style="display:flex;flex-wrap:wrap;gap:8px">` +
+    goals.map(g => {
+      const count = computeGelegenheitCount(g.id);
+      const done = isLogged(g.id, todayKey);
+      return `<button type="button" class="h-pill h-pill--outline" id="gel-pill-${g.id}" style="min-height:40px;padding:0 16px;font-size:14px" onclick="tapGelegenheit('${g.id}')">${done ? '✓' : '+'} ${escapeHtml(g.title)} · ${count}</button>`;
+    }).join('') + `</div>`;
+}
+async function tapGelegenheit(goalId) {
+  const btn = document.getElementById('gel-pill-' + goalId);
+  if (btn && !_reducedMotion) btn.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.08)' }, { transform: 'scale(1)' }], { duration: 200, easing: 'ease-out' });
+  const todayKey = getLocalDateKey();
+  const wasLogged = isLogged(goalId, todayKey);
+  const { unlocked } = await toggleLog(goalId, todayKey, false);
+  if (navigator.vibrate) navigator.vibrate(20);
+  if (!wasLogged) {
+    playTone(523, 0.08); setTimeout(() => playTone(659, 0.1), 100);
+    toast('+1 · Rückgängig? Nochmal tippen.');
+  }
+  buildHeuteScreen();
+  enqueueUnlocks(unlocked);
 }
 
 // "Zuletzt verdient" — rechte Spalte Desktop (desktop-heute.png), zeigt den
@@ -3364,15 +3561,28 @@ function renderBar(pct, sizeClass = '') {
 }
 // Fortschritt zur nächsten Stufe als {current,total,unit,nextTierLabel} für
 // die Bar im Abzeichen-Detail — dieselbe Schwellen-Logik wie describeNextTier().
+// Serie bzw. Gesamtanzahl + Einheit je nach Rhythmus — ein Ort für die
+// Verzweigung, die describeNextTier()/computeBadgeBarFraction()/der
+// Heute-Kopf-Rotator (Punkt 5) sonst dreifach duplizieren müssten.
+function computeStreakOrCount(goal) {
+  switch (goal.rhythm) {
+    case 'taeglich': return { value: computeDailyStreak(goal.id), unitSingular: 'Tag', unitPlural: 'Tage' };
+    case 'drei': case 'woche': return { value: computeWeekStreak(goal.id, goal.rhythm), unitSingular: 'Woche', unitPlural: 'Wochen' };
+    case 'monatlich': return { value: computeMonthStreak(goal.id), unitSingular: 'Monat', unitPlural: 'Monate' };
+    case 'gelegenheit': return { value: computeGelegenheitCount(goal.id), unitSingular: 'Mal', unitPlural: 'Mal' };
+    case 'checkin': return { value: computeCheckinStreak(goal), unitSingular: 'Tag', unitPlural: 'Tage' };
+    default: return null;
+  }
+}
 function computeBadgeBarFraction(goal, tier) {
   if (!goal || tier === 'glanz' || tier === 'gesperrt') return null;
   const th = GOAL_TIER_THRESHOLDS[goal.rhythm];
-  if (!th) return null;
-  const streak = goal.rhythm === 'taeglich' ? computeDailyStreak(goal.id) : computeWeekStreak(goal.id, goal.rhythm);
+  const sc = computeStreakOrCount(goal);
+  if (!th || !sc) return null;
   const nextTier = tier === 'skizze' ? 'tusche' : 'glanz';
   const total = th[nextTier];
-  const unit = goal.rhythm === 'taeglich' ? (total === 1 ? 'Tag' : 'Tage') : (total === 1 ? 'Woche' : 'Wochen');
-  return { current: Math.min(streak, total), total, unit, nextTierLabel: nextTier === 'tusche' ? 'Tusche' : 'Glanz' };
+  const unit = total === 1 ? sc.unitSingular : sc.unitPlural;
+  return { current: Math.min(sc.value, total), total, unit, nextTierLabel: nextTier === 'tusche' ? 'Tusche' : 'Glanz' };
 }
 
 function renderHeuteModuleList() {
@@ -3438,10 +3648,65 @@ function closeSupplementeSheet() { document.getElementById('supplemente-sheet-ov
 function openAbendCheckin() {
   const todayKey = getLocalDateKey();
   document.querySelectorAll('#abend-checkin-overlay .mood-btn').forEach(b => b.classList.toggle('selected', b.textContent === storageGet('mood_' + new Date().toDateString())));
+  const savedAlcohol = storageGet('alcohol_' + todayKey);
+  document.querySelectorAll('#abend-checkin-overlay .alcohol-btn').forEach(b => b.classList.toggle('selected', b.dataset.val === savedAlcohol));
   document.getElementById('checkin-up-text').value = storageGet('gratitude_' + todayKey) || '';
+  renderCheckinHeldList();
   document.getElementById('abend-checkin-overlay').classList.add('open');
 }
 function closeAbendCheckin() { document.getElementById('abend-checkin-overlay').classList.remove('open'); }
+
+// Alkohol (Runde 5 Punkt 7.4): zwei Zähler. "Ohne Alkohol" (bestehend,
+// goal-from-no_alcohol) bricht bei "Höchstens 2 Gläser" ODER "Mehr".
+// "Im Rahmen" (neu, goal-im-rahmen) bricht nur bei "Mehr". Beide sind
+// einfache seit-Datum-Zähler wie computeCounterDays() — ein Bruch setzt
+// since auf heute, genau wie der bestehende "Neu beginnen"-Button
+// (resetCounter()). Bei "Mehr"/"Höchstens 2 Gläser" gibt es bewusst keinen
+// Kommentar und keinen Warnton — die Serie endet einfach still.
+async function selectAlcohol(btn, val) {
+  document.querySelectorAll('#abend-checkin-overlay .alcohol-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const todayKey = getLocalDateKey();
+  storageSet('alcohol_' + todayKey, val);
+  const noAlc = getGoal('goal-from-no_alcohol');
+  const imRahmen = getGoal('goal-im-rahmen');
+  if (val === 'mehr') {
+    if (noAlc && noAlc.since !== todayKey) { noAlc.since = todayKey; await saveGoal(noAlc); }
+    if (imRahmen && imRahmen.since !== todayKey) { imRahmen.since = todayKey; await saveGoal(imRahmen); }
+  } else if (val === 'rahmen') {
+    if (noAlc && noAlc.since !== todayKey) { noAlc.since = todayKey; await saveGoal(noAlc); }
+  }
+  buildHeuteScreen();
+}
+
+// "Heute gehalten" (Punkt 7.4): eine Zeile pro aktivem Verzicht- oder
+// Check-in-Ziel. Switch an = gehalten (Default, kein Log nötig — ein Tag
+// ohne geöffneten Check-in zählt automatisch als gehalten). Ausschalten
+// schreibt einen Log-Eintrag, der für diese Ziele als Ausnahme gilt
+// (computeCheckinStreak() wertet Abwesenheit als Erfolg).
+function getCheckinHeldGoals() {
+  return getGoals({ archived: false, paused: false }).filter(g =>
+    g.kind !== 'counter' && g.kind !== 'checkin' && (g.category === 'verzicht' || g.rhythm === 'checkin'));
+}
+function renderCheckinHeldList() {
+  const el = document.getElementById('checkin-held-list');
+  if (!el) return;
+  const todayKey = getLocalDateKey();
+  const goals = getCheckinHeldGoals();
+  if (!goals.length) { el.innerHTML = '<div class="h-meta">Keine Verzicht- oder Check-in-Ziele aktiv.</div>'; return; }
+  el.innerHTML = goals.map(g => {
+    const held = !isLogged(g.id, todayKey);
+    return `<div class="h-row" style="cursor:default">
+      <div class="h-row-body"><div class="h-row-title">${escapeHtml(g.title)}</div></div>
+      <button type="button" class="h-switch${held ? ' on' : ''}" onclick="toggleCheckinHeld('${g.id}')" aria-label="${escapeHtml(g.title)} heute gehalten"></button>
+    </div>`;
+  }).join('');
+}
+async function toggleCheckinHeld(goalId) {
+  await toggleLog(goalId, getLocalDateKey(), false);
+  renderCheckinHeldList();
+}
+
 async function saveAbendCheckin() {
   const todayKey = getLocalDateKey();
   storageSet('gratitude_' + todayKey, document.getElementById('checkin-up-text').value);
@@ -3481,6 +3746,18 @@ async function onGoalRowArrowTap(e, goalId) {
   enqueueUnlocks(unlocked);
 }
 
+// Rest-der-Zeile-Tap (Runde 4 Punkt 1, erweitert in Runde 5 Punkt 7.3/7.4):
+// Check-in-Ziele öffnen direkt den Check-in, Ziele mit Timer (so lange noch
+// nicht erledigt) öffnen den Player im Timer-Modus, alles andere das
+// normale Detail-Sheet.
+function onGoalRowBodyTap(goalId) {
+  const g = getGoal(goalId);
+  if (!g) return;
+  if (g.kind === 'checkin') { openAbendCheckin(goalId); return; }
+  if (g.hasTimer && !isLogged(goalId, getLocalDateKey())) { openGoalTimerPlayer(goalId); return; }
+  openGoalDetailSheet(goalId);
+}
+
 async function onOvercomeChipTap(e, goalId) {
   e.stopPropagation();
   clearTimeout(_overcomeChipTimeout);
@@ -3497,14 +3774,16 @@ async function onOvercomeChipTap(e, goalId) {
 // "Tusche in 4 Tagen" — Restweg bis zur nächsten Stufe, nur für Ziele mit
 // Serie (täglich/drei/woche). Einmalige Ziele und die höchste Stufe (Glanz)
 // haben keinen Restweg mehr.
+const DATIVE_UNITS = { Tag: 'Tagen', Woche: 'Wochen', Monat: 'Monaten', Mal: 'Mal' };
 function describeNextTier(goal, tier) {
   const th = GOAL_TIER_THRESHOLDS[goal.rhythm];
-  if (!th || tier === 'glanz') return null;
-  const streak = goal.rhythm === 'taeglich' ? computeDailyStreak(goal.id) : computeWeekStreak(goal.id, goal.rhythm);
+  const sc = computeStreakOrCount(goal);
+  if (!th || !sc || tier === 'glanz') return null;
   const nextTier = (tier === 'gesperrt' || tier === 'skizze') ? 'tusche' : 'glanz';
-  const need = th[nextTier] - streak;
+  const need = th[nextTier] - sc.value;
   if (need <= 0) return null;
-  const unit = goal.rhythm === 'taeglich' ? (need === 1 ? 'Tag' : 'Tagen') : (need === 1 ? 'Woche' : 'Wochen');
+  const unitBase = need === 1 ? sc.unitSingular : sc.unitPlural;
+  const unit = need === 1 ? unitBase : (DATIVE_UNITS[sc.unitSingular] || unitBase);
   return `${nextTier === 'tusche' ? 'Tusche' : 'Glanz'} in ${need} ${unit}`;
 }
 
@@ -3540,9 +3819,12 @@ function openGoalDetailSheet(goalId) {
   } else {
     const progress = describeBadgeProgress(g, tier);
     const next = describeNextTier(g, tier);
+    const primaryBtn = (g.hasTimer && !done)
+      ? `<button type="button" class="h-pill h-pill--shadow" style="width:100%" onclick="closeGoalDetailSheet();openGoalTimerPlayer('${g.id}')">Starten · ${g.timerMin || 5} Min</button>`
+      : `<button type="button" class="h-pill${done ? '' : ' h-pill--shadow'}" style="width:100%" onclick="toggleGoalDetailDone('${g.id}')">${done ? 'Rückgängig' : 'Erledigt'}</button>`;
     body.innerHTML = `
       <div class="h-meta" style="margin-bottom:20px;line-height:1.5">${progress}${next ? ' · ' + next : ''}</div>
-      <button type="button" class="h-pill" style="width:100%" onclick="toggleGoalDetailDone('${g.id}')">${done ? 'Rückgängig' : 'Erledigt'}</button>
+      ${primaryBtn}
     `;
   }
 
@@ -3906,8 +4188,21 @@ function renderUnlockCelebration() {
     icon: goal ? goal.icon : 'funke', drawing: goal ? goal.drawing : null, size: 120,
   });
   document.getElementById('unlock-title').textContent = goal ? goal.title : 'Überwunden';
-  document.getElementById('unlock-meta').textContent = unlockTierLabel(u.tier);
+  document.getElementById('unlock-meta').textContent = describeAchievementSentence(goal, u.tier);
   document.getElementById('unlock-character').innerHTML = renderUnlockCharacter();
+}
+// Runde 5 Punkt 7.5: Titel sind Infinitiv ("10 Seiten lesen"), der
+// Freischalt-Screen feiert im Perfekt ("30 Tage gelesen."). Echte
+// Verb-Konjugation ist für beliebige, nutzerdefinierte Titel nicht
+// zuverlässig automatisierbar — stattdessen eine generische, grammatisch
+// immer korrekte Formulierung, die denselben Zweck erfüllt.
+function describeAchievementSentence(goal, tier) {
+  if (!goal) return unlockTierLabel(tier);
+  const sc = computeStreakOrCount(goal);
+  if (!sc || !sc.value) return unlockTierLabel(tier);
+  if (goal.rhythm === 'gelegenheit') return `${sc.value}× ${goal.title}.`;
+  const unit = sc.value === 1 ? sc.unitSingular : sc.unitPlural;
+  return `${sc.value} ${unit} in Folge: ${goal.title}.`;
 }
 
 // "Zur Sammlung" (Runde 5 Punkt 3) schließt den Feiermoment und führt
@@ -4488,6 +4783,12 @@ function openPlayer(exerciseId) {
       { key: 'exercise_' + ex.id + '_' + getLocalDateKey(), amount: ex.xp || 10, label: ex.title + ' abgeschlossen' });
     return;
   }
+  startStandaloneExercise(ex);
+}
+// Gemeinsamer Aufbau für eine einzelne, nicht-sequenzielle Übung — von
+// openPlayer() (Content-Item) und openGoalTimerPlayer() (Ziel mit Timer,
+// Runde 5 Punkt 7.3, baut sich ein Exercise-ähnliches Objekt on the fly).
+function startStandaloneExercise(ex) {
   _playerState = {
     exercise: ex, totalSec: ex.details.durationSec || 60, soundPack: getSoundPack(),
     running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null, sequence: null, lastPopRemaining: null,
@@ -4511,6 +4812,18 @@ function openPlayer(exerciseId) {
   setupPlayerHowto();
   updatePlayerDisplay(0);
   document.getElementById('player-overlay').classList.add('open');
+}
+// Ziel mit Timer (Runde 5 Punkt 7.3): läuft durch denselben Player wie eine
+// Timer-Übung, details.linkedGoalId sorgt dafür, dass finishPlayerExercise()
+// das Ziel beim Abschluss automatisch abhakt (Pfeil-Animation beim nächsten
+// Heute-Rebuild, dieselbe Mechanik wie bei verknüpften Übungen).
+function openGoalTimerPlayer(goalId) {
+  const g = getGoal(goalId);
+  if (!g || !g.hasTimer) return;
+  startStandaloneExercise({
+    id: 'goal-timer-' + g.id, title: g.title, xp: g.xp || 10,
+    details: { kind: 'timer', durationSec: (g.timerMin || 5) * 60, cue: null, pattern: null, linkedGoalId: g.id },
+  });
 }
 
 // Routinen (Morgen/Mittag/Abend) und geführte Protokolle (MLD/BFR) laufen
@@ -4982,12 +5295,17 @@ const GOAL_CATEGORIES = [
   { id: 'mut',      label: 'Mut' },
   { id: 'geist',    label: 'Geist' },
   { id: 'verzicht', label: 'Verzicht' },
+  { id: 'werk',     label: 'Werk' },
+  { id: 'geld',     label: 'Geld' },
 ];
 const GOAL_RHYTHMS = [
-  { id: 'taeglich', label: 'Täglich' },
-  { id: 'drei',     label: '3× Woche' },
-  { id: 'woche',    label: 'Wöchentlich' },
-  { id: 'einmal',   label: 'Einmalig' },
+  { id: 'taeglich',    label: 'Täglich' },
+  { id: 'drei',        label: '3× Woche' },
+  { id: 'woche',       label: 'Wöchentlich' },
+  { id: 'monatlich',   label: 'Monatlich' },
+  { id: 'einmal',      label: 'Einmalig' },
+  { id: 'gelegenheit', label: 'Gelegenheit' },
+  { id: 'checkin',     label: 'Im Check-in' },
 ];
 
 let _goalSheetState = null;
@@ -5227,9 +5545,9 @@ function openGoalSheet(goalId = null) {
         icon: existing.icon || 'funke', drawing: existing.drawing ? existing.drawing.slice() : null,
         isDrawMode: !!(existing.drawing && existing.drawing.length),
         rhythm: existing.rhythm, time: existing.time || '', xp: existing.xp || 10, notify: !!existing.notify,
-        active: !existing.paused,
+        active: !existing.paused, hasTimer: !!existing.hasTimer, timerMin: existing.timerMin || 5,
       }
-    : { id: null, title: '', category: 'koerper', icon: 'schritte', drawing: null, isDrawMode: false, rhythm: 'taeglich', time: '', xp: 10, notify: false, active: true };
+    : { id: null, title: '', category: 'koerper', icon: 'schritte', drawing: null, isDrawMode: false, rhythm: 'taeglich', time: '', xp: 10, notify: false, active: true, hasTimer: false, timerMin: 5 };
   _goalSheetState.iconGroup = iconGroupFor(_goalSheetState.category);
 
   document.getElementById('gs-title').textContent = existing ? 'Ziel bearbeiten' : 'Neues Ziel';
@@ -5238,6 +5556,7 @@ function openGoalSheet(goalId = null) {
   document.getElementById('gs-archive-btn').style.display = existing ? '' : 'none';
   document.getElementById('gs-active-row').style.display = existing ? '' : 'none';
   updateGoalSheetActiveSwitch();
+  updateGoalSheetTimerUI();
   document.getElementById('gs-icon-search').value = '';
   updateGoalSheetNotifyBtn();
 
@@ -5266,6 +5585,20 @@ function toggleGoalSheetActive() {
   _goalSheetState.active = !_goalSheetState.active;
   updateGoalSheetActiveSwitch();
 }
+// Runde 5 Punkt 7.3: "Mit Timer"-Switch + Minuten-Stepper.
+function updateGoalSheetTimerUI() {
+  document.getElementById('gs-timer-switch').classList.toggle('on', _goalSheetState.hasTimer);
+  document.getElementById('gs-timer-stepper-row').style.display = _goalSheetState.hasTimer ? 'flex' : 'none';
+  document.getElementById('gs-timer-min-display').textContent = String(_goalSheetState.timerMin);
+}
+function toggleGoalSheetTimer() {
+  _goalSheetState.hasTimer = !_goalSheetState.hasTimer;
+  updateGoalSheetTimerUI();
+}
+function adjustGoalSheetTimerMin(delta) {
+  _goalSheetState.timerMin = Math.max(1, Math.min(120, _goalSheetState.timerMin + delta));
+  updateGoalSheetTimerUI();
+}
 
 function closeGoalSheet() {
   document.getElementById('goal-sheet-overlay').classList.remove('open');
@@ -5286,6 +5619,8 @@ async function saveGoalFromSheet() {
     time,
     xp: _goalSheetState.xp || 10,
     notify: !!_goalSheetState.notify,
+    hasTimer: !!_goalSheetState.hasTimer,
+    timerMin: _goalSheetState.timerMin || 5,
     archived: prior ? prior.archived : false,
     paused: _goalSheetState.id ? !_goalSheetState.active : false,
     createdAt: prior ? prior.createdAt : undefined,
