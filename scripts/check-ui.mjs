@@ -11,7 +11,9 @@
 //   - Farbwerte außerhalb der Tokens (color/background-color/border-color)
 //   - text-transform: uppercase
 //   - jede andere font-family als Host Grotesk
-//   - die Strings "XP", "LV", "// V3", "Guten Tag" im sichtbaren Text
+//   - die Strings "LV", "// V3", "Guten Tag" im sichtbaren Text ("XP" ist seit
+//     Runde 5 Punkt 5 wieder erlaubt — der Heute-Kopf zeigt "XP heute · N
+//     gesamt" absichtlich, siehe mobil-heute.png)
 // Legt außerdem Screenshots aller besuchten Zustände unter screenshots/ ab.
 //
 // Nutzung: node scripts/check-ui.mjs   (bzw. npm run check-ui)
@@ -33,7 +35,7 @@ const FORBIDDEN_CLASS_PREFIXES = [
   'panel', 'page-header', 'bottom-nav', 'hero', 'xp', 'supp-', 'mld-', 'bfr-',
   'emg-', 'recipe-', 'btn-', 'gmi-', 'quote', 'habit', 'scroll-page', 'cal-btn',
 ];
-const FORBIDDEN_STRINGS = ['XP', 'LV', '// V3', 'Guten Tag'];
+const FORBIDDEN_STRINGS = ['LV', '// V3', 'Guten Tag'];
 const ALLOWED_HEX = new Set([
   '#f4f3ef', '#14140f', '#ffe14d', '#5e5c55', '#8a877e', '#6b6860', '#d9d4c7',
   '#eae6dc', '#bdb8ac',

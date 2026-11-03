@@ -3055,6 +3055,140 @@ function computeHeuteCounters() {
   return { counters };
 }
 
+// ══════════════ HEUTE-KOPF: wechselnde Infos + XP — Runde 5 Punkt 5 ══════════════
+// XP werden rein aus den Logs berechnet (keine Level, keine Missionen) —
+// unabhängig vom alten awardXP()/xp_total-System (XP-Tab, Trophäen, Chip
+// bleiben unverändert bestehen, das hier ist nur für den Heute-Kopf).
+const XP_RULES = { ziel: 10, routine: 20, overcome: 10, gelegenheit: 10, checkin: 10 };
+// Einmalig den alten V3-XP-Stand (xp_total, Level/Missionen-System) als
+// Sockel übernehmen, damit "gesamt" im neuen Heute-Kopf nicht bei 0 beginnt.
+function migrateXpLegacyTotal() {
+  if (storageGet('xp_legacy_migrated_v1') === '1') return;
+  const oldTotal = parseInt(storageGet('xp_total') || '0', 10);
+  if (oldTotal > 0) storageSet('xp_legacy_total', String(oldTotal));
+  storageSet('xp_legacy_migrated_v1', '1');
+}
+function computeHeuteHeaderXP() {
+  const todayKey = getLocalDateKey();
+  let today = 0, total = 0;
+  _logsCache.forEach(log => {
+    const g = getGoal(log.goalId);
+    if (!g) return;
+    let amount;
+    if (g.kind === 'checkin' || g.id === 'goal-abend-checkin') amount = XP_RULES.checkin;
+    else if (g.kind === 'routine') amount = XP_RULES.routine + (log.mut ? XP_RULES.overcome : 0);
+    else if (g.rhythm === 'gelegenheit') amount = XP_RULES.gelegenheit;
+    else amount = XP_RULES.ziel + (log.mut ? XP_RULES.overcome : 0);
+    total += amount;
+    if (log.date === todayKey) today += amount;
+  });
+  const legacy = parseInt(storageGet('xp_legacy_total') || '0', 10);
+  return { today, total: total + legacy };
+}
+
+// Vier Infos, die alle 4s crossfaden (Tap schaltet manuell weiter) — siehe
+// mobil-heute.png. Bei prefers-reduced-motion nur der Tap, keine Auto-Rotation.
+function computeHeuteHeaderInfos() {
+  const infos = [];
+  const { counters } = computeHeuteCounters();
+  if (counters.length) {
+    infos.push({ value: String(counters[0].days), label: counters[0].counter.title });
+  } else {
+    infos.push({ value: '0', label: 'Noch keine Verzicht-Zähler' });
+  }
+
+  if (timerStart && timerRunning) {
+    const h = Math.floor((Date.now() - timerStart) / 3600000);
+    infos.push({ value: String(h), label: 'Stunden gefastet' });
+  } else {
+    let eatFrom = '';
+    try { const w = JSON.parse(storageGet('eat16_8') || 'null'); if (w && w.start) eatFrom = w.start; } catch (err) {}
+    infos.push({ value: 'Essfenster', label: eatFrom ? `ab ${eatFrom}` : 'noch nicht geplant' });
+  }
+
+  let bestGoal = null, bestStreak = 0, bestUnit = 'Tage';
+  getGoals({ archived: false, paused: false }).filter(g => g.kind !== 'counter' && g.kind !== 'checkin').forEach(g => {
+    if (g.rhythm !== 'taeglich' && g.rhythm !== 'drei' && g.rhythm !== 'woche') return;
+    const streak = g.rhythm === 'taeglich' ? computeDailyStreak(g.id) : computeWeekStreak(g.id, g.rhythm);
+    if (streak > bestStreak) { bestStreak = streak; bestGoal = g; bestUnit = g.rhythm === 'taeglich' ? 'Tage' : 'Wochen'; }
+  });
+  if (bestGoal) {
+    infos.push({ value: String(bestStreak), label: `${bestUnit} ${bestGoal.title} in Folge` });
+  } else {
+    infos.push({ value: '0', label: 'Noch keine Serie' });
+  }
+
+  const goals = getSammlungGoalBadges();
+  const badgeTierFor = g => {
+    if (g.paused || g.archived) { const e = getEarned(g.id); return (e && e.tier) || 'gesperrt'; }
+    return computeTier(g);
+  };
+  const goalEarned = goals.filter(g => badgeTierFor(g) !== 'gesperrt').length;
+  const counterEarned = getCounters().filter(c => computeCounterTier(c) !== 'gesperrt').length;
+  const earnedBadges = goalEarned + counterEarned + (getEarned('sys-overcome') ? 1 : 0);
+  infos.push({ value: String(earnedBadges), label: 'Abzeichen gesammelt' });
+
+  return infos;
+}
+
+let _heuteInfoIdx = 0;
+let _heuteInfoTimer = null;
+let _heuteInfoCache = [];
+function buildHeuteHeaderInfo() {
+  const el = document.getElementById('h-counters');
+  if (!el) return;
+  _heuteInfoCache = computeHeuteHeaderInfos();
+  if (_heuteInfoIdx >= _heuteInfoCache.length) _heuteInfoIdx = 0;
+  const xp = computeHeuteHeaderXP();
+
+  if (!el.dataset.built) {
+    el.dataset.built = '1';
+    el.style.cssText = 'display:flex;align-items:flex-start;justify-content:space-between;gap:16px';
+    el.innerHTML = `
+      <div class="h-heute-info" onclick="advanceHeuteInfo()" style="cursor:pointer">
+        <div class="h-num-lg" id="h-info-value" style="font-size:56px;transition:opacity 300ms ease"></div>
+        <div class="h-meta" id="h-info-label" style="transition:opacity 300ms ease"></div>
+        <div class="h-heute-dots" id="h-heute-dots" style="display:flex;gap:6px;margin-top:10px"></div>
+      </div>
+      <div style="text-align:right;border-left:1px solid var(--line);padding-left:16px;flex-shrink:0">
+        <div class="h-num-lg" id="h-info-xp-today" style="font-size:56px"></div>
+        <div class="h-meta" id="h-info-xp-label"></div>
+      </div>`;
+    if (!_reducedMotion) {
+      _heuteInfoTimer = setInterval(() => advanceHeuteInfo(), 4000);
+    }
+  }
+  renderHeuteInfoSlide(false);
+  const xpTodayEl = document.getElementById('h-info-xp-today');
+  const xpLabelEl = document.getElementById('h-info-xp-label');
+  if (xpTodayEl) xpTodayEl.textContent = String(xp.today);
+  if (xpLabelEl) xpLabelEl.textContent = `XP heute · ${xp.total.toLocaleString('de-DE')} gesamt`;
+}
+function renderHeuteInfoSlide(animate) {
+  const info = _heuteInfoCache[_heuteInfoIdx];
+  if (!info) return;
+  const valueEl = document.getElementById('h-info-value');
+  const labelEl = document.getElementById('h-info-label');
+  const dotsEl = document.getElementById('h-heute-dots');
+  const apply = () => {
+    if (valueEl) valueEl.textContent = info.value;
+    if (labelEl) labelEl.textContent = info.label;
+    if (dotsEl) dotsEl.innerHTML = _heuteInfoCache.map((_, i) =>
+      `<span style="width:6px;height:6px;border-radius:999px;background:${i === _heuteInfoIdx ? 'var(--ink)' : 'var(--line)'}"></span>`).join('');
+  };
+  if (animate && valueEl && labelEl && !_reducedMotion) {
+    valueEl.style.opacity = '0'; labelEl.style.opacity = '0';
+    setTimeout(() => { apply(); valueEl.style.opacity = '1'; labelEl.style.opacity = '1'; }, 300);
+  } else {
+    apply();
+  }
+}
+function advanceHeuteInfo() {
+  if (!_heuteInfoCache.length) return;
+  _heuteInfoIdx = (_heuteInfoIdx + 1) % _heuteInfoCache.length;
+  renderHeuteInfoSlide(true);
+}
+
 // Runde 5 Punkt 4: erledigte Ziele bleiben an ihrer Stelle — keine
 // "offen zuerst"-Sortierung mehr. Nur noch nach Uhrzeit, Ziele ohne
 // Uhrzeit nach der Reihenfolge, in der sie angelegt wurden.
@@ -3105,13 +3239,7 @@ function buildHeuteScreen() {
   const total = goals.length;
   const done = doneToday.size;
 
-  const { counters } = computeHeuteCounters();
-  const countersEl = document.getElementById('h-counters');
-  if (countersEl) {
-    countersEl.innerHTML = counters.map(({ counter, days }) =>
-      `<div class="h-counter" style="cursor:pointer" onclick="showPage('pg-sammlung')"><div class="h-num-lg" style="font-size:56px">${days}</div><div class="h-meta">${escapeHtml(counter.title)}</div></div>`
-    ).join('') || '<div class="h-meta">Noch keine Verzicht-Zähler.</div>';
-  }
+  buildHeuteHeaderInfo();
 
   const ring = document.getElementById('h-ring-progress');
   const ringCount = document.getElementById('h-ring-count');
@@ -6246,6 +6374,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   restoreSectionCollapseState();
   initSuppTab();
   renderDailyQuote();
+  migrateXpLegacyTotal();
   refreshXPUI();
   enhanceAccessibility();
   registerServiceWorker();
