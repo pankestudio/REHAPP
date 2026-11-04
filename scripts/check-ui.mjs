@@ -66,7 +66,37 @@ async function auditState(page, label) {
     const badClasses = new Set();
     const badFonts = new Set();
     const badColors = new Set();
+    const smallTargets = new Set();
     let uppercaseCount = 0;
+
+    // UX-Audit Block 3: Touch-Ziele mindestens 44×44px. Die sichtbare Größe
+    // darf kleiner bleiben, wenn ein ::before die Tippfläche unsichtbar auf
+    // mindestens 44×44 anhebt (siehe .h-pill::before etc.) — darum zählt
+    // hier das Maximum aus dem eigenen Rect und dem ::before-Rect.
+    function effectiveTapSize(el) {
+      const rect = el.getBoundingClientRect();
+      let w = rect.width, h = rect.height;
+      const before = getComputedStyle(el, '::before');
+      if (before && before.content && before.content !== 'none') {
+        const bw = parseFloat(before.width);
+        const bh = parseFloat(before.height);
+        if (!Number.isNaN(bw)) w = Math.max(w, bw);
+        if (!Number.isNaN(bh)) h = Math.max(h, bh);
+      }
+      return { w, h };
+    }
+    const interactiveSelector = 'button, a[href], input:not([type=range]):not([type=hidden]), select, textarea, [role="button"]';
+    document.querySelectorAll(interactiveSelector).forEach(el => {
+      const visible = el.offsetParent !== null;
+      if (!visible) return;
+      if (el.disabled) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.width === 0 && rect.height === 0) return;
+      const { w, h } = effectiveTapSize(el);
+      if (w < 44 || h < 44) {
+        smallTargets.add(`${w.toFixed(0)}×${h.toFixed(0)} @ ${el.id || el.className || el.tagName} "${(el.textContent || el.getAttribute('aria-label') || '').trim().slice(0, 30)}"`);
+      }
+    });
 
     function rgbToHexInPage(rgb) {
       const m = rgb.match(/rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?\)/);
@@ -100,6 +130,7 @@ async function auditState(page, label) {
       badClasses: [...badClasses],
       badFonts: [...badFonts],
       badColors: [...badColors],
+      smallTargets: [...smallTargets],
       uppercaseCount,
       text,
     };
@@ -108,6 +139,7 @@ async function auditState(page, label) {
   if (result.badClasses.length) fail(`[${label}] verbotene Klassen-Präfixe: ${result.badClasses.join(', ')}`);
   if (result.badFonts.length) fail(`[${label}] Font ≠ Host Grotesk: ${result.badFonts.join(', ')}`);
   if (result.badColors.length) fail(`[${label}] Farbwerte außerhalb der Tokens: ${result.badColors.join(', ')}`);
+  if (result.smallTargets.length) fail(`[${label}] Touch-Ziele unter 44×44px: ${result.smallTargets.join(', ')}`);
   if (result.uppercaseCount) fail(`[${label}] ${result.uppercaseCount} Element(e) mit text-transform:uppercase`);
   FORBIDDEN_STRINGS.forEach(s => {
     if (result.text.includes(s)) fail(`[${label}] verbotener String im sichtbaren Text: "${s}"`);

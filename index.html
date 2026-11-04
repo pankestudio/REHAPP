@@ -270,6 +270,7 @@ body {
 .h-section-count { font-size: 15px; color: var(--muted); flex-shrink: 0; }
 .h-section--sm .h-section-title { font-size: 22px; }
 .h-section-chevron {
+  position: relative;
   width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
   background: none; border: none; color: var(--muted); cursor: pointer;
   transform: rotate(90deg);
@@ -284,6 +285,7 @@ body {
 
 /* ════════════════ PILL / CIRCLEBUTTON ════════════════ */
 .h-pill {
+  position: relative;
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 56px; padding: 0 28px;
   border-radius: 999px !important; border: none;
@@ -301,6 +303,7 @@ body {
 .h-pill--shadow:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--yellow); }
 
 .h-circle-btn {
+  position: relative;
   display: inline-flex; align-items: center; justify-content: center;
   width: 56px; height: 56px; border-radius: 50% !important;
   background: transparent; border: 1px solid var(--ink); color: var(--ink);
@@ -311,6 +314,18 @@ body {
 .h-circle-btn--fill { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .h-circle-btn:active { transform: scale(.96); }
 .h-circle-btn[disabled] { opacity: .35; cursor: default; }
+
+/* UX-Audit Block 3: Touch-Ziele mindestens 44×44px. Viele Pills/Kontur-
+   Buttons sind absichtlich klein (Tages-Kürzel, "Pausieren", "Mini", …) —
+   die sichtbare Größe bleibt, aber ein unsichtbares ::before zentriert über
+   dem Element hebt die TIPPFLÄCHE auf mindestens 44×44 an. max(100%,44px)
+   ist für ohnehin schon große Elemente ein No-op, kein Sondercode pro
+   Button nötig. Deckt serienmäßig auch künftige kleine Pills ab. */
+.h-pill::before, .h-circle-btn::before, .h-switch::before, .h-seg-btn::before,
+.h-goalrow-arrow::before, .h-section-chevron::before, .h-badge-grid button::before {
+  content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: max(100%, 44px); height: max(100%, 44px);
+}
 
 /* ════════════════ ROW / EXPANDROW / GOALROW ════════════════ */
 .h-list { border-top: 1px solid var(--line); }
@@ -324,6 +339,7 @@ body {
 .h-row:active { background-color: var(--grid); }
 .h-row-lead { width: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .h-goalrow-arrow {
+  position: relative;
   width: 56px; flex-shrink: 0; align-self: stretch; background: none; border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: transform 120ms ease;
@@ -383,7 +399,7 @@ input[type=range]::-moz-range-track { height: 1px; background: var(--ink); }
 
 input[type=text], input[type=number], input[type=time], input[type=search], input[type=file], textarea, select {
   background: transparent; border: 1px solid var(--line); color: var(--ink);
-  padding: 8px 10px; font-size: 15px;
+  padding: 8px 10px; font-size: 15px; min-height: 44px;
 }
 input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 
@@ -395,7 +411,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 
 /* ════════════════ BADGE ════════════════ */
 .h-badge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0 24px; }
-.h-badge-grid button { background: none; border: none; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: transform 100ms ease-out; }
+.h-badge-grid button { position: relative; background: none; border: none; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: transform 100ms ease-out; }
 .h-badge-grid button:active { transform: scale(.96); }
 button[aria-pressed] { transition: transform 100ms ease-out; }
 button[aria-pressed]:active { transform: scale(.96); }
