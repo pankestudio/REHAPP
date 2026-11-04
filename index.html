@@ -353,11 +353,6 @@ body {
 .h-seg-ellipse { position: absolute; inset: -4px -8px; opacity: 0; pointer-events: none; }
 .h-seg-ellipse path { stroke: var(--ink); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .h-seg-btn.active .h-seg-ellipse { opacity: 1; }
-/* Zeichnet sich in 300ms — reiner Selektor-Trigger: die Animation matcht erst,
-   wenn .active per JS gesetzt wird, und läuft dadurch bei jedem Wechsel neu
-   an (kein manueller Reflow-Trick nötig). Gleiches hPenDraw-Keyframe wie die
-   Unterstreichungen anderswo, nur mit eigener Dauer. */
-.h-seg-btn.active .h-seg-ellipse path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: hPenDraw 300ms var(--ease) forwards; }
 
 /* ════════════════ STEPPER / SWITCH / SLIDER ════════════════ */
 .h-stepper { display: flex; align-items: center; gap: 18px; justify-content: center; }
@@ -465,9 +460,15 @@ button[aria-pressed]:active { transform: scale(.95); }
 .h-bar-fill { position: absolute; top: 0; left: 0; bottom: 0; background: var(--yellow); border-right: 2px solid var(--ink); filter: url(#wb); }
 
 /* ════════════════ STIFT-ELEMENTE ════════════════ */
+/* UX-Audit Block 1: Ruhezustand ist immer sichtbar — kein stroke-dasharray
+   mehr im CSS. Das frühere .h-pen-draw { stroke-dasharray:1; ... } verließ
+   sich auf pathLength="1"-Normalisierung, die nicht jeder Browser für
+   Kurven zuverlässig umsetzt (ergab z.T. ein 1px-Punktmuster statt einer
+   Linie). .h-pen-draw ist jetzt nur noch ein reiner JS-Selektor-Marker
+   ohne eigene Optik — das Zeichnen passiert transient über drawPenStroke()
+   mit der echten, von getTotalLength() berechneten Pfadlänge.
+   Siehe docs/design/ für die Stift-Filter selbst (w1 etc.). */
 .h-pen { stroke: var(--ink); fill: none; stroke-linecap: round; }
-.h-pen-draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: hPenDraw 600ms var(--ease) forwards; }
-@keyframes hPenDraw { to { stroke-dashoffset: 0; } }
 .h-arrow-open { width: 32px; height: 32px; }
 .h-strike-shaft { height: 12px; }
 
@@ -538,7 +539,7 @@ button[aria-pressed]:active { transform: scale(.95); }
 <nav class="h-rail" id="h-rail" aria-label="Navigation"></nav>
 <nav class="h-sidenav" id="h-sidenav" aria-label="Navigation">
   <div class="h-sidenav-brand" aria-hidden="true">
-    <svg viewBox="0 0 160 34" class="h-sidenav-brand-svg"><text x="2" y="26" font-family="var(--ui)" font-weight="300" font-size="30">REHAPP</text><path class="h-pen h-pen-draw" pathLength="1" d="M4 17 L150 17" stroke="var(--ink)" stroke-width="2" fill="none" stroke-linecap="round"/><path class="h-pen h-pen-draw" pathLength="1" d="M138 9 L152 17 L138 25" stroke="var(--ink)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg viewBox="0 0 160 34" class="h-sidenav-brand-svg"><text x="2" y="26" font-family="var(--ui)" font-weight="300" font-size="30">REHAPP</text><path class="h-pen h-pen-draw" d="M4 17 L150 17" stroke="var(--ink)" stroke-width="2" fill="none" stroke-linecap="round"/><path class="h-pen h-pen-draw" d="M138 9 L152 17 L138 25" stroke="var(--ink)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </div>
   <div class="h-sidenav-items" id="h-sidenav-items"></div>
   <div class="h-sidenav-foot">
@@ -1000,13 +1001,13 @@ button[aria-pressed]:active { transform: scale(.95); }
       <div class="h-player-title-wrap" id="player-title-wrap">
         <div style="position:relative;display:inline-block">
           <div class="h-title" id="player-exercise-title"></div>
-          <svg class="h-strike-shaft" id="player-title-strike" style="position:absolute;left:-3%;top:38%;width:106%;overflow:visible;display:none" viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen" pathLength="1" d="M2 7C60 5 120 8 180 6S270 5 298 6M290 1L298 6L290 11" stroke-width="3"/></svg>
+          <svg class="h-strike-shaft" id="player-title-strike" style="position:absolute;left:-3%;top:38%;width:106%;overflow:visible;display:none" viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen" d="M2 7C60 5 120 8 180 6S270 5 298 6M290 1L298 6L290 11" stroke-width="3"/></svg>
         </div>
         <div class="h-meta" id="player-exercise-meta" style="margin-bottom:4px"></div>
       </div>
       <div class="h-player-stack">
         <svg class="h-player-ring-svg" viewBox="0 0 300 300" aria-hidden="true">
-          <circle cx="150" cy="150" r="130" stroke="var(--line)" stroke-width="3" fill="none" class="h-pen-draw" id="player-ring-base" pathLength="1" filter="url(#w1)"/>
+          <circle cx="150" cy="150" r="130" stroke="var(--line)" stroke-width="3" fill="none" class="h-pen-draw" id="player-ring-base" filter="url(#w1)"/>
           <circle cx="150" cy="150" r="130" stroke="var(--ink)" stroke-width="4" fill="none"
             stroke-linecap="round" id="player-ring-progress" pathLength="1"
             stroke-dasharray="1" stroke-dashoffset="1"
@@ -1664,7 +1665,7 @@ function renderNavChrome() {
     <div class="h-nav-item" data-page="${n.page}" id="nav-${n.slug}" onclick="showPage('${n.page}')">
       <div class="h-nav-icon"><svg viewBox="0 0 24 24"${n.svgAttrs}>${n.inner}</svg></div>
       <div class="h-nav-label">${n.label}</div>
-      <svg class="h-nav-underline" viewBox="0 0 60 8" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M3 4.5C18 3.6 40 5.2 57 4"/></svg>
+      <svg class="h-nav-underline" viewBox="0 0 60 8" aria-hidden="true"><path class="h-pen h-pen-draw" d="M3 4.5C18 3.6 40 5.2 57 4"/></svg>
     </div>`).join('');
   const rail = document.getElementById('h-rail');
   if (rail) rail.innerHTML = NAV_ITEMS.map(n => `
@@ -1680,7 +1681,12 @@ function renderNavChrome() {
     </div>`).join('');
 }
 function syncNavActive(id) {
-  document.querySelectorAll('.h-nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === id));
+  document.querySelectorAll('.h-nav-item').forEach(n => {
+    const wasActive = n.classList.contains('active');
+    const nowActive = n.dataset.page === id;
+    n.classList.toggle('active', nowActive);
+    if (nowActive && !wasActive) drawPenStrokesIn(n);
+  });
 }
 
 // ══════════════ DATA ══════════════
@@ -3459,13 +3465,13 @@ function renderGoalRow(g, done, todayKey) {
   return `
     <div class="h-row" data-goal-id="${g.id}" style="padding:0;align-items:stretch;justify-content:space-between">
       <button type="button" class="h-goalrow-arrow" onclick="onGoalRowArrowTap(event,'${g.id}')" aria-label="„${escapeHtml(g.title)}“ abhaken">
-        ${done ? '' : `<svg class="h-arrow-open" viewBox="0 0 32 32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M7 16 H24 M17 9 L24 16 L17 23"/></svg>`}
+        ${done ? '' : `<svg class="h-arrow-open" viewBox="0 0 32 32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="h-pen h-pen-draw" filter="url(#w3)" d="M4 17C10 15 17 18 26 16 M19 9.5C22 12 24.5 14 27 16 24.5 18 22 20 19.5 23"/></svg>`}
       </button>
       <div onclick="onGoalRowBodyTap('${g.id}')" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;padding:13px 16px 13px 0;cursor:pointer">
         <div style="flex:1;min-width:0">
           <div style="position:relative;display:inline-block;max-width:100%">
             <span class="h-text" ${done ? 'style="color:var(--faint)"' : ''}>${escapeHtml(g.title)}</span>
-            ${done ? `<svg class="h-strike-shaft" style="position:absolute;left:-3%;top:38%;width:106%;overflow:visible" viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M2 7C60 5 120 8 180 6S270 5 298 6M290 1L298 6L290 11" stroke-width="3"/></svg>` : ''}
+            ${done ? `<svg class="h-strike-shaft" style="position:absolute;left:-3%;top:38%;width:106%;overflow:visible" viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen h-pen-draw" d="M2 7C60 5 120 8 180 6S270 5 298 6M290 1L298 6L290 11" stroke-width="3"/></svg>` : ''}
           </div>
           ${g.time ? `<div class="h-meta">${escapeHtml(g.time)}</div>` : ''}
         </div>
@@ -3554,6 +3560,7 @@ function buildHeuteScreen() {
       emptyEl.style.display = 'none';
       listEl.style.display = '';
       listEl.innerHTML = sortGoalsForHeute(goals).map(g => renderGoalRow(g, doneToday.has(g.id), todayKey)).join('');
+      drawPenStrokesIn(listEl);
     }
   }
 
@@ -4604,6 +4611,45 @@ let _playerState = null;
 const _reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let _wakeLock = null;
 
+// UX-Audit Block 1: zeichnet einen Stift-Pfad transient nach — Ruhezustand
+// ist immer ohne dasharray (volle Linie); nur bei einer echten Änderung
+// (Abhaken, Erscheinen, Auswahl) läuft kurz die Zeichen-Animation mit der
+// über getTotalLength() berechneten tatsächlichen Pfadlänge (nicht die
+// pathLength-Normalisierung, die browserabhängig unzuverlässig ist).
+function drawPenStroke(path) {
+  if (!path || typeof path.getTotalLength !== 'function') return;
+  if (_reducedMotion) { path.style.strokeDasharray = ''; path.style.strokeDashoffset = ''; return; }
+  let len;
+  try { len = path.getTotalLength(); } catch (err) { return; }
+  if (!len) return;
+  path.style.transition = 'none';
+  path.style.strokeDasharray = String(len);
+  path.style.strokeDashoffset = String(len);
+  path.getBoundingClientRect();
+  path.style.transition = 'stroke-dashoffset 600ms cubic-bezier(.65,0,.35,1)';
+  path.style.strokeDashoffset = '0';
+  const onDone = () => {
+    path.style.transition = '';
+    path.style.strokeDasharray = '';
+    path.style.strokeDashoffset = '';
+    path.removeEventListener('transitionend', onDone);
+  };
+  path.addEventListener('transitionend', onDone);
+}
+// Zeichnet alle .h-pen-draw-Elemente innerhalb eines frisch gerenderten
+// Containers nach (Pfeil/Durchstreichen in neu eingefügten Zeilen, Ellipse
+// in neu aufgebauten Segmented-Listen, …). .h-pen-draw sitzt entweder direkt
+// auf dem path/circle, oder auf einem umgebenden <svg> (dann wird der erste
+// innere path/circle genommen, z.B. beim Durchstreichen im Player).
+function drawPenStrokesIn(container) {
+  if (!container) return;
+  container.querySelectorAll('.h-pen-draw').forEach(el => {
+    const tag = el.tagName;
+    const path = (tag === 'path' || tag === 'circle') ? el : el.querySelector('path, circle');
+    drawPenStroke(path);
+  });
+}
+
 // Ein AudioContext + eine Master-GainNode für die ganze App (Player, Abhaken,
 // Freischalten) — Lautstärke wirkt dadurch sofort auf alles Laufende, statt
 // in jede Ton-Hüllkurve einzeln eingebacken zu sein. Entsteht lazy beim
@@ -4856,8 +4902,7 @@ async function resumePlayer() {
   if (freshStart && !_reducedMotion) {
     const blob = document.getElementById('player-blob-circle');
     if (blob) blob.animate([{ transform: 'scale(.6)' }, { transform: 'scale(.85)' }], { duration: 600, easing: 'cubic-bezier(.45,0,.55,1)' });
-    const ringBase = document.getElementById('player-ring-base');
-    if (ringBase) { ringBase.classList.remove('h-pen-draw'); void ringBase.getBBox(); ringBase.classList.add('h-pen-draw'); }
+    drawPenStroke(document.getElementById('player-ring-base'));
   }
   _playerState.rafId = requestAnimationFrame(playerTick);
 }
@@ -4943,11 +4988,9 @@ async function finishPlayerExercise() {
   // Tick), dann der Pfeil quer durch den Titel (wie in Heute), dann der
   // Akkord, danach erst Fertig/Nochmal.
   const strike = document.getElementById('player-title-strike');
-  if (strike && !_reducedMotion) {
+  if (strike) {
     strike.style.display = 'block';
-    strike.classList.remove('h-pen-draw'); void strike.getBoundingClientRect(); strike.classList.add('h-pen-draw');
-  } else if (strike) {
-    strike.style.display = 'block';
+    drawPenStroke(strike.querySelector('path'));
   }
   await new Promise(r => setTimeout(r, _reducedMotion ? 0 : 650));
 
@@ -5201,6 +5244,7 @@ function activateSegBtn(btn, groupBtns, opts = {}) {
   groupBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
   btn.classList.add('active');
   btn.setAttribute('aria-pressed', 'true');
+  drawPenStroke(btn.querySelector('.h-seg-ellipse path'));
   if (!opts.silent) playSegTick();
 }
 function playSegTick() {
@@ -6641,7 +6685,7 @@ function buildHomeSuppList() {
     row.className = 'h-row';
     row.style.cssText = 'padding:0;align-items:stretch';
     row.innerHTML = `
-      <button type="button" class="h-goalrow-arrow" aria-label="„${escapeHtml(s.title)}“ abhaken">${isDone ? '' : `<svg class="h-arrow-open" viewBox="0 0 32 32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M7 16 H24 M17 9 L24 16 L17 23"/></svg>`}</button>
+      <button type="button" class="h-goalrow-arrow" aria-label="„${escapeHtml(s.title)}“ abhaken">${isDone ? '' : `<svg class="h-arrow-open" viewBox="0 0 32 32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="h-pen h-pen-draw" filter="url(#w3)" d="M4 17C10 15 17 18 26 16 M19 9.5C22 12 24.5 14 27 16 24.5 18 22 20 19.5 23"/></svg>`}</button>
       <div class="h-row-body" style="padding:13px 16px 13px 0;cursor:pointer">
         <div class="h-row-title" ${isDone ? 'style="color:var(--faint)"' : ''}>${escapeHtml(s.title)}${s.dose ? ' — ' + escapeHtml(s.dose) : ''}</div>
         <div class="h-row-meta">${escapeHtml(mechanism.split('.')[0])}.</div>
@@ -6656,6 +6700,7 @@ function buildHomeSuppList() {
     };
     row.querySelector('.h-row-body').onclick = () => openSupplementDetailSheet(s.id);
     root.appendChild(row);
+    drawPenStrokesIn(row);
   });
   if (items.length > 4) {
     const more = document.createElement('div');
@@ -7031,6 +7076,7 @@ function enhanceAccessibility() {
 document.addEventListener('DOMContentLoaded', async () => {
   renderNavChrome();
   syncNavActive('pg-home');
+  drawPenStrokesIn(document.querySelector('.h-sidenav-brand'));
   // Gespeicherte Einstellungen sofort anwenden
   const savedFs = storageGet('settings_fontsize');
   if (savedFs) applyFontSize(parseInt(savedFs, 10));
