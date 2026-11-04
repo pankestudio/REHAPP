@@ -501,6 +501,10 @@ button[aria-pressed]:active { transform: scale(.95); }
   opacity: 0; transition: all .25s; white-space: nowrap; max-width: min(90vw,400px); z-index: 700; pointer-events: none;
 }
 .h-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.h-sw-update-pill {
+  position: fixed; bottom: calc(96px + var(--safe-bot)); left: 50%; transform: translateX(-50%);
+  z-index: 710;
+}
 .h-modal-overlay {
   position: fixed; inset: 0; z-index: 680; background: rgba(20,20,15,0.5);
   display: none; align-items: center; justify-content: center; padding: 24px;
@@ -6844,15 +6848,49 @@ function clearScheduledNotifications() {
   while (pendingNotificationTimeouts.length) clearTimeout(pendingNotificationTimeouts.pop());
 }
 function registerServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').then(() => {
-      installMode = 'pwa';
-      updateInstallStatus();
-    }).catch(() => {
-      installMode = 'singlefile';
-      updateInstallStatus();
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    installMode = 'pwa';
+    updateInstallStatus();
+    watchForSWUpdate(reg);
+  }).catch(() => {
+    installMode = 'singlefile';
+    updateInstallStatus();
+  });
+  let _swReloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (_swReloaded) return;
+    _swReloaded = true;
+    window.location.reload();
+  });
+}
+
+// Runde 5c Punkt 1: network-first lädt index.html zwar immer frisch vom
+// Netz, aber ein bereits offener Tab läuft trotzdem noch mit dem alten
+// Service Worker/JS weiter — erst ein Reload übernimmt die neue Version.
+// Statt automatisch neu zu laden (würde Formulareingaben/offene Sheets
+// verwerfen), zeigt die App unten eine Pille und lädt nur auf Tipp neu.
+function watchForSWUpdate(reg) {
+  if (reg.waiting) showSWUpdateBanner(reg.waiting);
+  reg.addEventListener('updatefound', () => {
+    const nw = reg.installing;
+    if (!nw) return;
+    nw.addEventListener('statechange', () => {
+      if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+        showSWUpdateBanner(nw);
+      }
     });
-  }
+  });
+}
+function showSWUpdateBanner(worker) {
+  if (document.getElementById('sw-update-pill')) return;
+  const el = document.createElement('button');
+  el.type = 'button';
+  el.id = 'sw-update-pill';
+  el.className = 'h-pill h-sw-update-pill';
+  el.textContent = 'Neue Version – Neu laden';
+  el.onclick = () => worker.postMessage({ type: 'SKIP_WAITING' });
+  document.body.appendChild(el);
 }
 function notificationPermissionLabel() {
   if (!('Notification' in window)) return 'nicht unterstützt';

@@ -18,7 +18,15 @@ self.addEventListener('install', event => {
       )
     )
   );
-  self.skipWaiting();
+  // Kein automatisches skipWaiting() mehr (Runde 5c Punkt 1): ein Update
+  // bleibt "waiting", bis die Person unten auf "Neue Version – Neu laden"
+  // tippt (index.html schickt dann SKIP_WAITING per postMessage). Beim
+  // allerersten Install gibt es ohnehin keinen Controller, der warten
+  // müsste — der Worker aktiviert sich dann sofort von selbst.
+});
+
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -44,8 +52,28 @@ self.addEventListener('push', event => {
   );
 });
 
+// index.html/Navigationen: network-first (Runde 5c Punkt 1) — eine neue
+// Version muss sofort vom Netz kommen, damit updatefound/installed zuverlässig
+// feuert; Cache nur als Offline-Fallback. Alles andere (Fonts, Icons,
+// Manifest) bleibt cache-first wie bisher — ändert sich praktisch nie und
+// profitiert vom schnellen Offline-Zugriff.
+function isAppShellRequest(request) {
+  return request.mode === 'navigate' || request.url.endsWith('/index.html') || request.url === self.location.origin + '/';
+}
+
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+
+  if (isAppShellRequest(event.request)) {
+    event.respondWith(
+      fetch(event.request).then(response => {
+        caches.open(CACHE_NAME).then(c => c.put(event.request, response.clone()));
+        return response;
+      }).catch(() => caches.match(event.request).then(cached => cached || caches.match('./index.html')))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
