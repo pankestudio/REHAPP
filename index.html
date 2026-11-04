@@ -122,7 +122,6 @@ body {
   #h-sidenav .h-side-item .h-nav-icon { width: 22px; height: 22px; }
   #h-sidenav .h-side-item .h-nav-icon svg { width: 22px; height: 22px; }
   #h-sidenav .h-side-item .h-nav-label { font-size: 16px; }
-  #h-sidenav .h-side-underline { position: absolute; left: 46px; bottom: 2px; width: 24px; height: 6px; margin-top: 0; }
   #h-sidenav .h-side-item.active { background: var(--grid); }
   .h-sidenav-foot { font-size: 12px; color: var(--muted); line-height: 1.5; }
   .h-sidenav-foot > div:first-child { margin-bottom: 2px; }
@@ -1657,7 +1656,6 @@ function renderNavChrome() {
     <div class="h-nav-item h-side-item" data-page="${n.page}" id="side-${n.slug}" onclick="showPage('${n.page}')">
       <div class="h-nav-icon"><svg viewBox="0 0 24 24"${n.svgAttrs}>${n.inner}</svg></div>
       <div class="h-nav-label">${n.label}</div>
-      <svg class="h-nav-underline h-side-underline" viewBox="0 0 60 8" aria-hidden="true"><path class="h-pen h-pen-draw" pathLength="1" d="M3 4.5C18 3.6 40 5.2 57 4"/></svg>
     </div>`).join('');
 }
 function syncNavActive(id) {
