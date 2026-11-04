@@ -1397,6 +1397,19 @@ button[aria-pressed]:active { transform: scale(.96); }
 
 </div>
 
+<!-- ══ BESTÄTIGUNGS-DIALOG (UX-Audit Block 4) — ersetzt confirm() ══ -->
+<div class="h-modal-overlay" id="confirm-dialog-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-dialog-title" tabindex="-1">
+  <div class="h-modal-card">
+    <div class="h-modal-title" id="confirm-dialog-title"></div>
+    <div class="h-modal-copy" id="confirm-dialog-body"></div>
+    <div id="confirm-dialog-extra"></div>
+    <div class="h-modal-btns">
+      <button type="button" class="h-pill h-pill--outline" id="confirm-dialog-cancel" onclick="closeConfirmDialog()">Abbrechen</button>
+      <button type="button" class="h-pill" id="confirm-dialog-confirm" onclick="runConfirmDialog()">Löschen</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ RESET MODAL ══ -->
 <div class="h-modal-overlay" id="reset-modal" role="dialog" aria-modal="true">
   <div class="h-modal-card">
@@ -4176,14 +4189,20 @@ function buildSammlungBadges() {
 }
 let _smSelectedBadge = null;
 
-async function resetCounter(id) {
+function resetCounter(id) {
   const c = getGoal(id);
   if (!c) return;
-  if (!confirm(`"${c.title}" wirklich neu beginnen? Die aktuelle Serie von ${computeCounterDays(c)} Tagen geht verloren.`)) return;
-  c.since = getLocalDateKey();
-  await saveGoal(c);
-  buildSammlungHistory();
-  buildHeuteScreen();
+  openConfirmDialog({
+    title: `„${c.title}“ neu beginnen?`,
+    body: `Die aktuelle Serie von ${computeCounterDays(c)} Tagen geht verloren.`,
+    confirmLabel: 'Neu beginnen',
+    onConfirm: async () => {
+      c.since = getLocalDateKey();
+      await saveGoal(c);
+      buildSammlungHistory();
+      buildHeuteScreen();
+    },
+  });
 }
 
 function buildSammlungHistory() {
@@ -5492,16 +5511,23 @@ async function saveExerciseFromEditor() {
   buildUebungenList();
   toast(isNew ? 'Übung angelegt' : 'Übung aktualisiert');
 }
-async function deleteExerciseFromEditor() {
+function deleteExerciseFromEditor() {
   if (!_exerciseEditorState || !_exerciseEditorState.id) return;
-  const used = routinesUsingExercise(_exerciseEditorState.id);
-  const usedText = used.length ? ` Sie wird in diesen Routinen verwendet: ${used.map(g => g.title).join(', ')}.` : '';
-  if (!confirm(`"${_exerciseEditorState.title}" wirklich löschen?${usedText}`)) return;
-  await deleteItem(_exerciseEditorState.id);
-  closeExerciseEditor();
-  buildSetExerciseList();
-  buildUebungenList();
-  toast('Übung gelöscht');
+  const id = _exerciseEditorState.id;
+  const used = routinesUsingExercise(id);
+  const usedText = used.length ? `Wird in diesen Routinen verwendet: ${used.map(g => g.title).join(', ')}. ` : '';
+  openConfirmDialog({
+    title: `„${_exerciseEditorState.title}“ löschen?`,
+    body: `${usedText}Logs und Abzeichen dieser Übung bleiben erhalten.`,
+    confirmLabel: 'Übung löschen',
+    onConfirm: async () => {
+      await deleteItem(id);
+      closeExerciseEditor();
+      buildSetExerciseList();
+      buildUebungenList();
+      toast('Übung gelöscht');
+    },
+  });
 }
 
 function buildSetGoalsList() {
@@ -5927,13 +5953,20 @@ async function saveGoalFromSheet() {
   toast(prior ? 'Ziel aktualisiert' : 'Ziel angelegt');
 }
 
-async function archiveGoalFromSheet() {
+function archiveGoalFromSheet() {
   if (!_goalSheetState || !_goalSheetState.id) return;
-  if (!confirm('Dieses Ziel wirklich archivieren? Es verschwindet aus der Heute-Liste, der Fortschritt bleibt erhalten.')) return;
-  await archiveGoal(_goalSheetState.id);
-  closeGoalSheet();
-  buildHeuteScreen();
-  toast('Ziel archiviert');
+  const id = _goalSheetState.id;
+  openConfirmDialog({
+    title: `„${_goalSheetState.title}“ archivieren?`,
+    body: 'Es verschwindet aus der Heute-Liste, der Fortschritt bleibt erhalten.',
+    confirmLabel: 'Archivieren',
+    onConfirm: async () => {
+      await archiveGoal(id);
+      closeGoalSheet();
+      buildHeuteScreen();
+      toast('Ziel archiviert');
+    },
+  });
 }
 
 
@@ -6050,13 +6083,22 @@ async function saveItemFromEditor() {
   toast('Gespeichert');
 }
 
-async function deleteItemFromEditor() {
+const ITEM_TYPE_LABELS = { supplement: 'Supplement', habit: 'Habit', exercise: 'Übung', task: 'Aufgabe' };
+function deleteItemFromEditor() {
   if (!_ieDraft || !_ieDraft.id) return;
-  if (!confirm(`"${_ieDraft.title}" wirklich löschen?`)) return;
-  await deleteItem(_ieDraft.id);
-  closeItemEditor();
-  refreshContentDrivenUI();
-  toast('Gelöscht');
+  const id = _ieDraft.id;
+  const typeLabel = ITEM_TYPE_LABELS[_ieDraft.type] || 'Eintrag';
+  openConfirmDialog({
+    title: `${typeLabel} „${_ieDraft.title}“ löschen?`,
+    body: 'Tagesfortschritt und XP, die daran hängen, verschwinden mit.',
+    confirmLabel: `${typeLabel} löschen`,
+    onConfirm: async () => {
+      await deleteItem(id);
+      closeItemEditor();
+      refreshContentDrivenUI();
+      toast('Gelöscht');
+    },
+  });
 }
 
 function exportContentItems() {
@@ -6303,13 +6345,23 @@ async function saveRoutineFromEditor() {
 }
 
 function confirmResetAll() {
-  if (!confirm('Alle Daten löschen? Nicht rückgängig.')) return;
-  localStorage.clear();
-  try {
-    if (_contentDB) _contentDB.close();
-    indexedDB.deleteDatabase(CONTENT_DB_NAME);
-  } catch (err) { console.warn('Content-DB löschen fehlgeschlagen', err); }
-  location.reload();
+  openConfirmDialog({
+    title: 'Alle REHAPP-Daten auf diesem Gerät löschen?',
+    body: 'Ziele, Serien und Abzeichen sind danach weg. Exportiere vorher ein Backup.',
+    confirmLabel: 'Alles löschen',
+    extraHtml: `<div class="h-row" style="cursor:pointer;margin-bottom:8px" onclick="exportAppData()">
+      <div class="h-row-body"><div class="h-row-title">Backup exportieren</div></div>
+      <span class="h-row-chevron">›</span>
+    </div>`,
+    onConfirm: () => {
+      localStorage.clear();
+      try {
+        if (_contentDB) _contentDB.close();
+        indexedDB.deleteDatabase(CONTENT_DB_NAME);
+      } catch (err) { console.warn('Content-DB löschen fehlgeschlagen', err); }
+      location.reload();
+    },
+  });
 }
 
 function importBackupFromSettings(e) {
@@ -6560,6 +6612,38 @@ function renderOedemTrend() {
     textEl.textContent = trend < -0.5 ? `↓ ${Math.abs(trend).toFixed(1)}cm gesamt — guter Verlauf` : trend > 0.5 ? `↑ ${trend.toFixed(1)}cm — Flüssigkeit beobachten` : 'Stabil';
   }
 }
+
+// ══════════════ BESTÄTIGUNGS-DIALOG (UX-Audit Block 4) ══════════════
+// Ersetzt alle confirm()-Aufrufe durch ein eigenes Sheet im App-Design:
+// Titel nennt das Objekt, ein Satz zur Folge, Abbrechen (Kontur, Fokus beim
+// Öffnen) + gefüllte Löschen-Pill. Escape bricht ab, Fokus kehrt zum
+// Auslöser zurück — derselbe Fokus-Mechanismus wie bei den Sheet-Overlays.
+let _confirmDialogTrigger = null;
+let _confirmDialogOnConfirm = null;
+function openConfirmDialog({ title, body, confirmLabel = 'Löschen', onConfirm, extraHtml = '' }) {
+  _confirmDialogTrigger = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
+  _confirmDialogOnConfirm = onConfirm;
+  document.getElementById('confirm-dialog-title').textContent = title;
+  document.getElementById('confirm-dialog-body').textContent = body;
+  document.getElementById('confirm-dialog-extra').innerHTML = extraHtml;
+  document.getElementById('confirm-dialog-confirm').textContent = confirmLabel;
+  document.getElementById('confirm-dialog-overlay').classList.add('open');
+  document.getElementById('confirm-dialog-cancel').focus({ preventScroll: true });
+}
+function closeConfirmDialog() {
+  document.getElementById('confirm-dialog-overlay').classList.remove('open');
+  _confirmDialogOnConfirm = null;
+  if (_confirmDialogTrigger && document.contains(_confirmDialogTrigger)) _confirmDialogTrigger.focus({ preventScroll: true });
+  _confirmDialogTrigger = null;
+}
+function runConfirmDialog() {
+  const fn = _confirmDialogOnConfirm;
+  closeConfirmDialog();
+  if (fn) fn();
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('confirm-dialog-overlay').classList.contains('open')) closeConfirmDialog();
+});
 
 // ══════════════ MODAL / RESET ══════════════
 
