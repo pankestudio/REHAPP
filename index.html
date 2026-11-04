@@ -6852,18 +6852,22 @@ function clearScheduledNotifications() {
 }
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
+  // _swUserRequestedReload bleibt false, bis die Person wirklich auf die
+  // Update-Pille tippt. self.clients.claim() im sw.js lässt controllerchange
+  // nämlich auch beim ALLERERSTEN Besuch feuern (der frische, bis dahin
+  // unkontrollierte Tab wird sofort geclaimt) — ein ungefragter Reload genau
+  // dann würde Erststart-Seeding mittenrein unterbrechen/doppelt anstoßen.
+  let _swUserRequestedReload = false;
   navigator.serviceWorker.register('./sw.js').then(reg => {
     installMode = 'pwa';
     updateInstallStatus();
-    watchForSWUpdate(reg);
+    watchForSWUpdate(reg, () => { _swUserRequestedReload = true; });
   }).catch(() => {
     installMode = 'singlefile';
     updateInstallStatus();
   });
-  let _swReloaded = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (_swReloaded) return;
-    _swReloaded = true;
+    if (!_swUserRequestedReload) return;
     window.location.reload();
   });
 }
@@ -6873,26 +6877,26 @@ function registerServiceWorker() {
 // Service Worker/JS weiter — erst ein Reload übernimmt die neue Version.
 // Statt automatisch neu zu laden (würde Formulareingaben/offene Sheets
 // verwerfen), zeigt die App unten eine Pille und lädt nur auf Tipp neu.
-function watchForSWUpdate(reg) {
-  if (reg.waiting) showSWUpdateBanner(reg.waiting);
+function watchForSWUpdate(reg, markUserRequested) {
+  if (reg.waiting) showSWUpdateBanner(reg.waiting, markUserRequested);
   reg.addEventListener('updatefound', () => {
     const nw = reg.installing;
     if (!nw) return;
     nw.addEventListener('statechange', () => {
       if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-        showSWUpdateBanner(nw);
+        showSWUpdateBanner(nw, markUserRequested);
       }
     });
   });
 }
-function showSWUpdateBanner(worker) {
+function showSWUpdateBanner(worker, markUserRequested) {
   if (document.getElementById('sw-update-pill')) return;
   const el = document.createElement('button');
   el.type = 'button';
   el.id = 'sw-update-pill';
   el.className = 'h-pill h-sw-update-pill';
   el.textContent = 'Neue Version – Neu laden';
-  el.onclick = () => worker.postMessage({ type: 'SKIP_WAITING' });
+  el.onclick = () => { markUserRequested(); worker.postMessage({ type: 'SKIP_WAITING' }); };
   document.body.appendChild(el);
 }
 function notificationPermissionLabel() {
