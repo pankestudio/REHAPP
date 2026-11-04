@@ -276,8 +276,8 @@ body {
   transition: transform 240ms ease-out;
 }
 .h-section.collapsed .h-section-chevron { transform: rotate(0deg); }
-.h-section-chevron:active { transform: rotate(90deg) scale(.95); }
-.h-section.collapsed .h-section-chevron:active { transform: rotate(0deg) scale(.95); }
+.h-section-chevron:active { transform: rotate(90deg) scale(.96); }
+.h-section.collapsed .h-section-chevron:active { transform: rotate(0deg) scale(.96); }
 .h-section-body { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 240ms ease-out; }
 .h-section-body > div { overflow: hidden; min-height: 0; }
 .h-section.collapsed .h-section-body { grid-template-rows: 0fr; }
@@ -290,14 +290,14 @@ body {
   background: var(--ink); color: var(--paper);
   font-size: 16px; font-weight: 500;
   cursor: pointer;
-  transition: transform var(--dur-in) var(--ease), opacity var(--dur-in) var(--ease);
+  transition: transform 100ms ease-out, opacity var(--dur-in) var(--ease);
 }
 .h-pill--outline { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
-.h-pill:active { transform: scale(.95); }
+.h-pill:active { transform: scale(.96); }
 .h-pill[disabled] { opacity: .4; cursor: default; }
 /* Gelber Schatten (Runde 5 Punkt 3) — nur für die eine Hauptaktion pro
    Screen (Starten, Ziel anlegen, Zur Sammlung, Ziel öffnen, ...). */
-.h-pill--shadow { box-shadow: 4px 4px 0 var(--yellow); transition: transform 100ms ease, box-shadow 100ms ease; }
+.h-pill--shadow { box-shadow: 4px 4px 0 var(--yellow); transition: transform 100ms ease-out, box-shadow 100ms ease-out; }
 .h-pill--shadow:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--yellow); }
 
 .h-circle-btn {
@@ -305,11 +305,11 @@ body {
   width: 56px; height: 56px; border-radius: 50% !important;
   background: transparent; border: 1px solid var(--ink); color: var(--ink);
   cursor: pointer;
-  transition: transform var(--dur-in) var(--ease), opacity var(--dur-in) var(--ease);
+  transition: transform 100ms ease-out, opacity var(--dur-in) var(--ease);
 }
 .h-circle-btn--sm { width: 44px; height: 44px; }
 .h-circle-btn--fill { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-.h-circle-btn:active { transform: scale(.95); }
+.h-circle-btn:active { transform: scale(.96); }
 .h-circle-btn[disabled] { opacity: .35; cursor: default; }
 
 /* ════════════════ ROW / EXPANDROW / GOALROW ════════════════ */
@@ -319,7 +319,9 @@ body {
   min-height: 56px; padding: 13px 0;
   border-bottom: 1px solid var(--line);
   cursor: pointer;
+  transition: background-color 100ms ease-out;
 }
+.h-row:active { background-color: var(--grid); }
 .h-row-lead { width: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .h-goalrow-arrow {
   width: 56px; flex-shrink: 0; align-self: stretch; background: none; border: none; cursor: pointer;
@@ -341,11 +343,12 @@ body {
 /* ════════════════ SEGMENTED ════════════════ */
 .h-seg { display: flex; flex-wrap: wrap; gap: 22px; }
 .h-seg-btn {
-  position: relative; background: none; border: none; padding: 8px 14px;
+  position: relative; display: inline-flex; align-items: center; background: none; border: none; padding: 8px 14px;
+  min-height: 44px;
   font-size: 15px; font-weight: 500; color: var(--muted); cursor: pointer;
-  transition: transform 120ms ease;
+  transition: transform 100ms ease-out;
 }
-.h-seg-btn:active { transform: scale(.95); }
+.h-seg-btn:active { transform: scale(.96); }
 .h-seg-btn.active { color: var(--ink); font-weight: 700; }
 /* Handgezeichnete Ellipse umkreist die Auswahl (Runde 5c Punkt 2) statt der
    früheren Unterstreichung — inset statt fester Breite, damit sie sich per
@@ -361,15 +364,15 @@ body {
 .h-switch {
   position: relative; display: inline-block; width: 44px; height: 26px; flex-shrink: 0;
   border: 1px solid var(--line); border-radius: 999px !important; background: transparent;
-  cursor: pointer; transition: background .15s, border-color .15s;
+  cursor: pointer; transition: background-color 100ms, border-color 150ms, transform 100ms ease-out;
 }
 .h-switch::after {
   content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
-  border-radius: 50% !important; background: var(--muted); transition: transform .15s, background .15s;
+  border-radius: 50% !important; background: var(--muted); transition: transform 150ms, background-color 100ms;
 }
 .h-switch.on { background: var(--ink); border-color: var(--ink); }
 .h-switch.on::after { transform: translateX(18px); background: var(--paper); }
-.h-switch:active { transform: scale(.95); }
+.h-switch:active { transform: scale(.96); }
 
 input[type=range] {
   width: 100%; -webkit-appearance: none; height: 1px; background: var(--ink); outline: none; margin: 10px 0;
@@ -392,9 +395,10 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 
 /* ════════════════ BADGE ════════════════ */
 .h-badge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0 24px; }
-.h-badge-grid button { background: none; border: none; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.h-badge-grid button:active { transform: scale(.95); }
-button[aria-pressed]:active { transform: scale(.95); }
+.h-badge-grid button { background: none; border: none; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: transform 100ms ease-out; }
+.h-badge-grid button:active { transform: scale(.96); }
+button[aria-pressed] { transition: transform 100ms ease-out; }
+button[aria-pressed]:active { transform: scale(.96); }
 .h-badge-lock { color: var(--lock); }
 
 /* ════════════════ SHEET ════════════════ */
@@ -498,8 +502,8 @@ button[aria-pressed]:active { transform: scale(.95); }
 .h-toast {
   position: fixed; bottom: calc(96px + var(--safe-bot)); left: 50%; transform: translateX(-50%) translateY(16px);
   background: var(--ink); color: var(--paper); border-radius: 999px !important;
-  padding: 10px 18px; font-size: 14px; font-weight: 500;
-  opacity: 0; transition: all .25s; white-space: nowrap; max-width: min(90vw,400px); z-index: 700; pointer-events: none;
+  padding: 10px 18px; font-size: 15px; font-weight: 500;
+  opacity: 0; transition: opacity 200ms ease-out, transform 200ms ease-out; white-space: nowrap; max-width: min(90vw,400px); z-index: 700; pointer-events: none;
 }
 .h-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .h-toast--top { top: calc(16px + var(--safe-top)); bottom: auto; transform: translateX(-50%) translateY(-16px); }
