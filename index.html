@@ -501,6 +501,8 @@ button[aria-pressed]:active { transform: scale(.95); }
   opacity: 0; transition: all .25s; white-space: nowrap; max-width: min(90vw,400px); z-index: 700; pointer-events: none;
 }
 .h-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.h-toast--top { top: calc(16px + var(--safe-top)); bottom: auto; transform: translateX(-50%) translateY(-16px); }
+.h-toast--top.show { transform: translateX(-50%) translateY(0); }
 .h-sw-update-pill {
   position: fixed; bottom: calc(96px + var(--safe-bot)); left: 50%; transform: translateX(-50%);
   z-index: 710;
@@ -3844,7 +3846,7 @@ async function saveAbendCheckin() {
   closeAbendCheckin();
   buildHeuteScreen();
   enqueueUnlocks(unlocked);
-  toast('CHECK-IN GESPEICHERT');
+  toast('Check-in gespeichert');
 }
 
 // Pfeil-Zone: hakt direkt ab/wieder auf, bei Routinen entsteht dabei nur ein
@@ -5483,7 +5485,7 @@ async function pauseGoal(id) {
   await saveGoal(g);
   buildSetGoalsList();
   buildHeuteScreen();
-  toast('ZIEL PAUSIERT');
+  toast('Ziel pausiert');
 }
 async function reactivateGoal(id) {
   const g = getGoal(id);
@@ -5493,7 +5495,7 @@ async function reactivateGoal(id) {
   await saveGoal(g);
   buildSetGoalsList();
   buildHeuteScreen();
-  toast('ZIEL REAKTIVIERT');
+  toast('Ziel reaktiviert');
 }
 
 function openEinstellungen() {
@@ -5832,7 +5834,7 @@ function closeGoalSheet() {
 
 async function saveGoalFromSheet() {
   const name = document.getElementById('gs-name').value.trim();
-  if (!name) { toast('BITTE EINEN NAMEN EINGEBEN'); return; }
+  if (!name) { toast('Bitte einen Namen eingeben'); return; }
   const time = document.getElementById('gs-time').value || null;
   const prior = _goalSheetState.id ? getGoal(_goalSheetState.id) : null;
   const goal = {
@@ -5858,7 +5860,7 @@ async function saveGoalFromSheet() {
   await saveGoal(goal);
   closeGoalSheet();
   buildHeuteScreen();
-  toast(prior ? 'ZIEL AKTUALISIERT' : 'ZIEL ANGELEGT');
+  toast(prior ? 'Ziel aktualisiert' : 'Ziel angelegt');
 }
 
 async function archiveGoalFromSheet() {
@@ -5867,7 +5869,7 @@ async function archiveGoalFromSheet() {
   await archiveGoal(_goalSheetState.id);
   closeGoalSheet();
   buildHeuteScreen();
-  toast('ZIEL ARCHIVIERT');
+  toast('Ziel archiviert');
 }
 
 
@@ -5973,7 +5975,7 @@ function refreshContentDrivenUI() {
 async function saveItemFromEditor() {
   if (!_ieDraft) return;
   const title = document.getElementById('ie-title').value.trim();
-  if (!title) { toast('TITEL FEHLT'); return; }
+  if (!title) { toast('Titel fehlt'); return; }
   _ieDraft.title = title;
   _ieDraft.dose  = document.getElementById('ie-dose').value.trim() || null;
   _ieDraft.time  = document.getElementById('ie-time').value || null;
@@ -5981,7 +5983,7 @@ async function saveItemFromEditor() {
   await saveItem(_ieDraft);
   closeItemEditor();
   refreshContentDrivenUI();
-  toast('GESPEICHERT');
+  toast('Gespeichert');
 }
 
 async function deleteItemFromEditor() {
@@ -5990,7 +5992,7 @@ async function deleteItemFromEditor() {
   await deleteItem(_ieDraft.id);
   closeItemEditor();
   refreshContentDrivenUI();
-  toast('GELÖSCHT');
+  toast('Gelöscht');
 }
 
 function exportContentItems() {
@@ -6000,7 +6002,7 @@ function exportContentItems() {
   a.download = `rehapp-content-${new Date().toISOString().slice(0,10)}.json`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  toast('INHALTE EXPORTIERT');
+  toast('Inhalte exportiert');
 }
 
 function importContentItems(e) {
@@ -6013,10 +6015,10 @@ function importContentItems(e) {
       if (!Array.isArray(incoming)) throw new Error('Kein Array');
       for (const it of incoming) await saveItem(it);
       refreshContentDrivenUI();
-      toast('INHALTE IMPORTIERT');
+      toast('Inhalte importiert');
     } catch (err) {
       console.warn('Content-Import fehlgeschlagen', err);
-      toast('IMPORT FEHLGESCHLAGEN');
+      toast('Import fehlgeschlagen');
     }
   };
   reader.readAsText(file);
@@ -6349,6 +6351,7 @@ function completeCRPSDay(day) {
 // ══════════════ GMI MODULES ══════════════
 
 const gmiTimers = {};
+const GMI_LABELS = { sensory: 'Sensory Wake-Up', imagery: 'Explicit Motor Imagery', scrubbing: 'Scrubbing' };
 
 function toggleGMI(id) {
   const body = document.getElementById(`gmi-body-${id}`);
@@ -6374,7 +6377,7 @@ function startGMITimer(id, seconds) {
       safeVibrate([60, 30, 60]);
       playTone(440, 0.15); setTimeout(() => playTone(550, 0.2), 180);
       if (btn) { btn.textContent = 'Nochmal starten'; btn.disabled = false; }
-      toast(`${id.toUpperCase()} — SESSION BEENDET`);
+      toast(`${GMI_LABELS[id] || id} — Session beendet`);
     }
   }, 1000);
 }
@@ -6390,7 +6393,7 @@ function completeScrubbingSession() {
   awardXP(`scrubbing_${getLocalDateKey()}`, 200, 'Scrubbing', { scope: 'day' });
   storageSet('xp_award_ever_scrubbing_done', '1');
   safeVibrate([40, 20, 40, 20, 60]);
-  toast('SCRUBBING ABGESCHLOSSEN');
+  toast('Scrubbing abgeschlossen');
   refreshXPUI();
 }
 
@@ -6440,9 +6443,9 @@ function saveBudapest() {
   refreshXPUI();
   safeVibrate([20, 15, 20]);
   if (jaCount >= 4) {
-    toast(`BUDAPEST: ${jaCount}/6 AKTIV — ARZT INFORMIEREN`);
+    toast(`Budapest: ${jaCount}/6 aktiv — Arzt informieren`);
   } else {
-    toast(`BUDAPEST-LOG GESPEICHERT`);
+    toast('Budapest-Log gespeichert');
   }
 }
 
@@ -6450,19 +6453,19 @@ function saveBudapest() {
 
 function saveOedem() {
   const val = parseFloat(document.getElementById('oedem-cm')?.value || '0');
-  if (!val || val < 10 || val > 40) { toast('UNGÜLTIGER WERT'); return; }
+  if (!val || val < 10 || val > 40) { toast('Ungültiger Wert'); return; }
   const log = JSON.parse(storageGet('oedem_log') || '[]');
   const last = log.length ? log[log.length - 1].cm : null;
   log.push({ date: getLocalDateKey(), cm: val, ts: Date.now() });
   storageSet('oedem_log', JSON.stringify(log.slice(-30)));
-  let msg = `ÖDEM: ${val}cm`;
+  let msg = `Ödem: ${val}cm`;
   if (last !== null) {
     const diff = val - last;
     if (diff <= -0.5) {
       awardXP(`oedem_reduction_${getLocalDateKey()}`, 50, 'Ödem-Reduktion', { scope: 'day' });
-      msg += ` — REDUKTION ${Math.abs(diff).toFixed(1)}cm`;
+      msg += ` — Reduktion ${Math.abs(diff).toFixed(1)}cm`;
     } else if (diff > 0.5) {
-      msg += ` ⚠ ANSTIEG: Elektrolyte & Salz prüfen`;
+      msg += ` ⚠ Anstieg: Elektrolyte & Salz prüfen`;
     }
   }
   awardXP(`oedem_log_${getLocalDateKey()}`, 15, 'Ödem geloggt', { scope: 'day' });
@@ -6507,7 +6510,7 @@ function closeResetModal() {
 function confirmResetConfirmed() {
   closeResetModal();
   resetTimer();
-  toast('FASTEN ZURÜCKGESETZT');
+  toast('Fasten zurückgesetzt');
 }
 
 function open168Modal() {
@@ -6559,7 +6562,7 @@ function setModalEatWindow(start, end) {
 function confirm168Modal() {
   const start = document.getElementById('modal-eat-start').value;
   const end   = document.getElementById('modal-eat-end').value;
-  if (!start || !end || start === end) { toast('BITTE GÜLTIGE ZEITEN WÄHLEN'); return; }
+  if (!start || !end || start === end) { toast('Bitte gültige Zeiten wählen'); return; }
   close168Modal();
   storageSet('eat16_8', JSON.stringify({ start, end }));
   // Also sync the pg-fast time inputs
@@ -6569,7 +6572,7 @@ function confirm168Modal() {
   if (pe) pe.value = end;
   awardXP('schedule_16_8', 10, '16:8 Zeitfenster gesetzt', { scope: 'day' });
   start16_8Mode();
-  toast(`16:8 AKTIV — ${start} bis ${end} UHR`);
+  toast(`16:8 aktiv — ${start} bis ${end} Uhr`);
 }
 
 // ══════════════ WATER (8×0.4L = 3.2L) ══════════════
@@ -6789,7 +6792,7 @@ function awardXP(actionKey, amount, label, options = {}) {
   const current = computeXPState(total);
   if (current.level > previous.level) {
     flashXPGain(`LEVEL ${current.level}`);
-    toast(`LEVEL ${current.level} ERREICHT`);
+    toast(`Level ${current.level} erreicht`);
     popElement(document.getElementById('xp-level-badge'));
     safeVibrate([20, 30, 20, 30, 45]);
   }
@@ -6935,7 +6938,7 @@ function exportAppData() {
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   storageSet('last_export_ts', String(Date.now()));
   awardXP('backup_export', 15, 'Backup exportiert', { scope: 'day' });
-  toast('BACKUP EXPORTIERT');
+  toast('Backup exportiert');
   popElement(document.getElementById('install-status-pill'));
 }
 
@@ -6984,10 +6987,10 @@ function importAppDataFromFile(file) {
       initSuppTab(); renderDailyQuote(); buildHeuteScreen();
       buildSettings();
       awardXP('backup_import', 25, 'Backup importiert', { scope: 'day' });
-      toast('BACKUP IMPORTIERT');
+      toast('Backup importiert');
     } catch (err) {
       console.warn(err);
-      toast('IMPORT FEHLGESCHLAGEN');
+      toast('Import fehlgeschlagen');
     }
   };
   reader.readAsText(file);
@@ -7081,7 +7084,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       initSuppTab();
       buildBudapestFilter();
       buildHeuteScreen();
-      toast('NEUER TAG — PROTOKOLL ZURÜCKGESETZT');
+      toast('Neuer Tag — Protokoll zurückgesetzt');
     }
   }, 30000); // check every 30 seconds
   if (storageGet('16_8_active') === '1') {
@@ -7174,7 +7177,7 @@ function timerAction() {
   document.getElementById('timer-start-btn').style.display = 'none';
   document.getElementById('timer-reset-btn').style.display = '';
   awardXP('fast_start', 30, 'Fasten gestartet', { scope: 'day' });
-  toast('FASTEN GESTARTET');
+  toast('Fasten gestartet');
   updateDynamicFavicon();
   if (timerRunning) safeVibrate(18);
 }
@@ -7216,7 +7219,7 @@ function updateTimer() {
     document.getElementById('timer-mode-label').textContent = '// 100H ERREICHT';
     document.getElementById('timer-milestone').style.display = 'none';
     awardXP('fast_100h', 120, '100h abgeschlossen', { scope: 'ever' });
-    toast('100H ABGESCHLOSSEN');
+    toast('100h abgeschlossen');
     updateDynamicFavicon();
     return;
   }
@@ -7282,7 +7285,7 @@ function start16_8Mode() {
   update16_8Display();
   timer16_8Interval = setInterval(update16_8Display, 1000);
   awardXP('start_16_8', 20, '16:8 aktiviert', { scope: 'day' });
-  toast('16:8 MODUS AKTIV');
+  toast('16:8-Modus aktiv');
   updateDynamicFavicon();
 }
 
@@ -7460,7 +7463,7 @@ function exportCalendar(type) {
     a.download = 'regen-protokoll.ics';
     a.click();
     awardXP('calendar_apple', 10, 'Kalender exportiert', { scope: 'day' });
-    toast('ICS EXPORTIERT');
+    toast('ICS exportiert');
   } else {
     // Open each event sequentially — browser may block popups after first; use delay
     events.forEach((ev, i) => {
@@ -7470,7 +7473,7 @@ function exportCalendar(type) {
       setTimeout(() => window.open(url, '_blank', 'noopener,noreferrer'), i * 400);
     });
     awardXP('calendar_google', 10, 'Google Kalender geöffnet', { scope: 'day' });
-    toast(`GOOGLE KALENDER — ${events.length} EINTRÄGE GEÖFFNET`);
+    toast(`Google-Kalender — ${events.length} Einträge geöffnet`);
   }
 }
 
@@ -7558,14 +7561,14 @@ function syncPushTimer() {
 async function subscribePush() {
   try {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      toast('PUSH WIRD NICHT UNTERSTÜTZT');
+      toast('Push wird nicht unterstützt');
       return;
     }
     const permission = await Notification.requestPermission();
     updateNotificationStatus();
     if (permission !== 'granted') return;
     const reg = await navigator.serviceWorker.getRegistration();
-    if (!reg) { toast('SERVICE WORKER NICHT BEREIT'); return; }
+    if (!reg) { toast('Service Worker nicht bereit'); return; }
     const keyRes = await fetch('/.netlify/functions/vapid-public-key');
     if (!keyRes.ok) throw new Error('VAPID-Key nicht verfügbar');
     const { key } = await keyRes.json();
@@ -7634,7 +7637,7 @@ window.addEventListener('visibilitychange', () => {
       renderDailyQuote();
       initSuppTab();
       buildBudapestFilter();
-      toast('NEUER TAG — PROTOKOLL ZURÜCKGESETZT');
+      toast('Neuer Tag — Protokoll zurückgesetzt');
     }
   }
 });
@@ -7670,7 +7673,7 @@ function completeMasterplanPhase() {
   awardXP(`masterplan_phase${currentPhase.phase}`, currentPhase.xp, `Phase ${currentPhase.phase} abgeschlossen`, { scope: 'ever' });
   buildMasterplan();
   safeVibrate([20, 15, 20, 15, 40]);
-  toast(`PHASE ${currentPhase.phase} — ${currentPhase.title.toUpperCase()}`);
+  toast(`Phase ${currentPhase.phase} — ${currentPhase.title}`);
 }
 
 // ══════════════ VAGUS ══════════════
@@ -7724,7 +7727,7 @@ function completeVagusSession() {
   refreshXPUI();
   safeVibrate([20, 15, 30]);
   playTone(440, 0.15); setTimeout(() => playTone(550, 0.2), 180);
-  toast('VAGUS-SESSION ABGESCHLOSSEN');
+  toast('Vagus-Session abgeschlossen');
 }
 
 // ══════════════ MECHANOBIOLOGIE ══════════════
@@ -7744,7 +7747,7 @@ function startMechanoTimer() {
   if (status) status.textContent = 'Reiz aktiv — Dehnung / Isometrik';
   awardXP('mechano_start_' + getLocalDateKey(), 12, 'Mechano-Reiz', { scope: 'day' });
   safeVibrate([20, 10, 20]);
-  toast('MECHANOBIOLOGIE — 10 MIN REIZ LÄUFT');
+  toast('Mechanobiologie — 10 Min Reiz läuft');
   mechanoInterval = setInterval(() => {
     rem--;
     if (cd) cd.textContent = formatClockFromMs(rem * 1000);
@@ -7752,7 +7755,7 @@ function startMechanoTimer() {
       clearInterval(mechanoInterval);
       mechanoMode = 'cooldown';
       safeVibrate([60, 30, 60]);
-      toast('REIZ BEENDET — 6H REFRAKTÄRPHASE STARTET');
+      toast('Reiz beendet — 6h Refraktärphase startet');
       if (status) status.textContent = 'Refraktärphase — 6h Pause einhalten';
       if (btn) { btn.textContent = 'Cooldown läuft'; btn.disabled = true; }
       const cooldownEnd = Date.now() + 6 * 3600000;
@@ -7768,7 +7771,7 @@ function startMechanoTimer() {
           if (status) status.textContent = 'Nächster Reiz: bereit';
           if (cd) cd.textContent = '';
           storageRemove('mechano_cooldown_until');
-          toast('MECHANO BEREIT — NÄCHSTER REIZ MÖGLICH');
+          toast('Mechano bereit — nächster Reiz möglich');
         }
       }, 5000);
     }
@@ -7820,12 +7823,12 @@ function startVizTimer() {
       if (btn) { btn.textContent = 'Nochmal starten'; btn.disabled = false; }
       safeVibrate([40, 30, 40]);
       playTone(440, 0.15); setTimeout(() => playTone(550, 0.2), 180);
-      toast('VISUALISIERUNG ABGESCHLOSSEN');
+      toast('Visualisierung abgeschlossen');
       refreshXPUI();
     }
   }, 1000);
   awardXP('viz_start_' + getLocalDateKey(), 5, 'Visualisierung gestartet', { scope: 'day', silent: true });
-  toast('VISUALISIERUNG GESTARTET — 10 MIN');
+  toast('Visualisierung gestartet — 10 Min');
 }
 
 // ══════════════ COLLAPSIBLE PANELS ══════════════
@@ -7917,6 +7920,11 @@ let _tt;
 function toast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg; el.classList.add('show');
+  // Über einem offenen Sheet (Runde 5c Punkt 4) an den oberen Rand statt an
+  // den unteren — unten liegen in Sheets häufig Eingabefelder, und die
+  // feste Bottom-Position würde sie verdecken bzw. mit der Bildschirm-
+  // tastatur kollidieren.
+  el.classList.toggle('h-toast--top', !!document.querySelector('.h-sheet-overlay.open'));
   clearTimeout(_tt); _tt = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
@@ -8071,7 +8079,7 @@ function exportAppDataText() {
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1200);
   awardXP('backup_export_text', 12, 'Text-Export', { scope: 'day' });
-  toast('TEXT-EXPORT ERSTELLT');
+  toast('Text-Export erstellt');
 }
 
 function openInBrowser() {
@@ -8086,9 +8094,9 @@ function openInBrowser() {
   anchor.remove();
   if (isStandalone && navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(url).catch(() => {});
-    toast('LINK GEÖFFNET — FALLS IOS IM APP-MODUS BLEIBT: URL IST IN DIE ZWISCHENABLAGE KOPIERT.');
+    toast('Link geöffnet — falls iOS im App-Modus bleibt: URL ist in die Zwischenablage kopiert.');
   } else {
-    toast('BROWSER-ANSICHT GEÖFFNET');
+    toast('Browser-Ansicht geöffnet');
   }
 }
 
@@ -8135,11 +8143,11 @@ function applyManualFastOffset() {
   const minutes = Math.max(0, Math.min(59, parseInt(document.getElementById('manual-fast-minutes')?.value || '0', 10) || 0));
   const elapsedMs = ((hours * 60) + minutes) * 60000;
   if (elapsedMs <= 0) {
-    toast('BITTE ZEIT > 0 EINTRAGEN');
+    toast('Bitte Zeit > 0 eintragen');
     return;
   }
   beginFastingAtElapsed(elapsedMs, 'fast_manual_offset', 'Fasten mit Vorsprung');
-  toast(`FASTEN AUF ${hours}H ${minutes}M GESETZT`);
+  toast(`Fasten auf ${hours}h ${minutes}m gesetzt`);
 }
 
 function startRefeedWindow(silent = false, until = null) {
@@ -8150,7 +8158,7 @@ function startRefeedWindow(silent = false, until = null) {
   refeedInterval = setInterval(updateRefeedWindow, 1000);
   if (!silent) {
     safeVibrate([35, 30, 35]);
-    toast('REFEED-FENSTER AKTIV — 6H SCHONKOST');
+    toast('Refeed-Fenster aktiv — 6h Schonkost');
   }
 }
 
@@ -8167,7 +8175,7 @@ function stopRefeedWindow(silent = false) {
   if (display) display.textContent = formatClockFromMs(REFEED_WINDOW_MS);
   const copy = document.getElementById('refeed-copy');
   if (copy) copy.textContent = 'Nach 100h startet automatisch ein 6h-Fenster mit Schonkost-Hinweis.';
-  if (!silent) toast('REFEED-FENSTER BEENDET');
+  if (!silent) toast('Refeed-Fenster beendet');
   updateDynamicFavicon();
 }
 
@@ -8185,7 +8193,7 @@ function updateRefeedWindow() {
   const remaining = until - Date.now();
   if (remaining <= 0) {
     stopRefeedWindow(true);
-    toast('REFEED BEENDET — 16:8 ODER SANFTER WIEDEREINSTIEG');
+    toast('Refeed beendet — 16:8 oder sanfter Wiedereinstieg');
     safeVibrate([24, 20, 24]);
     return;
   }
