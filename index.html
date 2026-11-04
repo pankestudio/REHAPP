@@ -276,6 +276,8 @@ body {
   transition: transform 240ms ease-out;
 }
 .h-section.collapsed .h-section-chevron { transform: rotate(0deg); }
+.h-section-chevron:active { transform: rotate(90deg) scale(.95); }
+.h-section.collapsed .h-section-chevron:active { transform: rotate(0deg) scale(.95); }
 .h-section-body { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 240ms ease-out; }
 .h-section-body > div { overflow: hidden; min-height: 0; }
 .h-section.collapsed .h-section-body { grid-template-rows: 0fr; }
@@ -372,6 +374,7 @@ body {
 }
 .h-switch.on { background: var(--ink); border-color: var(--ink); }
 .h-switch.on::after { transform: translateX(18px); background: var(--paper); }
+.h-switch:active { transform: scale(.95); }
 
 input[type=range] {
   width: 100%; -webkit-appearance: none; height: 1px; background: var(--ink); outline: none; margin: 10px 0;
@@ -395,6 +398,8 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 /* ════════════════ BADGE ════════════════ */
 .h-badge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0 24px; }
 .h-badge-grid button { background: none; border: none; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.h-badge-grid button:active { transform: scale(.95); }
+button[aria-pressed]:active { transform: scale(.95); }
 .h-badge-lock { color: var(--lock); }
 
 /* ════════════════ SHEET ════════════════ */
