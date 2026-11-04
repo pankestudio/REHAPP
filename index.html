@@ -339,13 +339,23 @@ body {
 /* ════════════════ SEGMENTED ════════════════ */
 .h-seg { display: flex; flex-wrap: wrap; gap: 22px; }
 .h-seg-btn {
-  position: relative; background: none; border: none; padding: 6px 2px 10px;
+  position: relative; background: none; border: none; padding: 8px 14px;
   font-size: 15px; font-weight: 500; color: var(--muted); cursor: pointer;
+  transition: transform 120ms ease;
 }
+.h-seg-btn:active { transform: scale(.95); }
 .h-seg-btn.active { color: var(--ink); font-weight: 700; }
-.h-seg-ellipse { position: absolute; left: 50%; bottom: -2px; transform: translateX(-50%); width: 70%; max-width: 70px; height: 14px; opacity: 0; pointer-events: none; }
-.h-seg-ellipse path { stroke: var(--ink); fill: none; stroke-width: 2; }
+/* Handgezeichnete Ellipse umkreist die Auswahl (Runde 5c Punkt 2) statt der
+   früheren Unterstreichung — inset statt fester Breite, damit sie sich per
+   preserveAspectRatio="none" nicht-uniform auf jede Button-Breite streckt. */
+.h-seg-ellipse { position: absolute; inset: -4px -8px; opacity: 0; pointer-events: none; }
+.h-seg-ellipse path { stroke: var(--ink); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .h-seg-btn.active .h-seg-ellipse { opacity: 1; }
+/* Zeichnet sich in 300ms — reiner Selektor-Trigger: die Animation matcht erst,
+   wenn .active per JS gesetzt wird, und läuft dadurch bei jedem Wechsel neu
+   an (kein manueller Reflow-Trick nötig). Gleiches hPenDraw-Keyframe wie die
+   Unterstreichungen anderswo, nur mit eigener Dauer. */
+.h-seg-btn.active .h-seg-ellipse path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: hPenDraw 300ms var(--ease) forwards; }
 
 /* ════════════════ STEPPER / SWITCH / SLIDER ════════════════ */
 .h-stepper { display: flex; align-items: center; gap: 18px; justify-content: center; }
@@ -607,8 +617,8 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         </button>
       </div>
       <div class="h-seg" id="timer-mode-seg" style="margin-bottom:20px">
-        <button type="button" class="h-seg-btn active" id="tmode-100h" onclick="switchTimerMode('100h',this)">100h Fasten<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-        <button type="button" class="h-seg-btn" id="tmode-168" onclick="switchTimerMode('16_8',this)">16:8 Rhythmus<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
+        <button type="button" class="h-seg-btn active" aria-pressed="true" id="tmode-100h" onclick="switchTimerMode('100h',this)">100h Fasten<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+        <button type="button" class="h-seg-btn" aria-pressed="false" id="tmode-168" onclick="switchTimerMode('16_8',this)">16:8 Rhythmus<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
       </div>
       <div class="h-meta" id="timer-mode-label" style="margin-bottom:6px">Standby</div>
       <div class="h-title" id="timer-display" style="font-size:clamp(2.6rem,13vw,3.6rem);margin-bottom:20px">00:00:00</div>
@@ -719,9 +729,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
         </button>
       </div>
       <div class="h-seg" id="supp-time-tabs" style="margin-bottom:20px">
-        <button type="button" class="h-seg-btn" id="stab-morning" onclick="setSuppTab('morning')">Morgens<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-        <button type="button" class="h-seg-btn" id="stab-midday"  onclick="setSuppTab('midday')">Mittags<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-        <button type="button" class="h-seg-btn" id="stab-evening" onclick="setSuppTab('evening')">Abends<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
+        <button type="button" class="h-seg-btn" aria-pressed="false" id="stab-morning" onclick="setSuppTab('morning')">Morgens<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+        <button type="button" class="h-seg-btn" aria-pressed="false" id="stab-midday"  onclick="setSuppTab('midday')">Mittags<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+        <button type="button" class="h-seg-btn" aria-pressed="false" id="stab-evening" onclick="setSuppTab('evening')">Abends<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
       </div>
       <div id="home-supp-list"></div>
       <div style="padding:4px 0 0">
@@ -741,18 +751,18 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
       </div>
       <div class="h-meta" style="margin-bottom:10px">Wie war der Tag?</div>
       <div class="h-seg" style="margin-bottom:24px">
-        <button type="button" class="h-seg-btn mood-btn" onclick="selectMood(this,'Gut')">Gut<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-        <button type="button" class="h-seg-btn mood-btn" onclick="selectMood(this,'Ok')">Ok<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-        <button type="button" class="h-seg-btn mood-btn" onclick="selectMood(this,'Müde')">Müde<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-        <button type="button" class="h-seg-btn mood-btn" onclick="selectMood(this,'Schmerzen')">Schmerzen<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-        <button type="button" class="h-seg-btn mood-btn" onclick="selectMood(this,'Stark')">Stark<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
+        <button type="button" class="h-seg-btn mood-btn" aria-pressed="false" onclick="selectMood(this,'Gut')">Gut<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+        <button type="button" class="h-seg-btn mood-btn" aria-pressed="false" onclick="selectMood(this,'Ok')">Ok<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+        <button type="button" class="h-seg-btn mood-btn" aria-pressed="false" onclick="selectMood(this,'Müde')">Müde<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+        <button type="button" class="h-seg-btn mood-btn" aria-pressed="false" onclick="selectMood(this,'Schmerzen')">Schmerzen<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+        <button type="button" class="h-seg-btn mood-btn" aria-pressed="false" onclick="selectMood(this,'Stark')">Stark<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
       </div>
 
       <div class="h-meta" style="margin-bottom:10px">Alkohol</div>
       <div class="h-seg" style="margin-bottom:24px">
-        <button type="button" class="h-seg-btn alcohol-btn" data-val="kein" onclick="selectAlcohol(this,'kein')">Kein Alkohol<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-        <button type="button" class="h-seg-btn alcohol-btn" data-val="rahmen" onclick="selectAlcohol(this,'rahmen')">Höchstens 2 Gläser<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-        <button type="button" class="h-seg-btn alcohol-btn" data-val="mehr" onclick="selectAlcohol(this,'mehr')">Mehr<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
+        <button type="button" class="h-seg-btn alcohol-btn" aria-pressed="false" data-val="kein" onclick="selectAlcohol(this,'kein')">Kein Alkohol<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+        <button type="button" class="h-seg-btn alcohol-btn" aria-pressed="false" data-val="rahmen" onclick="selectAlcohol(this,'rahmen')">Höchstens 2 Gläser<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+        <button type="button" class="h-seg-btn alcohol-btn" aria-pressed="false" data-val="mehr" onclick="selectAlcohol(this,'mehr')">Mehr<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
       </div>
 
       <div class="h-meta" style="margin-bottom:6px">Heute gehalten</div>
@@ -889,8 +899,8 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
     </div>
     <div class="h-meta" style="margin-bottom:24px">Abzeichen freigeschaltet</div>
     <div class="h-seg" id="sm-seg">
-      <button type="button" class="h-seg-btn active" id="sm-seg-badges" onclick="setSammlungSegment('badges')">Abzeichen<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-      <button type="button" class="h-seg-btn" id="sm-seg-history" onclick="setSammlungSegment('history')">Verlauf<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
+      <button type="button" class="h-seg-btn active" aria-pressed="true" id="sm-seg-badges" onclick="setSammlungSegment('badges')">Abzeichen<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+      <button type="button" class="h-seg-btn" aria-pressed="false" id="sm-seg-history" onclick="setSammlungSegment('history')">Verlauf<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
     </div>
     <div id="sm-badges-view" style="margin-top:20px"></div>
     <!-- Budapest-Filter + Ödem-Sensor (Runde 5b Punkt 8): aus Wissen hierher
@@ -1051,9 +1061,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
       <div style="margin-bottom:24px">
         <div class="h-meta" style="margin-bottom:8px">Art</div>
         <div class="h-seg" id="ee-kind-seg">
-          <button type="button" class="h-seg-btn" onclick="setExerciseEditorKind('timer')">Timer<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-          <button type="button" class="h-seg-btn" onclick="setExerciseEditorKind('atmung')">Atmung<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-          <button type="button" class="h-seg-btn" onclick="setExerciseEditorKind('schritte')">Schritte<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
+          <button type="button" class="h-seg-btn" aria-pressed="false" onclick="setExerciseEditorKind('timer')">Timer<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+          <button type="button" class="h-seg-btn" aria-pressed="false" onclick="setExerciseEditorKind('atmung')">Atmung<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+          <button type="button" class="h-seg-btn" aria-pressed="false" onclick="setExerciseEditorKind('schritte')">Schritte<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
         </div>
       </div>
 
@@ -1343,11 +1353,11 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
   <div class="h-section" data-section-key="supp:rezepte"><div class="h-section-row" onclick="toggleSection('supp:rezepte')"><div class="h-section-title" style="font-size:28px">Rezepte</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:rezepte"><div>
     <div class="h-meta" style="margin:12px 0">Nach mehrtägigem Fasten den Kostaufbau mit der Ärztin abstimmen.</div>
     <div class="h-seg" id="recipe-filter-seg" style="margin-bottom:16px">
-      <button type="button" class="h-seg-btn active" onclick="filterRecipes('Alle',this)">Alle<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-      <button type="button" class="h-seg-btn" onclick="filterRecipes('Schnell',this)">Schnell<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-      <button type="button" class="h-seg-btn" onclick="filterRecipes('Refeed',this)">Refeed<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-      <button type="button" class="h-seg-btn" onclick="filterRecipes('Protein',this)">Protein<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
-      <button type="button" class="h-seg-btn" onclick="filterRecipes('Pflanzlich',this)">Pflanzlich<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
+      <button type="button" class="h-seg-btn active" aria-pressed="true" onclick="filterRecipes('Alle',this)">Alle<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+      <button type="button" class="h-seg-btn" aria-pressed="false" onclick="filterRecipes('Schnell',this)">Schnell<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+      <button type="button" class="h-seg-btn" aria-pressed="false" onclick="filterRecipes('Refeed',this)">Refeed<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+      <button type="button" class="h-seg-btn" aria-pressed="false" onclick="filterRecipes('Protein',this)">Protein<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
+      <button type="button" class="h-seg-btn" aria-pressed="false" onclick="filterRecipes('Pflanzlich',this)">Pflanzlich<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
     </div>
     <div class="h-list" id="recipes-container"></div>
   </div></div></div>
@@ -3748,8 +3758,7 @@ document.addEventListener('keydown', e => {
 // (resetCounter()). Bei "Mehr"/"Höchstens 2 Gläser" gibt es bewusst keinen
 // Kommentar und keinen Warnton — die Serie endet einfach still.
 async function selectAlcohol(btn, val) {
-  document.querySelectorAll('#abend-checkin-overlay .alcohol-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  activateSegBtn(btn, document.querySelectorAll('#abend-checkin-overlay .alcohol-btn'));
   const todayKey = getLocalDateKey();
   storageSet('alcohol_' + todayKey, val);
   const noAlc = getGoal('goal-from-no_alcohol');
@@ -4173,9 +4182,10 @@ function buildSammlungHistory() {
   el.innerHTML = countersHtml + el.innerHTML;
 }
 
-function setSammlungSegment(seg) {
-  document.getElementById('sm-seg-badges').classList.toggle('active', seg === 'badges');
-  document.getElementById('sm-seg-history').classList.toggle('active', seg === 'history');
+function setSammlungSegment(seg, opts = {}) {
+  const badgesBtn = document.getElementById('sm-seg-badges');
+  const historyBtn = document.getElementById('sm-seg-history');
+  activateSegBtn(seg === 'badges' ? badgesBtn : historyBtn, [badgesBtn, historyBtn], opts);
   document.getElementById('sm-badges-view').style.display = seg === 'badges' ? '' : 'none';
   document.getElementById('sm-history-view').style.display = seg === 'history' ? '' : 'none';
   document.getElementById('sm-history-extras').style.display = seg === 'history' ? '' : 'none';
@@ -4183,7 +4193,7 @@ function setSammlungSegment(seg) {
 }
 
 function openSammlung() {
-  setSammlungSegment('badges');
+  setSammlungSegment('badges', { silent: true });
 }
 
 function describeBadgeProgress(goal, tier) {
@@ -5118,7 +5128,7 @@ function renderSoundPackPicker() {
     const el = document.getElementById(id);
     if (!el) return;
     el.innerHTML = Object.keys(SOUND_PACK_LABELS).map(p => `
-      <button type="button" class="h-seg-btn ${p === current ? 'active' : ''}" onclick="chooseSoundPack('${p}')">${SOUND_PACK_LABELS[p]}<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
+      <button type="button" class="h-seg-btn ${p === current ? 'active' : ''}" aria-pressed="${p === current}" onclick="chooseSoundPack('${p}')">${SOUND_PACK_LABELS[p]}<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
     `).join('');
   });
   const slider = document.getElementById('set-volume');
@@ -5170,6 +5180,22 @@ function previewSoundPack(pack) {
   [0.84, 0.92, 1.0].forEach(offset => schedulePreviewTick(now + offset, pack));
 }
 function previewCurrentSoundPack() { previewSoundPack(getSoundPack()); }
+
+// Runde 5c Punkt 2: gemeinsamer Helfer für alle Segmented-Controls (Status,
+// Alkohol, Klang, Rhythmus, …) — synct active/aria-pressed über die Gruppe
+// und spielt den Tick-Ton des aktuellen Klangpakets. Die Ellipse zeichnet
+// sich rein über CSS neu (Animation ist an .active gebunden, siehe Style),
+// kein manueller Reflow-Trick nötig.
+function activateSegBtn(btn, groupBtns, opts = {}) {
+  groupBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+  btn.classList.add('active');
+  btn.setAttribute('aria-pressed', 'true');
+  if (!opts.silent) playSegTick();
+}
+function playSegTick() {
+  const ctx = ensurePlayerAudioCtx();
+  scheduleTick(ctx.currentTime, getSoundPack());
+}
 
 // Beim Ziehen: ein einzelner Tick, gedrosselt auf höchstens alle 120ms.
 // Beim Loslassen: einmal der Akkord. Lautstärke wirkt sofort über die
@@ -5238,7 +5264,7 @@ function openExerciseEditor(id) {
   document.getElementById('ee-cue').value = _exerciseEditorState.cue;
   document.getElementById('ee-anleitung').value = _exerciseEditorState.anleitung;
   document.getElementById('ee-delete-btn').style.display = ex ? '' : 'none';
-  setExerciseEditorKind(_exerciseEditorState.kind);
+  setExerciseEditorKind(_exerciseEditorState.kind, { silent: true });
   updateExerciseDurationDisplay();
   updateExerciseRoundsDisplay();
   renderExercisePhaseSteppers();
@@ -5249,11 +5275,12 @@ function openExerciseEditor(id) {
 }
 function closeExerciseEditor() { document.getElementById('exercise-editor-overlay').classList.remove('open'); }
 
-function setExerciseEditorKind(kind) {
+function setExerciseEditorKind(kind, opts = {}) {
   _exerciseEditorState.kind = kind;
-  document.querySelectorAll('#ee-kind-seg .h-seg-btn').forEach((btn, i) => {
-    btn.classList.toggle('active', ['timer', 'atmung', 'schritte'][i] === kind);
-  });
+  const kinds = ['timer', 'atmung', 'schritte'];
+  const btns = document.querySelectorAll('#ee-kind-seg .h-seg-btn');
+  const target = btns[kinds.indexOf(kind)];
+  if (target) activateSegBtn(target, btns, opts);
   document.getElementById('ee-kind-timer').style.display = kind === 'timer' ? '' : 'none';
   document.getElementById('ee-kind-atmung').style.display = kind === 'atmung' ? '' : 'none';
   document.getElementById('ee-kind-schritte').style.display = kind === 'schritte' ? '' : 'none';
@@ -5664,7 +5691,7 @@ function renderIconGroupSeg(segId, currentGroup, onPick) {
   const el = document.getElementById(segId);
   if (!el) return;
   el.innerHTML = Object.keys(ICON_GROUPS).map(g => `
-    <button type="button" class="h-seg-btn ${g === currentGroup ? 'active' : ''}" onclick="${onPick}('${g}')">${ICON_GROUPS[g].label}<svg class="h-seg-ellipse" viewBox="0 0 60 8" aria-hidden="true"><path d="M3 4.5C18 3.6 40 5.2 57 4"/></svg></button>
+    <button type="button" class="h-seg-btn ${g === currentGroup ? 'active' : ''}" aria-pressed="${g === currentGroup}" onclick="${onPick}('${g}')">${ICON_GROUPS[g].label}<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
   `).join('');
 }
 function renderIconGrid({ gridId, group, query, selected, showDrawCell, drawActive, onPick, onDrawPick }) {
@@ -6509,8 +6536,7 @@ function close168Modal() {
   // Snap button back to 100h if user cancels and we're not in 16:8 mode yet
   if (timerMode !== '16_8') {
     const btn = document.getElementById('tmode-100h');
-    document.querySelectorAll('#timer-mode-seg .h-seg-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
+    if (btn) activateSegBtn(btn, document.querySelectorAll('#timer-mode-seg .h-seg-btn'));
   }
 }
 
@@ -6584,11 +6610,10 @@ function updateWaterHome() {
 
 let currentSuppTab = 'morning';
 
-function setSuppTab(tab) {
+function setSuppTab(tab, opts = {}) {
   currentSuppTab = tab;
-  document.querySelectorAll('#supp-time-tabs .h-seg-btn').forEach(b => b.classList.remove('active'));
   const btn = document.getElementById(`stab-${tab}`);
-  if (btn) btn.classList.add('active');
+  if (btn) activateSegBtn(btn, document.querySelectorAll('#supp-time-tabs .h-seg-btn'), opts);
   buildHomeSuppList();
 }
 
@@ -6633,14 +6658,13 @@ function buildHomeSuppList() {
 function initSuppTab() {
   const h = new Date().getHours();
   const tab = h < 11 ? 'morning' : h < 15 ? 'midday' : 'evening';
-  setSuppTab(tab);
+  setSuppTab(tab, { silent: true });
 }
 
 // ══════════════ TIMER MODE SWITCH ══════════════
 
 function switchTimerMode(mode, btn) {
-  document.querySelectorAll('#timer-mode-seg .h-seg-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+  if (btn) activateSegBtn(btn, document.querySelectorAll('#timer-mode-seg .h-seg-btn'));
   if (mode === '16_8') {
     open168Modal();
   } else {
@@ -7349,8 +7373,8 @@ function buildRecipes(filter = 'Alle') {
 }
 
 function filterRecipes(tag, btn) {
-  document.querySelectorAll('#recipe-filter-seg .h-seg-btn').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active'); buildRecipes(tag);
+  activateSegBtn(btn, document.querySelectorAll('#recipe-filter-seg .h-seg-btn'));
+  buildRecipes(tag);
 }
 
 // ══════════════ BREATHING ══════════════
@@ -7359,12 +7383,10 @@ function filterRecipes(tag, btn) {
 // ══════════════ MOOD ══════════════
 
 function selectMood(btn, mood) {
-  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  activateSegBtn(btn, document.querySelectorAll('.mood-btn'));
   storageSet('mood_'+new Date().toDateString(), mood);
   awardXP('mood_' + getLocalDateKey(), 8, 'Status gewählt', { scope: 'day', silent: true });
   if (navigator.vibrate) navigator.vibrate(20);
-  toast('STATUS: '+mood.toUpperCase());
 }
 
 // ══════════════ CALENDAR ══════════════
