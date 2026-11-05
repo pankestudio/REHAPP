@@ -144,8 +144,13 @@ body {
   .h-heute-col { display: flex; flex-direction: column; }
   #h-heute-left { flex: 1; min-width: 0; }
   #h-heute-right { width: 420px; flex-shrink: 0; }
-  #h-heute .h-heute-title-desktop { display: block; }
-  #h-heute .h-heute-clock-desktop { display: block; align-self: flex-end; }
+  /* UX-Audit Block 10: Uhrzeit überlappte oben rechts das Zähler-Paar in
+     der rechten Spalte — wandert in dieselbe Zeile wie der Seitentitel,
+     rechtsbündig, statt in die rechte Spalte reinparentet zu werden
+     (siehe layoutHeuteColumns(), .h-heute-clock-desktop nicht mehr in
+     HEUTE_RIGHT_SELECTORS). */
+  #h-heute .h-heute-title-desktop { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  #h-heute .h-heute-clock-desktop { display: block; }
 
   /* Übungen — Liste links, Detail rechts, siehe desktop-uebungen.png */
   #pg-move.active { display: grid; grid-template-columns: 440px 1fr; column-gap: 48px; align-content: start; }
@@ -632,10 +637,12 @@ button[aria-pressed]:active { transform: scale(.96); }
       </div>
     </div>
     <div class="h-heute-title-desktop">
-      <div class="h-heute-title-desktop-h">Heute</div>
-      <div class="h-meta" id="h-heute-title-date"></div>
+      <div>
+        <div class="h-heute-title-desktop-h">Heute</div>
+        <div class="h-meta" id="h-heute-title-date"></div>
+      </div>
+      <div class="h-clock h-heute-clock-desktop" id="h-heute-clock-desktop"></div>
     </div>
-    <div class="h-clock h-heute-clock-desktop" id="h-heute-clock-desktop"></div>
 
     <div class="h-counters" id="h-counters"></div>
 
@@ -3567,7 +3574,7 @@ const HEUTE_LEFT_SELECTORS = [
   '#h-goal-list', '#h-goal-empty', '#h-gelegenheit-list', '.h-templates',
 ];
 const HEUTE_RIGHT_SELECTORS = [
-  '.h-heute-clock-desktop', '#h-counters', '#h-heute-sep1', '.h-heute-ringrow', '#h-heute-sep2',
+  '#h-counters', '#h-heute-sep1', '.h-heute-ringrow', '#h-heute-sep2',
   '.h-section[data-section-key="home:heute-noch"]', '#h-module-list', '.h-heute-last',
 ];
 function layoutHeuteColumns() {
@@ -3582,7 +3589,7 @@ function layoutHeuteColumns() {
   } else {
     // Exakte ursprüngliche Quelltext-Reihenfolge (Mobil-Lesefluss).
     const order = [
-      '.h-header', '.h-heute-title-desktop', '.h-heute-clock-desktop', '#h-counters',
+      '.h-header', '.h-heute-title-desktop', '#h-counters',
       '#h-heute-sep1', '.h-heute-ringrow', '#h-heute-sep2', '#h-backup-notice',
       '.h-section[data-section-key="home:ziele"]', '#h-goal-list', '#h-goal-empty', '#h-gelegenheit-list',
       '.h-section[data-section-key="home:heute-noch"]', '#h-module-list', '.h-heute-last', '.h-templates',
