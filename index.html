@@ -48,6 +48,7 @@
   --ease:    cubic-bezier(.65,0,.35,1);
   --dur-in:  220ms;
   --dur-out: 150ms;
+  --dur-m:   300ms;
   --ui:      'Host Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bot: env(safe-area-inset-bottom, 0px);
@@ -149,12 +150,13 @@ body {
      rechtsbündig, statt in die rechte Spalte reinparentet zu werden
      (siehe layoutHeuteColumns(), .h-heute-clock-desktop nicht mehr in
      HEUTE_RIGHT_SELECTORS). */
-  #h-heute .h-heute-title-desktop { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  #h-heute .h-heute-title-desktop { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
   #h-heute .h-heute-clock-desktop { display: block; }
   /* Runde 6a Punkt 3.6: "Ziele"/"Heute noch" wirken neben der 54px
      Seitenüberschrift wie ein zweiter Titel — auf dem Desktop kleiner und
      fett statt groß/dünn, analog zu #pg-move.active .h-section-title. */
   #h-heute .h-section-title { font-size: 22px !important; font-weight: 600; }
+  #h-heute .h-next-title { font-size: 30px; }
 
   /* Übungen — Liste links, Detail rechts, siehe desktop-uebungen.png */
   #pg-move.active { display: grid; grid-template-columns: 440px 1fr; column-gap: 48px; align-content: start; }
@@ -273,6 +275,15 @@ body {
 .h-heute-last-badge { flex-shrink: 0; }
 .h-heute-last-text { flex: 1; min-width: 0; }
 .h-heute-last-row .h-row-chevron { font-size: 13px; color: var(--muted); white-space: nowrap; }
+/* „Als Nächstes" (Runde 6a Punkt 4) — genau eine Sache, eine Hauptaktion. */
+.h-next { border: 2px solid var(--ink); border-radius: 20px; padding: 14px 16px 12px; margin: 0 0 24px; transition: opacity var(--dur-m) var(--ease); }
+.h-next-fade { opacity: 0; }
+.h-next-head, .h-next-main, .h-next-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.h-next-title, .h-next-meta, .h-next-after { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.h-next-title { font-size: 24px; line-height: 1.15; }
+.h-next-meta:empty, .h-goal-meta:empty { display: none; }
+.h-next--calm .h-next-title { white-space: normal; font-size: 20px; }
+.h-next-later { position: relative; background: none; border: none; padding: 0; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--ink); white-space: nowrap; }
 .h-uebung-title-desktop { display: none; }
 .h-ue-detail { display: none; }
 .h-toc-desktop { display: none; }
@@ -375,7 +386,7 @@ body {
    ist für ohnehin schon große Elemente ein No-op, kein Sondercode pro
    Button nötig. Deckt serienmäßig auch künftige kleine Pills ab. */
 .h-pill::before, .h-circle-btn::before, .h-switch::before, .h-seg-btn::before,
-.h-goalrow-arrow::before, .h-section-chevron::before, .h-badge-grid button::before {
+.h-goalrow-arrow::before, .h-section-chevron::before, .h-badge-grid button::before, .h-next-later::before {
   content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
   width: max(100%, 44px); height: max(100%, 44px);
 }
@@ -714,6 +725,21 @@ button[aria-pressed]:active { transform: scale(.96); }
     <div class="h-counters" id="h-counters"></div>
 
     <div class="h-sep" id="h-heute-sep2"></div>
+
+    <section class="h-next" id="h-next" aria-label="Als Nächstes">
+      <div class="h-next-head" style="margin-bottom:8px"><span style="font-size:13px;font-weight:600">Als Nächstes</span><span class="h-meta" id="h-next-when" style="white-space:nowrap"></span></div>
+      <div class="h-next-main">
+        <div style="flex:1;min-width:0">
+          <div class="h-next-title" id="h-next-title" aria-live="polite"></div>
+          <div class="h-meta h-next-meta" id="h-next-meta" style="font-size:14px;margin-top:4px"></div>
+        </div>
+        <button type="button" class="h-pill h-pill--shadow" id="h-next-action" style="min-height:44px;padding:0 18px;font-size:15px;flex-shrink:0" onclick="onNextUpAction()"></button>
+      </div>
+      <div class="h-next-foot" id="h-next-foot" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)">
+        <span class="h-meta h-next-after" id="h-next-after" style="flex:1;min-width:0"></span>
+        <button type="button" class="h-next-later" id="h-next-later" onclick="onNextUpLater()">Später ›</button>
+      </div>
+    </section>
 
     <div id="h-backup-notice"></div>
     <div class="h-section" data-section-key="home:ziele" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('home:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count" id="h-goal-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:ziele"><div>
@@ -3689,7 +3715,7 @@ function renderGoalRow(g, done, todayKey) {
             <span class="h-text" ${done ? 'style="color:var(--faint)"' : ''}>${escapeHtml(g.title)}</span>
             ${done ? `<svg class="h-strike-shaft" style="position:absolute;left:-3%;top:38%;width:106%;overflow:visible" viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen h-pen-draw" d="M2 7C60 5 120 8 180 6S270 5 298 6M290 1L298 6L290 11" stroke-width="3"/></svg>` : ''}
           </div>
-          ${g.time ? `<div class="h-meta">${escapeHtml(g.time)}</div>` : ''}
+          <div class="h-meta h-goal-meta" data-time="${escapeHtml(g.time || '')}">${escapeHtml(g.time || '')}</div>
         </div>
         ${showChip ? `<button class="h-pill h-pill--outline" style="min-height:36px;padding:0 14px;font-size:13px;flex-shrink:0" onclick="onOvercomeChipTap(event,'${g.id}')">Mit Überwindung?</button>` : '<span class="h-row-chevron">›</span>'}
       </div>
@@ -3705,7 +3731,7 @@ function renderGoalRow(g, done, todayKey) {
 // bereits im DOM stehendes Element verschiebt es nur (keine Zustands-/
 // Listener-Verluste) — bei jedem Aufruf idempotent in die Zielreihenfolge.
 const HEUTE_LEFT_SELECTORS = [
-  '.h-heute-title-desktop', '#h-backup-notice', '.h-section[data-section-key="home:ziele"]',
+  '.h-heute-title-desktop', '#h-next', '#h-backup-notice', '.h-section[data-section-key="home:ziele"]',
   '#h-goal-list', '#h-goal-empty', '#h-gelegenheit-list', '.h-templates',
 ];
 const HEUTE_RIGHT_SELECTORS = [
@@ -3725,7 +3751,7 @@ function layoutHeuteColumns() {
     // Exakte ursprüngliche Quelltext-Reihenfolge (Mobil-Lesefluss).
     const order = [
       '.h-header', '.h-heute-title-desktop', '#h-counters',
-      '#h-heute-sep2', '#h-backup-notice',
+      '#h-heute-sep2', '#h-next', '#h-backup-notice',
       '.h-section[data-section-key="home:ziele"]', '#h-goal-list', '#h-goal-empty', '#h-gelegenheit-list',
       '.h-section[data-section-key="home:heute-noch"]', '#h-module-list', '.h-heute-last', '.h-templates',
     ];
@@ -3886,6 +3912,212 @@ function computeBadgeBarFraction(goal, tier) {
   return { current: Math.min(sc.value, total), total, unit, nextTierLabel: nextTier === 'tusche' ? 'Tusche' : 'Glanz' };
 }
 
+// Wasser: 8 Glas-Slots à 0,4 L (Wasser-Sheet) plus frei addierte Mengen
+// in 0,2-L-Schritten („Als Nächstes", Schnellaktion) unter eigenem Key —
+// so bleiben bestehende Slot-Daten gültig.
+const WATER_TARGET_L = 3;
+function getWaterLiters(dateStr = new Date().toDateString()) {
+  const slots = JSON.parse(storageGet('water6_' + dateStr) || '[]').length;
+  const extra = parseFloat(storageGet('water_extra_' + dateStr) || '0') || 0;
+  return Math.max(0, Math.round((slots * 0.4 + extra) * 10) / 10);
+}
+function addWaterLiters(delta) {
+  const key = 'water_extra_' + new Date().toDateString();
+  const cur = parseFloat(storageGet(key) || '0') || 0;
+  storageSet(key, String(Math.round((cur + delta) * 10) / 10));
+  updateWaterHome();
+  renderHeuteModuleList();
+}
+function formatLiters(l) { return l.toFixed(1).replace('.', ','); }
+
+// ══════════════ ALS NÄCHSTES (Runde 6a Punkt 4) ══════════════
+// nextUp(state, now) ist rein: kein DOM, kein Storage, keine Uhr — alles
+// kommt über state/now, damit die sechs Regeln direkt testbar sind.
+// state = { goals: [{id,title,kind,rhythm,time,done,stepCount}] in Listen-
+//   reihenfolge, fastEndsAt: ms|null, counters: [{key,title,current,target,
+//   unit,step}], snoozed: {key: bisMs} }
+// Rückgabe: { rule, key, goalId, title, meta, when, action:{label,type}|null,
+//   after: Titel des nächsten Kandidaten|null }
+const NEXTUP_WAKE_START = 7 * 60;
+const NEXTUP_WAKE_END = 22 * 60;
+const NEXTUP_SNOOZE_MS = 30 * 60000;
+function nextUpMinutes(hhmm) {
+  const [h, m] = String(hhmm).split(':').map(Number);
+  return h * 60 + (m || 0);
+}
+function nextUpClock(ms) {
+  const d = new Date(ms);
+  return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+}
+function nextUpRelative(diffMin) {
+  if (diffMin > 0) return `in ${diffMin} Min`;
+  if (diffMin < 0) return `seit ${-diffMin} Min`;
+  return 'jetzt';
+}
+function nextUpGoalAction(g) {
+  if (g.kind === 'checkin') return { label: 'Ausfüllen', type: 'checkin' };
+  if (g.kind === 'routine') return { label: 'Starten', type: 'routine' };
+  return { label: 'Erledigen', type: 'done' };
+}
+function nextUp(state, now) {
+  const t = now.getTime();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const goals = state.goals || [];
+  const open = goals.filter(g => !g.done);
+  const cands = [];
+
+  // 1. Ab 20:00 und der Check-in ist offen
+  const checkin = open.find(g => g.kind === 'checkin');
+  if (checkin && nowMin >= 20 * 60) {
+    cands.push({ rule: 1, key: checkin.id, goalId: checkin.id, title: 'Abend-Check-in',
+      meta: 'Den Tag abschließen', when: checkin.time || 'Heute Abend', action: { label: 'Ausfüllen', type: 'checkin' } });
+  }
+
+  // 2. Offenes Ziel mit Uhrzeit zwischen jetzt − 30 und jetzt + 90 Min, das früheste zuerst
+  open.filter(g => g.time)
+    .map(g => ({ g, m: nextUpMinutes(g.time) }))
+    .filter(x => x.m >= nowMin - 30 && x.m <= nowMin + 90)
+    .sort((a, b) => a.m - b.m)
+    .forEach(({ g, m }) => {
+      const rel = nextUpRelative(m - nowMin);
+      cands.push({ rule: 2, key: g.id, goalId: g.id, title: g.title,
+        meta: g.kind === 'routine' && g.stepCount ? `${rel} · ${g.stepCount} Schritte` : rel,
+        when: g.time, action: nextUpGoalAction(g) });
+    });
+
+  // 3. Fastenende in höchstens 90 Min
+  if (state.fastEndsAt) {
+    const diff = state.fastEndsAt - t;
+    if (diff >= 0 && diff <= 90 * 60000) {
+      cands.push({ rule: 3, key: 'fasten', goalId: null, title: 'Essfenster öffnet',
+        meta: `Fasten endet um ${nextUpClock(state.fastEndsAt)}`, when: nextUpRelative(Math.ceil(diff / 60000)),
+        action: { label: 'Ansehen', type: 'fasten' } });
+    }
+  }
+
+  // 4. Zählziel mindestens 20 % hinter dem Soll. Soll = Tagesziel × Anteil
+  // der vergangenen Wachzeit (07:00–22:00). Rückstand in Prozent des
+  // Tagesziels, damit Wasser (L) und Supplemente (Stück) vergleichbar sind.
+  const wakeFrac = Math.min(1, Math.max(0, (nowMin - NEXTUP_WAKE_START) / (NEXTUP_WAKE_END - NEXTUP_WAKE_START)));
+  (state.counters || [])
+    .filter(c => c.target > 0)
+    .map(c => ({ c, soll: c.target * wakeFrac, behind: (c.target * wakeFrac - c.current) / c.target }))
+    .filter(x => x.behind >= 0.2)
+    .sort((a, b) => b.behind - a.behind)
+    .forEach(({ c, soll }) => {
+      const fmt = v => c.unit === 'L' ? formatLiters(v) : String(Math.round(v));
+      const unit = c.unit ? ' ' + c.unit : '';
+      cands.push({ rule: 4, key: c.key, goalId: null, title: c.title,
+        meta: `${fmt(c.current)} von ${c.target}${unit} · Soll ${fmt(soll)}${unit}`, when: 'Jetzt',
+        action: c.key === 'wasser' ? { label: '+ 0,2 L', type: 'water' } : { label: 'Ansehen', type: 'supp' } });
+    });
+
+  // 5. Offenes tägliches Ziel ohne Uhrzeit, das erste in der Liste
+  open.filter(g => !g.time && g.rhythm === 'taeglich').forEach(g => {
+    cands.push({ rule: 5, key: g.id, goalId: g.id, title: g.title, meta: 'Täglich', when: 'Heute', action: nextUpGoalAction(g) });
+  });
+
+  const seen = new Set();
+  const list = cands.filter(c => {
+    if (seen.has(c.key) || (state.snoozed && state.snoozed[c.key] > t)) return false;
+    seen.add(c.key);
+    return true;
+  });
+
+  // 6. Nichts offen → ruhiger Zustand ohne Button. Ist noch etwas offen,
+  // aber gerade nicht dran (z. B. Abendroutine um 22:30), sagt die Karte
+  // das, statt fälschlich „alles durchgestrichen" zu behaupten.
+  if (!list.length) {
+    return { rule: 6, key: 'calm', goalId: null, action: null, after: null, when: '', meta: '',
+      title: open.length ? 'Gerade steht nichts an.' : 'Für heute ist alles durchgestrichen.' };
+  }
+  return { ...list[0], after: list[1] ? list[1].title : null };
+}
+
+function readNextUpSnoozes() {
+  try {
+    const s = JSON.parse(storageGet('nextup_snooze') || 'null');
+    return s && s.date === getLocalDateKey() ? s.until || {} : {};
+  } catch (err) { return {}; }
+}
+function collectNextUpState() {
+  const todayKey = getLocalDateKey();
+  const goals = sortGoalsForHeute(getActiveHeuteGoals()).map(g => ({
+    id: g.id, title: g.title, kind: g.kind || null, rhythm: g.rhythm, time: g.time || null,
+    done: isLogged(g.id, todayKey), stepCount: (g.steps || []).length,
+  }));
+  const fastEndsAt = timerStart && timerRunning ? timerStart + (timerMode === '16_8' ? 16 : 100) * 3600000 : null;
+  const supps = getItems({ type: 'supplement', activeOnly: true });
+  const doneItems = getItemsDoneToday();
+  const counters = [
+    { key: 'wasser', title: 'Wasser', current: getWaterLiters(), target: WATER_TARGET_L, unit: 'L' },
+    { key: 'supplemente', title: 'Supplemente', current: supps.filter(s => doneItems.has(s.id)).length, target: supps.length, unit: '' },
+  ];
+  return { goals, fastEndsAt, counters, snoozed: readNextUpSnoozes() };
+}
+
+let _nextUpCurrent = null;
+let _nextUpFadeTimer = null;
+function applyNextUpTag(goalId) {
+  document.querySelectorAll('#h-goal-list .h-goal-meta').forEach(el => {
+    const row = el.closest('[data-goal-id]');
+    const isNext = row && row.dataset.goalId === goalId;
+    el.textContent = [el.dataset.time, isNext ? 'als Nächstes' : ''].filter(Boolean).join(' · ');
+  });
+}
+function paintNextUp(nu) {
+  const card = document.getElementById('h-next');
+  card.classList.toggle('h-next--calm', !nu.action);
+  document.getElementById('h-next-when').textContent = nu.when;
+  document.getElementById('h-next-title').textContent = nu.title;
+  document.getElementById('h-next-meta').textContent = nu.meta;
+  const actionBtn = document.getElementById('h-next-action');
+  actionBtn.style.display = nu.action ? '' : 'none';
+  actionBtn.textContent = nu.action ? nu.action.label : '';
+  document.getElementById('h-next-foot').style.display = nu.action ? '' : 'none';
+  document.getElementById('h-next-after').textContent = nu.after ? `Danach: ${nu.after}` : '';
+}
+function renderNextUp() {
+  if (!document.getElementById('h-next')) return;
+  const nu = nextUp(collectNextUpState(), new Date());
+  const prev = _nextUpCurrent;
+  _nextUpCurrent = nu;
+  applyNextUpTag(nu.goalId);
+  const body = document.getElementById('h-next');
+  if (!prev || prev.key === nu.key || _reducedMotion) {
+    clearTimeout(_nextUpFadeTimer);
+    body.classList.remove('h-next-fade');
+    paintNextUp(nu);
+    return;
+  }
+  body.classList.add('h-next-fade');
+  clearTimeout(_nextUpFadeTimer);
+  _nextUpFadeTimer = setTimeout(() => {
+    paintNextUp(_nextUpCurrent);
+    body.classList.remove('h-next-fade');
+  }, 300);
+}
+function onNextUpAction() {
+  const nu = _nextUpCurrent;
+  if (!nu || !nu.action) return;
+  switch (nu.action.type) {
+    case 'checkin': openAbendCheckin(nu.goalId); break;
+    case 'routine': openRoutinePlayer(nu.goalId); break;
+    case 'done': onGoalRowArrowTap(null, nu.goalId); break;
+    case 'fasten': openFastenSheet(); break;
+    case 'water': addWaterLiters(0.2); toast(`Wasser · ${formatLiters(getWaterLiters())} / ${WATER_TARGET_L} L`); break;
+    case 'supp': openSupplementeSheet(); break;
+  }
+}
+function onNextUpLater() {
+  const nu = _nextUpCurrent;
+  if (!nu || !nu.action) return;
+  const until = readNextUpSnoozes();
+  until[nu.key] = Date.now() + NEXTUP_SNOOZE_MS;
+  storageSet('nextup_snooze', JSON.stringify({ date: getLocalDateKey(), until }));
+  renderNextUp();
+}
+
 function renderHeuteModuleList() {
   const el = document.getElementById('h-module-list');
   if (!el) return;
@@ -3894,9 +4126,7 @@ function renderHeuteModuleList() {
   const fastenSub = (fastenLabel && fastenLabel.textContent.replace(/^\/\/\s*/, '')) || 'Bereit';
   const fastenVal = (fastenValue && fastenValue.textContent) || '00:00:00';
 
-  const today = new Date().toDateString();
-  const waterSaved = JSON.parse(storageGet('water6_' + today) || '[]');
-  const waterL = (waterSaved.length * 0.4).toFixed(1).replace('.', ',');
+  const waterL = formatLiters(getWaterLiters());
 
   const h = new Date().getHours();
   const suppTab = h < 11 ? 'morning' : h < 15 ? 'midday' : 'evening';
@@ -3939,6 +4169,7 @@ function renderHeuteModuleList() {
       ${renderBar(suppPct, 'h-bar--row')}
     </div>
   `;
+  renderNextUp();
 }
 
 function openFastenSheet() { document.getElementById('fasten-sheet-overlay').classList.add('open'); }
@@ -7046,9 +7277,7 @@ function buildWater() {
 }
 
 function updateWaterHome() {
-  const today = new Date().toDateString();
-  const saved = JSON.parse(storageGet('water6_'+today) || '[]');
-  const ml = saved.length * 400;
+  const ml = Math.round(getWaterLiters() * 1000);
   const remain = Math.max(0, 3200 - ml);
   const mlEl = document.getElementById('water-ml-home');
   const remEl = document.getElementById('water-remain-home');
@@ -7523,6 +7752,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   _watchedDate = new Date().toDateString();
   setInterval(() => {
     updateHeuteClock();
+    renderNextUp();
     const nowDate = new Date().toDateString();
     if (nowDate !== _watchedDate) {
       _watchedDate = nowDate;
@@ -8521,7 +8751,7 @@ function exportAppDataText() {
     exportedAt: new Date().toISOString(),
     xp: storageGet('xp_total') || '0',
     mood: storageGet('mood_' + today) || 'nicht gesetzt',
-    waterMl: JSON.parse(storageGet('water6_' + today) || '[]').length * 400,
+    waterMl: Math.round(getWaterLiters(today) * 1000),
     checksDone: DAILY_CHECKS.filter(item => storageGet('check_' + today + '_' + item.id) === '1').map(item => item.label),
     progress: JSON.parse(storageGet('progress_log') || '[]').slice(-14)
   };
