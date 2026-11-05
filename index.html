@@ -229,6 +229,22 @@ body {
   }
 }
 
+/* UX-Audit Block 9: Icon-Buttons (Play-Kreis, Zurück, Schließen, Vor/
+   Zurück im Player, Chevron, Vorhören) bekommen auf dem Desktop einen
+   Tooltip bei Hover und Fokus — Text aus aria-label, kein title-Attribut
+   (kein natives, unzugängliches Tooltip-Verhalten). (hover:hover) schließt
+   Touch-Geräte mit großem Viewport aus, wo ein Tooltip sonst hängen bliebe. */
+@media (min-width: 1024px) and (hover: hover) {
+  .h-circle-btn[aria-label], .h-section-chevron[aria-label] { position: relative; }
+  .h-circle-btn[aria-label]:hover::after, .h-circle-btn[aria-label]:focus-visible::after,
+  .h-section-chevron[aria-label]:hover::after, .h-section-chevron[aria-label]:focus-visible::after {
+    content: attr(aria-label);
+    position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--paper); font-size: 12.5px; font-weight: 500;
+    padding: 6px 10px; border-radius: 6px; white-space: nowrap; pointer-events: none; z-index: 900;
+  }
+}
+
 /* ════════════════ APPHEADER ════════════════ */
 .h-header { display: flex; justify-content: space-between; align-items: flex-start; padding-top: calc(16px + var(--safe-top)); margin-bottom: 28px; }
 .h-header-left, .h-header-right { display: flex; flex-direction: column; }
@@ -262,7 +278,10 @@ body {
   height: calc(80px + var(--safe-bot));
   z-index: 100;
 }
-.h-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; }
+.h-nav-item {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer;
+  background: none; border: none; padding: 0; -webkit-tap-highlight-color: transparent;
+}
 .h-nav-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
 .h-nav-icon svg { width: 22px; height: 22px; stroke: var(--nav-off); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .h-nav-label { font-size: 12.5px; color: var(--nav-off); }
@@ -412,7 +431,7 @@ body {
 .h-switch:active { transform: scale(.96); }
 
 input[type=range] {
-  width: 100%; -webkit-appearance: none; height: 1px; background: var(--ink); outline: none; margin: 10px 0;
+  width: 100%; -webkit-appearance: none; height: 1px; background: var(--ink); margin: 10px 0;
 }
 input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--ink); cursor: pointer; border: none; }
 input[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--ink); cursor: pointer; border: none; }
@@ -643,13 +662,13 @@ button[aria-pressed]:active { transform: scale(.96); }
     <div class="h-sep" id="h-heute-sep2"></div>
 
     <div id="h-backup-notice"></div>
-    <div class="h-section" data-section-key="home:ziele" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('home:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count" id="h-goal-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:ziele"><div>
+    <div class="h-section" data-section-key="home:ziele" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('home:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count" id="h-goal-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:ziele"><div>
     </div></div></div>
     <div class="h-list" id="h-goal-list" style="margin-top:4px"></div>
     <div id="h-goal-empty" style="display:none"></div>
     <div id="h-gelegenheit-list"></div>
 
-    <div class="h-section" data-section-key="home:heute-noch"><div class="h-section-row" onclick="toggleSection('home:heute-noch')"><div class="h-section-title" style="font-size:28px">Heute noch</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:heute-noch"><div>
+    <div class="h-section" data-section-key="home:heute-noch"><div class="h-section-row" onclick="toggleSection('home:heute-noch')"><div class="h-section-title" style="font-size:28px">Heute noch</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:heute-noch"><div>
     </div></div></div>
     <div class="h-list" id="h-module-list" style="margin-top:4px"></div>
     <div class="h-heute-last" id="h-heute-last"></div>
@@ -1181,17 +1200,17 @@ button[aria-pressed]:active { transform: scale(.96); }
 
   <div class="h-ue-detail" id="ue-detail-panel"></div>
 
-  <div class="h-section" data-section-key="move:routinen" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('move:routinen')"><div class="h-section-title">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:routinen"><div>
+  <div class="h-section" data-section-key="move:routinen" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('move:routinen')"><div class="h-section-title">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:routinen"><div>
     <div class="h-list" id="ue-routine-list" style="margin-top:12px"></div>
     <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToRoutineEditor(null)">+ Routine</button>
   </div></div></div>
 
-  <div class="h-section" data-section-key="move:atmung"><div class="h-section-row" onclick="toggleSection('move:atmung')"><div class="h-section-title">Atmung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:atmung"><div>
+  <div class="h-section" data-section-key="move:atmung"><div class="h-section-row" onclick="toggleSection('move:atmung')"><div class="h-section-title">Atmung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:atmung"><div>
     <div class="h-list" id="ue-atmung-list" style="margin-top:12px"></div>
     <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToExerciseEditor(null)">+ Übung</button>
   </div></div></div>
 
-  <div class="h-section" data-section-key="move:protokolle"><div class="h-section-row" onclick="toggleSection('move:protokolle')"><div class="h-section-title">Protokolle</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:protokolle"><div>
+  <div class="h-section" data-section-key="move:protokolle"><div class="h-section-row" onclick="toggleSection('move:protokolle')"><div class="h-section-title">Protokolle</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:protokolle"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" onclick="openMldProtocolPlayer()">
         <div class="h-row-body"><div class="h-row-title">Lymphdrainage — Selbst-MLD</div><div class="h-row-meta">7 Schritte mit Einzel-Timer</div></div>
@@ -1212,7 +1231,7 @@ button[aria-pressed]:active { transform: scale(.96); }
     </div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="move:einzeluebungen"><div class="h-section-row" onclick="toggleSection('move:einzeluebungen')"><div class="h-section-title">Einzelübungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:einzeluebungen"><div>
+  <div class="h-section" data-section-key="move:einzeluebungen"><div class="h-section-row" onclick="toggleSection('move:einzeluebungen')"><div class="h-section-title">Einzelübungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:einzeluebungen"><div>
     <div class="h-list" id="ue-list" style="margin-top:12px"></div>
     <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToExerciseEditor(null)">+ Übung</button>
 
@@ -1328,11 +1347,11 @@ button[aria-pressed]:active { transform: scale(.96); }
   </div>
   <div class="h-toc-desktop" id="supp-toc"></div>
 
-  <div class="h-section" data-section-key="supp:supplemente" style="margin-top:20px"><div class="h-section-row" onclick="toggleSection('supp:supplemente')"><div class="h-section-title" style="font-size:28px">Supplemente</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:supplemente"><div>
+  <div class="h-section" data-section-key="supp:supplemente" style="margin-top:20px"><div class="h-section-row" onclick="toggleSection('supp:supplemente')"><div class="h-section-title" style="font-size:28px">Supplemente</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:supplemente"><div>
     <div class="h-list" style="margin-top:12px" id="supp-wissen-list"></div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="supp:protokolle"><div class="h-section-row" onclick="toggleSection('supp:protokolle')"><div class="h-section-title" style="font-size:28px">Protokolle</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:protokolle"><div>
+  <div class="h-section" data-section-key="supp:protokolle"><div class="h-section-row" onclick="toggleSection('supp:protokolle')"><div class="h-section-title" style="font-size:28px">Protokolle</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:protokolle"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" data-collapse-id="wissen-mld" onclick="toggleCollapse('wissen-mld')">
         <div class="h-row-body"><div class="h-row-title">Lymphdrainage — Hintergrund</div></div>
@@ -1353,7 +1372,7 @@ button[aria-pressed]:active { transform: scale(.96); }
     </div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="supp:atmung"><div class="h-section-row" onclick="toggleSection('supp:atmung')"><div class="h-section-title" style="font-size:28px">Atmung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:atmung"><div>
+  <div class="h-section" data-section-key="supp:atmung"><div class="h-section-row" onclick="toggleSection('supp:atmung')"><div class="h-section-title" style="font-size:28px">Atmung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:atmung"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" data-collapse-id="wissen-atmung" onclick="toggleCollapse('wissen-atmung')">
         <div class="h-row-body"><div class="h-row-title">Techniken im Überblick</div></div>
@@ -1370,7 +1389,7 @@ button[aria-pressed]:active { transform: scale(.96); }
     </div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="supp:fasten"><div class="h-section-row" onclick="toggleSection('supp:fasten')"><div class="h-section-title" style="font-size:28px">Fasten</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:fasten"><div>
+  <div class="h-section" data-section-key="supp:fasten"><div class="h-section-row" onclick="toggleSection('supp:fasten')"><div class="h-section-title" style="font-size:28px">Fasten</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:fasten"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" data-collapse-id="masterplan" onclick="toggleCollapse('masterplan')">
         <div class="h-row-body"><div class="h-row-title">14-Tage Masterplan</div><div class="h-row-meta">Phasenübersicht</div></div>
@@ -1402,7 +1421,7 @@ button[aria-pressed]:active { transform: scale(.96); }
     </div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="supp:rezepte"><div class="h-section-row" onclick="toggleSection('supp:rezepte')"><div class="h-section-title" style="font-size:28px">Rezepte</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:rezepte"><div>
+  <div class="h-section" data-section-key="supp:rezepte"><div class="h-section-row" onclick="toggleSection('supp:rezepte')"><div class="h-section-title" style="font-size:28px">Rezepte</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:rezepte"><div>
     <div class="h-meta" style="margin:12px 0">Nach mehrtägigem Fasten den Kostaufbau mit der Ärztin abstimmen.</div>
     <div class="h-seg" id="recipe-filter-seg" style="margin-bottom:16px">
       <button type="button" class="h-seg-btn active" aria-pressed="true" onclick="filterRecipes('Alle',this)">Alle<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
@@ -1549,7 +1568,7 @@ button[aria-pressed]:active { transform: scale(.96); }
   </div>
   <div class="h-toc-desktop" id="settings-toc"></div>
 
-  <div class="h-section" data-section-key="settings:klang" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('settings:klang')"><div class="h-section-title" style="font-size:28px">Klang</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:klang"><div>
+  <div class="h-section" data-section-key="settings:klang" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('settings:klang')"><div class="h-section-title" style="font-size:28px">Klang</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:klang"><div>
     <div style="display:flex;align-items:center;gap:12px;margin:16px 0 24px">
       <div class="h-seg" id="set-sound-packs" style="flex:1"></div>
       <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="previewCurrentSoundPack()" aria-label="Vorhören">
@@ -1561,30 +1580,30 @@ button[aria-pressed]:active { transform: scale(.96); }
       <button type="button" class="h-switch" id="set-countdown-switch" onclick="toggleCountdownPreroll()" aria-label="Countdown ab 5 Sekunden"></button>
     </div>
     <div class="h-row" style="cursor:default;flex-direction:column;align-items:stretch">
-      <div class="h-row-title" style="margin-bottom:6px">Lautstärke <span class="h-meta" id="set-volume-meta"></span></div>
+      <label class="h-row-title" for="set-volume" style="margin-bottom:6px">Lautstärke <span class="h-meta" id="set-volume-meta"></span></label>
       <input type="range" id="set-volume" min="0" max="100" value="70" oninput="onSetVolumeInput()" onchange="onSetVolumeChange()">
     </div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="settings:routinen"><div class="h-section-row" onclick="toggleSection('settings:routinen')"><div class="h-section-title" style="font-size:28px">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:routinen"><div>
+  <div class="h-section" data-section-key="settings:routinen"><div class="h-section-row" onclick="toggleSection('settings:routinen')"><div class="h-section-title" style="font-size:28px">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:routinen"><div>
     <div class="h-list" id="set-routine-list" style="margin-top:12px"></div>
     <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToRoutineEditor(null)">+ Routine</button>
   </div></div></div>
 
-  <div class="h-section" data-section-key="settings:uebungen"><div class="h-section-row" onclick="toggleSection('settings:uebungen')"><div class="h-section-title" style="font-size:28px">Übungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:uebungen"><div>
+  <div class="h-section" data-section-key="settings:uebungen"><div class="h-section-row" onclick="toggleSection('settings:uebungen')"><div class="h-section-title" style="font-size:28px">Übungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:uebungen"><div>
     <div class="h-list" id="set-exercise-list" style="margin-top:12px"></div>
     <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToExerciseEditor(null)">+ Übung</button>
   </div></div></div>
 
-  <div class="h-section" data-section-key="settings:ziele"><div class="h-section-row" onclick="toggleSection('settings:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:ziele"><div>
+  <div class="h-section" data-section-key="settings:ziele"><div class="h-section-row" onclick="toggleSection('settings:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:ziele"><div>
     <div class="h-list" id="set-goals-list" style="margin-top:12px"></div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="settings:erinnerungen"><div class="h-section-row" onclick="toggleSection('settings:erinnerungen')"><div class="h-section-title" style="font-size:28px">Erinnerungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:erinnerungen"><div>
+  <div class="h-section" data-section-key="settings:erinnerungen"><div class="h-section-row" onclick="toggleSection('settings:erinnerungen')"><div class="h-section-title" style="font-size:28px">Erinnerungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:erinnerungen"><div>
     <div class="h-list" id="set-reminders-list" style="margin-top:12px"></div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="settings:app"><div class="h-section-row" onclick="toggleSection('settings:app')"><div class="h-section-title" style="font-size:28px">App</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:app"><div>
+  <div class="h-section" data-section-key="settings:app"><div class="h-section-row" onclick="toggleSection('settings:app')"><div class="h-section-title" style="font-size:28px">App</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:app"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" style="cursor:default">
         <div class="h-row-body"><div class="h-row-title">App-Modus</div><div class="h-row-meta" id="install-status-copy">Wird geprüft …</div></div>
@@ -1613,11 +1632,11 @@ button[aria-pressed]:active { transform: scale(.96); }
     </div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="settings:inhalte"><div class="h-section-row" onclick="toggleSection('settings:inhalte')"><div class="h-section-title" style="font-size:28px">Inhalte</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:inhalte"><div>
+  <div class="h-section" data-section-key="settings:inhalte"><div class="h-section-row" onclick="toggleSection('settings:inhalte')"><div class="h-section-title" style="font-size:28px">Inhalte</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:inhalte"><div>
     <div id="set-content-editor" style="margin-top:12px"></div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="settings:daten"><div class="h-section-row" onclick="toggleSection('settings:daten')"><div class="h-section-title" style="font-size:28px">Daten</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:daten"><div>
+  <div class="h-section" data-section-key="settings:daten"><div class="h-section-row" onclick="toggleSection('settings:daten')"><div class="h-section-title" style="font-size:28px">Daten</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:daten"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" onclick="exportAppData()">
         <div class="h-row-body"><div class="h-row-title">Backup exportieren</div></div>
@@ -1715,23 +1734,23 @@ const NAV_ITEMS = [
 function renderNavChrome() {
   const bottom = document.getElementById('h-nav-bottom');
   if (bottom) bottom.innerHTML = NAV_ITEMS.map(n => `
-    <div class="h-nav-item" data-page="${n.page}" id="nav-${n.slug}" onclick="showPage('${n.page}')">
+    <button type="button" class="h-nav-item" data-page="${n.page}" id="nav-${n.slug}" onclick="showPage('${n.page}')">
       <div class="h-nav-icon"><svg viewBox="0 0 24 24"${n.svgAttrs}>${n.inner}</svg></div>
       <div class="h-nav-label">${n.label}</div>
       <svg class="h-nav-underline" viewBox="0 0 60 8" aria-hidden="true"><path class="h-pen h-pen-draw" d="M3 4.5C18 3.6 40 5.2 57 4"/></svg>
-    </div>`).join('');
+    </button>`).join('');
   const rail = document.getElementById('h-rail');
   if (rail) rail.innerHTML = NAV_ITEMS.map(n => `
-    <div class="h-nav-item h-rail-item" data-page="${n.page}" id="rail-${n.slug}" onclick="showPage('${n.page}')">
+    <button type="button" class="h-nav-item h-rail-item" data-page="${n.page}" id="rail-${n.slug}" onclick="showPage('${n.page}')">
       <div class="h-nav-icon"><svg viewBox="0 0 24 24"${n.svgAttrs}>${n.inner}</svg></div>
       <div class="h-nav-label">${n.label}</div>
-    </div>`).join('');
+    </button>`).join('');
   const side = document.getElementById('h-sidenav-items');
   if (side) side.innerHTML = NAV_ITEMS.map(n => `
-    <div class="h-nav-item h-side-item" data-page="${n.page}" id="side-${n.slug}" onclick="showPage('${n.page}')">
+    <button type="button" class="h-nav-item h-side-item" data-page="${n.page}" id="side-${n.slug}" onclick="showPage('${n.page}')">
       <div class="h-nav-icon"><svg viewBox="0 0 24 24"${n.svgAttrs}>${n.inner}</svg></div>
       <div class="h-nav-label">${n.label}</div>
-    </div>`).join('');
+    </button>`).join('');
 }
 function syncNavActive(id) {
   document.querySelectorAll('.h-nav-item').forEach(n => {
@@ -4154,7 +4173,7 @@ function buildSammlungBadges() {
       <div class="h-section-row" onclick="toggleSection('sammlung:${key}')">
         <div class="h-section-title">${escapeHtml(title)}</div>
         <div class="h-section-count"></div>
-        <button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen">
+        <button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen">
           <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
         </button>
       </div>
@@ -6728,6 +6747,37 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.getElementById('confirm-dialog-overlay').classList.contains('open')) closeConfirmDialog();
 });
 
+// UX-Audit Block 9: Fokusfalle — Tab kreist innerhalb des obersten offenen
+// Sheets/Modals, statt in den Hintergrund zu entkommen. Generisch für alle
+// .h-sheet-overlay/.h-modal-overlay-Instanzen, kein Sonderfall pro Sheet
+// nötig. Bei mehreren gleichzeitig offenen (z.B. Bestätigungs-Dialog über
+// einem Editor-Sheet) gewinnt der mit dem höchsten z-index.
+function getFocusTrapOverlay() {
+  const overlays = Array.from(document.querySelectorAll('.h-sheet-overlay.open, .h-modal-overlay.open'));
+  let top = null, topZ = -1;
+  overlays.forEach(el => {
+    const z = parseInt(getComputedStyle(el).zIndex, 10) || 0;
+    if (z >= topZ) { top = el; topZ = z; }
+  });
+  return top;
+}
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Tab') return;
+  const overlay = getFocusTrapOverlay();
+  if (!overlay) return;
+  const focusables = Array.from(overlay.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  )).filter(el => el.offsetParent !== null);
+  if (!focusables.length) return;
+  const first = focusables[0], last = focusables[focusables.length - 1];
+  const inside = overlay.contains(document.activeElement);
+  if (e.shiftKey) {
+    if (!inside || document.activeElement === first) { e.preventDefault(); last.focus(); }
+  } else {
+    if (!inside || document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+});
+
 // ══════════════ MODAL / RESET ══════════════
 
 function confirmReset() {
@@ -7254,7 +7304,10 @@ function makeKeyboardClickable(el) {
   });
 }
 function enhanceAccessibility() {
-  document.querySelectorAll('[onclick]:not(button):not(a):not(input), .h-nav-item').forEach(makeKeyboardClickable);
+  // .h-nav-item sind seit UX-Audit Block 9 echte <button>-Elemente,
+  // brauchen den Polyfill nicht mehr (makeKeyboardClickable() überspringt
+  // sie ohnehin automatisch).
+  document.querySelectorAll('[onclick]:not(button):not(a):not(input)').forEach(makeKeyboardClickable);
   document.querySelectorAll('a[target="_blank"]').forEach(a => a.setAttribute('rel', 'noopener noreferrer'));
 }
 
