@@ -570,6 +570,7 @@ button[aria-pressed]:active { transform: scale(.96); }
 .h-toast--top.show { transform: translateX(-50%) translateY(0); }
 .h-sw-update-pill {
   position: fixed; bottom: calc(96px + var(--safe-bot)); left: 50%; transform: translateX(-50%);
+  background: var(--paper); box-shadow: 0 2px 10px rgba(20,20,15,.12);
   z-index: 710;
 }
 .h-modal-overlay {
@@ -7183,8 +7184,8 @@ function showSWUpdateBanner(worker, markUserRequested) {
   const el = document.createElement('button');
   el.type = 'button';
   el.id = 'sw-update-pill';
-  el.className = 'h-pill h-sw-update-pill';
-  el.textContent = 'Neue Version – Neu laden';
+  el.className = 'h-pill h-pill--outline h-sw-update-pill';
+  el.textContent = 'Neue Version · Jetzt laden';
   el.onclick = () => { markUserRequested(); worker.postMessage({ type: 'SKIP_WAITING' }); };
   document.body.appendChild(el);
 }
