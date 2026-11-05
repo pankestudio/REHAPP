@@ -113,6 +113,12 @@ async function auditState(page, label) {
       return Array.from(el.childNodes).some(n => n.nodeType === 3 && n.textContent.trim());
     }
 
+    // UX-Audit Block 8: nur Token-Dauern (100/150/200/300ms) für Transitions/
+    // Animationen — Ausnahme 600ms für Stift-Zeichnungen. getComputedStyle
+    // serialisiert Zeitwerte immer in Sekunden ("0.1s" statt "100ms").
+    const ALLOWED_DURATIONS_S = new Set(['0s', '0.1s', '0.15s', '0.2s', '0.3s', '0.6s']);
+    const badDurations = new Set();
+
     document.querySelectorAll('*').forEach(el => {
       if (el.className && typeof el.className === 'string') {
         el.className.split(/\s+/).filter(Boolean).forEach(cls => {
@@ -138,6 +144,13 @@ async function auditState(page, label) {
         const hex = rgbToHexInPage(cs[prop]);
         if (hex && !allowedHex.has(hex)) badColors.add(hex + ' (' + prop + ') @ ' + (el.id || el.className || el.tagName));
       });
+      ['transitionDuration', 'animationDuration'].forEach(prop => {
+        (cs[prop] || '').split(',').map(d => d.trim()).forEach(d => {
+          if (d && !ALLOWED_DURATIONS_S.has(d)) {
+            badDurations.add(`${d} (${prop}) @ ${el.id || el.className || el.tagName}`);
+          }
+        });
+      });
     });
 
     const text = document.body.innerText || '';
@@ -148,6 +161,7 @@ async function auditState(page, label) {
       smallTargets: [...smallTargets],
       badSizes: [...badSizes],
       badWeights: [...badWeights],
+      badDurations: [...badDurations],
       uppercaseCount,
       text,
     };
@@ -159,6 +173,7 @@ async function auditState(page, label) {
   if (result.smallTargets.length) fail(`[${label}] Touch-Ziele unter 44×44px: ${result.smallTargets.join(', ')}`);
   if (result.badSizes.length) fail(`[${label}] Text unter 12px: ${result.badSizes.join(', ')}`);
   if (result.badWeights.length) fail(`[${label}] Schriftschnitt über 600: ${result.badWeights.join(', ')}`);
+  if (result.badDurations.length) fail(`[${label}] Nicht-Token-Dauern: ${result.badDurations.join(', ')}`);
   if (result.uppercaseCount) fail(`[${label}] ${result.uppercaseCount} Element(e) mit text-transform:uppercase`);
   FORBIDDEN_STRINGS.forEach(s => {
     if (result.text.includes(s)) fail(`[${label}] verbotener String im sichtbaren Text: "${s}"`);
