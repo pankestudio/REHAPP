@@ -677,7 +677,7 @@ button[aria-pressed]:active { transform: scale(.96); }
       <div id="timer-16-8-block" class="h-meta" style="margin-bottom:14px"></div>
       <div style="display:flex;gap:10px;margin-bottom:28px">
         <button type="button" class="h-pill" id="timer-start-btn" style="flex:1" onclick="timerAction()">Fasten starten</button>
-        <button type="button" class="h-pill h-pill--outline" id="timer-reset-btn" style="flex:1;display:none" onclick="confirmReset()">Reset</button>
+        <button type="button" class="h-pill h-pill--outline" id="timer-reset-btn" style="flex:1;display:none" onclick="confirmReset()">Timer zurücksetzen</button>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);margin-bottom:20px">
@@ -915,7 +915,7 @@ button[aria-pressed]:active { transform: scale(.96); }
         <button type="button" class="h-pill h-pill--outline" id="gs-notify-btn" style="min-height:40px;padding:0 16px;font-size:14px;flex-shrink:0" onclick="toggleGoalSheetNotify()">Aus</button>
       </div>
 
-      <button type="button" class="h-pill h-pill--shadow" style="width:100%" onclick="saveGoalFromSheet()">Speichern</button>
+      <button type="button" class="h-pill h-pill--shadow" style="width:100%" onclick="saveGoalFromSheet()">Ziel speichern</button>
       <button type="button" class="h-pill h-pill--outline" id="gs-archive-btn" style="width:100%;margin-top:12px;display:none" onclick="archiveGoalFromSheet()">Archivieren</button>
     </div>
   </div>
@@ -976,7 +976,7 @@ button[aria-pressed]:active { transform: scale(.96); }
           <div style="display:flex;align-items:center;gap:10px;margin:8px 0 16px">
             <input type="number" id="oedem-cm" min="10" max="40" step="0.1" placeholder="23.5" inputmode="decimal" style="width:90px;text-align:center;font-size:17px">
             <span class="h-meta">cm</span>
-            <button type="button" class="h-pill h-pill--outline" onclick="saveOedem()">Speichern</button>
+            <button type="button" class="h-pill h-pill--outline" onclick="saveOedem()">Ödem speichern</button>
           </div>
           <div style="padding-bottom:16px">
             <div class="h-meta" style="margin-bottom:8px">Verlauf 7 Tage</div>
@@ -1014,7 +1014,7 @@ button[aria-pressed]:active { transform: scale(.96); }
     <div class="h-title" style="font-size:28px;margin:20px 0 6px" id="unlock-title">Neues Abzeichen</div>
     <div class="h-meta" id="unlock-meta" style="margin-bottom:28px"></div>
     <button type="button" class="h-pill h-pill--shadow" id="unlock-next-btn" onclick="advanceUnlockQueue()">Zur Sammlung</button>
-    <button type="button" class="h-pill h-pill--outline" style="margin-top:12px" onclick="replayUnlockCelebration()">Nochmal</button>
+    <button type="button" class="h-pill h-pill--outline" style="margin-top:12px" onclick="replayUnlockCelebration()">Moment wiederholen</button>
     <div class="h-meta" id="unlock-queue-note" style="margin-top:14px"></div>
   </div>
 
@@ -1071,7 +1071,7 @@ button[aria-pressed]:active { transform: scale(.96); }
         <button type="button" class="h-circle-btn" id="player-prev-btn" onclick="prevPlayerStep()" aria-label="Vorheriger Schritt" style="display:none">
           <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
         </button>
-        <button type="button" class="h-pill h-pill--shadow" id="player-start-btn" onclick="togglePlayerRun()">Start</button>
+        <button type="button" class="h-pill h-pill--shadow" id="player-start-btn" onclick="togglePlayerRun()">Übung starten</button>
         <button type="button" class="h-circle-btn" id="player-next-btn" onclick="nextPlayerStep()" aria-label="Nächster Schritt" style="display:none">
           <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
         </button>
@@ -1080,8 +1080,8 @@ button[aria-pressed]:active { transform: scale(.96); }
         </button>
       </div>
       <div style="display:none;gap:12px;align-items:center;margin-top:8px" id="player-done-btns">
-        <button type="button" class="h-pill" onclick="closePlayerDone()">Fertig</button>
-        <button type="button" class="h-pill h-pill--outline" onclick="restartPlayerExercise()">Nochmal</button>
+        <button type="button" class="h-pill" id="player-done-btn" onclick="closePlayerDone()">Zur Sammlung</button>
+        <button type="button" class="h-pill h-pill--outline" onclick="restartPlayerExercise()">Übung wiederholen</button>
       </div>
       <div style="display:flex;gap:8px;margin-top:28px" id="player-sound-picker"></div>
     </div>
@@ -1529,7 +1529,7 @@ button[aria-pressed]:active { transform: scale(.96); }
 
     <div class="h-modal-btns">
       <button type="button" class="h-pill h-pill--outline" onclick="closeItemEditor()">Abbrechen</button>
-      <button type="button" class="h-pill" onclick="saveItemFromEditor()">Speichern</button>
+      <button type="button" class="h-pill" id="ie-save-btn" onclick="saveItemFromEditor()">Speichern</button>
     </div>
     <button type="button" class="h-pill h-pill--outline" id="ie-delete-btn" onclick="deleteItemFromEditor()" style="width:100%;margin-top:12px">Löschen</button>
   </div>
@@ -3402,9 +3402,11 @@ function computeHeuteHeaderInfos() {
   } else {
     // Punkt 2: oben steht immer eine Zahl — die Essfenster-Startzeit ist eine
     // Uhrzeit, kein Wort, und passt damit in den 104px-Zahlen-Slot.
+    // UX-Audit Block 6: kein Platzhalter-Strich als große Zahl — ist kein
+    // Essfenster gesetzt, wird diese Info übersprungen statt "–" zu zeigen.
     let eatFrom = '';
     try { const w = JSON.parse(storageGet('eat16_8') || 'null'); if (w && w.start) eatFrom = w.start; } catch (err) {}
-    infos.push(eatFrom ? { value: eatFrom, label: 'Essfenster ab' } : { value: '–', label: 'Essfenster noch nicht geplant' });
+    if (eatFrom) infos.push({ value: eatFrom, label: 'Essfenster ab' });
   }
 
   let bestGoal = null, bestStreak = 0, bestUnit = 'Tage';
@@ -4165,7 +4167,8 @@ function buildSammlungBadges() {
             <span class="h-meta" style="font-size:11px;text-align:center">${escapeHtml(g.title)}${g.paused ? ' · pausiert' : ''}</span>
           </button>
         `).join('') + `</div>`
-      : `<div class="h-meta" style="margin:16px 0">Noch keine Ziele.</div>`;
+      : `<div class="h-meta" style="margin:16px 0 10px">Noch kein Ziel in ${escapeHtml(c.label)}.</div>
+         <button type="button" class="h-pill h-pill--outline" style="min-height:40px;padding:0 18px;font-size:14px" onclick="goToGoalEditor(null,'${c.id}')">+ Ziel anlegen</button>`;
     html += sammlungSection(c.id, c.label, body);
   });
 
@@ -5010,7 +5013,7 @@ function resetPlayer() {
   _playerState.running = false;
   _playerState.elapsedAtPause = 0;
   _playerState.lastPopRemaining = null;
-  document.getElementById('player-start-btn').textContent = 'Start';
+  document.getElementById('player-start-btn').textContent = 'Übung starten';
   document.getElementById('player-start-btn').style.display = '';
   document.getElementById('player-reset-btn').style.display = '';
   document.getElementById('player-done-btns').style.display = 'none';
@@ -5062,6 +5065,7 @@ async function finishPlayerExercise() {
   else if (seq.completionAward) awardXP(seq.completionAward.key, seq.completionAward.amount, seq.completionAward.label, { scope: 'day', silent: true });
 
   _playerState.pendingUnlocks = unlocked;
+  document.getElementById('player-done-btn').textContent = seq ? 'Routine beenden' : 'Zur Sammlung';
   document.getElementById('player-done-btns').style.display = 'flex';
 }
 
@@ -5108,7 +5112,7 @@ function startStandaloneExercise(ex) {
     ? ex.details.pattern.map(p => `${p.sec} s ${p.label.toLowerCase()}`).join(', ')
     : Math.max(1, Math.round((ex.details.durationSec || 60) / 60)) + ' Min';
   document.getElementById('player-steps-bar').style.display = 'none';
-  document.getElementById('player-start-btn').textContent = 'Start';
+  document.getElementById('player-start-btn').textContent = 'Übung starten';
   document.getElementById('player-start-btn').style.display = '';
   document.getElementById('player-reset-btn').style.display = '';
   document.getElementById('player-done-btns').style.display = 'none';
@@ -5205,7 +5209,7 @@ function loadPlayerStep(idx) {
     applyStepText();
   }
 
-  document.getElementById('player-start-btn').textContent = 'Start';
+  document.getElementById('player-start-btn').textContent = 'Übung starten';
   document.getElementById('player-start-btn').style.display = '';
   document.getElementById('player-reset-btn').style.display = '';
   document.getElementById('player-done-btns').style.display = 'none';
@@ -5893,7 +5897,8 @@ function openGoalSheet(goalId = null) {
         rhythm: existing.rhythm, time: existing.time || '', xp: existing.xp || 10, notify: !!existing.notify,
         active: !existing.paused, hasTimer: !!existing.hasTimer, timerMin: existing.timerMin || 5,
       }
-    : { id: null, title: '', category: 'koerper', icon: 'schritte', drawing: null, isDrawMode: false, rhythm: 'taeglich', time: '', xp: 10, notify: false, active: true, hasTimer: false, timerMin: 5 };
+    : { id: null, title: '', category: _goalEditorPresetCategory || 'koerper', icon: 'schritte', drawing: null, isDrawMode: false, rhythm: 'taeglich', time: '', xp: 10, notify: false, active: true, hasTimer: false, timerMin: 5 };
+  _goalEditorPresetCategory = null;
   _goalSheetRoute = 'ziel/' + (goalId || 'neu');
   const draft = loadDraft(_goalSheetRoute);
   if (draft) _goalSheetState = Object.assign({}, _goalSheetState, draft);
@@ -6064,6 +6069,7 @@ function openItemEditor(id, newType) {
         schedule: { days: [] }, xp: 10, notify: false, active: true, details: {}, order: undefined };
 
   document.getElementById('ie-title-label').textContent = existing ? 'Item bearbeiten' : 'Neues Item';
+  document.getElementById('ie-save-btn').textContent = `${ITEM_TYPE_LABELS[_ieDraft.type] || 'Eintrag'} speichern`;
   document.getElementById('ie-title').value = _ieDraft.title || '';
   document.getElementById('ie-dose').value = _ieDraft.dose || '';
   document.getElementById('ie-time').value = _ieDraft.time || '';
@@ -7370,7 +7376,12 @@ const EDITOR_ROUTES = {
 // leerem Hash immer stur auf Heute zu gehen — sonst würde z.B. Speichern
 // eines aus Setup heraus geöffneten Ziels ungewollt auf Heute zurückwerfen.
 let _editorOriginPage = null;
-function goToGoalEditor(id) { _editorOriginPage = currentPage; navigateTo('ziel/' + (id || 'neu')); }
+let _goalEditorPresetCategory = null;
+function goToGoalEditor(id, presetCategory) {
+  _editorOriginPage = currentPage;
+  _goalEditorPresetCategory = presetCategory || null;
+  navigateTo('ziel/' + (id || 'neu'));
+}
 function goToRoutineEditor(id) { _editorOriginPage = currentPage; navigateTo('routine/' + (id || 'neu')); }
 function goToExerciseEditor(id) { _editorOriginPage = currentPage; navigateTo('uebung/' + (id || 'neu')); }
 
