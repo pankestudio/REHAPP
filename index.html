@@ -206,6 +206,20 @@ body {
   .h-toc-item { padding: 10px 0; font-size: 14px; color: var(--muted); cursor: pointer; border-bottom: 1px solid var(--line); }
   .h-toc-item:hover { color: var(--ink); }
   #pg-supp.active > .h-section, #pg-settings.active > .h-section { grid-column: 2; max-width: 70ch; }
+
+  /* Ziel-/Routinen-/Übungs-Editor — eigene Seiten mit Route (UX-Audit
+     Block 5), auf dem Desktop als rechtes Detail-Panel statt Vollbild-
+     Sheet. Funktioniert unabhängig davon, ob der Editor von Heute oder
+     von Setup aus geöffnet wurde (anders als Sammlungs-Detail oder
+     Übungen-Detail, die als Grid-Spalte IHRER jeweils einen Ursprungsseite
+     eingebunden sind) — ein fest angedocktes Panel statt Grid-Spalte, da
+     die drei Editoren aus zwei unterschiedlich aufgebauten Seiten kommen.
+     Die ursprüngliche .h-sheet-overlay-Vollbild-Regel (inset:0) bleibt für
+     Mobil/Tablet unverändert; hier wird nur die linke Seite geöffnet. */
+  #goal-sheet-overlay.open, #routine-editor-overlay.open, #exercise-editor-overlay.open {
+    top: 0; right: 0; bottom: 0; left: auto; width: 480px; max-width: 42vw;
+    border-left: 1px solid var(--ink);
+  }
 }
 
 /* ════════════════ APPHEADER ════════════════ */
@@ -832,11 +846,11 @@ button[aria-pressed]:active { transform: scale(.96); }
   <!-- ZIEL-SHEET (Phase 5): Erstellen + Bearbeiten, Vollbild-Overlay -->
   <div class="h-sheet-overlay" id="goal-sheet-overlay" role="dialog" aria-modal="true" aria-label="Ziel bearbeiten" style="z-index:615">
     <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
-      <div class="h-header">
-        <div class="h-title" id="gs-title" style="font-size:24px">Neues Ziel</div>
-        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeGoalSheet()" aria-label="Schließen">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+      <div class="h-header" style="justify-content:flex-start;gap:16px">
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeGoalSheet()" aria-label="Zurück">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
+        <div class="h-title" id="gs-title" style="font-size:24px">Neues Ziel</div>
       </div>
 
       <div id="gs-active-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
@@ -1077,11 +1091,11 @@ button[aria-pressed]:active { transform: scale(.96); }
   <!-- ÜBUNG BEARBEITEN (Phase 8): Sheet über Einstellungen -->
   <div class="h-sheet-overlay" id="exercise-editor-overlay" role="dialog" aria-modal="true" aria-label="Übung bearbeiten" style="z-index:620">
     <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
-      <div class="h-header">
-        <div class="h-title" id="ee-sheet-title" style="font-size:24px">Übung bearbeiten</div>
-        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeExerciseEditor()" aria-label="Schließen">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+      <div class="h-header" style="justify-content:flex-start;gap:16px">
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeExerciseEditor()" aria-label="Zurück">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
+        <div class="h-title" id="ee-sheet-title" style="font-size:24px">Übung bearbeiten</div>
       </div>
 
       <div style="margin-bottom:20px">
@@ -1163,12 +1177,12 @@ button[aria-pressed]:active { transform: scale(.96); }
 
   <div class="h-section" data-section-key="move:routinen" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('move:routinen')"><div class="h-section-title">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:routinen"><div>
     <div class="h-list" id="ue-routine-list" style="margin-top:12px"></div>
-    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="openRoutineEditor(null)">+ Routine</button>
+    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToRoutineEditor(null)">+ Routine</button>
   </div></div></div>
 
   <div class="h-section" data-section-key="move:atmung"><div class="h-section-row" onclick="toggleSection('move:atmung')"><div class="h-section-title">Atmung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:atmung"><div>
     <div class="h-list" id="ue-atmung-list" style="margin-top:12px"></div>
-    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="openExerciseEditor(null)">+ Übung</button>
+    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToExerciseEditor(null)">+ Übung</button>
   </div></div></div>
 
   <div class="h-section" data-section-key="move:protokolle"><div class="h-section-row" onclick="toggleSection('move:protokolle')"><div class="h-section-title">Protokolle</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:protokolle"><div>
@@ -1194,7 +1208,7 @@ button[aria-pressed]:active { transform: scale(.96); }
 
   <div class="h-section" data-section-key="move:einzeluebungen"><div class="h-section-row" onclick="toggleSection('move:einzeluebungen')"><div class="h-section-title">Einzelübungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:einzeluebungen"><div>
     <div class="h-list" id="ue-list" style="margin-top:12px"></div>
-    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="openExerciseEditor(null)">+ Übung</button>
+    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToExerciseEditor(null)">+ Übung</button>
 
     <div class="h-list" id="ue-extra-list">
       <div class="h-row" data-collapse-id="vagus" onclick="toggleCollapse('vagus')">
@@ -1548,12 +1562,12 @@ button[aria-pressed]:active { transform: scale(.96); }
 
   <div class="h-section" data-section-key="settings:routinen"><div class="h-section-row" onclick="toggleSection('settings:routinen')"><div class="h-section-title" style="font-size:28px">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:routinen"><div>
     <div class="h-list" id="set-routine-list" style="margin-top:12px"></div>
-    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="openRoutineEditor(null)">+ Routine</button>
+    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToRoutineEditor(null)">+ Routine</button>
   </div></div></div>
 
   <div class="h-section" data-section-key="settings:uebungen"><div class="h-section-row" onclick="toggleSection('settings:uebungen')"><div class="h-section-title" style="font-size:28px">Übungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:uebungen"><div>
     <div class="h-list" id="set-exercise-list" style="margin-top:12px"></div>
-    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="openExerciseEditor(null)">+ Übung</button>
+    <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToExerciseEditor(null)">+ Übung</button>
   </div></div></div>
 
   <div class="h-section" data-section-key="settings:ziele"><div class="h-section-row" onclick="toggleSection('settings:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Sektion ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:ziele"><div>
@@ -1621,11 +1635,11 @@ button[aria-pressed]:active { transform: scale(.96); }
 <!-- ROUTINE-SHEET: Uhrzeit, Schritte, Mini-Version -->
   <div class="h-sheet-overlay" id="routine-editor-overlay" role="dialog" aria-modal="true" aria-label="Routine bearbeiten">
     <div class="h-sheet-body">
-      <div class="h-sheet-head">
-        <div class="h-title" id="re-title">Routine</div>
-        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeRoutineEditor()" aria-label="Schließen">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+      <div class="h-sheet-head" style="justify-content:flex-start;gap:16px">
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeRoutineEditor()" aria-label="Zurück">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
+        <div class="h-title" id="re-title">Routine</div>
       </div>
 
       <div style="margin-bottom:20px">
@@ -3606,7 +3620,7 @@ function buildHeuteScreen() {
     const existingTitles = new Set(goals.map(g => g.title));
     const available = GOAL_TEMPLATES.filter(t => !existingTitles.has(t.title));
     templatesEl.innerHTML = `<div class="h-meta" style="margin-bottom:10px">Vorlagen</div><div style="display:flex;flex-wrap:wrap;gap:8px">` +
-      `<button class="h-pill h-pill--shadow" style="min-height:40px;padding:0 18px;font-size:14px" onclick="openGoalSheet()">+ Eigenes Ziel</button>` +
+      `<button class="h-pill h-pill--shadow" style="min-height:40px;padding:0 18px;font-size:14px" onclick="goToGoalEditor()">+ Eigenes Ziel</button>` +
       available.slice(0, 4).map(t => `<button class="h-pill h-pill--outline" style="min-height:40px;padding:0 18px;font-size:14px" onclick="addGoalFromTemplate('${slugifyId(t.title)}')">${escapeHtml(t.title)}</button>`).join('') +
       `</div>` +
       (available.length > 4 ? `<div class="h-row" style="cursor:pointer;border-bottom:none;padding:10px 0 0" onclick="openAllTemplatesSheet()"><div class="h-row-body"><div class="h-meta">Alle Vorlagen ›</div></div></div>` : '');
@@ -5315,7 +5329,7 @@ function buildSetExerciseList() {
   if (!el) return;
   const exercises = getItems({ type: 'exercise' });
   el.innerHTML = exercises.length ? exercises.map((ex) => `
-    <div class="h-row" id="setrow-uebung-${ex.id}" onclick="openExerciseEditor('${ex.id}')">
+    <div class="h-row" id="setrow-uebung-${ex.id}" onclick="goToExerciseEditor('${ex.id}')">
       <div class="h-row-body">
         <div class="h-row-title">${escapeHtml(ex.title)}${ex.active ? '' : ' (inaktiv)'}</div>
         <div class="h-row-meta">${formatMMSS(ex.details.durationSec || 0)} min</div>
@@ -5336,6 +5350,7 @@ function moveExercise(id, dir) {
 const EXERCISE_PHASE_LABELS = ['Einatmen', 'Halten', 'Ausatmen', 'Halten'];
 
 let _exerciseEditorState = null;
+let _exerciseEditorRoute = null;
 function openExerciseEditor(id) {
   const ex = id ? getItems({ type: 'exercise' }).find(e => e.id === id) : null;
   const d = ex ? ex.details : {};
@@ -5353,6 +5368,15 @@ function openExerciseEditor(id) {
     linkedGoalId: d.linkedGoalId || '',
     active: ex ? ex.active : true,
   };
+  _exerciseEditorRoute = 'uebung/' + (id || 'neu');
+  const draft = loadDraft(_exerciseEditorRoute);
+  if (draft) _exerciseEditorState = Object.assign({}, _exerciseEditorState, draft);
+  startDraftAutosave(_exerciseEditorRoute, () => Object.assign({}, _exerciseEditorState, {
+    title: document.getElementById('ee-name').value,
+    cue: document.getElementById('ee-cue').value,
+    anleitung: document.getElementById('ee-anleitung').value,
+    linkedGoalId: document.getElementById('ee-goal').value,
+  }));
   document.getElementById('ee-sheet-title').textContent = ex ? 'Übung bearbeiten' : 'Neue Übung';
   document.getElementById('ee-name').value = _exerciseEditorState.title;
   document.getElementById('ee-cue').value = _exerciseEditorState.cue;
@@ -5367,7 +5391,8 @@ function openExerciseEditor(id) {
   updateExerciseActiveSwitch();
   document.getElementById('exercise-editor-overlay').classList.add('open');
 }
-function closeExerciseEditor() { document.getElementById('exercise-editor-overlay').classList.remove('open'); }
+function closeExerciseEditorUI() { document.getElementById('exercise-editor-overlay').classList.remove('open'); stopDraftAutosave(); }
+function closeExerciseEditor() { closeEditorViaRoute('uebung'); }
 
 function setExerciseEditorKind(kind, opts = {}) {
   _exerciseEditorState.kind = kind;
@@ -5506,6 +5531,7 @@ async function saveExerciseFromEditor() {
     : { ...existing, title: name, active: st.active, details: { ...existing.details, ...details } };
 
   await saveItem(item);
+  clearDraft(_exerciseEditorRoute);
   closeExerciseEditor();
   buildSetExerciseList();
   buildUebungenList();
@@ -5522,6 +5548,7 @@ function deleteExerciseFromEditor() {
     confirmLabel: 'Übung löschen',
     onConfirm: async () => {
       await deleteItem(id);
+      clearDraft(_exerciseEditorRoute);
       closeExerciseEditor();
       buildSetExerciseList();
       buildUebungenList();
@@ -5538,7 +5565,7 @@ function buildSetGoalsList() {
   const archived = getGoals({ archived: true });
   const counters = getCounters();
   let html = active.length ? active.map(g => `
-    <div class="h-row" id="setrow-ziel-${g.id}" ${g.kind ? '' : `onclick="openGoalSheet('${g.id}')"`}>
+    <div class="h-row" id="setrow-ziel-${g.id}" ${g.kind ? '' : `onclick="goToGoalEditor('${g.id}')"`}>
       <div style="flex-shrink:0">${renderBadge({ cat: g.category, tier: computeTier(g), icon: g.icon, drawing: g.drawing, size: 28 })}</div>
       <div style="flex:1">${escapeHtml(g.title)}${g.kind === 'routine' ? ' · Routine' : g.kind === 'checkin' ? ' · Check-in' : ''}</div>
       ${!g.kind ? `<button type="button" class="h-pill h-pill--outline" style="min-height:32px;padding:0 14px;font-size:12px;flex-shrink:0" onclick="event.stopPropagation();pauseGoal('${g.id}')">Pausieren</button>` : ''}
@@ -5627,6 +5654,7 @@ const GOAL_RHYTHMS = [
 ];
 
 let _goalSheetState = null;
+let _goalSheetRoute = null;
 let _gsDrawing = false;
 let _gsRawStroke = [];
 let _gsCanvasCtx = null;
@@ -5866,7 +5894,14 @@ function openGoalSheet(goalId = null) {
         active: !existing.paused, hasTimer: !!existing.hasTimer, timerMin: existing.timerMin || 5,
       }
     : { id: null, title: '', category: 'koerper', icon: 'schritte', drawing: null, isDrawMode: false, rhythm: 'taeglich', time: '', xp: 10, notify: false, active: true, hasTimer: false, timerMin: 5 };
+  _goalSheetRoute = 'ziel/' + (goalId || 'neu');
+  const draft = loadDraft(_goalSheetRoute);
+  if (draft) _goalSheetState = Object.assign({}, _goalSheetState, draft);
   _goalSheetState.iconGroup = iconGroupFor(_goalSheetState.category);
+  startDraftAutosave(_goalSheetRoute, () => Object.assign({}, _goalSheetState, {
+    title: document.getElementById('gs-name').value,
+    time: document.getElementById('gs-time').value,
+  }));
 
   document.getElementById('gs-title').textContent = existing ? 'Ziel bearbeiten' : 'Neues Ziel';
   document.getElementById('gs-name').value = _goalSheetState.title;
@@ -5918,9 +5953,11 @@ function adjustGoalSheetTimerMin(delta) {
   updateGoalSheetTimerUI();
 }
 
-function closeGoalSheet() {
+function closeGoalSheetUI() {
   document.getElementById('goal-sheet-overlay').classList.remove('open');
+  stopDraftAutosave();
 }
+function closeGoalSheet() { closeEditorViaRoute('ziel'); }
 
 async function saveGoalFromSheet() {
   const name = document.getElementById('gs-name').value.trim();
@@ -5948,6 +5985,7 @@ async function saveGoalFromSheet() {
     since: prior ? prior.since : undefined,
   };
   await saveGoal(goal);
+  clearDraft(_goalSheetRoute);
   closeGoalSheet();
   buildHeuteScreen();
   toast(prior ? 'Ziel aktualisiert' : 'Ziel angelegt');
@@ -5962,6 +6000,7 @@ function archiveGoalFromSheet() {
     confirmLabel: 'Archivieren',
     onConfirm: async () => {
       await archiveGoal(id);
+      clearDraft(_goalSheetRoute);
       closeGoalSheet();
       buildHeuteScreen();
       toast('Ziel archiviert');
@@ -6197,7 +6236,7 @@ function buildSetRoutineList() {
   if (!el) return;
   const routines = sortGoalsForHeute(getActiveHeuteGoals().filter(g => g.kind === 'routine'));
   el.innerHTML = routines.map(g => `
-    <div class="h-row" id="setrow-routine-${g.id}" onclick="openRoutineEditor('${g.id}')">
+    <div class="h-row" id="setrow-routine-${g.id}" onclick="goToRoutineEditor('${g.id}')">
       <div class="h-row-body"><div class="h-row-title">${escapeHtml(g.title)}</div><div class="h-row-meta">${escapeHtml(g.time || '—')} · ${g.steps.length} Schritte</div></div>
       <div class="h-row-chevron">›</div>
     </div>
@@ -6205,12 +6244,20 @@ function buildSetRoutineList() {
 }
 
 let _routineEditorState = null;
+let _routineEditorRoute = null;
 function openRoutineEditor(id) {
   const g = id ? getGoal(id) : null;
   _routineEditorState = g
     ? { id: g.id, title: g.title, time: g.time || '', category: g.category || 'koerper', icon: g.icon || 'schritte', pauseSec: g.pauseSec || 5, steps: (g.steps || []).map(s => ({ ...s })), active: !g.paused }
     : { id: null, title: '', time: '', category: 'koerper', icon: 'schritte', pauseSec: 5, steps: [], active: true };
+  _routineEditorRoute = 'routine/' + (id || 'neu');
+  const draft = loadDraft(_routineEditorRoute);
+  if (draft) _routineEditorState = Object.assign({}, _routineEditorState, draft);
   _routineEditorState.iconGroup = iconGroupFor(_routineEditorState.category);
+  startDraftAutosave(_routineEditorRoute, () => Object.assign({}, _routineEditorState, {
+    title: document.getElementById('re-name').value,
+    time: document.getElementById('re-time').value,
+  }));
   document.getElementById('re-title').textContent = g ? 'Routine bearbeiten' : 'Neue Routine';
   document.getElementById('re-name').value = _routineEditorState.title;
   document.getElementById('re-time').value = _routineEditorState.time;
@@ -6224,12 +6271,14 @@ function openRoutineEditor(id) {
   updateRoutineActiveSwitch();
   document.getElementById('routine-editor-overlay').classList.add('open');
 }
-function closeRoutineEditor() {
+function closeRoutineEditorUI() {
   document.getElementById('routine-editor-overlay').classList.remove('open');
+  stopDraftAutosave();
   _routineEditorState = null;
   buildSetRoutineList();
   buildRoutineList();
 }
+function closeRoutineEditor() { closeEditorViaRoute('routine'); }
 function renderRoutineCategories() {
   const el = document.getElementById('re-categories');
   el.innerHTML = GOAL_CATEGORIES.map(c => `
@@ -6339,6 +6388,7 @@ async function saveRoutineFromEditor() {
     createdAt: prior ? prior.createdAt : undefined,
   };
   await saveGoal(goal);
+  clearDraft(_routineEditorRoute);
   closeRoutineEditor();
   buildHeuteScreen();
   toast(prior ? 'Routine aktualisiert' : 'Routine angelegt');
@@ -7251,6 +7301,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateDynamicFavicon();
   window.addEventListener('focus', updateDynamicFavicon);
   window.addEventListener('pageshow', updateDynamicFavicon);
+  // Ein bereits in der URL vorhandener Hash (Deep-Link oder Editor-Route,
+  // UX-Audit Block 5) feuert kein hashchange beim ersten Laden — einmal
+  // manuell anstoßen, damit z.B. #ziel/neu nach einem Reload denselben
+  // Editor samt Entwurf wiederherstellt.
+  if (window.location.hash) handleHashRoute();
 });
 
 // ══════════════ NAV ══════════════
@@ -7291,10 +7346,82 @@ const DEEP_LINK_ROUTES = {
 
 function navigateTo(path) { window.location.hash = path; }
 
+// ══════════════ EDITOR-ROUTEN — UX-Audit Block 5 ══════════════
+// Ziel-/Routinen-/Übungs-Editor sind eigene Seiten mit Route statt reiner
+// Sheets: #ziel/neu, #ziel/{id}, #routine/neu, #routine/{id}, #uebung/neu,
+// #uebung/{id}. Die Trigger (goToGoalEditor() etc.) pushen per navigateTo()
+// einen Hash-Eintrag; handleHashRoute() öffnet darauf den Editor. Der
+// Zurück-Kreis im Editor-Header und jeder Speichern/Löschen/Escape-Pfad
+// ruft weiterhin die ursprüngliche close*()-Funktion — die geht jetzt über
+// closeEditorViaRoute(): läuft die aktuelle Route auf diesen Editor, wird
+// per history.back() zum Ausgangspunkt zurücknavigiert (Browser-Zurück
+// landet dadurch am selben Ort); sonst wird direkt ausgeblendet. Ein
+// Sicherheits-Timeout fängt den Fall ab, dass es keine Historie zum
+// Zurückgehen gibt (z.B. Editor als allererste Seite direkt per URL
+// geöffnet).
+const EDITOR_ROUTES = {
+  ziel:    { overlayId: 'goal-sheet-overlay',     prefixes: ['ziel/', 'setup/ziel/'],       open: id => openGoalSheet(id),     closeUI: () => closeGoalSheetUI() },
+  routine: { overlayId: 'routine-editor-overlay', prefixes: ['routine/', 'setup/routine/'], open: id => openRoutineEditor(id), closeUI: () => closeRoutineEditorUI() },
+  uebung:  { overlayId: 'exercise-editor-overlay',prefixes: ['uebung/', 'setup/uebung/'],   open: id => openExerciseEditor(id),closeUI: () => closeExerciseEditorUI() },
+};
+// Merkt sich die Seite, von der aus der Editor geöffnet wurde (Heute ODER
+// Setup — anders als der alte reine #setup/...-Deep-Link, der immer von
+// Heute kam). handleHashRoute() stellt diese Seite wieder her, statt bei
+// leerem Hash immer stur auf Heute zu gehen — sonst würde z.B. Speichern
+// eines aus Setup heraus geöffneten Ziels ungewollt auf Heute zurückwerfen.
+let _editorOriginPage = null;
+function goToGoalEditor(id) { _editorOriginPage = currentPage; navigateTo('ziel/' + (id || 'neu')); }
+function goToRoutineEditor(id) { _editorOriginPage = currentPage; navigateTo('routine/' + (id || 'neu')); }
+function goToExerciseEditor(id) { _editorOriginPage = currentPage; navigateTo('uebung/' + (id || 'neu')); }
+
+function closeEditorViaRoute(editorKey) {
+  const r = EDITOR_ROUTES[editorKey];
+  const hash = window.location.hash.replace(/^#/, '');
+  const onRoute = r.prefixes.some(p => hash.startsWith(p));
+  if (!onRoute) { r.closeUI(); return; }
+  const hashBefore = window.location.hash;
+  history.back();
+  setTimeout(() => { if (window.location.hash === hashBefore) navigateTo(''); }, 150);
+}
+
+// Entwürfe (Abnahme: "überleben ein Neuladen") — alle 1s unter
+// draft:{route} gesichert, solange ein Editor offen ist; beim Öffnen
+// derselben Route wiederhergestellt; gelöscht nur nach Speichern.
+function saveDraft(route, state) { try { localStorage.setItem('draft:' + route, JSON.stringify(state)); } catch (err) {} }
+function loadDraft(route) { try { const raw = localStorage.getItem('draft:' + route); return raw ? JSON.parse(raw) : null; } catch (err) { return null; } }
+function clearDraft(route) { try { localStorage.removeItem('draft:' + route); } catch (err) {} }
+let _editorDraftInterval = null;
+function startDraftAutosave(route, getState) {
+  stopDraftAutosave();
+  _editorDraftInterval = setInterval(() => saveDraft(route, getState()), 1000);
+}
+function stopDraftAutosave() {
+  if (_editorDraftInterval) clearInterval(_editorDraftInterval);
+  _editorDraftInterval = null;
+}
+
 function handleHashRoute() {
   const hash = window.location.hash.replace(/^#/, '');
-  if (!hash) { if (currentPage !== 'pg-home') showPage('pg-home'); return; }
   const parts = hash.split('/');
+
+  if (parts.length === 2 && EDITOR_ROUTES[parts[0]]) {
+    EDITOR_ROUTES[parts[0]].open(parts[1] === 'neu' ? null : parts[1]);
+  } else {
+    // Keine/eine andere Route aktiv — offene Editoren schließen (Browser-
+    // Zurück/Vorwärts hat die Route verlassen, ohne dass eine close*()-
+    // Funktion selbst schon gelaufen ist).
+    Object.values(EDITOR_ROUTES).forEach(r => {
+      if (document.getElementById(r.overlayId).classList.contains('open')) r.closeUI();
+    });
+  }
+
+  if (!hash) {
+    const origin = _editorOriginPage;
+    _editorOriginPage = null;
+    if (origin && origin !== currentPage) showPage(origin);
+    else if (!origin && currentPage !== 'pg-home') showPage('pg-home');
+    return;
+  }
   if (parts[0] !== 'setup' || parts.length !== 3) return;
   const route = DEEP_LINK_ROUTES[parts[1]];
   const id = parts[2];
