@@ -560,6 +560,21 @@ button[aria-pressed]:active { transform: scale(.96); }
 :root[data-theme="nacht"] .h-wordmark-strike path,
 :root[data-theme="nacht"] .h-wordmark-p path { stroke: var(--yellow); }
 
+/* Startbildschirm (Runde 6a Punkt 2) — Fläche ist IMMER Tusche, auch
+   tagsüber/im Nachtmodus unverändert, deshalb eigene fixe Tokens statt
+   --ink/--paper, die sich mit data-theme="nacht" umdrehen würden. */
+:root { --splash-bg: #14140F; --splash-ink: #F4F3EF; --splash-muted: #A8A496; }
+.h-splash {
+  position: fixed; inset: 0; z-index: 9999; background: var(--splash-bg);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 1; transition: opacity 200ms ease-in;
+}
+.h-splash.h-splash-out { opacity: 0; pointer-events: none; }
+.h-splash-wordmark { --wm-size: 54px; }
+.h-splash .h-wordmark-text, .h-splash .h-wordmark-b { color: var(--splash-ink); }
+.h-splash .h-wordmark-b-struck { color: var(--splash-muted); }
+.h-splash .h-wordmark-strike path, .h-splash .h-wordmark-p path { stroke: var(--yellow); }
+
 /* ════════════════ SEGMENT (Sammlung Abzeichen/Verlauf = h-seg, Sheet unlock) ════════════════ */
 .h-unlock-overlay {
   display: none; position: fixed; inset: 0; z-index: 650;
@@ -624,6 +639,24 @@ button[aria-pressed]:active { transform: scale(.96); }
   <filter id="wb" x="-20%" y="-60%" width="140%" height="220%"><feTurbulence type="fractalNoise" baseFrequency="0.15" numOctaves="1" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2" xChannelSelector="R" yChannelSelector="G"/></filter>
   <pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" stroke="#14140F" stroke-width="1.2"/></pattern>
 </defs></svg>
+<!-- Runde 6a Punkt 2: Startbildschirm "Rehab wird Rehapp" — einmal pro
+     Sitzung, nicht bei Deep-Links. Der Skip-Check läuft synchron direkt
+     hier (nicht erst bei DOMContentLoaded), damit kein Flash entsteht:
+     trifft er zu, wird #h-splash noch vor dem ersten Paint ausgeblendet. -->
+<div class="h-splash" id="h-splash" aria-hidden="true"><div class="h-splash-wordmark" id="h-splash-wordmark"></div></div>
+<script>
+(function () {
+  var skip = false;
+  try {
+    var hash = location.hash.replace(/^#/, '');
+    skip = sessionStorage.getItem('rehapp_splash_shown') === '1'
+      || location.search.indexOf('aktion=') !== -1
+      || /^(setup|ziel|routine|uebung)\//.test(hash);
+    sessionStorage.setItem('rehapp_splash_shown', '1');
+  } catch (err) { skip = true; }
+  if (skip) document.getElementById('h-splash').style.display = 'none';
+})();
+</script>
 <div class="h-shell">
 <nav class="h-rail" id="h-rail" aria-label="Navigation"></nav>
 <nav class="h-sidenav" id="h-sidenav" aria-label="Navigation">
@@ -1779,6 +1812,56 @@ function renderWordmark(size = 30, { drawOnLoad = false } = {}) {
     <span class="h-wordmark-text" aria-hidden="true">REHA</span>
     <span class="h-wordmark-b${drawOnLoad ? '' : ' h-wordmark-b-struck'}" aria-hidden="true">B<svg class="h-wordmark-strike${drawCls}" viewBox="0 0 40 40" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen" d="M1 33C14 23 26 15 39 6" stroke-width="4.6" fill="none" stroke-linecap="round"/></svg></span><svg class="h-wordmark-p${drawCls}" viewBox="0 0 24 32" width="${pW}" height="${pH}" aria-hidden="true" style="transform:rotate(-5deg)"><path class="h-pen" d="M5 30V4C14 2 21 5 20 11C19 17 12 18 6 17" stroke-width="${pStroke}" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="h-wordmark-p${drawCls}" viewBox="0 0 24 32" width="${pW}" height="${pH}" aria-hidden="true" style="transform:rotate(4deg)"><path class="h-pen" d="M5 30V4C14 2 21 5 20 11C19 17 12 18 6 17" stroke-width="${pStroke}" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </span>`;
+}
+
+// Runde 6a Punkt 2: Startbildschirm "Rehab wird Rehapp" — läuft höchstens
+// einmal pro Sitzung (sessionStorage, Skip-Check bereits synchron im
+// Markup gelaufen, bevor dieses Skript überhaupt lädt). Zeichnet B-Durch-
+// strich + die beiden P's zeitlich gestaffelt per drawPenStroke() mit
+// eigener (kürzerer) Dauer, hält kurz, blendet dann zur App aus — blockiert
+// nichts, die App läuft im Hintergrund unabhängig weiter. Ein Tipp
+// überspringt sofort zum Ausblenden.
+function initSplashScreen() {
+  const splash = document.getElementById('h-splash');
+  if (!splash || splash.style.display === 'none') return;
+  const wrap = document.getElementById('h-splash-wordmark');
+  wrap.innerHTML = renderWordmark(54, { drawOnLoad: true });
+  const strikePath = wrap.querySelector('.h-wordmark-strike path');
+  const pPaths = Array.from(wrap.querySelectorAll('.h-wordmark-p path'));
+  const bEl = wrap.querySelector('.h-wordmark-b');
+  const timers = [];
+  const schedule = (fn, ms) => timers.push(setTimeout(fn, ms));
+
+  function dismiss() {
+    timers.forEach(clearTimeout);
+    splash.classList.add('h-splash-out');
+    if (_reducedMotion) splash.style.display = 'none';
+    else setTimeout(() => { splash.style.display = 'none'; }, 200);
+  }
+  splash.addEventListener('click', dismiss, { once: true });
+
+  if (_reducedMotion) {
+    bEl.classList.add('h-wordmark-b-struck');
+    schedule(dismiss, 400);
+    return;
+  }
+
+  // Ausgangszustand: Durchstrich + P's noch ungezeichnet. Der Ruhezustand
+  // ist sonst immer voll sichtbar (Block 1) — hier eine bewusste, zeitlich
+  // auf <1,4s begrenzte Ausnahme für die Choreografie.
+  [strikePath, ...pPaths].forEach(p => {
+    const len = p.getTotalLength();
+    p.style.strokeDasharray = String(len);
+    p.style.strokeDashoffset = String(len);
+  });
+
+  schedule(() => {
+    drawPenStroke(strikePath, 300);
+    schedule(() => bEl.classList.add('h-wordmark-b-struck'), 300);
+  }, 100);
+  schedule(() => drawPenStroke(pPaths[0], 225), 450);
+  schedule(() => drawPenStroke(pPaths[1], 225), 675);
+  schedule(dismiss, 1200);
 }
 
 function renderNavChrome() {
@@ -4747,7 +4830,7 @@ let _wakeLock = null;
 // (Abhaken, Erscheinen, Auswahl) läuft kurz die Zeichen-Animation mit der
 // über getTotalLength() berechneten tatsächlichen Pfadlänge (nicht die
 // pathLength-Normalisierung, die browserabhängig unzuverlässig ist).
-function drawPenStroke(path) {
+function drawPenStroke(path, durationMs = 600) {
   if (!path || typeof path.getTotalLength !== 'function') return;
   if (_reducedMotion) { path.style.strokeDasharray = ''; path.style.strokeDashoffset = ''; return; }
   let len;
@@ -4757,7 +4840,7 @@ function drawPenStroke(path) {
   path.style.strokeDasharray = String(len);
   path.style.strokeDashoffset = String(len);
   path.getBoundingClientRect();
-  path.style.transition = 'stroke-dashoffset 600ms cubic-bezier(.65,0,.35,1)';
+  path.style.transition = `stroke-dashoffset ${durationMs}ms cubic-bezier(.65,0,.35,1)`;
   path.style.strokeDashoffset = '0';
   const onDone = () => {
     path.style.transition = '';
@@ -7364,6 +7447,7 @@ function enhanceAccessibility() {
 // ══════════════ INIT ══════════════
 
 document.addEventListener('DOMContentLoaded', async () => {
+  initSplashScreen();
   renderNavChrome();
   syncNavActive('pg-home');
   const sidenavBrand = document.getElementById('h-sidenav-brand');

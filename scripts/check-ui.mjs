@@ -222,6 +222,11 @@ async function main() {
   page.on('pageerror', e => consoleErrors.push(String(e)));
   page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
 
+  // Runde 6a Punkt 2: der Startbildschirm ist eine bewusste, zeitlich
+  // begrenzte (<1,4s) Design-Ausnahme mit eigener, nicht kippender Farbe —
+  // für die Audits hier soll er erst gar nicht laufen, nicht Teil des zu
+  // prüfenden "echten" App-Zustands.
+  await page.addInitScript(() => { try { sessionStorage.setItem('rehapp_splash_shown', '1'); } catch (err) {} });
   await page.goto(`http://localhost:${PORT}/index.html`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(500);
 
