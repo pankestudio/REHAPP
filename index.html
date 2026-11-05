@@ -8,7 +8,9 @@
 <meta name="apple-mobile-web-app-title" content="REHAPP">
 <meta name="application-name" content="REHAPP">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" id="dynamic-favicon" href="./icons/icon-192.png" sizes="192x192">
+<link rel="icon" id="dynamic-favicon" href="./favicon.svg" type="image/svg+xml">
+<link rel="icon" href="./favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="./favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 <meta name="theme-color" content="#F4F3EF">
 <meta name="description" content="REHAPP — Regenerationsprotokoll als mobile Web-App für Fasten, Bewegung, Supplemente und Heilungs-Gamification.">
@@ -118,8 +120,6 @@ body {
     position: sticky; top: 0; height: 100vh;
   }
   .h-sidenav-brand { margin-bottom: 32px; }
-  .h-sidenav-brand-svg { width: 150px; height: 32px; }
-  .h-sidenav-brand-svg text { fill: var(--ink); }
   .h-sidenav-items { display: flex; flex-direction: column; gap: 2px; flex: 1; }
   /* #h-sidenav-Scope statt bloßer .h-side-item-Klasse: .h-nav-item{flex-
      direction:column} ist eine Basisregel mit derselben Spezifität (0,1,0)
@@ -536,6 +536,30 @@ button[aria-pressed]:active { transform: scale(.96); }
 .h-arrow-open { width: 32px; height: 32px; }
 .h-strike-shaft { height: 12px; }
 
+/* Wortmarke „Rehab → Rehapp" (Runde 6a Punkt 1) — renderWordmark(). */
+.h-wordmark { display: inline-flex; align-items: flex-end; line-height: 1; }
+.h-wordmark-text {
+  font-family: var(--ui); font-weight: 600; font-size: var(--wm-size);
+  letter-spacing: -0.035em; color: var(--ink); line-height: 1;
+}
+.h-wordmark-b {
+  position: relative; display: inline-flex; font-family: var(--ui); font-weight: 600;
+  font-size: var(--wm-size); letter-spacing: -0.035em; color: var(--ink); line-height: 1;
+}
+.h-wordmark-b-struck { color: var(--muted); }
+/* Prozentual zur B-Box statt fester px-Maße aus font-size — ein quadratisches
+   40×40-Viewbox würde bei fester px-Breite über die (schmalere) B-Glyphe
+   hinausragen und in die P's hineinlaufen. */
+.h-wordmark-strike { position: absolute; left: 0; top: 50%; width: 92%; height: 100%; transform: translateY(-50%); pointer-events: none; overflow: visible; }
+.h-wordmark-p { margin-left: calc(var(--wm-size) * 0.015); align-self: flex-end; overflow: visible; }
+/* Stiftfarbe hell --ink, in der Tusche-Nacht --yellow (siehe Punkt 5).
+   data-theme="nacht" ist der einzige CSS-relevante Zustand — "Automatisch"
+   und "Wie das System" (Punkt 5) werten ihre jeweilige Bedingung in JS aus
+   und setzen/entfernen dasselbe Attribut, statt dass CSS selbst zwischen
+   vier Modi unterscheiden müsste. */
+:root[data-theme="nacht"] .h-wordmark-strike path,
+:root[data-theme="nacht"] .h-wordmark-p path { stroke: var(--yellow); }
+
 /* ════════════════ SEGMENT (Sammlung Abzeichen/Verlauf = h-seg, Sheet unlock) ════════════════ */
 .h-unlock-overlay {
   display: none; position: fixed; inset: 0; z-index: 650;
@@ -603,8 +627,7 @@ button[aria-pressed]:active { transform: scale(.96); }
 <div class="h-shell">
 <nav class="h-rail" id="h-rail" aria-label="Navigation"></nav>
 <nav class="h-sidenav" id="h-sidenav" aria-label="Navigation">
-  <div class="h-sidenav-brand" aria-hidden="true">
-    <svg viewBox="0 0 160 34" class="h-sidenav-brand-svg"><text x="2" y="26" font-family="var(--ui)" font-weight="300" font-size="30">REHAPP</text><path class="h-pen h-pen-draw" d="M4 17 L150 17" stroke="var(--ink)" stroke-width="2" fill="none" stroke-linecap="round"/><path class="h-pen h-pen-draw" d="M138 9 L152 17 L138 25" stroke="var(--ink)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div class="h-sidenav-brand" id="h-sidenav-brand">
   </div>
   <div class="h-sidenav-items" id="h-sidenav-items"></div>
   <div class="h-sidenav-foot">
@@ -1739,6 +1762,25 @@ const NAV_ITEMS = [
   { page: 'pg-supp', slug: 'supp', label: 'Wissen', svgAttrs: '', inner: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>' },
   { page: 'pg-settings', slug: 'settings', label: 'Setup', svgAttrs: '', inner: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>' },
 ];
+// Runde 6a Punkt 1: Wortmarke „Rehab → Rehapp" als Komponente aus HTML +
+// Inline-SVG (kein Bild, kein <text> für die P — handgezeichnet). "REHA"
+// getippt, dann ein "B" (getippt, --muted, mit diagonalem Stift-Durchstrich
+// überdeckt), dann zwei handgezeichnete "P"-Pfade leicht gegeneinander
+// verdreht. size = Schriftgröße von REHA/B in px, alle SVGs skalieren
+// proportional mit. drawOnLoad=true (Startbildschirm, Punkt 2) lässt den
+// Durchstrich + die P's einmalig über drawPenStroke() einzeichnen, statt
+// sie wie im Seitenleisten-Einsatz sofort fertig zu zeigen.
+function renderWordmark(size = 30, { drawOnLoad = false } = {}) {
+  const pW = (size * 0.46).toFixed(1);
+  const pH = (size * 0.68).toFixed(1);
+  const pStroke = (size * 0.1).toFixed(2);
+  const drawCls = drawOnLoad ? ' h-wordmark-draw' : '';
+  return `<span class="h-wordmark" style="--wm-size:${size}px" role="img" aria-label="REHAPP">
+    <span class="h-wordmark-text" aria-hidden="true">REHA</span>
+    <span class="h-wordmark-b${drawOnLoad ? '' : ' h-wordmark-b-struck'}" aria-hidden="true">B<svg class="h-wordmark-strike${drawCls}" viewBox="0 0 40 40" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen" d="M1 33C14 23 26 15 39 6" stroke-width="4.6" fill="none" stroke-linecap="round"/></svg></span><svg class="h-wordmark-p${drawCls}" viewBox="0 0 24 32" width="${pW}" height="${pH}" aria-hidden="true" style="transform:rotate(-5deg)"><path class="h-pen" d="M5 30V4C14 2 21 5 20 11C19 17 12 18 6 17" stroke-width="${pStroke}" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="h-wordmark-p${drawCls}" viewBox="0 0 24 32" width="${pW}" height="${pH}" aria-hidden="true" style="transform:rotate(4deg)"><path class="h-pen" d="M5 30V4C14 2 21 5 20 11C19 17 12 18 6 17" stroke-width="${pStroke}" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </span>`;
+}
+
 function renderNavChrome() {
   const bottom = document.getElementById('h-nav-bottom');
   if (bottom) bottom.innerHTML = NAV_ITEMS.map(n => `
@@ -7324,7 +7366,8 @@ function enhanceAccessibility() {
 document.addEventListener('DOMContentLoaded', async () => {
   renderNavChrome();
   syncNavActive('pg-home');
-  drawPenStrokesIn(document.querySelector('.h-sidenav-brand'));
+  const sidenavBrand = document.getElementById('h-sidenav-brand');
+  if (sidenavBrand) sidenavBrand.innerHTML = renderWordmark(30);
   // Gespeicherte Einstellungen sofort anwenden
   const savedFs = storageGet('settings_fontsize');
   if (savedFs) applyFontSize(parseInt(savedFs, 10));
@@ -8356,76 +8399,13 @@ function getCurrentAppUrl() {
   return window.location.href.split('#')[0];
 }
 
-function drawFavicon(mode, progress = 0) {
-  const link = document.getElementById('dynamic-favicon') || document.querySelector('link[rel="icon"]');
-  if (!link) return;
-  let stroke = '#4e6e80';
-  let fill = 'rgba(78,110,128,0.18)';
-  let label = '';
-  let ring = 0;
-
-  if (mode === 'fast-running') {
-    stroke = '#c8dde8';
-    fill = 'rgba(200,221,232,0.08)';
-    ring = Math.max(0.08, Math.min(1, progress));
-    label = 'F';
-  } else if (mode === 'fast-paused') {
-    stroke = '#ffb300';
-    fill = 'rgba(255,179,0,0.10)';
-    ring = 0.28;
-    label = 'P';
-  } else if (mode === 'refeed') {
-    stroke = '#ffb300';
-    fill = 'rgba(255,179,0,0.12)';
-    ring = Math.max(0.08, Math.min(1, progress));
-    label = 'R';
-  } else if (mode === '16_8-open') {
-    stroke = '#00e676';
-    fill = 'rgba(0,230,118,0.10)';
-    ring = 0.88;
-    label = 'E';
-  } else if (mode === '16_8-fast') {
-    stroke = '#ffb300';
-    fill = 'rgba(255,179,0,0.10)';
-    ring = 0.58;
-    label = 'F';
-  }
-
-  const circumference = 2 * Math.PI * 22;
-  const dash = Math.max(10, circumference * ring);
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-      <rect width="64" height="64" rx="16" fill="#101113"/>
-      <circle cx="32" cy="32" r="22" fill="${fill}" stroke="rgba(255,255,255,0.08)" stroke-width="4"/>
-      <circle cx="32" cy="32" r="22" fill="none" stroke="${stroke}" stroke-width="4" stroke-linecap="round"
-        stroke-dasharray="${dash} ${circumference}" transform="rotate(-90 32 32)"/>
-      <text x="32" y="37" text-anchor="middle" font-size="18" font-family="Arial, sans-serif" fill="${stroke}">${label}</text>
-    </svg>`;
-  link.href = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-}
-
-function updateDynamicFavicon() {
-  const refeedUntil = parseInt(storageGet('refeedUntil') || '0', 10);
-  if (refeedUntil > Date.now()) {
-    const remainingPct = (refeedUntil - Date.now()) / REFEED_WINDOW_MS;
-    drawFavicon('refeed', remainingPct);
-    return;
-  }
-  if (timerMode === '16_8') {
-    const st = get16_8Status();
-    drawFavicon(st.inW ? '16_8-open' : '16_8-fast');
-    return;
-  }
-  if (timerStart && timerRunning) {
-    drawFavicon('fast-running', (Date.now() - timerStart) / (100 * 3600000));
-    return;
-  }
-  if (timerStart && !timerRunning) {
-    drawFavicon('fast-paused');
-    return;
-  }
-  drawFavicon('idle');
-}
+// Runde 6a Punkt 1: die alte per-Zustand gezeichnete Favicon (blau/gold,
+// Vor-Hybrid-Palette) überschrieb bei jedem Aufruf das neue statische
+// Marken-Favicon (favicon.svg/32/16, R-Abzeichen) per data:-URI — Funktion
+// bleibt als No-op stehen, damit keiner der vielen Aufrufer angefasst
+// werden muss.
+function drawFavicon() {}
+function updateDynamicFavicon() {}
 
 function exportAppDataText() {
   const today = new Date().toDateString();

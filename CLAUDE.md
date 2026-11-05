@@ -172,9 +172,13 @@ normale Browser-Tabs (siehe `updateInstallStatus()` / persistenter Speicher).
 `npm run deploy` (Netlify CLI) statt Netlify Drop — Drop kann keine Functions
 ausliefern, damit würde Web Push stillschweigend nicht funktionieren.
 Kopiert zusätzlich zu `dist/`:
-  index.html, sw.js, manifest.webmanifest, icons/icon-192.png,
-  icons/icon-512.png, icons/apple-touch-icon.png,
-  fonts/HostGrotesk-latin.woff2, fonts/HostGrotesk-latin-ext.woff2
+  index.html, sw.js, manifest.webmanifest, favicon.svg, favicon-32.png,
+  favicon-16.png, icons/icon-192.png, icons/icon-512.png,
+  icons/apple-touch-icon.png, fonts/HostGrotesk-latin.woff2,
+  fonts/HostGrotesk-latin-ext.woff2
+(Bis Runde 6a kopierten `netlify.toml` und `package.json` die Icons/
+Favicons trotz dieser Checkliste tatsächlich nicht mit — daher die 404s.
+Beide Skripte sind jetzt synchron mit dieser Liste.)
 `netlify/functions/` wird direkt aus dem Repo deployt (nicht über dist/),
 braucht dafür lokal `npm install` in `netlify/functions/` (node_modules dort
 sind gitignored, esbuild bundelt beim Deploy aus dem lokalen node_modules).

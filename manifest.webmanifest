@@ -4,8 +4,8 @@
   "description": "Rehabilitations-Protokoll: CRPS, Fasten, Bewegung, Supplemente.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0f1012",
-  "theme_color": "#0f1012",
+  "background_color": "#14140F",
+  "theme_color": "#F4F3EF",
   "orientation": "portrait",
   "lang": "de",
   "icons": [

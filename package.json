@@ -5,7 +5,7 @@
   "scripts": {
     "validate": "node validate.js",
     "check-ui": "node scripts/check-ui.mjs",
-    "deploy": "mkdir -p dist/fonts && cp index.html sw.js manifest.webmanifest dist/ && cp fonts/*.woff2 dist/fonts/ && npx netlify deploy --prod --dir dist"
+    "deploy": "mkdir -p dist/fonts dist/icons && cp index.html sw.js manifest.webmanifest favicon.svg favicon-32.png favicon-16.png dist/ && cp fonts/*.woff2 dist/fonts/ && cp icons/*.png dist/icons/ && npx netlify deploy --prod --dir dist"
   },
   "devDependencies": {
     "playwright": "^1.48.0"
