@@ -37,7 +37,7 @@ const FORBIDDEN_CLASS_PREFIXES = [
 ];
 const FORBIDDEN_STRINGS = ['LV', '// V3', 'Guten Tag'];
 const ALLOWED_HEX = new Set([
-  '#f4f3ef', '#14140f', '#ffe14d', '#5e5c55', '#8a877e', '#6b6860', '#d9d4c7',
+  '#f4f3ef', '#14140f', '#ffe14d', '#5e5c55', '#6e6b63', '#6b6860', '#d9d4c7',
   '#eae6dc', '#bdb8ac',
 ]);
 
