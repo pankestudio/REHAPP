@@ -98,7 +98,7 @@ body {
     border-right: 1px solid var(--line);
   }
   .h-rail-item { width: 100%; padding: 10px 4px; gap: 6px; }
-  .h-rail-item .h-nav-label { font-size: 11px; text-align: center; }
+  .h-rail-item .h-nav-label { font-size: 12.5px; text-align: center; }
 }
 
 @media (min-width: 1024px) {
@@ -226,9 +226,9 @@ body {
 .h-header { display: flex; justify-content: space-between; align-items: flex-start; padding-top: calc(16px + var(--safe-top)); margin-bottom: 28px; }
 .h-header-left, .h-header-right { display: flex; flex-direction: column; }
 .h-header-right { align-items: flex-end; }
-.h-brand { font-weight: 700; font-size: 14px; }
+.h-brand { font-weight: 600; font-size: 14px; }
 .h-screen-name { font-size: 14px; color: var(--muted); margin-top: 2px; }
-.h-clock { font-weight: 700; font-size: 15px; }
+.h-clock { font-weight: 600; font-size: 15px; }
 .h-date { font-size: 13px; color: var(--muted); margin-top: 2px; }
 .h-heute-title-desktop, .h-heute-clock-desktop { display: none; }
 .h-heute-title-desktop-h { font-weight: 300; font-size: 54px; letter-spacing: -0.02em; line-height: 1; margin-bottom: 8px; }
@@ -262,7 +262,7 @@ body {
 .h-nav-underline { width: 30px; height: 7px; margin-top: -1px; opacity: 0; }
 .h-nav-underline path { stroke: var(--ink); fill: none; stroke-width: 2; stroke-linecap: round; }
 .h-nav-item.active .h-nav-icon svg { stroke: var(--ink); }
-.h-nav-item.active .h-nav-label { color: var(--ink); font-weight: 700; }
+.h-nav-item.active .h-nav-label { color: var(--ink); font-weight: 600; }
 .h-nav-item.active .h-nav-underline { opacity: 1; }
 
 /* ════════════════ TYPOGRAFIE ════════════════ */
@@ -379,7 +379,7 @@ body {
   transition: transform 100ms ease-out;
 }
 .h-seg-btn:active { transform: scale(.96); }
-.h-seg-btn.active { color: var(--ink); font-weight: 700; }
+.h-seg-btn.active { color: var(--ink); font-weight: 600; }
 /* Handgezeichnete Ellipse umkreist die Auswahl (Runde 5c Punkt 2) statt der
    früheren Unterstreichung — inset statt fester Breite, damit sie sich per
    preserveAspectRatio="none" nicht-uniform auf jede Button-Breite streckt. */
@@ -445,7 +445,7 @@ button[aria-pressed]:active { transform: scale(.96); }
 /* ════════════════ NOTICE ════════════════ */
 .h-notice { border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); padding: 16px 0; margin: 16px 0; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
 .h-notice-icon { flex-shrink: 0; margin-top: 2px; }
-.h-notice-title { font-size: 17px; font-weight: 700; }
+.h-notice-title { font-size: 17px; font-weight: 600; }
 .h-notice-text { font-size: 15px; margin-top: 2px; line-height: 1.4; }
 
 /* ════════════════ PLAYER ════════════════
@@ -548,13 +548,13 @@ button[aria-pressed]:active { transform: scale(.96); }
 }
 .h-modal-overlay.open { display: flex; }
 .h-modal-card { width: 100%; max-width: 360px; padding: 24px; background: var(--paper); border: 1px solid var(--ink); }
-.h-modal-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+.h-modal-title { font-size: 20px; font-weight: 600; margin-bottom: 10px; }
 .h-modal-copy { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
 .h-modal-btns { display: flex; gap: 10px; }
 .h-modal-btns .h-pill { flex: 1; }
 .h-chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.h-row-title.current { font-weight: 700; }
-#timer-milestone .h-row.reached .h-text, #timer-milestone .h-row.reached .h-meta { color: var(--ink); font-weight: 700; }
+.h-row-title.current { font-weight: 600; }
+#timer-milestone .h-row.reached .h-text, #timer-milestone .h-row.reached .h-meta { color: var(--ink); font-weight: 600; }
 .phase-seg.active { background: var(--grid); }
 
 </style>
@@ -629,7 +629,7 @@ button[aria-pressed]:active { transform: scale(.96); }
         </div>
       </div>
       <div>
-        <div class="h-text" style="font-weight:700;font-size:16px;margin-bottom:6px">Tagesziele</div>
+        <div class="h-text" style="font-weight: 600;font-size:16px;margin-bottom:6px">Tagesziele</div>
         <div class="h-meta" id="h-done-text">Erledigt · 0 von 8</div>
         <div class="h-meta" id="h-overcome-chip">Überwindung · 0 heute</div>
       </div>
@@ -681,10 +681,10 @@ button[aria-pressed]:active { transform: scale(.96); }
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);margin-bottom:20px">
-        <div class="phase-seg" id="ps0" style="padding:10px 4px;text-align:center;border-right:1px solid var(--line)"><div class="h-text" style="font-size:13px">Start</div><div class="h-meta" style="font-size:11px">0-18h</div></div>
-        <div class="phase-seg" id="ps1" style="padding:10px 4px;text-align:center;border-right:1px solid var(--line)"><div class="h-text" style="font-size:13px">Ketose</div><div class="h-meta" style="font-size:11px">18-48h</div></div>
-        <div class="phase-seg" id="ps2" style="padding:10px 4px;text-align:center;border-right:1px solid var(--line)"><div class="h-text" style="font-size:13px">Autophagie</div><div class="h-meta" style="font-size:11px">48-72h</div></div>
-        <div class="phase-seg" id="ps3" style="padding:10px 4px;text-align:center"><div class="h-text" style="font-size:13px">Stammzellen</div><div class="h-meta" style="font-size:11px">72-100h</div></div>
+        <div class="phase-seg" id="ps0" style="padding:10px 4px;text-align:center;border-right:1px solid var(--line)"><div class="h-text" style="font-size:13px">Start</div><div class="h-meta" style="font-size:12.5px">0-18h</div></div>
+        <div class="phase-seg" id="ps1" style="padding:10px 4px;text-align:center;border-right:1px solid var(--line)"><div class="h-text" style="font-size:13px">Ketose</div><div class="h-meta" style="font-size:12.5px">18-48h</div></div>
+        <div class="phase-seg" id="ps2" style="padding:10px 4px;text-align:center;border-right:1px solid var(--line)"><div class="h-text" style="font-size:13px">Autophagie</div><div class="h-meta" style="font-size:12.5px">48-72h</div></div>
+        <div class="phase-seg" id="ps3" style="padding:10px 4px;text-align:center"><div class="h-text" style="font-size:13px">Stammzellen</div><div class="h-meta" style="font-size:12.5px">72-100h</div></div>
       </div>
       <div class="h-meta" style="margin-bottom:4px">Aktuelle Phase</div>
       <div class="h-text" id="phase-description" style="margin-bottom:24px;line-height:1.5">Timer starten, um den Fortschritt zu tracken.</div>
@@ -910,7 +910,7 @@ button[aria-pressed]:active { transform: scale(.96); }
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;gap:16px">
         <div>
           <div class="h-meta">Erinnerung</div>
-          <div class="h-meta" style="color:var(--faint);font-size:11px;margin-top:2px">Kommt mit dem Erinnerungs-System — wird vorerst nur gespeichert.</div>
+          <div class="h-meta" style="color:var(--faint);font-size:12.5px;margin-top:2px">Kommt mit dem Erinnerungs-System — wird vorerst nur gespeichert.</div>
         </div>
         <button type="button" class="h-pill h-pill--outline" id="gs-notify-btn" style="min-height:40px;padding:0 16px;font-size:14px;flex-shrink:0" onclick="toggleGoalSheetNotify()">Aus</button>
       </div>
@@ -1027,7 +1027,7 @@ button[aria-pressed]:active { transform: scale(.96); }
           <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
         <div class="h-player-step-wrap" id="player-step-wrap">
-          <div class="h-meta" id="player-ctx-label" style="font-weight:700;color:var(--ink)"></div>
+          <div class="h-meta" id="player-ctx-label" style="font-weight: 600;color:var(--ink)"></div>
           <div class="h-meta" id="player-step-label" style="color:var(--faint);min-height:16px"></div>
         </div>
       </div>
@@ -1063,7 +1063,7 @@ button[aria-pressed]:active { transform: scale(.96); }
         <div class="h-phasebar-labels" id="player-phasebar-labels"></div>
       </div>
       <div class="h-player-howto" id="player-howto" style="display:none">
-        <div class="h-meta" style="font-weight:700;color:var(--ink);font-size:14px">So geht's</div>
+        <div class="h-meta" style="font-weight: 600;color:var(--ink);font-size:14px">So geht's</div>
         <div style="font-size:15px;line-height:1.5;margin-top:4px" id="player-howto-text"></div>
         <div class="h-meta" id="player-next-preview" style="margin-top:8px"></div>
       </div>
@@ -3679,7 +3679,7 @@ function renderHeuteLastBadge() {
       <div class="h-heute-last-badge">${badgeSvg}</div>
       <div class="h-heute-last-text">
         <div class="h-meta">Zuletzt verdient</div>
-        <div class="h-text" style="font-weight:700">${escapeHtml(g.title)} · ${tierLabel}</div>
+        <div class="h-text" style="font-weight: 600">${escapeHtml(g.title)} · ${tierLabel}</div>
       </div>
       <div class="h-row-chevron">Sammlung ›</div>
     </div>`;
@@ -4164,7 +4164,7 @@ function buildSammlungBadges() {
       ? `<div class="h-badge-grid">` + list.map(g => `
           <button type="button" onclick="openBadgeDetail('${g.id}')">
             ${renderBadge({ cat: g.category, tier: badgeTierFor(g), icon: g.icon, drawing: g.drawing, size: 84 })}
-            <span class="h-meta" style="font-size:11px;text-align:center">${escapeHtml(g.title)}${g.paused ? ' · pausiert' : ''}</span>
+            <span style="font-size:14px;font-weight:500;color:var(--ink);text-align:center">${escapeHtml(g.title)}${g.paused ? ' · pausiert' : ''}</span>
           </button>
         `).join('') + `</div>`
       : `<div class="h-meta" style="margin:16px 0 10px">Noch kein Ziel in ${escapeHtml(c.label)}.</div>
@@ -4178,7 +4178,7 @@ function buildSammlungBadges() {
   const counterBody = `<div class="h-badge-grid">` + counters.map(c => `
     <button type="button" onclick="openBadgeDetail('${c.id}')">
       ${renderBadge({ cat: 'verzicht', tier: computeCounterTier(c), icon: c.icon, drawing: c.drawing, size: 84 })}
-      <span class="h-meta" style="font-size:11px;text-align:center">${escapeHtml(c.title)} · ${computeCounterDays(c)}d</span>
+      <span style="font-size:14px;font-weight:500;color:var(--ink);text-align:center">${escapeHtml(c.title)} · ${computeCounterDays(c)}d</span>
     </button>
   `).join('') + `</div>`;
   html += sammlungSection('verzicht-zaehler', 'Verzicht-Zähler', counterBody);
@@ -4186,11 +4186,11 @@ function buildSammlungBadges() {
   const systemBody = `<div class="h-badge-grid">
     <button type="button" onclick="openBadgeDetail('sys-overcome')">
       ${renderBadge({ cat: 'mut', tier: sysEarned ? sysEarned.tier : 'gesperrt', icon: 'funke', size: 84 })}
-      <span class="h-meta" style="font-size:11px;text-align:center">Überwunden</span>
+      <span style="font-size:14px;font-weight:500;color:var(--ink);text-align:center">Überwunden</span>
     </button>
     <button type="button" disabled style="cursor:default">
       ${renderBadge({ cat: 'verzicht', tier: hundredDays ? 'glanz' : 'gesperrt', icon: 'funke', size: 84 })}
-      <span class="h-meta" style="font-size:11px;text-align:center">Hundert Tage</span>
+      <span style="font-size:14px;font-weight:500;color:var(--ink);text-align:center">Hundert Tage</span>
     </button>
   </div>`;
   html += sammlungSection('system', 'System', systemBody);
@@ -4626,7 +4626,7 @@ function renderUebungDetailPanel() {
         <div class="h-ue-detail-step">
           <div class="h-ue-detail-step-n">${i + 1}</div>
           <div class="h-ue-detail-step-body">
-            <div class="h-text" style="font-weight:700">${escapeHtml(s.title)}</div>
+            <div class="h-text" style="font-weight: 600">${escapeHtml(s.title)}</div>
             ${getAnleitungFor(s.title, null, s.cue) ? `<div class="h-meta" style="margin-top:4px;line-height:1.5">${escapeHtml(getAnleitungFor(s.title, null, s.cue))}</div>` : ''}
           </div>
           <div class="h-meta">${formatMMSS(s.sec)}</div>
@@ -4636,7 +4636,7 @@ function renderUebungDetailPanel() {
     <div class="h-heute-last-row" style="cursor:default;border-top:1px solid var(--line)">
       <div class="h-heute-last-badge">${renderBadge({ cat: g.category, tier, icon: g.icon, drawing: g.drawing, size: 48 })}</div>
       <div class="h-heute-last-text">
-        <div class="h-text" style="font-weight:700">${escapeHtml(g.title)}</div>
+        <div class="h-text" style="font-weight: 600">${escapeHtml(g.title)}</div>
         <div class="h-meta">${describeBadgeProgress(g, tier)}</div>
       </div>
     </div>
@@ -6493,7 +6493,7 @@ function buildCRPSCalendar() {
     const isToday = d.day === currentDay;
     return `
       <div class="h-row" data-collapse-id="crps-${i}" onclick="toggleCollapse('crps-${i}')">
-        <div class="h-row-lead"><span class="h-text" style="${isToday ? 'font-weight:700' : ''}">${done ? '✓' : d.day}</span></div>
+        <div class="h-row-lead"><span class="h-text" style="${isToday ? 'font-weight: 600' : ''}">${done ? '✓' : d.day}</span></div>
         <div class="h-row-body">
           <div class="h-row-title${isToday ? ' current' : ''}">${escapeHtml(d.title)}</div>
           <div class="h-row-meta">${escapeHtml(d.phase)}</div>
@@ -6660,7 +6660,7 @@ function renderOedemTrend() {
     const h = Math.max(6, Math.round(((e.cm - min) / range) * 40) + 6);
     return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
       <div style="width:100%;background:var(--ink);height:${h}px"></div>
-      <div class="h-meta" style="font-size:11px">${e.date.slice(5)}</div>
+      <div class="h-meta" style="font-size:12.5px">${e.date.slice(5)}</div>
     </div>`;
   }).join('');
   if (textEl && log.length >= 2) {
@@ -6792,7 +6792,7 @@ function buildWater() {
     d.setAttribute('aria-label', '0,4L');
     d.innerHTML = saved.includes(i)
       ? '<svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
-      : '<span style="font-size:11px">0,4</span>';
+      : '<span style="font-size:12.5px">0,4</span>';
     d.onclick = () => {
       const sv = JSON.parse(storageGet('water6_'+today) || '[]');
       const p = sv.indexOf(i);

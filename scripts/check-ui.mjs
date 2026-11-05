@@ -106,6 +106,13 @@ async function auditState(page, label) {
       return '#' + [r, g, b].map(v => parseInt(v, 10).toString(16).padStart(2, '0')).join('');
     }
 
+    // UX-Audit Block 7: kein Text unter 12px, kein Schnitt über 600.
+    const badSizes = new Set();
+    const badWeights = new Set();
+    function hasDirectText(el) {
+      return Array.from(el.childNodes).some(n => n.nodeType === 3 && n.textContent.trim());
+    }
+
     document.querySelectorAll('*').forEach(el => {
       if (el.className && typeof el.className === 'string') {
         el.className.split(/\s+/).filter(Boolean).forEach(cls => {
@@ -119,6 +126,14 @@ async function auditState(page, label) {
       if (cs.fontFamily && !cs.fontFamily.includes('Host Grotesk')) {
         badFonts.add(cs.fontFamily + ' @ ' + (el.id || el.className || el.tagName));
       }
+      if (hasDirectText(el)) {
+        const size = parseFloat(cs.fontSize);
+        const weight = parseInt(cs.fontWeight, 10);
+        const label = el.id || el.className || el.tagName;
+        const text = el.textContent.trim().slice(0, 24);
+        if (size < 12) badSizes.add(`${size}px @ ${label} "${text}"`);
+        if (weight > 600) badWeights.add(`${weight} @ ${label} "${text}"`);
+      }
       ['color', 'backgroundColor', 'borderTopColor'].forEach(prop => {
         const hex = rgbToHexInPage(cs[prop]);
         if (hex && !allowedHex.has(hex)) badColors.add(hex + ' (' + prop + ') @ ' + (el.id || el.className || el.tagName));
@@ -131,6 +146,8 @@ async function auditState(page, label) {
       badFonts: [...badFonts],
       badColors: [...badColors],
       smallTargets: [...smallTargets],
+      badSizes: [...badSizes],
+      badWeights: [...badWeights],
       uppercaseCount,
       text,
     };
@@ -140,6 +157,8 @@ async function auditState(page, label) {
   if (result.badFonts.length) fail(`[${label}] Font ≠ Host Grotesk: ${result.badFonts.join(', ')}`);
   if (result.badColors.length) fail(`[${label}] Farbwerte außerhalb der Tokens: ${result.badColors.join(', ')}`);
   if (result.smallTargets.length) fail(`[${label}] Touch-Ziele unter 44×44px: ${result.smallTargets.join(', ')}`);
+  if (result.badSizes.length) fail(`[${label}] Text unter 12px: ${result.badSizes.join(', ')}`);
+  if (result.badWeights.length) fail(`[${label}] Schriftschnitt über 600: ${result.badWeights.join(', ')}`);
   if (result.uppercaseCount) fail(`[${label}] ${result.uppercaseCount} Element(e) mit text-transform:uppercase`);
   FORBIDDEN_STRINGS.forEach(s => {
     if (result.text.includes(s)) fail(`[${label}] verbotener String im sichtbaren Text: "${s}"`);
