@@ -34,6 +34,9 @@ Medizinisches Rehabilitationsprotokoll, kein Essstörungs-Kontext.
 
 ## Design – verbindlich
 - Referenzbilder liegen in `docs/design/`. Neuere Version gewinnt.
+- Papiere tagsüber über `data-paper` auf `<html>` (`loeschpapier` | `altpapier` | `washi`, Standard ohne Attribut = Plan).
+  Jedes Papier hat eigene Werte für `--paper`, `--grid`, `--line`, `--muted`, `--faint`, `--nav-off` und eine ruhige
+  Struktur (`--paper-tex`). Keine Fasern, keine Flecken. Nachts gilt immer Tusche.
 - **Nur Tokens** aus `:root` in `index.html` (`--paper`, `--ink`, `--yellow`, `--muted`, `--faint`, `--line`, …),
   keine festen Farben in Komponenten. Nachtmodus über `[data-theme="nacht"]`, Text auf Gelb nutzt `--on-yellow`.
 - Gelb (`--yellow`) nur mit Bedeutung: Hauptaktion, Glanz, Überwindung, Atemkreis „jetzt“, „Weg zu Glanz“.

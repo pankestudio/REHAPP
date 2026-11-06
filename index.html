@@ -53,6 +53,8 @@
   // &theme=night|light für Prüfungen und Screenshots (Demo-Speicher ist frisch)
   var th = /[?&]theme=(night|light|auto|system)/.exec(location.search);
   if (th) store.theme_mode = th[1];
+  var pp = /[?&]paper=(plan|loeschpapier|altpapier|washi)/.exec(location.search);
+  if (pp) store.paper = pp[1];
   var has = function (k) { return Object.prototype.hasOwnProperty.call(store, k); };
   var mem = {
     getItem: function (k) { return has(k) ? String(store[k]) : null; },
@@ -81,6 +83,8 @@
       night = start > 300 ? (m >= start || m < 300) : (m >= start && m < 300);
     }
     if (night) document.documentElement.setAttribute('data-theme', 'nacht');
+    var paper = localStorage.getItem('paper');
+    if (paper && paper !== 'plan') document.documentElement.setAttribute('data-paper', paper);
   } catch (e) {}
 })();
 </script>
@@ -132,6 +136,24 @@
 :root[data-theme="nacht"] {
   --paper: #14140F; --ink: #F4F3EF; --muted: #A8A496; --faint: #8E8A7E;
   --nav-off: #8E8A7E; --line: #36352D; --grid: #22211B; --lock: #4F4D44;
+}
+/* Papiere (Setup → Darstellung). Nur tagsüber, nachts bleibt Tusche.
+   Grautöne je Papier nachgedunkelt, damit Text und Tabs ≥ 4,6:1 halten.
+   Struktur als ruhige Wolkigkeit, bewusst ohne Fasern oder Flecken. */
+:root[data-paper="loeschpapier"]:not([data-theme="nacht"]) {
+  --paper: #F2E1DE; --grid: #E8D3CF; --line: #D8C2BE; --muted: #5C5552; --faint: #5E5652; --nav-off: #5E5652;
+  --paper-tex: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='a' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.011' numOctaves='3' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.66 0 0 0 0 0.40 0 0 0 0 0.42 2.6 0 0 0 -1.05'/%3E%3C/filter%3E%3Cfilter id='b' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='1' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.30 0 0 0 0 0.30 1.6 0 0 0 -0.75'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23a)' opacity='0.16'/%3E%3Crect width='300' height='300' filter='url(%23b)' opacity='0.10'/%3E%3C/svg%3E"); --paper-tex-size: 300px 300px;
+}
+:root[data-paper="altpapier"]:not([data-theme="nacht"]) {
+  --paper: #EFE6D3; --grid: #E4D9C2; --line: #D3C6AC; --muted: #5B5548; --faint: #5E574B; --nav-off: #5E574B;
+  --paper-tex: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='m' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.018' numOctaves='3' seed='21' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.42 0 0 0 0 0.22 2.2 0 0 0 -0.9'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23m)' opacity='0.14'/%3E%3C/svg%3E"), radial-gradient(ellipse at 50% 45%, rgba(122, 90, 42, 0) 60%, rgba(122, 90, 42, .14) 100%); --paper-tex-size: 300px 300px, 100% 100%;
+}
+:root[data-paper="washi"]:not([data-theme="nacht"]) {
+  --paper: #F1F0EA; --grid: #E6E5DD; --line: #D6D4CA; --faint: #64615A; --nav-off: #64615A;
+}
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background-image: var(--paper-tex, none); background-size: var(--paper-tex-size, auto);
 }
 .h-theme-fade, .h-theme-fade * {
   transition: background-color var(--dur-m) var(--ease), color var(--dur-m) var(--ease),
@@ -8829,6 +8851,27 @@ function resolveNightTheme(mode, startHHMM, now, systemDark) {
   const m = now.getHours() * 60 + now.getMinutes();
   return start > end ? (m >= start || m < end) : (m >= start && m < end);
 }
+// Papiere: plan (Standard), loeschpapier, altpapier, washi. data-paper auf
+// <html>, die Tokens greifen nur ohne data-theme="nacht".
+const PAPERS = [
+  { id: 'plan', label: 'Plan', meta: 'Glatt, wie bisher' },
+  { id: 'loeschpapier', label: 'Löschpapier', meta: 'Zartrosa, leicht wolkig' },
+  { id: 'altpapier', label: 'Altes Papier', meta: 'Eierschale mit dunklerem Rand' },
+  { id: 'washi', label: 'Washi', meta: 'Hell und leicht kühl' },
+];
+function getPaper() { const v = storageGet('paper'); return PAPERS.some(p => p.id === v) ? v : 'plan'; }
+function applyPaper() {
+  const v = getPaper();
+  if (v === 'plan') document.documentElement.removeAttribute('data-paper');
+  else document.documentElement.setAttribute('data-paper', v);
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', cssToken('--paper'));
+}
+function setPaper(id) {
+  storageSet('paper', id);
+  applyPaper();
+  renderThemeSettings();
+}
+
 function applyTheme(animate = true) {
   const root = document.documentElement;
   const night = resolveNightTheme(getThemeMode(), getThemeAutoStart(), new Date(),
@@ -8840,6 +8883,8 @@ function applyTheme(animate = true) {
     applyTheme._t = setTimeout(() => root.classList.remove('h-theme-fade'), 300);
   }
   if (night) root.setAttribute('data-theme', 'nacht'); else root.removeAttribute('data-theme');
+  const paper = getPaper();
+  if (paper === 'plan') root.removeAttribute('data-paper'); else root.setAttribute('data-paper', paper);
   document.querySelector('meta[name="theme-color"]').setAttribute('content', cssToken('--paper'));
   document.querySelector('meta[name="color-scheme"]').setAttribute('content', night ? 'dark' : 'light');
   if (changed && _goalSheetState) redrawGoalSheetCanvas();
@@ -8860,7 +8905,14 @@ function renderThemeSettings() {
       <label class="h-row-body" for="set-theme-start"><div class="h-row-title">Nacht ab</div><div class="h-row-meta">Vorbelegt mit 90 Min vor der Abendroutine</div></label>
       <input type="time" id="set-theme-start" value="${getThemeAutoStart()}" onchange="setThemeAutoStart(this.value)"
         style="min-height:44px;background:transparent;border:1px solid var(--line);padding:8px 10px;color:var(--ink);font-family:var(--ui);font-size:14px">
-    </div>` : '');
+    </div>` : '') + `
+    <div class="h-meta" style="margin:20px 0 2px">Papier${document.documentElement.getAttribute('data-theme') === 'nacht' ? ' · gilt tagsüber' : ''}</div>
+    <div class="h-list" role="radiogroup" aria-label="Papier">` + PAPERS.map(pp => `
+      <button type="button" class="h-row" role="radio" aria-checked="${pp.id === getPaper()}" onclick="setPaper('${pp.id}')"
+        style="width:100%;background:none;border:none;border-bottom:1px solid var(--line);text-align:left;color:inherit">
+        <div class="h-row-body"><div class="h-row-title">${pp.label}</div><div class="h-row-meta">${pp.meta}</div></div>
+        ${pp.id === getPaper() ? check : ''}
+      </button>`).join('') + `</div>`;
 }
 function setThemeMode(id) {
   storageSet('theme_mode', id);

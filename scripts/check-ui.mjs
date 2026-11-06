@@ -403,6 +403,35 @@ async function sweep(browser, suffix, consoleErrors, vp) {
   const auditState = async (p, label) => { await p.waitForTimeout(700); return auditStateBase(p, label + suffix + '@' + vp.w); };
 
   console.log(`\nBesuche Tabs + Sheets bei ${vp.w}px${suffix ? ' (Nacht)' : ''} …`);
+  // Einklappen muss wirklich einklappen (Runde 6b-Vorlauf): pro Tab jede
+  // Sektion zu- und wieder aufklappen, die Seite muss dabei kürzer werden.
+  // Nur im ersten Durchlauf (390 hell), die Logik hängt nicht am Viewport-Theme.
+  if (!suffix && vp.w === 390) {
+    for (const pg of ['pg-home', 'pg-move', 'pg-sammlung', 'pg-supp', 'pg-settings']) {
+      const bad = await page.evaluate(async pid => {
+        showPage(pid);
+        await new Promise(r => setTimeout(r, 250));
+        const out = [];
+        const heightOf = () => document.getElementById(pid).scrollHeight;
+        for (const sec of document.querySelectorAll(`#${pid} .h-section[data-section-key]`)) {
+          if (!sec.offsetParent) continue;
+          const key = sec.dataset.sectionKey;
+          const wasCollapsed = sec.classList.contains('collapsed');
+          if (wasCollapsed) { toggleSection(key); await new Promise(r => setTimeout(r, 260)); }
+          const open = heightOf();
+          toggleSection(key); await new Promise(r => setTimeout(r, 260));
+          const closed = heightOf();
+          toggleSection(key); await new Promise(r => setTimeout(r, 260));
+          if (wasCollapsed) { toggleSection(key); await new Promise(r => setTimeout(r, 260)); }
+          if (!(closed < open - 10)) out.push(`${key} (offen ${open}px, zu ${closed}px)`);
+        }
+        return out;
+      }, pg);
+      if (bad.length) fail(`[${pg}] Einklappen ohne Wirkung: ${bad.join(', ')}`);
+    }
+    await page.evaluate(() => showPage('pg-home'));
+    await page.waitForTimeout(250);
+  }
   await auditState(page, 'heute');
 
   await page.evaluate(() => openFastenSheet());
