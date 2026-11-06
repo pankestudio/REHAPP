@@ -1383,18 +1383,6 @@ button[aria-pressed]:active { transform: scale(.96); }
         <div class="h-row-body"><div class="h-row-title">Lymphdrainage — Selbst-MLD</div><div class="h-row-meta">7 Schritte mit Einzel-Timer</div></div>
         <div class="h-row-trail">25 Min <span class="h-row-chevron">›</span></div>
       </div>
-      <div class="h-row" data-collapse-id="bfr-info" onclick="toggleCollapse('bfr-info')">
-        <div class="h-row-body"><div class="h-row-title">BFR-Training</div><div class="h-row-meta">Blutflussrestriktion · 5 Schritte</div></div>
-        <div class="h-row-chevron" id="collapse-arrow-bfr-info">›</div>
-      </div>
-    </div>
-    <div id="collapse-body-bfr-info" class="closed">
-      <div class="h-expand-copy">Phase 2 passiv (nur Kompression). Phase 3 aktiv: 30-15-15-15-Schema. GH-Ausschüttung ohne Gelenkbelastung. Fibroblasten-Aktivierung für Kapsel &amp; Bänder.</div>
-      <div class="h-notice" style="cursor:default">
-        <div class="h-notice-icon"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-        <div><div class="h-notice-title">Sicherheit</div><div class="h-notice-text">Manschettendruck 60–80% LOP. Puls distal tastbar lassen. Bei Taubheit, Blaufärbung oder Schmerz sofort lösen.</div></div>
-      </div>
-      <button type="button" class="h-pill" style="width:100%;margin-top:4px" onclick="openBfrProtocolPlayer()">BFR-Protokoll im Player starten</button>
     </div>
   </div></div></div>
 
@@ -1427,16 +1415,8 @@ button[aria-pressed]:active { transform: scale(.96); }
         <div class="h-row-chevron" id="collapse-arrow-wissen-mld">›</div>
       </div>
       <div id="collapse-body-wissen-mld" class="closed">
-        <div class="h-expand-copy">Federleichter Druck ca. 30–40 mmHg. Kein Öl. Immer Richtung Herz. Haut wandern lassen, nicht verschieben.</div>
+        <div class="h-expand-copy">Ganz leichter Druck: Du bewegst nur die Haut, nicht die Muskeln darunter. Etwa so viel, wie eine Münze auf der Handfläche wiegt. Kein Öl, sonst rutscht die Hand, statt die Haut mitzunehmen. Immer in Richtung Herz arbeiten. Den richtigen Druck zeigt dir deine Therapeutin am besten einmal.</div>
         <button type="button" class="h-pill h-pill--outline" style="margin-bottom:16px" onclick="openMldProtocolPlayer()">Im Player starten</button>
-      </div>
-      <div class="h-row" data-collapse-id="wissen-bfr" onclick="toggleCollapse('wissen-bfr')">
-        <div class="h-row-body"><div class="h-row-title">BFR-Training — Hintergrund</div></div>
-        <div class="h-row-chevron" id="collapse-arrow-wissen-bfr">›</div>
-      </div>
-      <div id="collapse-body-wissen-bfr" class="closed">
-        <div class="h-expand-copy">Phase 2 passiv (nur Kompression). Phase 3 aktiv: 30-15-15-15-Schema. GH-Ausschüttung ohne Gelenkbelastung, Fibroblasten-Aktivierung für Kapsel &amp; Bänder. Manschettendruck 60–80% LOP, Puls distal tastbar lassen — bei Taubheit, Blaufärbung oder Schmerz sofort lösen.</div>
-        <button type="button" class="h-pill h-pill--outline" style="margin-bottom:16px" onclick="openBfrProtocolPlayer()">Im Player starten</button>
       </div>
     </div>
   </div></div></div>
@@ -2032,7 +2012,7 @@ const RECIPES = [
     warum: 'Lachs und Walnüsse liefern Omega-3-Fettsäuren, Beeren und Spinat Polyphenole, Avocado Kalium. Mediterrane Kost dieser Art ist in Studien mit niedrigeren Entzündungswerten verbunden.' },
   { title: 'Kollagen-Shake', meta: '5 Min · 1 Glas', tags: ['Kollagen', 'Schnell'],
     ingredients: ['10–15 g Kollagenpeptide (hydrolysiert, Typ I/III)', '150 g Blaubeeren (TK geht)', '½ Banane', '200 ml Kokosdrink ungesüßt', '1 TL frischer Ingwer', 'Saft ½ Zitrone oder ½ Orange'],
-    steps: ['Alles fein mixen und gleich trinken.', 'Am besten etwa 60 Min vor Bewegung oder BFR (siehe Wissen → Kollagen-Timing).'],
+    steps: ['Alles fein mixen und gleich trinken.', 'Am besten etwa 60 Min vor Bewegung (siehe Wissen → Kollagen-Timing).'],
     warum: 'Kollagenpeptide liefern Glycin und Prolin. Vitamin C aus Zitrusfrüchten und Beeren braucht der Körper als Cofaktor für die Kollagenbildung.' },
   { title: 'Golden Milk mit Kurkuma-Paste', meta: '10 Min · Paste für ca. 2 Wochen', tags: ['Entzündungsarm', 'Vorbereiten'],
     ingredients: ['Paste: 4 EL Kurkuma gemahlen', '1 EL Ingwer gemahlen', '1 TL schwarzer Pfeffer frisch gemahlen', '120 ml Wasser', '2 EL Kokosöl', 'Pro Tasse: 1 TL Paste', '250 ml Mandeldrink ungesüßt', '1 Prise Zimt'],
@@ -2389,13 +2369,6 @@ const VAGUS_DRILLS = [
   { title: 'Langer Ausatem', desc: 'Einatmen 4 Sek — Ausatmen 8–10 Sek. 6 Zyklen. Verlängerter Ausatem aktiviert parasympathischen Ast. HRV steigt.', sec: 90 },
 ];
 
-const BFR_STEPS = [
-  { title: 'Manschette anlegen', desc: 'Manschette am oberen Oberschenkel. Druck: 60–80% des Verschlussdrucks (LOP). Kein Taubheitsgefühl, keine bläuliche Verfärbung. Puls distal noch tastbar.', sec: 60 },
-  { title: 'Wadenheben passiv / aktiv', desc: 'Phase 2 (Fasten): nur Kompression, kein Heben. Phase 3 (Refeed): 30 Wdh – Pause 30 Sek – 3x 15 Wdh. Langsam, kontrolliert.', sec: 180 },
-  { title: 'Kniestrecken sitzend', desc: 'Sitzend. Bein langsam strecken, 2 Sek halten, senken. 30-15-15-15 Schema. Metabolischer Stress ohne Gelenkbelastung.', sec: 180 },
-  { title: 'Isometrisches Halten', desc: 'Fußheben gegen leichten Widerstand (Band / Decke). 10 Sek halten, 5 Sek Pause. 8–10 Wdh. Pulsatiler Reiz für Fibroblasten.', sec: 120 },
-  { title: 'Manschette lösen', desc: 'Manschette öffnen. 1–2 Min ruhig liegen. Reaktive Hyperämie beobachten — Kribbeln/Wärme ist normal. Bei Schmerz: Arzt informieren.', sec: 90 },
-];
 
 const MASTERPLAN = [
   {
@@ -5782,9 +5755,6 @@ function openProtocolPlayer(stepsRaw, title, completionAward, after = null) {
 function openMldProtocolPlayer() {
   openProtocolPlayer(MLD_STEPS, 'Lymphdrainage', { key: 'mld_session_' + getLocalDateKey(), amount: 25, label: 'Lymphdrainage abgeschlossen' });
 }
-function openBfrProtocolPlayer() {
-  openProtocolPlayer(BFR_STEPS, 'BFR-Training', { key: 'bfr_session_' + getLocalDateKey(), amount: 25, label: 'BFR abgeschlossen' });
-}
 
 function loadPlayerStep(idx) {
   const seq = _playerState.sequence;
@@ -8440,7 +8410,7 @@ function buildSupplements() {
       <div class="h-row-chevron" id="collapse-arrow-supp-kollagen">›</div>
     </div>
     <div id="collapse-body-supp-kollagen" class="closed">
-      <div class="h-expand-copy">15g Kollagen + 1g Vitamin C exakt 60 Min vor Bewegung / BFR einnehmen — der Serumpeak der Aminosäuren trifft dann auf die mechanische Belastung. Dieser Zeitpunkt maximiert die Kollageneinlagerung in Bänder und Kapsel.</div>
+      <div class="h-expand-copy">15g Kollagen + 1g Vitamin C exakt 60 Min vor Bewegung einnehmen — der Serumpeak der Aminosäuren trifft dann auf die mechanische Belastung. Dieser Zeitpunkt maximiert die Kollageneinlagerung in Bänder und Kapsel.</div>
     </div>`;
   el.innerHTML = html;
 }
