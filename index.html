@@ -7356,7 +7356,7 @@ function confirm168Modal() {
   if (ps) ps.value = start;
   if (pe) pe.value = end;
   awardXP('schedule_16_8', 10, '16:8 Zeitfenster gesetzt', { scope: 'day' });
-  start16_8Mode();
+  start16_8Mode({ silent: true });
   toast(`16:8 aktiv — ${start} bis ${end} Uhr`);
 }
 
@@ -7575,7 +7575,7 @@ function awardXP(actionKey, amount, label, options = {}) {
 
   const current = computeXPState(total);
   if (current.level > previous.level) {
-    flashXPGain(`LEVEL ${current.level}`);
+    flashXPGain(`Level ${current.level}`);
     toast(`Level ${current.level} erreicht`);
     popElement(document.getElementById('xp-level-badge'));
     safeVibrate([20, 30, 20, 30, 45]);
@@ -7907,7 +7907,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }, 30000); // check every 30 seconds
   if (storageGet('16_8_active') === '1') {
     timerMode = '16_8';
-    start16_8Mode();
+    start16_8Mode({ silent: true });
   }
 
   const refeedUntil = parseInt(storageGet('refeedUntil') || '0', 10);
@@ -8090,7 +8090,7 @@ function resetTimer() {
   storageRemove('16_8_active');
   syncPushTimer();
   document.getElementById('timer-display').textContent = '00:00:00';
-  document.getElementById('timer-mode-label').textContent = 'STANDBY';
+  document.getElementById('timer-mode-label').textContent = 'Standby';
   document.getElementById('timer-start-btn').style.display = '';
   document.getElementById('timer-start-btn').textContent = 'Fasten starten';
   document.getElementById('timer-start-btn').onclick = timerAction;
@@ -8116,7 +8116,7 @@ function updateTimer() {
     document.getElementById('timer-start-btn').textContent = '16:8 Aktivieren';
     document.getElementById('timer-start-btn').onclick = start16_8Mode;
     document.getElementById('timer-display').textContent = '100:00:00';
-    document.getElementById('timer-mode-label').textContent = '// 100H ERREICHT';
+    document.getElementById('timer-mode-label').textContent = '100 h erreicht';
     document.getElementById('timer-milestone').style.display = 'none';
     awardXP('fast_100h', 120, '100h abgeschlossen', { scope: 'ever' });
     toast('100h abgeschlossen');
@@ -8148,10 +8148,10 @@ function updateTimer() {
   document.getElementById('ps2').classList.toggle('active', totalH >= 48 && totalH < 72);
   document.getElementById('ps3').classList.toggle('active', totalH >= 72);
   let mode, sub;
-  if (totalH < 18) { mode = '// GLYKOGEN-ABBAU'; sub = `Noch ${Math.ceil(18-totalH)}h bis Ketose`; }
-  else if (totalH < 48) { mode = '// KETOSE AKTIV'; sub = `Noch ${Math.ceil(48-totalH)}h bis Autophagie-Peak`; }
-  else if (totalH < 72) { mode = '// AUTOPHAGIE-PEAK'; sub = `Noch ${Math.ceil(72-totalH)}h bis Stammzellaktivierung`; }
-  else { mode = '// STAMMZELLEN AKTIV'; sub = `Noch ${Math.ceil(100-totalH)}h bis Fastenende`; }
+  if (totalH < 18) { mode = 'Glykogen-Abbau'; sub = `Noch ${Math.ceil(18-totalH)}h bis Ketose`; }
+  else if (totalH < 48) { mode = 'Ketose aktiv'; sub = `Noch ${Math.ceil(48-totalH)}h bis Autophagie-Peak`; }
+  else if (totalH < 72) { mode = 'Autophagie-Peak'; sub = `Noch ${Math.ceil(72-totalH)}h bis Stammzellaktivierung`; }
+  else { mode = 'Stammzellen aktiv'; sub = `Noch ${Math.ceil(100-totalH)}h bis Fastenende`; }
 
   const modeEl = document.getElementById('timer-mode-label');
   if (modeEl && modeEl.textContent !== mode) modeEl.textContent = mode;
@@ -8172,7 +8172,9 @@ function updateTimer() {
 
 // ══════════════ 16:8 ══════════════
 
-function start16_8Mode() {
+// silent: beim App-Start (Wiederherstellen) und wenn der Aufrufer selbst
+// eine Meldung zeigt. Vorher kam "16:8-Modus aktiv" bei JEDEM Öffnen.
+function start16_8Mode({ silent = false } = {}) {
   stopRefeedWindow(true);
   timerMode = '16_8';
   storageSet('16_8_active', '1');
@@ -8185,7 +8187,7 @@ function start16_8Mode() {
   update16_8Display();
   timer16_8Interval = setInterval(update16_8Display, 1000);
   awardXP('start_16_8', 20, '16:8 aktiviert', { scope: 'day' });
-  toast('16:8-Modus aktiv');
+  if (!silent) toast('16:8-Modus aktiv');
   updateDynamicFavicon();
 }
 
@@ -8222,7 +8224,7 @@ function get16_8Status() {
   let diff = cheat ? 0 : (inW ? endM : startM) - nowM;
   if (diff < 0) diff += 1440;
   const hh = Math.floor(diff/60), mm = Math.floor(diff%60), ss = Math.floor((diff%1)*60);
-  return { inW, cheat, cd: cheat ? '— CHEAT DAY —' : `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`, start: s.start, end: s.end };
+  return { inW, cheat, cd: cheat ? 'Cheat Day' : `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`, start: s.start, end: s.end };
 }
 
 function update16_8Display() {
@@ -8230,20 +8232,20 @@ function update16_8Display() {
   document.getElementById('timer-display').textContent = st.cd;
   const modeEl = document.getElementById('timer-mode-label');
   if (st.cheat) {
-    if (modeEl) modeEl.textContent = '// CHEAT DAY';
+    if (modeEl) modeEl.textContent = 'Cheat Day';
   } else {
-    if (modeEl && modeEl.textContent !== (st.inW ? '// ESSFENSTER OFFEN' : '// FASTENZEIT')) {
-      modeEl.textContent = st.inW ? '// ESSFENSTER OFFEN' : '// FASTENZEIT';
+    if (modeEl && modeEl.textContent !== (st.inW ? 'Essfenster offen' : 'Fastenzeit')) {
+      modeEl.textContent = st.inW ? 'Essfenster offen' : 'Fastenzeit';
     }
   }
   const b = document.getElementById('timer-16-8-block');
   if (st.cheat) {
-    b.textContent = 'CHEAT DAY — Kein Fastenfenster heute';
+    b.textContent = 'Cheat Day – kein Fastenfenster heute';
     b.style.borderColor = 'var(--amber)';
     b.style.color = 'var(--amber)';
     b.style.background = 'var(--amb-dim)';
   } else {
-    b.textContent = st.inW ? `ESSEN ERLAUBT  ${st.start} – ${st.end} UHR` : `FASTEN  NÄCHSTES FENSTER ${st.start} UHR`;
+    b.textContent = st.inW ? `Essen erlaubt · ${st.start}–${st.end} Uhr` : `Fasten · nächstes Fenster ${st.start} Uhr`;
     b.style.borderColor = st.inW ? 'var(--green)' : 'var(--amber)';
     b.style.color = st.inW ? 'var(--green)' : 'var(--amber)';
     b.style.background = st.inW ? 'var(--grn-dim)' : 'var(--amb-dim)';
