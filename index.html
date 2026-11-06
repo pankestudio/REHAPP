@@ -13,7 +13,7 @@
 <link rel="icon" href="./favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 <meta name="theme-color" content="#F4F3EF">
-<meta name="description" content="REHAPP — Regenerationsprotokoll als mobile Web-App für Fasten, Bewegung, Supplemente und Heilungs-Gamification.">
+<meta name="description" content="REHAPP – mobile Web-App für Fasten, Bewegung, Supplemente und Heilungs-Gamification.">
 <meta name="color-scheme" content="light">
 <script>
 // Runde 6a Punkt 5: Nachtmodus vor dem ersten Paint setzen, sonst blitzt
@@ -32,7 +32,7 @@
   } catch (e) {}
 })();
 </script>
-<title>REHAPP // Regenerationsprotokoll</title>
+<title>REHAPP</title>
 <style>
 
 @font-face {
@@ -583,6 +583,9 @@ button[aria-pressed]:active { transform: scale(.96); }
    Siehe docs/design/ für die Stift-Filter selbst (w1 etc.). */
 .h-pen { stroke: var(--ink); fill: none; stroke-linecap: round; }
 .h-arrow-open { width: 32px; height: 32px; }
+/* Der Pfeil muss ÜBER der absolut positionierten Kachel liegen,
+   sonst verdeckt die Kachel ihn (Fehler aus Runde 6a). */
+.h-goalrow-arrow svg.h-arrow-open { position: relative; z-index: 1; }
 .h-goalrow-arrow svg.h-goalrow-arrow-tile { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; }
 .h-strike-shaft { height: 12px; }
 
@@ -1827,7 +1830,7 @@ button[aria-pressed]:active { transform: scale(.96); }
         <button type="button" class="h-switch" id="re-active-switch" onclick="toggleRoutineActive()" aria-label="Aktiv"></button>
       </div>
 
-      <button type="button" class="h-pill h-pill--shadow" style="width:100%" onclick="saveRoutineFromEditor()">Routine sichern</button>
+      <button type="button" class="h-pill h-pill--shadow" style="width:100%" onclick="saveRoutineFromEditor()">Routine speichern</button>
     </div>
   </div>
 
@@ -6519,7 +6522,6 @@ function applyFontSize(px) {
 const CONTENT_TYPE_DEFS = [
   { type: 'supplement', label: 'Supplemente' },
   { type: 'exercise',   label: 'Übungen' },
-  { type: 'task',       label: 'Vorlagen' },
 ];
 
 function buildContentEditorPanel() {
@@ -6543,6 +6545,18 @@ function buildContentEditorPanel() {
         ${rowsHtml}
       </div>`;
   }).join('');
+  // Vorlagen sind die Ziel-Vorlagen (GOAL_TEMPLATES), nicht der alte
+  // Inhaltstyp 'task'. Zahl aus derselben Quelle wie "Alle Vorlagen ›" in Heute.
+  const tplSection = `
+      <div style="margin-bottom:20px">
+        <div style="margin-bottom:4px"><span class="h-meta">Vorlagen · ${GOAL_TEMPLATES.length}</span></div>
+        <div class="h-list">
+          <div class="h-row" onclick="openAllTemplatesSheet()">
+            <div class="h-row-body"><div class="h-row-title">Alle Vorlagen</div><div class="h-row-meta">Als Ziel anlegen</div></div>
+            <div class="h-row-chevron">›</div>
+          </div>
+        </div>
+      </div>`;
   return `
     <div style="display:flex;gap:8px;margin-bottom:16px">
       <button type="button" class="h-pill h-pill--outline" style="flex:1" onclick="exportContentItems()">JSON exportieren</button>
@@ -6550,7 +6564,7 @@ function buildContentEditorPanel() {
         <input type="file" accept="application/json" onchange="importContentItems(event)" style="display:none">
       </label>
     </div>
-    ${sections}`;
+    ${sections}${tplSection}`;
 }
 
 let _ieDraft = null;
