@@ -408,8 +408,6 @@ body {
 .h-title    { font-weight: 300; font-size: 40px; letter-spacing: -0.02em; line-height: 1.05; }
 .h-text     { font-weight: 400; font-size: 16px; line-height: 1.4; }
 .h-meta     { font-weight: 400; font-size: 13px; color: var(--muted); }
-.h-muted    { color: var(--muted); }
-.h-faint    { color: var(--faint); }
 
 /* ════════════════ SECTIONTITLE ════════════════ */
 .h-section { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 28px; }
@@ -430,6 +428,13 @@ body {
 .h-section-body { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 200ms ease-out; }
 .h-section-body > div { overflow: hidden; min-height: 0; }
 .h-section.collapsed .h-section-body { grid-template-rows: 0fr; }
+/* In Heute stehen die Listen NEBEN ihrer Sektion (das Desktop-Layout sortiert
+   sie in zwei Spalten um), deshalb klappt der Body allein nichts ein. */
+.h-section[data-section-key="home:ziele"].collapsed ~ #h-goal-list,
+.h-section[data-section-key="home:ziele"].collapsed ~ #h-goal-empty,
+.h-section[data-section-key="home:ziele"].collapsed ~ #h-gelegenheit-list,
+.h-section[data-section-key="home:heute-noch"].collapsed ~ #h-module-list,
+.h-section[data-section-key="home:heute-noch"].collapsed ~ .h-heute-last { display: none; }
 
 /* ════════════════ PILL / CIRCLEBUTTON ════════════════ */
 .h-pill {
@@ -560,7 +565,6 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 .h-badge-grid button:active { transform: scale(.96); }
 button[aria-pressed] { transition: transform 100ms ease-out; }
 button[aria-pressed]:active { transform: scale(.96); }
-.h-badge-lock { color: var(--lock); }
 
 /* ════════════════ SHEET ════════════════ */
 .h-sheet-overlay {
@@ -569,7 +573,6 @@ button[aria-pressed]:active { transform: scale(.96); }
 }
 .h-sheet-overlay.open { display: block; }
 .h-sheet-body { max-width: 480px; margin: 0 auto; padding: calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot)); }
-.h-sheet-handle { width: 36px; height: 4px; background: var(--line); border-radius: 999px !important; margin: 0 auto 20px; }
 .h-sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 .h-sheet-head .h-title { font-size: 26px; }
 
@@ -701,7 +704,6 @@ button[aria-pressed]:active { transform: scale(.96); }
 
 /* ════════════════ MISC HELPERS ════════════════ */
 .h-sep { border-top: 1px solid var(--line); margin: 20px 0; }
-.h-grid-3 { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; }
 .h-toast {
   position: fixed; bottom: calc(96px + var(--safe-bot)); left: 50%; transform: translateX(-50%) translateY(16px);
   background: var(--ink); color: var(--paper); border-radius: 999px !important;
@@ -8635,10 +8637,23 @@ function toggleSection(key) {
   applySectionCollapseVisual(section, collapsed);
   storageSet('collapsed:' + key, collapsed ? '1' : '0');
 }
+// Setup und Wissen starten zugeklappt (Inhaltsverzeichnis statt langer
+// Seite), Heute, Übungen und Sammlung offen. Einmalig werden alte, offen
+// gespeicherte Zustände von Setup/Wissen verworfen, damit die neue
+// Voreinstellung auch auf bestehenden Geräten greift.
+const COLLAPSED_BY_DEFAULT = key => key.startsWith('settings:') || key.startsWith('supp:');
 function restoreSectionCollapseState() {
+  if (storageGet('collapse_defaults_v1') !== '1') {
+    document.querySelectorAll('.h-section[data-section-key]').forEach(section => {
+      const key = section.dataset.sectionKey;
+      if (COLLAPSED_BY_DEFAULT(key)) storageRemove('collapsed:' + key);
+    });
+    storageSet('collapse_defaults_v1', '1');
+  }
   document.querySelectorAll('.h-section[data-section-key]').forEach(section => {
     const key = section.dataset.sectionKey;
-    applySectionCollapseVisual(section, storageGet('collapsed:' + key) === '1');
+    const saved = storageGet('collapsed:' + key);
+    applySectionCollapseVisual(section, saved === null ? COLLAPSED_BY_DEFAULT(key) : saved === '1');
   });
 }
 
