@@ -1637,7 +1637,11 @@ button[aria-pressed]:active { transform: scale(.96); }
   </div>
   <div class="h-toc-desktop" id="settings-toc"></div>
 
-  <div class="h-section" data-section-key="settings:klang" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('settings:klang')"><div class="h-section-title" style="font-size:28px">Klang</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:klang"><div>
+  <div class="h-section" data-section-key="settings:meintag" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('settings:meintag')"><div class="h-section-title" style="font-size:28px">Mein Tag</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:meintag"><div>
+    <div id="set-meintag" style="margin-top:12px"></div>
+  </div></div></div>
+
+  <div class="h-section" data-section-key="settings:klang"><div class="h-section-row" onclick="toggleSection('settings:klang')"><div class="h-section-title" style="font-size:28px">Klang</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:klang"><div>
     <div style="display:flex;align-items:center;gap:12px;margin:16px 0 24px">
       <div class="h-seg" id="set-sound-packs" style="flex:1"></div>
       <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="previewCurrentSoundPack()" aria-label="Vorhören">
@@ -3933,7 +3937,8 @@ function computeBadgeBarFraction(goal, tier) {
 // Wasser: 8 Glas-Slots à 0,4 L (Wasser-Sheet) plus frei addierte Mengen
 // in 0,2-L-Schritten („Als Nächstes", Schnellaktion) unter eigenem Key —
 // so bleiben bestehende Slot-Daten gültig.
-const WATER_TARGET_L = 3;
+// Wasserziel aus Setup → Mein Tag (vorher fest 3 L).
+function getWaterTarget() { const v = parseFloat(storageGet('water_target_l')); return v >= 1 && v <= 6 ? v : 3; }
 function getWaterLiters(dateStr = new Date().toDateString()) {
   const slots = JSON.parse(storageGet('water6_' + dateStr) || '[]').length;
   const extra = parseFloat(storageGet('water_extra_' + dateStr) || '0') || 0;
@@ -3947,7 +3952,7 @@ function addWaterLiters(delta) {
   renderHeuteModuleList();
 }
 function formatLiters(l) { return l.toFixed(1).replace('.', ','); }
-function waterStatusText(prefix) { return `${prefix} · ${formatLiters(getWaterLiters())} / ${WATER_TARGET_L} L`; }
+function waterStatusText(prefix) { return `${prefix} · ${formatLiters(getWaterLiters())} / ${formatLiters(getWaterTarget())} L`; }
 // Ein Glas = 0,2 L, mit 5 s „Rückgängig" — „Als Nächstes" und die
 // Schnellaktion am App-Icon nutzen denselben Weg.
 function logGlassOfWater() {
@@ -4093,7 +4098,7 @@ function collectNextUpState() {
   const supps = getItems({ type: 'supplement', activeOnly: true });
   const doneItems = getItemsDoneToday();
   const counters = [
-    { key: 'wasser', title: 'Wasser', current: getWaterLiters(), target: WATER_TARGET_L, unit: 'L' },
+    { key: 'wasser', title: 'Wasser', current: getWaterLiters(), target: getWaterTarget(), unit: 'L' },
     { key: 'supplemente', title: 'Supplemente', current: supps.filter(s => doneItems.has(s.id)).length, target: supps.length, unit: '' },
   ];
   return { goals, fastEndsAt, counters, snoozed: readNextUpSnoozes() };
@@ -4171,12 +4176,19 @@ function renderHeuteModuleList() {
 
   const waterL = formatLiters(getWaterLiters());
 
+  // Supplemente als ein Kombipunkt für den ganzen Tag (Mein Tag). Die
+  // Meta-Zeile nennt, was in der aktuellen Tageszeit noch offen ist.
   const h = new Date().getHours();
   const suppTab = h < 11 ? 'morning' : h < 15 ? 'midday' : 'evening';
-  const suppLabel = suppTab === 'morning' ? 'Morgens' : suppTab === 'midday' ? 'Mittags' : 'Abends';
-  const suppItems = getItems({ type: 'supplement', time: suppTab, activeOnly: true });
+  const SLOT = { morning: 'Morgens', midday: 'Mittags', evening: 'Abends' };
+  const suppItems = getItems({ type: 'supplement', activeOnly: true });
   const doneToday = getItemsDoneToday();
   const suppDone = suppItems.filter(s => doneToday.has(s.id)).length;
+  const slotOpen = suppItems.filter(s => s.time === suppTab && !doneToday.has(s.id));
+  const suppLabel = suppDone === suppItems.length ? 'Alles genommen'
+    : slotOpen.length === 1 ? `${SLOT[suppTab]}: ${slotOpen[0].title}`
+    : slotOpen.length ? `${SLOT[suppTab]} · ${slotOpen.length} offen` : `${SLOT[suppTab]} erledigt`;
+  const mods = getHeuteModules();
 
   let fastenPct = 0;
   if (timerStart && timerRunning) {
@@ -4184,12 +4196,16 @@ function renderHeuteModuleList() {
     const targetH = timerMode === '16_8' ? 16 : 100;
     fastenPct = Math.min(100, elapsedH / targetH * 100);
   }
-  const waterPct = Math.min(100, parseFloat(waterL.replace(',', '.')) / 3 * 100);
+  const waterPct = Math.min(100, parseFloat(waterL.replace(',', '.')) / getWaterTarget() * 100);
   const suppPct = suppItems.length ? suppDone / suppItems.length * 100 : 0;
 
   // Punkt 6: Titel (Fasten/Wasser/Supplemente) 17px ink, Meta-Zeile 13.5px
   // muted — vorher war alles klein und grau (nur .h-meta).
-  el.innerHTML = `
+  // Mein Tag: Fasten nur bei laufendem Timer (oder immer/nie), Wasser und
+  // Supplemente lassen sich ausblenden. Wasser hat den Glas-Knopf direkt in
+  // der Zeile, die Zeile selbst öffnet weiter das Sheet.
+  el.innerHTML = [
+    mods.fasten ? `
     <div class="h-row" onclick="openFastenSheet()" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer">
       <div style="display:flex;align-items:flex-end;justify-content:space-between">
         <div><div class="h-text" style="font-size:17px">Fasten</div><div class="h-meta" style="font-size:13.5px">${escapeHtml(fastenSub)}</div></div>
@@ -4197,13 +4213,17 @@ function renderHeuteModuleList() {
       </div>
       ${renderBar(fastenPct, 'h-bar--row')}
     </div>
+` : '',
+    mods.wasser ? `
     <div class="h-row" onclick="openWasserSheet()" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer">
-      <div style="display:flex;align-items:flex-end;justify-content:space-between">
-        <div class="h-text" style="font-size:17px">Wasser</div>
-        <div class="h-meta" style="font-size:13.5px;color:var(--ink)">${waterL} / 3 L →</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div><div class="h-text" style="font-size:17px">Wasser</div><div class="h-meta" style="font-size:13.5px">${waterL} / ${formatLiters(getWaterTarget())} L</div></div>
+        <button type="button" class="h-pill h-pill--outline" style="min-height:40px;padding:0 16px;font-size:15px;flex-shrink:0" onclick="event.stopPropagation(); logGlassOfWater()" aria-label="Glas Wasser trinken, plus 0,2 Liter">+ 0,2 L</button>
       </div>
       ${renderBar(waterPct, 'h-bar--row')}
     </div>
+` : '',
+    mods.supp ? `
     <div class="h-row" onclick="openSupplementeSheet()" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;cursor:pointer">
       <div style="display:flex;align-items:flex-end;justify-content:space-between">
         <div><div class="h-text" style="font-size:17px">Supplemente</div><div class="h-meta" style="font-size:13.5px">${suppLabel}</div></div>
@@ -4211,7 +4231,10 @@ function renderHeuteModuleList() {
       </div>
       ${renderBar(suppPct, 'h-bar--row')}
     </div>
-  `;
+` : '',
+  ].join('');
+  const listSec = document.querySelector('.h-section[data-section-key="home:heute-noch"]');
+  if (listSec) listSec.style.display = (mods.fasten || mods.wasser || mods.supp) ? '' : 'none';
   renderNextUp();
 }
 
@@ -6777,7 +6800,132 @@ function importContentItems(e) {
   reader.readAsText(file);
 }
 
+// ══════════════ MEIN TAG (Setup) ══════════════
+// Persönliche Einstellungen an einer Stelle: Tagesrhythmus, was Heute
+// zeigt, Wasserziel, Supplemente. Schlüssel: tag_aufstehen, tag_schlafen,
+// heute_fasten (auto|immer|aus), heute_wasser, heute_supp ('0' = aus),
+// water_target_l.
+function isFastingActive() {
+  return !!(timerStart && timerRunning) || storageGet('16_8_active') === '1';
+}
+function getHeuteModules() {
+  const f = storageGet('heute_fasten') || 'auto';
+  return {
+    fasten: f === 'immer' || (f === 'auto' && isFastingActive()),
+    wasser: storageGet('heute_wasser') !== '0',
+    supp: storageGet('heute_supp') !== '0',
+  };
+}
+function hhmmAdd(hhmm, deltaMin) {
+  const [h, m] = hhmm.split(':').map(Number);
+  const t = ((h * 60 + m + deltaMin) % 1440 + 1440) % 1440;
+  return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
+}
+function getTagRhythmus() {
+  return { auf: storageGet('tag_aufstehen') || '08:00', schlaf: storageGet('tag_schlafen') || '00:00' };
+}
+function previewRhythmus() {
+  const r = getTagRhythmus();
+  return { morgen: hhmmAdd(r.auf, 30), abend: hhmmAdd(r.schlaf, -60), nacht: hhmmAdd(r.schlaf, -150) };
+}
+async function applyRhythmus() {
+  const p = previewRhythmus();
+  const m = getGoal('goal-from-morning'), a = getGoal('goal-abendroutine');
+  if (m) await saveGoal({ ...m, time: p.morgen });
+  if (a) await saveGoal({ ...a, time: p.abend });
+  storageRemove('theme_auto_start');
+  storageSet('theme_auto_default', computeThemeAutoDefault());
+  applyTheme();
+  buildSettings(); buildHeuteScreen();
+  toast(`Morgenroutine ${p.morgen}, Abendroutine ${p.abend}`);
+}
+function setTagZeit(key, value) {
+  if (!/^\d{2}:\d{2}$/.test(value)) return;
+  storageSet(key, value);
+  renderMeinTagSettings();
+}
+function setHeuteFasten(v) { storageSet('heute_fasten', v); renderMeinTagSettings(); renderHeuteModuleList(); }
+function toggleHeuteModul(key) {
+  storageSet(key, storageGet(key) === '0' ? '1' : '0');
+  renderMeinTagSettings(); renderHeuteModuleList();
+}
+function adjustWaterTarget(delta) {
+  const v = Math.min(6, Math.max(1, Math.round((getWaterTarget() + delta) * 4) / 4));
+  storageSet('water_target_l', String(v));
+  renderMeinTagSettings(); renderHeuteModuleList();
+}
+function renderMeinTagSettings() {
+  const el = document.getElementById('set-meintag');
+  if (!el) return;
+  const r = getTagRhythmus(), p = previewRhythmus(), mods = getHeuteModules();
+  const f = storageGet('heute_fasten') || 'auto';
+  const ell = '<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg>';
+  const seg = (v, label) => `<button type="button" class="h-seg-btn${f === v ? ' active' : ''}" aria-pressed="${f === v}" onclick="setHeuteFasten('${v}')">${label}${ell}</button>`;
+  const sw = (key, on, label) => `<button type="button" class="h-switch${on ? ' on' : ''}" role="switch" aria-checked="${on}" aria-label="${label}" onclick="toggleHeuteModul('${key}')"></button>`;
+  const timeIn = (id, key, val) => `<input type="time" id="${id}" value="${val}" onchange="setTagZeit('${key}', this.value)" style="min-height:44px;background:transparent;border:1px solid var(--line);padding:8px 10px;color:var(--ink);font-family:var(--ui);font-size:14px">`;
+  const suppCount = getItems({ type: 'supplement', activeOnly: true }).length;
+  el.innerHTML = `
+    <div class="h-meta" style="margin:4px 0 2px">Tagesrhythmus</div>
+    <div class="h-list">
+      <div class="h-row" style="cursor:default"><label class="h-row-body" for="set-tag-auf"><div class="h-row-title">Aufstehen</div></label>${timeIn('set-tag-auf', 'tag_aufstehen', r.auf)}</div>
+      <div class="h-row" style="cursor:default"><label class="h-row-body" for="set-tag-schlaf"><div class="h-row-title">Schlafengehen</div></label>${timeIn('set-tag-schlaf', 'tag_schlafen', r.schlaf)}</div>
+      <div class="h-row" style="cursor:default;flex-wrap:wrap">
+        <div class="h-row-body"><div class="h-row-title">Routinen danach ausrichten</div><div class="h-row-meta">Morgenroutine ${p.morgen} · Abendroutine ${p.abend} · Nacht ab ${hhmmAdd(p.abend, -90)}</div></div>
+        <button type="button" class="h-pill h-pill--outline" style="min-height:44px;padding:0 16px;font-size:15px" onclick="applyRhythmus()">Zeiten übernehmen</button>
+      </div>
+    </div>
+    <div class="h-meta" style="margin:20px 0 2px">In Heute zeigen</div>
+    <div class="h-list">
+      <div class="h-row" style="cursor:default;flex-wrap:wrap;gap:8px 12px"><div class="h-row-body"><div class="h-row-title">Fasten</div><div class="h-row-meta">${isFastingActive() ? 'Timer läuft' : 'Kein Timer aktiv'}</div></div>
+        <div class="h-seg" role="group" aria-label="Fasten in Heute" style="flex-basis:100%">${seg('auto', 'Wenn aktiv')}${seg('immer', 'Immer')}${seg('aus', 'Aus')}</div></div>
+      <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Wasser</div></div>${sw('heute_wasser', mods.wasser, 'Wasser in Heute zeigen')}</div>
+      <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Supplemente</div></div>${sw('heute_supp', mods.supp, 'Supplemente in Heute zeigen')}</div>
+      ${isFastingActive() ? '' : `<div class="h-row" onclick="openFastenSheet()"><div class="h-row-body"><div class="h-row-title">Fasten starten</div><div class="h-row-meta">16:8 oder 100 h</div></div><div class="h-row-chevron">›</div></div>`}
+    </div>
+    <div class="h-meta" style="margin:20px 0 2px">Wasser</div>
+    <div class="h-list">
+      <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Tagesziel</div><div class="h-row-meta">Ein Glas = 0,2 L</div></div>
+        <div class="h-stepper"><button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustWaterTarget(-0.25)" aria-label="Wasserziel verringern">−</button><div class="h-stepper-val">${formatLiters(getWaterTarget())} L</div><button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustWaterTarget(0.25)" aria-label="Wasserziel erhöhen">+</button></div></div>
+    </div>
+    <div class="h-meta" style="margin:20px 0 2px">Supplemente</div>
+    <div class="h-list">
+      <div class="h-row" onclick="scrollToSection('settings:inhalte')"><div class="h-row-body"><div class="h-row-title">Meine Supplemente</div><div class="h-row-meta">${suppCount} aktiv · Mengen und Uhrzeit im Editor</div></div><div class="h-row-chevron">›</div></div>
+    </div>`;
+}
+
+// Einmalig (supplement_set_v1): die Supplemente auf das Set aus Mein Tag
+// umstellen. Nichts wird gelöscht, nur aktiv/inaktiv gesetzt; Mengen der
+// bestehenden Einträge bleiben, die zwei neuen stehen auf "lt. Packung".
+const SUPP_SET_V1_ACTIVE = ['supp-vitamin-c', 'supp-omega-3-epa-dha', 'supp-kollagen-typ-i-ii', 'supp-magnesium-bisglycinate', 'supp-d3-k2-kombi', 'supp-calcium'];
+async function migrateSupplementSetV1() {
+  if (storageGet('supplement_set_v1') === '1') return;
+  const all = getItems({ type: 'supplement' });
+  const byId = Object.fromEntries(all.map(i => [i.id, i]));
+  const order = Math.max(0, ...all.map(i => i.order || 0));
+  if (!byId['supp-d3-k2-kombi']) {
+    const d3 = byId['supp-vitamin-d3'], k2 = byId['supp-vitamin-k2-mk-7'];
+    const join = f => [d3 && d3.details && d3.details[f], k2 && k2.details && k2.details[f]].filter(Boolean).join(' ');
+    await saveItem({ id: 'supp-d3-k2-kombi', type: 'supplement', title: 'Vitamin D3/K2 (Kombi)', dose: 'lt. Packung', time: 'morning', block: null,
+      schedule: { days: [] }, xp: (d3 && d3.xp) || 5, notify: false, active: true, order: order + 1,
+      details: { mechanism: join('mechanism'), synergy: join('synergy'), caution: join('caution'), natural: join('natural') } });
+  }
+  if (!byId['supp-calcium']) {
+    await saveItem({ id: 'supp-calcium', type: 'supplement', title: 'Calcium', dose: 'lt. Packung', time: 'midday', block: null,
+      schedule: { days: [] }, xp: 5, notify: false, active: true, order: order + 2,
+      details: { mechanism: 'Baustein der Knochensubstanz. Arbeitet mit Vitamin D3 und K2 zusammen.',
+        synergy: 'Vitamin D3 verbessert die Aufnahme, K2 lenkt Calcium in den Knochen.',
+        caution: 'Menge und Einnahmezeit mit der Ärztin abstimmen.',
+        natural: 'Milchprodukte, Sesam, grünes Blattgemüse, calciumreiches Mineralwasser.' } });
+  }
+  for (const it of getItems({ type: 'supplement' })) {
+    const shouldBeActive = SUPP_SET_V1_ACTIVE.includes(it.id);
+    if (it.active !== shouldBeActive) await saveItem({ ...it, active: shouldBeActive });
+  }
+  storageSet('supplement_set_v1', '1');
+}
+
 function buildSettings() {
+  renderMeinTagSettings();
   buildSetRoutineList();
   buildReminderList();
   const contentEl = document.getElementById('set-content-editor');
@@ -6786,7 +6934,7 @@ function buildSettings() {
   if (buildDateEl) buildDateEl.textContent = BUILD_DATE;
 }
 
-const BUILD_DATE = '2026-11-02';
+const BUILD_DATE = '2026-11-06';
 
 function getCountdownPreroll() { return storageGet('player_countdown_preroll') === '1'; }
 function toggleCountdownPreroll() {
@@ -7858,6 +8006,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await initContentStore();
   if (window.REHAPP_DEMO) await loadDemoFixture();
+  await migrateSupplementSetV1();
   await initGoalsStore();
   await seedExercisesIfNeeded();
   await seedAtmungExercisesV2();
