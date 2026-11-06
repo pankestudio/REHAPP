@@ -1,5 +1,5 @@
 [build]
-  command = "mkdir -p dist/fonts dist/icons && cp index.html sw.js manifest.webmanifest favicon.svg favicon-32.png favicon-16.png dist/ && cp fonts/*.woff2 dist/fonts/ && cp icons/*.png dist/icons/"
+  command = "mkdir -p dist/fonts dist/icons && cp index.html sw.js manifest.webmanifest favicon.svg favicon-32.png favicon-16.png dist/ && cp fonts/*.woff2 dist/fonts/ && cp icons/*.png dist/icons/ && mkdir -p dist/tests/fixtures && cp tests/fixtures/demo.json dist/tests/fixtures/"
   publish = "dist"
 
 [functions]

@@ -1,0 +1,2828 @@
+{
+ "app": "REHAPP",
+ "demo": "2026-11-03",
+ "data": {
+  "content_done_2026-11-03": "[\"supp-vitamin-d3\",\"supp-vitamin-k2-mk-7\",\"supp-omega-3-epa-dha\"]",
+  "content_migrated_v1": "1",
+  "backup_before_goals_migration_v1": "{\"at\":\"2026-11-03T11:18:00.071Z\",\"localStorage\":{\"content_done_2026-11-03\":\"[]\",\"content_migrated_v1\":\"1\"},\"items\":[{\"id\":\"supp-vitamin-d3\",\"type\":\"supplement\",\"title\":\"Vitamin D3\",\"dose\":\"5.000 IE\",\"time\":\"morning\",\"block\":null,\"schedule\":{\"days\":[]},\"xp\":8,\"notify\":false,\"active\":true,\"details\":{\"mechanism\":\"Aktiviert Osteoblasten, fördert Kalziumaufnahme. Essentiell für Knochenremineralisierung und Immunmodulation.\",\"synergy\":\"Zwingend mit K2 MK-7 kombinieren. Magnesium für D3-Aktivierung nötig.\",\"caution\":\"Ohne K2 droht Kalziumablagerung in Gefäßen. Fettlöslich — mit Mahlzeit einnehmen.\",\"natural\":\"Fettreicher Fisch (Lachs, Hering, Makrele), Eigelb, UV-exponierte Pilze.\"},\"order\":0},{\"id\":\"supp-vitamin-k2-mk-7\",\"type\":\"supplement\",\"title\":\"Vitamin K2 MK-7\",\"dose\":\"200mcg\",\"time\":\"morning\",\"block\":null,\"schedule\":{\"days\":[]},\"xp\":8,\"notify\":false,\"active\":true,\"details\":{\"mechanism\":\"Aktiviert Osteocalcin — leitet Kalzium aus dem Blut in die Knochenmatrix. Verhindert Gefäßverkalkung.\",\"synergy\":\"Immer mit D3. Synergie mit Magnesium und Kollagen.\",\"caution\":\"Wechselwirkung mit Vitamin-K-Antagonisten (Warfarin) — ärztlich abklären.\",\"natural\":\"Natto (höchste Konzentration), Gouda, Edamer, Eigelb, Butter von Weidetieren.\"},\"order\":1},{\"id\":\"supp-omega-3-epa-dha\",\"type\":\"supplement\",\"title\":\"Omega-3 EPA/DHA\",\"dose\":\"2–3g\",\"time\":\"morning\",\"block\":null,\"schedule\":{\"days\":[]},\"xp\":8,\"notify\":false,\"active\":true,\"details\":{\"mechanism\":\"Hemmt COX-2 und LOX-Enzyme. Stärkster natürlicher Entzündungshemmer. Verbessert Zellmembranfluidität.\",\"synergy\":\"Synergie mit Curcumin und Boswellia für maximale Entzündungshemmung.\",\"caution\":\"Leicht blutverdünnend — im Blick behalten.\",\"natural\":\"Lachs, Makrele, Hering, Sardinen, Walnüsse, Leinsamen, Chiasamen.\"},\"order\":2},{\"id\":\"supp-kollagen-typ-i-ii\",\"type\":\"supplement\",\"title\":\"Kollagen Typ I/II\",\"dose\":\"15g\",\"time\":\"morning\",\"block\":null,\"schedule\":{\"days\":[]},\"xp\":8,\"notify\":false,\"active\":true,\"details\":{\"mechanism\":\"Liefert Glycin, Prolin, Hydroxyprolin für Sehnen, Bänder, Knorpel. Timing: 60 Min VOR Bewegung für maximalen Einbau.\",\"synergy\":\"Zwingend gleichzeitig mit Vitamin C. Silizium unterstützt Quervernetzung.\",\"caution\":\"Ohne mechanische Belastung stark reduzierte Wirkung.\",\"natural\":\"Knochenbrühe (lange gekocht), Hühnerknorpel, Fischsud.\"},\"order\":3},{\"id\":\"supp-vitamin-c\",\"type\":\"supplement\",\"title\":\"Vitamin C\",\"dose\":\"1g\",\"time\":\"morning\",\"block\":null,\"schedule\":{\"days\":[]},\"xp\":8,\"notify\":false,\"active\":true,\"details\":{\"mechanism\":\"Co-Faktor der Kollagensynthese-Enzyme. Antioxidans, schützt Fibroblasten.\",\"synergy\":\"Immer gleichzeitig mit Kollagen einnehmen.\",\"caution\":\"Über 2g täglich kann GI-Beschwerden verursachen.\",\"natural\":\"Paprika, Kiwi, Acerola, Brokkoli, Grünkohl, Zitrusfrüchte.\"},\"order\":4},{\"id\":\"supp-boswellia\",\"type\":\"supplement\",\"title\":\"Boswellia\",\"dose\":\"400mg\",\"time\":\"midday\",\"block\":null,\"schedule\":{\"days\":[]},\"xp\":8,\"notify\":false,\"active\":true,\"details\":{\"mechanism\":\"Hemmt 5-Lipoxygenase (5-LOX) und damit die Bildung von Leukotrienen. Wirkt in Studien bei Gelenkbeschwerden und Ödemen.\",\"synergy\":\"Stärkste Synergie mit Curcumin (unterschiedliche Angriffspunkte).\",\"caution\":\"Mit Mahlzeit einnehmen. Nicht mit Immunsuppressiva kombinieren.\",\"natural\":\"Kein sinnvoller Nahrungsmittelweg — nur als Extrakt wirksam.\"},\"order\":5},{\"id\":\"supp-curcumin-piperin\",\"type\":\"supplement\",\"title\":\"Curcumin + Piperin\",\"dose\":\"500mg\",\"time\":\"midday\",\"block\":null,\"schedule\":{\"days\":[]},\"xp\":8,\"notify\":false,\"active\":true,\"details\":{\"mechanism\":\"Hemmt in Studien NF-kB und COX-2 — zentraler Entzündungs-Transkriptionsfaktor. Piperin verbessert die Bioverfügbarkeit deutlich.\",\"synergy\":\"Piperin zwingend. Synergie mit Boswellia und Omega-3.\",\"caution\":\"Hemmt CYP3A4 — Wechselwirkungen möglich. Separat von Eisen einnehmen.\",\"natural\":\"Kurkuma frisch, schwarzer Pfeffer, Ingwer.\"},\"order\":6},{\"id\":\"supp-zink\",\"type\":\"supplement\",\"title\":\"Zink\",\"dose\":\"15–20mg\",\"time\":\"midday\",\"block\":null,\"schedule\":{\"days\":[]},\"xp\":8,\"notify\":false,\"active\":true,\"details\":{\"mechanism\":\"Co-Faktor von über 300 Enzymen. Essentiell für Wundheilung, Knochenaufbau und Immunfunktion.\",\"synergy\":\"Quercetin als Zink-Ionophor (transportiert Zink in Zellen).\",\"caution\":\"Langfristig >40mg täglich depletiert Kupfer. Nicht mit Eisen zusammen.\",\"natural\":\"Austern, Kürbiskerne, Rinderhack, Linsen, Cashews.\"},\"order\":7},{\"id\":\"supp-quercetin\",\"type\":\"supplement\",\"title\":\"Quercetin\",\"dose\":\"500mg\",\"time\":\"midday\",\"block\":null,\"schedule\":{\"days\":[]},\"xp\":8,\"notify\":false,\"active\":true,\"details\":{\"mechanism\":\"Zink-Ionophor, hemmt Hyaluronidase, antiödematös, antioxidativ.\",\"synergy\":\"Zwingend mit Zink. Bromelain erhöht Quercetin-Absorption.\",\"caution\":\"Kann Schilddrüsenmedikamente beeinflussen.\",\"natural\":\"Kapern, rote Zwiebeln, Äpfel (Schale), Heidelbeeren, Brokkoli.\"},\"order\":8},{\"id\":\"supp-glucosamin-msm\",\"type\":\"supplement\",\"title\":\"Glucosamin + MSM\",\"dose\":\"1500mg + 1000mg\",\"time\":\"midday\",\"block\":null,\"schedule\":{\"days\":[]},\"xp\":8,\"notify\":false,\"active\":true,\"details\":{\"mechanism\":\"Glucosamin: Strukturbaustein für Knorpel und Gelenkkapsel. MSM: Schwefelquelle für Kollagen- und Bindegewebsmatrix.\",\"synergy\":\"Klassische Kombination. Synergie mit Kollagen Typ II.\",\"caution\":\"Glucosamin aus Schalentieren — Allergie beachten. Erst ab Refeeding-Phase.\",\"natural\":\"Knochenbrühe (Glucosamin). Knoblauch, Zwiebeln, Eier, Brokkoli (Schwefel/MSM).\"},\"order\":9},{\"id\":\"supp-magnesium-bisglycinate\",\"type\":\"supplement\",\"title\":\"Magnesium Bisglycinate\",\"dose\":\"400mg\",\"time\":\"evening\",\"block\":null,\"schedule\":{\"days\":[]},\"xp\":8,\"notify\":false,\"active\":true,\"details\":{\"mechanism\":\"Co-Faktor für D3-Aktivierung und 300+ Enzymreaktionen. Verbessert Schlafarchitektur, senkt Cortisol, beruhigt Nervensystem.\",\"synergy\":\"Notwendig für D3-Aktivierung. Synergie mit K2 und B6.\",\"caution\":\"Bisglycinate: kein abführender Effekt. Bei Niereninsuffizienz vorsichtig.\",\"natural\":\"Dunkle Schokolade (70%+), Kürbiskerne, Spinat, Mandeln, Avocado, Banane.\"},\"order\":10},{\"id\":\"supp-nattokinase\",\"type\":\"supplement\",\"title\":\"Nattokinase\",\"dose\":\"100mg (2000 FU)\",\"time\":\"evening\",\"block\":null,\"schedule\":{\"days\":[]},\"xp\":8,\"notify\":false,\"active\":true,\"details\":{\"mechanism\":\"Fibrinolytisches Enzym. Baut Fibrinstrukturen ab, verbessert Mikrozirkulation, natürliche Thromboseprophylaxe.\",\"synergy\":\"Synergie mit Omega-3 und Bromelain (alle verbessern Fließeigenschaften).\",\"caution\":\"Additiv blutverdünnend — Gesamteffekt im Blick behalten.\",\"natural\":\"Natto (fermentierte Sojabohnen) — täglich 50g entspricht ca. einer Supplementdosis.\"},\"order\":11},{\"id\":\"supp-spm-faktoren-omega-3\",\"type\":\"supplement\",\"title\":\"SPM-Faktoren / Omega-3\",\"dose\":\"lt. Packung\",\"time\":\"evening\",\"block\":null,\"schedule\":{\"days\":[]},\"xp\":8,\"notify\":false,\"active\":true,\"details\":{\"mechanism\":\"Specialized Pro-resolving Mediators: aktive Entzündungsauflösung. Triggern Makrophagen-Shift M1→M2.\",\"synergy\":\"Werden aus EPA/DHA gebildet. Synergie mit Fasten (Autophagie verstärkt M2-Polarisierung).\",\"caution\":\"Qualität variiert stark — auf EPA/DHA-Derivate achten.\",\"natural\":\"Fetter Seefisch 3–4× wöchentlich.\"},\"order\":12},{\"id\":\"supp-magnesium-silizium\",\"type\":\"supplement\",\"title\":\"Magnesium + Silizium\",\"dose\":\"lt. Packung\",\"time\":\"evening\",\"block\":null,\"schedule\":{\"days\":[]},\"xp\":8,\"notify\":false,\"active\":true,\"details\":{\"mechanism\":\"Silizium für Kollagen-Quervernetzung und Knochenmatrix-Aufbau. Aktiviert Enzyme der Kollagenstabilisierung.\",\"synergy\":\"Synergie mit Kollagen Typ II und Vit C.\",\"caution\":\"Organisches Silizium (Schachtelhalm/Bambus) deutlich bioverfügbarer.\",\"natural\":\"Hafer, Hirse, Bambus-Sprossen, Schachtelhalm-Tee, Bananen.\"},\"order\":13},{\"id\":\"habit-sleep\",\"type\":\"habit\",\"title\":\"Geschlafen\",\"dose\":null,\"time\":null,\"block\":\"morgen\",\"schedule\":{\"days\":[]},\"xp\":20,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"mind. 6 Stunden\",\"why\":\"Schlafentzug erhöht CRPS-Schmerzintensität messbar. 6h+ sind kein Luxus — Zellreparatur, Schmerzgedächtnis-Reset und Cortisolabbau finden nur im Tiefschlaf statt.\",\"core\":true},\"order\":14},{\"id\":\"habit-foot_am\",\"type\":\"habit\",\"title\":\"Fuß-Aktivierung\",\"dose\":null,\"time\":null,\"block\":\"morgen\",\"schedule\":{\"days\":[]},\"xp\":12,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"3 Min · vor dem ersten Schritt\",\"why\":\"Die erste Gewichtsbelastung nach der Nacht ist kritisch. 3 Min Aktivierung bringt Durchblutung und Propriozeption in den Fuß, bevor er Gewicht trägt.\",\"core\":true},\"order\":15},{\"id\":\"habit-morning\",\"type\":\"habit\",\"title\":\"Morgenroutine\",\"dose\":null,\"time\":null,\"block\":\"morgen\",\"schedule\":{\"days\":[]},\"xp\":20,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"8 Min · Körper aufwecken\",\"why\":\"8 Min Bewegung direkt nach dem Aufwachen senkt Cortisol, aktiviert Muskelketten und setzt Serotonin frei. Der Ton für den ganzen Tag wird in den ersten 30 Min gesetzt.\",\"core\":true},\"order\":16},{\"id\":\"habit-breath\",\"type\":\"habit\",\"title\":\"Atemübung 4-7-8\",\"dose\":null,\"time\":null,\"block\":\"morgen\",\"schedule\":{\"days\":[]},\"xp\":8,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"3 Runden · Nervensystem\",\"why\":\"4-7-8 stimuliert den Vagusnerv direkt. Senkt Herzfrequenz und Entzündungsmarker, beruhigt das bei CRPS chronisch überreizte Nervensystem — in unter 3 Minuten.\",\"core\":true},\"order\":17},{\"id\":\"habit-sunlight\",\"type\":\"habit\",\"title\":\"Draußen\",\"dose\":null,\"time\":null,\"block\":\"morgen\",\"schedule\":{\"days\":[]},\"xp\":5,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Tageslicht & frische Luft\",\"why\":\"Tageslicht in den ersten 30 Min synchronisiert den Cortisol-Rhythmus und triggert Vitamin-D-Synthese. Beides direkt relevant für Schmerzregulation und Stimmung.\",\"core\":false},\"order\":18},{\"id\":\"habit-noscreen_am\",\"type\":\"habit\",\"title\":\"Screen-frei\",\"dose\":null,\"time\":null,\"block\":\"morgen\",\"schedule\":{\"days\":[]},\"xp\":15,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Erste 30 Min nach dem Aufwachen\",\"why\":\"Ohne Bildschirm kann das Gehirn beim Aufwachen die Schmerzverarbeitung neu kalibrieren. Displays aktivieren sofort den Sympathikus — der bei CRPS ohnehin überaktiv ist.\",\"core\":false},\"order\":19},{\"id\":\"habit-teeth\",\"type\":\"habit\",\"title\":\"Zähne\",\"dose\":null,\"time\":null,\"block\":\"morgen\",\"schedule\":{\"days\":[]},\"xp\":5,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"2 Min + Zungenreiniger\",\"why\":\"Orale Hygiene senkt systemische Entzündungslast. Bei CRPS verstärkt jeder Entzündungsreiz im Körper die Symptome — auch Entzündungen im Mund.\",\"core\":false},\"order\":20},{\"id\":\"habit-movement\",\"type\":\"habit\",\"title\":\"Bewegungspause\",\"dose\":null,\"time\":null,\"block\":\"tag\",\"schedule\":{\"days\":[]},\"xp\":3,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"2 Min aufstehen · strecken\",\"why\":\"2 Min aufstehen unterbricht die sympathische Dauerreizung durch langes Sitzen. Der Sympathikus ist bei CRPS chronisch überaktiv — jede Pause hilft.\",\"core\":false},\"order\":21},{\"id\":\"habit-foot_noon\",\"type\":\"habit\",\"title\":\"Gangschulung\",\"dose\":null,\"time\":null,\"block\":\"tag\",\"schedule\":{\"days\":[]},\"xp\":15,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"4 Min · Muskel & Koordination\",\"why\":\"Mittags ist der Körper warm und bereit. Gangschulung jetzt trainiert neuromuskuläre Kontrolle auf höchstem Level und normalisiert das durch KMÖ veränderte Gangbild.\",\"core\":true},\"order\":22},{\"id\":\"habit-box\",\"type\":\"habit\",\"title\":\"Box Breathing\",\"dose\":null,\"time\":null,\"block\":\"tag\",\"schedule\":{\"days\":[]},\"xp\":10,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Stress abbauen · 5 Runden\",\"why\":\"Box Breathing (4-4-4-4) ist die direkteste nicht-pharmakologische Methode zur Parasympathikus-Aktivierung. Nachweislich bei akutem Stress und Schmerzspitzen wirksam.\",\"core\":true},\"order\":23},{\"id\":\"habit-learning\",\"type\":\"habit\",\"title\":\"Input\",\"dose\":null,\"time\":null,\"block\":\"tag\",\"schedule\":{\"days\":[]},\"xp\":15,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"10 Minuten Neues\",\"why\":\"Kognitive Stimulation fördert Neuroplastizität — der zentrale Mechanismus, durch den das Gehirn Schmerzmuster umlernt. Lernen ist buchstäblich Schmerztherapie.\",\"core\":false},\"order\":24},{\"id\":\"habit-cooking\",\"type\":\"habit\",\"title\":\"Gekocht\",\"dose\":null,\"time\":null,\"block\":\"tag\",\"schedule\":{\"days\":[]},\"xp\":15,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Eine Mahlzeit selbst gekocht\",\"why\":\"Selbst kochen senkt den Anteil ultra-verarbeiteter Lebensmittel direkt. Fertigkost erhöht systemische Entzündungslast messbar.\",\"core\":false},\"order\":25},{\"id\":\"habit-others\",\"type\":\"habit\",\"title\":\"Für andere\",\"dose\":null,\"time\":null,\"block\":\"tag\",\"schedule\":{\"days\":[]},\"xp\":20,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Etwas für jemand getan\",\"why\":\"Echtes Geben setzt Oxytocin frei — ein direkter Schmerzdämpfer. Soziale Verbindung ist einer der wenigen kostenlosen Hebel mit nachgewiesenem Effekt auf Schmerztoleranz.\",\"core\":false},\"order\":26},{\"id\":\"habit-strength\",\"type\":\"habit\",\"title\":\"Kräftigung\",\"dose\":null,\"time\":null,\"block\":\"tag\",\"schedule\":{\"days\":[]},\"xp\":20,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"5 Übungen · Kraft & Stabilität\",\"why\":\"Starke Muskulatur entlastet Gelenke und normalisiert die CRPS-typische Schutzspannung. Jede Trainingseinheit baut dem Muskelabbau aktiv entgegen.\",\"core\":true},\"order\":27},{\"id\":\"habit-protein\",\"type\":\"habit\",\"title\":\"Protein pro Mahlzeit\",\"dose\":null,\"time\":null,\"block\":\"tag\",\"schedule\":{\"days\":[]},\"xp\":10,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Jede Mahlzeit eine Proteinquelle\",\"why\":\"~1,5 g Protein/kg Körpergewicht/Tag verteilt auf mehrere Mahlzeiten fördert Muskelproteinsynthese wirksamer als eine große Portion.\",\"core\":false},\"order\":28},{\"id\":\"habit-social\",\"type\":\"habit\",\"title\":\"Sozialer Kontakt\",\"dose\":null,\"time\":null,\"block\":\"tag\",\"schedule\":{\"days\":[]},\"xp\":10,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Echtes Gespräch oder Zeit mit jemandem\",\"why\":\"Soziale Isolation erhöht vorzeitige Sterblichkeit um bis zu 30 %. Echte Verbindung senkt Cortisol und Schmerzintensität messbar.\",\"core\":false},\"order\":29},{\"id\":\"habit-meal_order\",\"type\":\"habit\",\"title\":\"Gemüse/Protein zuerst\",\"dose\":null,\"time\":null,\"block\":\"tag\",\"schedule\":{\"days\":[]},\"xp\":10,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Kohlenhydrate zuletzt essen\",\"why\":\"Die Reihenfolge allein senkt den Blutzuckeranstieg um 20–40 %: Ballaststoffe und Protein verlangsamen die Magenentleerung und triggern GLP-1.\",\"core\":false},\"order\":30},{\"id\":\"habit-post_meal_walk\",\"type\":\"habit\",\"title\":\"Nach dem Essen bewegen\",\"dose\":null,\"time\":null,\"block\":\"tag\",\"schedule\":{\"days\":[]},\"xp\":10,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"10 Min. leichtes Gehen\",\"why\":\"10 Minuten Gehen direkt nach dem Essen senken die Blutzuckerspitze um 17–24 % (Meta-Review 2022).\",\"core\":false},\"order\":31},{\"id\":\"habit-estim_noon\",\"type\":\"habit\",\"title\":\"Elektrostimulation\",\"dose\":null,\"time\":null,\"block\":\"tag\",\"schedule\":{\"days\":[]},\"xp\":20,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Fuß + Knie · TENS/EMS · Mittag\",\"why\":\"TENS moduliert die Schmerzweiterleitung (Gate-Control-Theorie) und kann bei neuropathischem CRPS-Schmerz lindernd wirken. EMS erhält Muskelaktivität in der geschonten Extremität.\",\"core\":true},\"order\":32},{\"id\":\"habit-estim_evening\",\"type\":\"habit\",\"title\":\"Elektrostimulation\",\"dose\":null,\"time\":null,\"block\":\"abend\",\"schedule\":{\"days\":[]},\"xp\":20,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Fuß + Knie · TENS/EMS · Abend\",\"why\":\"Die zweite Session am Abend hält den analgetischen Effekt aufrecht. EMS-Arbeit gegen Ende des Tages reduziert die nächtliche Ödemneigung.\",\"core\":true},\"order\":33},{\"id\":\"habit-foot_pm\",\"type\":\"habit\",\"title\":\"Fuß-Regeneration\",\"dose\":null,\"time\":null,\"block\":\"abend\",\"schedule\":{\"days\":[]},\"xp\":10,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"3 Min · Entstauung & Mobilisation\",\"why\":\"Lymphatischer Rückfluss passiert hauptsächlich im Liegen. Aktiv unterstützen verhindert Ödem-Akkumulation über Nacht — die Hauptursache für Morgensteifigkeit bei KMÖ.\",\"core\":true},\"order\":34},{\"id\":\"habit-stretch\",\"type\":\"habit\",\"title\":\"Dehnung\",\"dose\":null,\"time\":null,\"block\":\"abend\",\"schedule\":{\"days\":[]},\"xp\":10,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"10 Min · Faszien & Gelenke\",\"why\":\"Faszienarbeit am Abend löst tagsüber aufgebaute Spannungen und bereitet das Nervensystem auf die Regenerationsphase des Schlafs vor.\",\"core\":true},\"order\":35},{\"id\":\"habit-vagus_eve\",\"type\":\"habit\",\"title\":\"Vagus\",\"dose\":null,\"time\":null,\"block\":\"abend\",\"schedule\":{\"days\":[]},\"xp\":15,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"5 Min · Parasympathikus\",\"why\":\"5 Min Vagus-Stimulation senkt den Ruhepuls messbar und erhöht die Herzratenvariabilität — beides direkte Marker für Nervensystemgesundheit bei CRPS.\",\"core\":true},\"order\":36},{\"id\":\"habit-meditation\",\"type\":\"habit\",\"title\":\"Meditation\",\"dose\":null,\"time\":null,\"block\":\"abend\",\"schedule\":{\"days\":[]},\"xp\":15,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"10 Minuten\",\"why\":\"10 Min Meditation verändert Schmerzperzeption auf neuraler Ebene — nachgewiesen durch veränderte Insula-Aktivität bei chronischen Schmerzpatienten.\",\"core\":true},\"order\":37},{\"id\":\"habit-gratitude\",\"type\":\"habit\",\"title\":\"Dankbarkeit\",\"dose\":null,\"time\":null,\"block\":\"abend\",\"schedule\":{\"days\":[]},\"xp\":10,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Was war dein Up heute?\",\"why\":\"Dankbarkeit aktiviert den präfrontalen Kortex und dämpft die Amygdala — direkte Auswirkung auf Schmerztoleranz und Schlafqualität. 3 Dinge reichen.\",\"core\":false},\"order\":38},{\"id\":\"habit-no_alcohol\",\"type\":\"habit\",\"title\":\"Kein Alkohol\",\"dose\":null,\"time\":null,\"block\":\"verzicht\",\"schedule\":{\"days\":[]},\"xp\":20,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Jeder Tag ohne Alkohol zählt\",\"why\":\"Alkohol verstärkt Neuroinflammation und zerstört Tiefschlaf. Beides sind die stärksten bekannten Trigger für CRPS-Verschlechterung — auch in kleinen Mengen.\",\"core\":true},\"order\":39},{\"id\":\"habit-no_sugar\",\"type\":\"habit\",\"title\":\"Kein Zucker\",\"dose\":null,\"time\":null,\"block\":\"verzicht\",\"schedule\":{\"days\":[]},\"xp\":15,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Zucker entzündet\",\"why\":\"Zucker erhöht CRP und andere Entzündungsmarker direkt. Bei CRPS, wo Entzündung ein Kernmechanismus ist, zählt jeder zuckerfreie Tag.\",\"core\":false},\"order\":40},{\"id\":\"habit-no_drugs\",\"type\":\"habit\",\"title\":\"Drogenfrei\",\"dose\":null,\"time\":null,\"block\":\"verzicht\",\"schedule\":{\"days\":[]},\"xp\":20,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Jeder Tag ohne Drogen zählt\",\"why\":\"Das Nervensystem braucht ungestörte Chemie um sich zu regulieren. Jeder drogenfreie Tag ist ein Tag, an dem Neuroplastizität ungehindert arbeiten kann.\",\"core\":true},\"order\":41},{\"id\":\"habit-no_meat\",\"type\":\"habit\",\"title\":\"Kein Fleisch\",\"dose\":null,\"time\":null,\"block\":\"verzicht\",\"schedule\":{\"days\":[]},\"xp\":15,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Pflanzlich ist entzündungsärmer\",\"why\":\"Rotes und verarbeitetes Fleisch erhöht Arachidonsäure und Pro-Entzündungs-Eicosanoide. Pflanzliche Tage senken die systemische Entzündungslast messbar.\",\"core\":false},\"order\":42},{\"id\":\"habit-no_carbs\",\"type\":\"habit\",\"title\":\"Keine Kohlenhydrate\",\"dose\":null,\"time\":null,\"block\":\"verzicht\",\"schedule\":{\"days\":[]},\"xp\":15,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Low-Carb / ketogen\",\"why\":\"Ketose senkt Insulinspiegel und Entzündungsmarker. Für CRPS-Betroffene kann die Reduktion von Blutzuckerspitzen die Schmerzintensität deutlich verringern.\",\"core\":false},\"order\":43},{\"id\":\"habit-gluten_free\",\"type\":\"habit\",\"title\":\"Glutenfrei\",\"dose\":null,\"time\":null,\"block\":\"verzicht\",\"schedule\":{\"days\":[]},\"xp\":10,\"notify\":false,\"active\":true,\"details\":{\"sub\":\"Ohne Weizen, Roggen, Gerste\",\"why\":\"Auch ohne Zöliakie kann Gluten bei sensiblen Personen intestinale Entzündung und Neuroinflammation fördern.\",\"core\":false},\"order\":44}]}",
+  "goals_migrated_v1": "1",
+  "backup_before_goals_migration_v2": "{\"at\":\"2026-11-03T11:18:00.091Z\",\"localStorage\":{\"content_done_2026-11-03\":\"[]\",\"content_migrated_v1\":\"1\",\"backup_before_goals_migration_v1\":\"{\\\"at\\\":\\\"2026-11-03T11:18:00.071Z\\\",\\\"localStorage\\\":{\\\"content_done_2026-11-03\\\":\\\"[]\\\",\\\"content_migrated_v1\\\":\\\"1\\\"},\\\"items\\\":[{\\\"id\\\":\\\"supp-vitamin-d3\\\",\\\"type\\\":\\\"supplement\\\",\\\"title\\\":\\\"Vitamin D3\\\",\\\"dose\\\":\\\"5.000 IE\\\",\\\"time\\\":\\\"morning\\\",\\\"block\\\":null,\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":8,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"mechanism\\\":\\\"Aktiviert Osteoblasten, fördert Kalziumaufnahme. Essentiell für Knochenremineralisierung und Immunmodulation.\\\",\\\"synergy\\\":\\\"Zwingend mit K2 MK-7 kombinieren. Magnesium für D3-Aktivierung nötig.\\\",\\\"caution\\\":\\\"Ohne K2 droht Kalziumablagerung in Gefäßen. Fettlöslich — mit Mahlzeit einnehmen.\\\",\\\"natural\\\":\\\"Fettreicher Fisch (Lachs, Hering, Makrele), Eigelb, UV-exponierte Pilze.\\\"},\\\"order\\\":0},{\\\"id\\\":\\\"supp-vitamin-k2-mk-7\\\",\\\"type\\\":\\\"supplement\\\",\\\"title\\\":\\\"Vitamin K2 MK-7\\\",\\\"dose\\\":\\\"200mcg\\\",\\\"time\\\":\\\"morning\\\",\\\"block\\\":null,\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":8,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"mechanism\\\":\\\"Aktiviert Osteocalcin — leitet Kalzium aus dem Blut in die Knochenmatrix. Verhindert Gefäßverkalkung.\\\",\\\"synergy\\\":\\\"Immer mit D3. Synergie mit Magnesium und Kollagen.\\\",\\\"caution\\\":\\\"Wechselwirkung mit Vitamin-K-Antagonisten (Warfarin) — ärztlich abklären.\\\",\\\"natural\\\":\\\"Natto (höchste Konzentration), Gouda, Edamer, Eigelb, Butter von Weidetieren.\\\"},\\\"order\\\":1},{\\\"id\\\":\\\"supp-omega-3-epa-dha\\\",\\\"type\\\":\\\"supplement\\\",\\\"title\\\":\\\"Omega-3 EPA/DHA\\\",\\\"dose\\\":\\\"2–3g\\\",\\\"time\\\":\\\"morning\\\",\\\"block\\\":null,\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":8,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"mechanism\\\":\\\"Hemmt COX-2 und LOX-Enzyme. Stärkster natürlicher Entzündungshemmer. Verbessert Zellmembranfluidität.\\\",\\\"synergy\\\":\\\"Synergie mit Curcumin und Boswellia für maximale Entzündungshemmung.\\\",\\\"caution\\\":\\\"Leicht blutverdünnend — im Blick behalten.\\\",\\\"natural\\\":\\\"Lachs, Makrele, Hering, Sardinen, Walnüsse, Leinsamen, Chiasamen.\\\"},\\\"order\\\":2},{\\\"id\\\":\\\"supp-kollagen-typ-i-ii\\\",\\\"type\\\":\\\"supplement\\\",\\\"title\\\":\\\"Kollagen Typ I/II\\\",\\\"dose\\\":\\\"15g\\\",\\\"time\\\":\\\"morning\\\",\\\"block\\\":null,\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":8,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"mechanism\\\":\\\"Liefert Glycin, Prolin, Hydroxyprolin für Sehnen, Bänder, Knorpel. Timing: 60 Min VOR Bewegung für maximalen Einbau.\\\",\\\"synergy\\\":\\\"Zwingend gleichzeitig mit Vitamin C. Silizium unterstützt Quervernetzung.\\\",\\\"caution\\\":\\\"Ohne mechanische Belastung stark reduzierte Wirkung.\\\",\\\"natural\\\":\\\"Knochenbrühe (lange gekocht), Hühnerknorpel, Fischsud.\\\"},\\\"order\\\":3},{\\\"id\\\":\\\"supp-vitamin-c\\\",\\\"type\\\":\\\"supplement\\\",\\\"title\\\":\\\"Vitamin C\\\",\\\"dose\\\":\\\"1g\\\",\\\"time\\\":\\\"morning\\\",\\\"block\\\":null,\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":8,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"mechanism\\\":\\\"Co-Faktor der Kollagensynthese-Enzyme. Antioxidans, schützt Fibroblasten.\\\",\\\"synergy\\\":\\\"Immer gleichzeitig mit Kollagen einnehmen.\\\",\\\"caution\\\":\\\"Über 2g täglich kann GI-Beschwerden verursachen.\\\",\\\"natural\\\":\\\"Paprika, Kiwi, Acerola, Brokkoli, Grünkohl, Zitrusfrüchte.\\\"},\\\"order\\\":4},{\\\"id\\\":\\\"supp-boswellia\\\",\\\"type\\\":\\\"supplement\\\",\\\"title\\\":\\\"Boswellia\\\",\\\"dose\\\":\\\"400mg\\\",\\\"time\\\":\\\"midday\\\",\\\"block\\\":null,\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":8,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"mechanism\\\":\\\"Hemmt 5-Lipoxygenase (5-LOX) und damit die Bildung von Leukotrienen. Wirkt in Studien bei Gelenkbeschwerden und Ödemen.\\\",\\\"synergy\\\":\\\"Stärkste Synergie mit Curcumin (unterschiedliche Angriffspunkte).\\\",\\\"caution\\\":\\\"Mit Mahlzeit einnehmen. Nicht mit Immunsuppressiva kombinieren.\\\",\\\"natural\\\":\\\"Kein sinnvoller Nahrungsmittelweg — nur als Extrakt wirksam.\\\"},\\\"order\\\":5},{\\\"id\\\":\\\"supp-curcumin-piperin\\\",\\\"type\\\":\\\"supplement\\\",\\\"title\\\":\\\"Curcumin + Piperin\\\",\\\"dose\\\":\\\"500mg\\\",\\\"time\\\":\\\"midday\\\",\\\"block\\\":null,\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":8,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"mechanism\\\":\\\"Hemmt in Studien NF-kB und COX-2 — zentraler Entzündungs-Transkriptionsfaktor. Piperin verbessert die Bioverfügbarkeit deutlich.\\\",\\\"synergy\\\":\\\"Piperin zwingend. Synergie mit Boswellia und Omega-3.\\\",\\\"caution\\\":\\\"Hemmt CYP3A4 — Wechselwirkungen möglich. Separat von Eisen einnehmen.\\\",\\\"natural\\\":\\\"Kurkuma frisch, schwarzer Pfeffer, Ingwer.\\\"},\\\"order\\\":6},{\\\"id\\\":\\\"supp-zink\\\",\\\"type\\\":\\\"supplement\\\",\\\"title\\\":\\\"Zink\\\",\\\"dose\\\":\\\"15–20mg\\\",\\\"time\\\":\\\"midday\\\",\\\"block\\\":null,\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":8,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"mechanism\\\":\\\"Co-Faktor von über 300 Enzymen. Essentiell für Wundheilung, Knochenaufbau und Immunfunktion.\\\",\\\"synergy\\\":\\\"Quercetin als Zink-Ionophor (transportiert Zink in Zellen).\\\",\\\"caution\\\":\\\"Langfristig >40mg täglich depletiert Kupfer. Nicht mit Eisen zusammen.\\\",\\\"natural\\\":\\\"Austern, Kürbiskerne, Rinderhack, Linsen, Cashews.\\\"},\\\"order\\\":7},{\\\"id\\\":\\\"supp-quercetin\\\",\\\"type\\\":\\\"supplement\\\",\\\"title\\\":\\\"Quercetin\\\",\\\"dose\\\":\\\"500mg\\\",\\\"time\\\":\\\"midday\\\",\\\"block\\\":null,\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":8,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"mechanism\\\":\\\"Zink-Ionophor, hemmt Hyaluronidase, antiödematös, antioxidativ.\\\",\\\"synergy\\\":\\\"Zwingend mit Zink. Bromelain erhöht Quercetin-Absorption.\\\",\\\"caution\\\":\\\"Kann Schilddrüsenmedikamente beeinflussen.\\\",\\\"natural\\\":\\\"Kapern, rote Zwiebeln, Äpfel (Schale), Heidelbeeren, Brokkoli.\\\"},\\\"order\\\":8},{\\\"id\\\":\\\"supp-glucosamin-msm\\\",\\\"type\\\":\\\"supplement\\\",\\\"title\\\":\\\"Glucosamin + MSM\\\",\\\"dose\\\":\\\"1500mg + 1000mg\\\",\\\"time\\\":\\\"midday\\\",\\\"block\\\":null,\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":8,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"mechanism\\\":\\\"Glucosamin: Strukturbaustein für Knorpel und Gelenkkapsel. MSM: Schwefelquelle für Kollagen- und Bindegewebsmatrix.\\\",\\\"synergy\\\":\\\"Klassische Kombination. Synergie mit Kollagen Typ II.\\\",\\\"caution\\\":\\\"Glucosamin aus Schalentieren — Allergie beachten. Erst ab Refeeding-Phase.\\\",\\\"natural\\\":\\\"Knochenbrühe (Glucosamin). Knoblauch, Zwiebeln, Eier, Brokkoli (Schwefel/MSM).\\\"},\\\"order\\\":9},{\\\"id\\\":\\\"supp-magnesium-bisglycinate\\\",\\\"type\\\":\\\"supplement\\\",\\\"title\\\":\\\"Magnesium Bisglycinate\\\",\\\"dose\\\":\\\"400mg\\\",\\\"time\\\":\\\"evening\\\",\\\"block\\\":null,\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":8,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"mechanism\\\":\\\"Co-Faktor für D3-Aktivierung und 300+ Enzymreaktionen. Verbessert Schlafarchitektur, senkt Cortisol, beruhigt Nervensystem.\\\",\\\"synergy\\\":\\\"Notwendig für D3-Aktivierung. Synergie mit K2 und B6.\\\",\\\"caution\\\":\\\"Bisglycinate: kein abführender Effekt. Bei Niereninsuffizienz vorsichtig.\\\",\\\"natural\\\":\\\"Dunkle Schokolade (70%+), Kürbiskerne, Spinat, Mandeln, Avocado, Banane.\\\"},\\\"order\\\":10},{\\\"id\\\":\\\"supp-nattokinase\\\",\\\"type\\\":\\\"supplement\\\",\\\"title\\\":\\\"Nattokinase\\\",\\\"dose\\\":\\\"100mg (2000 FU)\\\",\\\"time\\\":\\\"evening\\\",\\\"block\\\":null,\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":8,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"mechanism\\\":\\\"Fibrinolytisches Enzym. Baut Fibrinstrukturen ab, verbessert Mikrozirkulation, natürliche Thromboseprophylaxe.\\\",\\\"synergy\\\":\\\"Synergie mit Omega-3 und Bromelain (alle verbessern Fließeigenschaften).\\\",\\\"caution\\\":\\\"Additiv blutverdünnend — Gesamteffekt im Blick behalten.\\\",\\\"natural\\\":\\\"Natto (fermentierte Sojabohnen) — täglich 50g entspricht ca. einer Supplementdosis.\\\"},\\\"order\\\":11},{\\\"id\\\":\\\"supp-spm-faktoren-omega-3\\\",\\\"type\\\":\\\"supplement\\\",\\\"title\\\":\\\"SPM-Faktoren / Omega-3\\\",\\\"dose\\\":\\\"lt. Packung\\\",\\\"time\\\":\\\"evening\\\",\\\"block\\\":null,\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":8,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"mechanism\\\":\\\"Specialized Pro-resolving Mediators: aktive Entzündungsauflösung. Triggern Makrophagen-Shift M1→M2.\\\",\\\"synergy\\\":\\\"Werden aus EPA/DHA gebildet. Synergie mit Fasten (Autophagie verstärkt M2-Polarisierung).\\\",\\\"caution\\\":\\\"Qualität variiert stark — auf EPA/DHA-Derivate achten.\\\",\\\"natural\\\":\\\"Fetter Seefisch 3–4× wöchentlich.\\\"},\\\"order\\\":12},{\\\"id\\\":\\\"supp-magnesium-silizium\\\",\\\"type\\\":\\\"supplement\\\",\\\"title\\\":\\\"Magnesium + Silizium\\\",\\\"dose\\\":\\\"lt. Packung\\\",\\\"time\\\":\\\"evening\\\",\\\"block\\\":null,\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":8,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"mechanism\\\":\\\"Silizium für Kollagen-Quervernetzung und Knochenmatrix-Aufbau. Aktiviert Enzyme der Kollagenstabilisierung.\\\",\\\"synergy\\\":\\\"Synergie mit Kollagen Typ II und Vit C.\\\",\\\"caution\\\":\\\"Organisches Silizium (Schachtelhalm/Bambus) deutlich bioverfügbarer.\\\",\\\"natural\\\":\\\"Hafer, Hirse, Bambus-Sprossen, Schachtelhalm-Tee, Bananen.\\\"},\\\"order\\\":13},{\\\"id\\\":\\\"habit-sleep\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Geschlafen\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"morgen\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":20,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"mind. 6 Stunden\\\",\\\"why\\\":\\\"Schlafentzug erhöht CRPS-Schmerzintensität messbar. 6h+ sind kein Luxus — Zellreparatur, Schmerzgedächtnis-Reset und Cortisolabbau finden nur im Tiefschlaf statt.\\\",\\\"core\\\":true},\\\"order\\\":14},{\\\"id\\\":\\\"habit-foot_am\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Fuß-Aktivierung\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"morgen\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":12,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"3 Min · vor dem ersten Schritt\\\",\\\"why\\\":\\\"Die erste Gewichtsbelastung nach der Nacht ist kritisch. 3 Min Aktivierung bringt Durchblutung und Propriozeption in den Fuß, bevor er Gewicht trägt.\\\",\\\"core\\\":true},\\\"order\\\":15},{\\\"id\\\":\\\"habit-morning\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Morgenroutine\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"morgen\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":20,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"8 Min · Körper aufwecken\\\",\\\"why\\\":\\\"8 Min Bewegung direkt nach dem Aufwachen senkt Cortisol, aktiviert Muskelketten und setzt Serotonin frei. Der Ton für den ganzen Tag wird in den ersten 30 Min gesetzt.\\\",\\\"core\\\":true},\\\"order\\\":16},{\\\"id\\\":\\\"habit-breath\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Atemübung 4-7-8\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"morgen\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":8,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"3 Runden · Nervensystem\\\",\\\"why\\\":\\\"4-7-8 stimuliert den Vagusnerv direkt. Senkt Herzfrequenz und Entzündungsmarker, beruhigt das bei CRPS chronisch überreizte Nervensystem — in unter 3 Minuten.\\\",\\\"core\\\":true},\\\"order\\\":17},{\\\"id\\\":\\\"habit-sunlight\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Draußen\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"morgen\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":5,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Tageslicht & frische Luft\\\",\\\"why\\\":\\\"Tageslicht in den ersten 30 Min synchronisiert den Cortisol-Rhythmus und triggert Vitamin-D-Synthese. Beides direkt relevant für Schmerzregulation und Stimmung.\\\",\\\"core\\\":false},\\\"order\\\":18},{\\\"id\\\":\\\"habit-noscreen_am\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Screen-frei\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"morgen\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":15,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Erste 30 Min nach dem Aufwachen\\\",\\\"why\\\":\\\"Ohne Bildschirm kann das Gehirn beim Aufwachen die Schmerzverarbeitung neu kalibrieren. Displays aktivieren sofort den Sympathikus — der bei CRPS ohnehin überaktiv ist.\\\",\\\"core\\\":false},\\\"order\\\":19},{\\\"id\\\":\\\"habit-teeth\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Zähne\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"morgen\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":5,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"2 Min + Zungenreiniger\\\",\\\"why\\\":\\\"Orale Hygiene senkt systemische Entzündungslast. Bei CRPS verstärkt jeder Entzündungsreiz im Körper die Symptome — auch Entzündungen im Mund.\\\",\\\"core\\\":false},\\\"order\\\":20},{\\\"id\\\":\\\"habit-movement\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Bewegungspause\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"tag\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":3,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"2 Min aufstehen · strecken\\\",\\\"why\\\":\\\"2 Min aufstehen unterbricht die sympathische Dauerreizung durch langes Sitzen. Der Sympathikus ist bei CRPS chronisch überaktiv — jede Pause hilft.\\\",\\\"core\\\":false},\\\"order\\\":21},{\\\"id\\\":\\\"habit-foot_noon\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Gangschulung\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"tag\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":15,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"4 Min · Muskel & Koordination\\\",\\\"why\\\":\\\"Mittags ist der Körper warm und bereit. Gangschulung jetzt trainiert neuromuskuläre Kontrolle auf höchstem Level und normalisiert das durch KMÖ veränderte Gangbild.\\\",\\\"core\\\":true},\\\"order\\\":22},{\\\"id\\\":\\\"habit-box\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Box Breathing\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"tag\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":10,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Stress abbauen · 5 Runden\\\",\\\"why\\\":\\\"Box Breathing (4-4-4-4) ist die direkteste nicht-pharmakologische Methode zur Parasympathikus-Aktivierung. Nachweislich bei akutem Stress und Schmerzspitzen wirksam.\\\",\\\"core\\\":true},\\\"order\\\":23},{\\\"id\\\":\\\"habit-learning\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Input\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"tag\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":15,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"10 Minuten Neues\\\",\\\"why\\\":\\\"Kognitive Stimulation fördert Neuroplastizität — der zentrale Mechanismus, durch den das Gehirn Schmerzmuster umlernt. Lernen ist buchstäblich Schmerztherapie.\\\",\\\"core\\\":false},\\\"order\\\":24},{\\\"id\\\":\\\"habit-cooking\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Gekocht\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"tag\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":15,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Eine Mahlzeit selbst gekocht\\\",\\\"why\\\":\\\"Selbst kochen senkt den Anteil ultra-verarbeiteter Lebensmittel direkt. Fertigkost erhöht systemische Entzündungslast messbar.\\\",\\\"core\\\":false},\\\"order\\\":25},{\\\"id\\\":\\\"habit-others\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Für andere\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"tag\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":20,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Etwas für jemand getan\\\",\\\"why\\\":\\\"Echtes Geben setzt Oxytocin frei — ein direkter Schmerzdämpfer. Soziale Verbindung ist einer der wenigen kostenlosen Hebel mit nachgewiesenem Effekt auf Schmerztoleranz.\\\",\\\"core\\\":false},\\\"order\\\":26},{\\\"id\\\":\\\"habit-strength\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Kräftigung\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"tag\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":20,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"5 Übungen · Kraft & Stabilität\\\",\\\"why\\\":\\\"Starke Muskulatur entlastet Gelenke und normalisiert die CRPS-typische Schutzspannung. Jede Trainingseinheit baut dem Muskelabbau aktiv entgegen.\\\",\\\"core\\\":true},\\\"order\\\":27},{\\\"id\\\":\\\"habit-protein\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Protein pro Mahlzeit\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"tag\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":10,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Jede Mahlzeit eine Proteinquelle\\\",\\\"why\\\":\\\"~1,5 g Protein/kg Körpergewicht/Tag verteilt auf mehrere Mahlzeiten fördert Muskelproteinsynthese wirksamer als eine große Portion.\\\",\\\"core\\\":false},\\\"order\\\":28},{\\\"id\\\":\\\"habit-social\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Sozialer Kontakt\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"tag\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":10,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Echtes Gespräch oder Zeit mit jemandem\\\",\\\"why\\\":\\\"Soziale Isolation erhöht vorzeitige Sterblichkeit um bis zu 30 %. Echte Verbindung senkt Cortisol und Schmerzintensität messbar.\\\",\\\"core\\\":false},\\\"order\\\":29},{\\\"id\\\":\\\"habit-meal_order\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Gemüse/Protein zuerst\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"tag\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":10,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Kohlenhydrate zuletzt essen\\\",\\\"why\\\":\\\"Die Reihenfolge allein senkt den Blutzuckeranstieg um 20–40 %: Ballaststoffe und Protein verlangsamen die Magenentleerung und triggern GLP-1.\\\",\\\"core\\\":false},\\\"order\\\":30},{\\\"id\\\":\\\"habit-post_meal_walk\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Nach dem Essen bewegen\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"tag\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":10,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"10 Min. leichtes Gehen\\\",\\\"why\\\":\\\"10 Minuten Gehen direkt nach dem Essen senken die Blutzuckerspitze um 17–24 % (Meta-Review 2022).\\\",\\\"core\\\":false},\\\"order\\\":31},{\\\"id\\\":\\\"habit-estim_noon\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Elektrostimulation\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"tag\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":20,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Fuß + Knie · TENS/EMS · Mittag\\\",\\\"why\\\":\\\"TENS moduliert die Schmerzweiterleitung (Gate-Control-Theorie) und kann bei neuropathischem CRPS-Schmerz lindernd wirken. EMS erhält Muskelaktivität in der geschonten Extremität.\\\",\\\"core\\\":true},\\\"order\\\":32},{\\\"id\\\":\\\"habit-estim_evening\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Elektrostimulation\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"abend\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":20,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Fuß + Knie · TENS/EMS · Abend\\\",\\\"why\\\":\\\"Die zweite Session am Abend hält den analgetischen Effekt aufrecht. EMS-Arbeit gegen Ende des Tages reduziert die nächtliche Ödemneigung.\\\",\\\"core\\\":true},\\\"order\\\":33},{\\\"id\\\":\\\"habit-foot_pm\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Fuß-Regeneration\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"abend\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":10,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"3 Min · Entstauung & Mobilisation\\\",\\\"why\\\":\\\"Lymphatischer Rückfluss passiert hauptsächlich im Liegen. Aktiv unterstützen verhindert Ödem-Akkumulation über Nacht — die Hauptursache für Morgensteifigkeit bei KMÖ.\\\",\\\"core\\\":true},\\\"order\\\":34},{\\\"id\\\":\\\"habit-stretch\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Dehnung\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"abend\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":10,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"10 Min · Faszien & Gelenke\\\",\\\"why\\\":\\\"Faszienarbeit am Abend löst tagsüber aufgebaute Spannungen und bereitet das Nervensystem auf die Regenerationsphase des Schlafs vor.\\\",\\\"core\\\":true},\\\"order\\\":35},{\\\"id\\\":\\\"habit-vagus_eve\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Vagus\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"abend\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":15,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"5 Min · Parasympathikus\\\",\\\"why\\\":\\\"5 Min Vagus-Stimulation senkt den Ruhepuls messbar und erhöht die Herzratenvariabilität — beides direkte Marker für Nervensystemgesundheit bei CRPS.\\\",\\\"core\\\":true},\\\"order\\\":36},{\\\"id\\\":\\\"habit-meditation\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Meditation\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"abend\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":15,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"10 Minuten\\\",\\\"why\\\":\\\"10 Min Meditation verändert Schmerzperzeption auf neuraler Ebene — nachgewiesen durch veränderte Insula-Aktivität bei chronischen Schmerzpatienten.\\\",\\\"core\\\":true},\\\"order\\\":37},{\\\"id\\\":\\\"habit-gratitude\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Dankbarkeit\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"abend\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":10,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Was war dein Up heute?\\\",\\\"why\\\":\\\"Dankbarkeit aktiviert den präfrontalen Kortex und dämpft die Amygdala — direkte Auswirkung auf Schmerztoleranz und Schlafqualität. 3 Dinge reichen.\\\",\\\"core\\\":false},\\\"order\\\":38},{\\\"id\\\":\\\"habit-no_alcohol\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Kein Alkohol\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"verzicht\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":20,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Jeder Tag ohne Alkohol zählt\\\",\\\"why\\\":\\\"Alkohol verstärkt Neuroinflammation und zerstört Tiefschlaf. Beides sind die stärksten bekannten Trigger für CRPS-Verschlechterung — auch in kleinen Mengen.\\\",\\\"core\\\":true},\\\"order\\\":39},{\\\"id\\\":\\\"habit-no_sugar\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Kein Zucker\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"verzicht\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":15,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Zucker entzündet\\\",\\\"why\\\":\\\"Zucker erhöht CRP und andere Entzündungsmarker direkt. Bei CRPS, wo Entzündung ein Kernmechanismus ist, zählt jeder zuckerfreie Tag.\\\",\\\"core\\\":false},\\\"order\\\":40},{\\\"id\\\":\\\"habit-no_drugs\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Drogenfrei\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"verzicht\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":20,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Jeder Tag ohne Drogen zählt\\\",\\\"why\\\":\\\"Das Nervensystem braucht ungestörte Chemie um sich zu regulieren. Jeder drogenfreie Tag ist ein Tag, an dem Neuroplastizität ungehindert arbeiten kann.\\\",\\\"core\\\":true},\\\"order\\\":41},{\\\"id\\\":\\\"habit-no_meat\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Kein Fleisch\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"verzicht\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":15,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Pflanzlich ist entzündungsärmer\\\",\\\"why\\\":\\\"Rotes und verarbeitetes Fleisch erhöht Arachidonsäure und Pro-Entzündungs-Eicosanoide. Pflanzliche Tage senken die systemische Entzündungslast messbar.\\\",\\\"core\\\":false},\\\"order\\\":42},{\\\"id\\\":\\\"habit-no_carbs\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Keine Kohlenhydrate\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"verzicht\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":15,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Low-Carb / ketogen\\\",\\\"why\\\":\\\"Ketose senkt Insulinspiegel und Entzündungsmarker. Für CRPS-Betroffene kann die Reduktion von Blutzuckerspitzen die Schmerzintensität deutlich verringern.\\\",\\\"core\\\":false},\\\"order\\\":43},{\\\"id\\\":\\\"habit-gluten_free\\\",\\\"type\\\":\\\"habit\\\",\\\"title\\\":\\\"Glutenfrei\\\",\\\"dose\\\":null,\\\"time\\\":null,\\\"block\\\":\\\"verzicht\\\",\\\"schedule\\\":{\\\"days\\\":[]},\\\"xp\\\":10,\\\"notify\\\":false,\\\"active\\\":true,\\\"details\\\":{\\\"sub\\\":\\\"Ohne Weizen, Roggen, Gerste\\\",\\\"why\\\":\\\"Auch ohne Zöliakie kann Gluten bei sensiblen Personen intestinale Entzündung und Neuroinflammation fördern.\\\",\\\"core\\\":false},\\\"order\\\":44}]}\",\"goals_migrated_v1\":\"1\"},\"goals\":[{\"id\":\"goal-from-sleep\",\"title\":\"Geschlafen\",\"category\":\"koerper\",\"icon\":\"bett\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":20,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-sleep\"},{\"id\":\"goal-from-foot_am\",\"title\":\"Fuß-Aktivierung\",\"category\":\"koerper\",\"icon\":\"schritte\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":12,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-foot_am\"},{\"id\":\"goal-from-morning\",\"title\":\"Morgenroutine\",\"category\":\"koerper\",\"icon\":\"sonne\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":20,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-morning\"},{\"id\":\"goal-from-breath\",\"title\":\"Atemübung 4-7-8\",\"category\":\"geist\",\"icon\":\"welle\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":8,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-breath\"},{\"id\":\"goal-from-sunlight\",\"title\":\"Draußen\",\"category\":\"koerper\",\"icon\":\"sonne\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":5,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-sunlight\"},{\"id\":\"goal-from-noscreen_am\",\"title\":\"Screen-frei\",\"category\":\"geist\",\"icon\":\"blatt\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":15,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-noscreen_am\"},{\"id\":\"goal-from-teeth\",\"title\":\"Zähne\",\"category\":\"koerper\",\"icon\":\"funke\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":5,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-teeth\"},{\"id\":\"goal-from-movement\",\"title\":\"Bewegungspause\",\"category\":\"koerper\",\"icon\":\"schritte\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":3,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-movement\"},{\"id\":\"goal-from-foot_noon\",\"title\":\"Gangschulung\",\"category\":\"koerper\",\"icon\":\"schritte\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":15,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-foot_noon\"},{\"id\":\"goal-from-box\",\"title\":\"Box Breathing\",\"category\":\"geist\",\"icon\":\"welle\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":10,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-box\"},{\"id\":\"goal-from-learning\",\"title\":\"Input\",\"category\":\"geist\",\"icon\":\"buch\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":15,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-learning\"},{\"id\":\"goal-from-cooking\",\"title\":\"Gekocht\",\"category\":\"koerper\",\"icon\":\"tasse\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":15,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-cooking\"},{\"id\":\"goal-from-others\",\"title\":\"Für andere\",\"category\":\"menschen\",\"icon\":\"herz\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":20,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-others\"},{\"id\":\"goal-from-strength\",\"title\":\"Kräftigung\",\"category\":\"koerper\",\"icon\":\"hantel\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":20,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-strength\"},{\"id\":\"goal-from-protein\",\"title\":\"Protein pro Mahlzeit\",\"category\":\"koerper\",\"icon\":\"tasse\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":10,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-protein\"},{\"id\":\"goal-from-social\",\"title\":\"Sozialer Kontakt\",\"category\":\"menschen\",\"icon\":\"sprechblase\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":10,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-social\"},{\"id\":\"goal-from-meal_order\",\"title\":\"Gemüse/Protein zuerst\",\"category\":\"koerper\",\"icon\":\"tasse\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":10,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-meal_order\"},{\"id\":\"goal-from-post_meal_walk\",\"title\":\"Nach dem Essen bewegen\",\"category\":\"koerper\",\"icon\":\"schritte\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":10,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-post_meal_walk\"},{\"id\":\"goal-from-estim_noon\",\"title\":\"Elektrostimulation\",\"category\":\"koerper\",\"icon\":\"funke\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":20,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-estim_noon\"},{\"id\":\"goal-from-estim_evening\",\"title\":\"Elektrostimulation\",\"category\":\"koerper\",\"icon\":\"funke\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":20,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-estim_evening\"},{\"id\":\"goal-from-foot_pm\",\"title\":\"Fuß-Regeneration\",\"category\":\"koerper\",\"icon\":\"welle\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":10,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-foot_pm\"},{\"id\":\"goal-from-stretch\",\"title\":\"Dehnung\",\"category\":\"koerper\",\"icon\":\"pflanze\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":10,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-stretch\"},{\"id\":\"goal-from-vagus_eve\",\"title\":\"Vagus\",\"category\":\"geist\",\"icon\":\"welle\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":15,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-vagus_eve\"},{\"id\":\"goal-from-meditation\",\"title\":\"Meditation\",\"category\":\"geist\",\"icon\":\"mond\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":15,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-meditation\"},{\"id\":\"goal-from-gratitude\",\"title\":\"Dankbarkeit\",\"category\":\"geist\",\"icon\":\"herz\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":10,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-gratitude\"},{\"id\":\"goal-from-no_alcohol\",\"title\":\"Kein Alkohol\",\"category\":\"verzicht\",\"icon\":\"glas\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":20,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-no_alcohol\"},{\"id\":\"goal-from-no_sugar\",\"title\":\"Kein Zucker\",\"category\":\"verzicht\",\"icon\":\"tropfen\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":15,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-no_sugar\"},{\"id\":\"goal-from-no_drugs\",\"title\":\"Drogenfrei\",\"category\":\"verzicht\",\"icon\":\"blatt\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":20,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-no_drugs\"},{\"id\":\"goal-from-no_meat\",\"title\":\"Kein Fleisch\",\"category\":\"verzicht\",\"icon\":\"pflanze\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":15,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-no_meat\"},{\"id\":\"goal-from-no_carbs\",\"title\":\"Keine Kohlenhydrate\",\"category\":\"verzicht\",\"icon\":\"tropfen\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":15,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-no_carbs\"},{\"id\":\"goal-from-gluten_free\",\"title\":\"Glutenfrei\",\"category\":\"verzicht\",\"icon\":\"pflanze\",\"drawing\":null,\"rhythm\":\"taeglich\",\"time\":null,\"xp\":10,\"archived\":false,\"createdAt\":1793704680071,\"sourceHabitId\":\"habit-gluten_free\"}],\"logs\":[],\"earned\":[{\"id\":\"goal-from-sleep\",\"tier\":\"gesperrt\",\"at\":1793704680072},{\"id\":\"goal-from-foot_am\",\"tier\":\"gesperrt\",\"at\":1793704680073},{\"id\":\"goal-from-morning\",\"tier\":\"gesperrt\",\"at\":1793704680074},{\"id\":\"goal-from-breath\",\"tier\":\"gesperrt\",\"at\":1793704680075},{\"id\":\"goal-from-sunlight\",\"tier\":\"gesperrt\",\"at\":1793704680075},{\"id\":\"goal-from-noscreen_am\",\"tier\":\"gesperrt\",\"at\":1793704680076},{\"id\":\"goal-from-teeth\",\"tier\":\"gesperrt\",\"at\":1793704680077},{\"id\":\"goal-from-movement\",\"tier\":\"gesperrt\",\"at\":1793704680077},{\"id\":\"goal-from-foot_noon\",\"tier\":\"gesperrt\",\"at\":1793704680078},{\"id\":\"goal-from-box\",\"tier\":\"gesperrt\",\"at\":1793704680078},{\"id\":\"goal-from-learning\",\"tier\":\"gesperrt\",\"at\":1793704680079},{\"id\":\"goal-from-cooking\",\"tier\":\"gesperrt\",\"at\":1793704680079},{\"id\":\"goal-from-others\",\"tier\":\"gesperrt\",\"at\":1793704680080},{\"id\":\"goal-from-strength\",\"tier\":\"gesperrt\",\"at\":1793704680080},{\"id\":\"goal-from-protein\",\"tier\":\"gesperrt\",\"at\":1793704680081},{\"id\":\"goal-from-social\",\"tier\":\"gesperrt\",\"at\":1793704680081},{\"id\":\"goal-from-meal_order\",\"tier\":\"gesperrt\",\"at\":1793704680082},{\"id\":\"goal-from-post_meal_walk\",\"tier\":\"gesperrt\",\"at\":1793704680082},{\"id\":\"goal-from-estim_noon\",\"tier\":\"gesperrt\",\"at\":1793704680083},{\"id\":\"goal-from-estim_evening\",\"tier\":\"gesperrt\",\"at\":1793704680083},{\"id\":\"goal-from-foot_pm\",\"tier\":\"gesperrt\",\"at\":1793704680084},{\"id\":\"goal-from-stretch\",\"tier\":\"gesperrt\",\"at\":1793704680084},{\"id\":\"goal-from-vagus_eve\",\"tier\":\"gesperrt\",\"at\":1793704680085},{\"id\":\"goal-from-meditation\",\"tier\":\"gesperrt\",\"at\":1793704680087},{\"id\":\"goal-from-gratitude\",\"tier\":\"gesperrt\",\"at\":1793704680087},{\"id\":\"goal-from-no_alcohol\",\"tier\":\"gesperrt\",\"at\":1793704680088},{\"id\":\"goal-from-no_sugar\",\"tier\":\"gesperrt\",\"at\":1793704680088},{\"id\":\"goal-from-no_drugs\",\"tier\":\"gesperrt\",\"at\":1793704680089},{\"id\":\"goal-from-no_meat\",\"tier\":\"gesperrt\",\"at\":1793704680089},{\"id\":\"goal-from-no_carbs\",\"tier\":\"gesperrt\",\"at\":1793704680090},{\"id\":\"goal-from-gluten_free\",\"tier\":\"gesperrt\",\"at\":1793704680090}]}",
+  "goals_migrated_v2": "1",
+  "goals_migrated_v3": "1",
+  "exercises_seeded_v1": "1",
+  "exercises_seeded_v2": "1",
+  "exercises_seeded_v3_legacy": "1",
+  "theme_auto_default": "21:00",
+  "xp_legacy_migrated_v1": "1",
+  "last_backup_notice_ts": "1793704680142",
+  "push_device_id": "2a8c0caa-10c8-4078-8ded-261ee854ab95",
+  "eat16_8": "{\"start\":\"12:00\",\"end\":\"20:00\"}",
+  "16_8_active": "1",
+  "timerStart": "1793649600000",
+  "water_extra_Tue Nov 03 2026": "1.2",
+  "xp_award_day_2026-11-03_item_supp-vitamin-d3": "1",
+  "xp_total": "44",
+  "xp_day_2026-11-03": "44",
+  "xp_last_action": "Omega-3 EPA/DHA|+8",
+  "xp_award_day_2026-11-03_item_supp-vitamin-k2-mk-7": "1",
+  "trophy_first_check": "1",
+  "xp_award_ever_trophy_first_check": "1",
+  "xp_award_day_2026-11-03_item_supp-omega-3-epa-dha": "1"
+ },
+ "content": [
+  {
+   "id": "supp-vitamin-d3",
+   "type": "supplement",
+   "title": "Vitamin D3",
+   "dose": "5.000 IE",
+   "time": "morning",
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "mechanism": "Aktiviert Osteoblasten, fördert Kalziumaufnahme. Essentiell für Knochenremineralisierung und Immunmodulation.",
+    "synergy": "Zwingend mit K2 MK-7 kombinieren. Magnesium für D3-Aktivierung nötig.",
+    "caution": "Ohne K2 droht Kalziumablagerung in Gefäßen. Fettlöslich — mit Mahlzeit einnehmen.",
+    "natural": "Fettreicher Fisch (Lachs, Hering, Makrele), Eigelb, UV-exponierte Pilze."
+   },
+   "order": 0
+  },
+  {
+   "id": "supp-vitamin-k2-mk-7",
+   "type": "supplement",
+   "title": "Vitamin K2 MK-7",
+   "dose": "200mcg",
+   "time": "morning",
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "mechanism": "Aktiviert Osteocalcin — leitet Kalzium aus dem Blut in die Knochenmatrix. Verhindert Gefäßverkalkung.",
+    "synergy": "Immer mit D3. Synergie mit Magnesium und Kollagen.",
+    "caution": "Wechselwirkung mit Vitamin-K-Antagonisten (Warfarin) — ärztlich abklären.",
+    "natural": "Natto (höchste Konzentration), Gouda, Edamer, Eigelb, Butter von Weidetieren."
+   },
+   "order": 1
+  },
+  {
+   "id": "supp-omega-3-epa-dha",
+   "type": "supplement",
+   "title": "Omega-3 EPA/DHA",
+   "dose": "2–3g",
+   "time": "morning",
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "mechanism": "Hemmt COX-2 und LOX-Enzyme. Stärkster natürlicher Entzündungshemmer. Verbessert Zellmembranfluidität.",
+    "synergy": "Synergie mit Curcumin und Boswellia für maximale Entzündungshemmung.",
+    "caution": "Leicht blutverdünnend — im Blick behalten.",
+    "natural": "Lachs, Makrele, Hering, Sardinen, Walnüsse, Leinsamen, Chiasamen."
+   },
+   "order": 2
+  },
+  {
+   "id": "supp-kollagen-typ-i-ii",
+   "type": "supplement",
+   "title": "Kollagen Typ I/II",
+   "dose": "15g",
+   "time": "morning",
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "mechanism": "Liefert Glycin, Prolin, Hydroxyprolin für Sehnen, Bänder, Knorpel. Timing: 60 Min VOR Bewegung für maximalen Einbau.",
+    "synergy": "Zwingend gleichzeitig mit Vitamin C. Silizium unterstützt Quervernetzung.",
+    "caution": "Ohne mechanische Belastung stark reduzierte Wirkung.",
+    "natural": "Knochenbrühe (lange gekocht), Hühnerknorpel, Fischsud."
+   },
+   "order": 3
+  },
+  {
+   "id": "supp-vitamin-c",
+   "type": "supplement",
+   "title": "Vitamin C",
+   "dose": "1g",
+   "time": "morning",
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "mechanism": "Co-Faktor der Kollagensynthese-Enzyme. Antioxidans, schützt Fibroblasten.",
+    "synergy": "Immer gleichzeitig mit Kollagen einnehmen.",
+    "caution": "Über 2g täglich kann GI-Beschwerden verursachen.",
+    "natural": "Paprika, Kiwi, Acerola, Brokkoli, Grünkohl, Zitrusfrüchte."
+   },
+   "order": 4
+  },
+  {
+   "id": "supp-boswellia",
+   "type": "supplement",
+   "title": "Boswellia",
+   "dose": "400mg",
+   "time": "midday",
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "mechanism": "Hemmt 5-Lipoxygenase (5-LOX) und damit die Bildung von Leukotrienen. Wirkt in Studien bei Gelenkbeschwerden und Ödemen.",
+    "synergy": "Stärkste Synergie mit Curcumin (unterschiedliche Angriffspunkte).",
+    "caution": "Mit Mahlzeit einnehmen. Nicht mit Immunsuppressiva kombinieren.",
+    "natural": "Kein sinnvoller Nahrungsmittelweg — nur als Extrakt wirksam."
+   },
+   "order": 5
+  },
+  {
+   "id": "supp-curcumin-piperin",
+   "type": "supplement",
+   "title": "Curcumin + Piperin",
+   "dose": "500mg",
+   "time": "midday",
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "mechanism": "Hemmt in Studien NF-kB und COX-2 — zentraler Entzündungs-Transkriptionsfaktor. Piperin verbessert die Bioverfügbarkeit deutlich.",
+    "synergy": "Piperin zwingend. Synergie mit Boswellia und Omega-3.",
+    "caution": "Hemmt CYP3A4 — Wechselwirkungen möglich. Separat von Eisen einnehmen.",
+    "natural": "Kurkuma frisch, schwarzer Pfeffer, Ingwer."
+   },
+   "order": 6
+  },
+  {
+   "id": "supp-zink",
+   "type": "supplement",
+   "title": "Zink",
+   "dose": "15–20mg",
+   "time": "midday",
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "mechanism": "Co-Faktor von über 300 Enzymen. Essentiell für Wundheilung, Knochenaufbau und Immunfunktion.",
+    "synergy": "Quercetin als Zink-Ionophor (transportiert Zink in Zellen).",
+    "caution": "Langfristig >40mg täglich depletiert Kupfer. Nicht mit Eisen zusammen.",
+    "natural": "Austern, Kürbiskerne, Rinderhack, Linsen, Cashews."
+   },
+   "order": 7
+  },
+  {
+   "id": "supp-quercetin",
+   "type": "supplement",
+   "title": "Quercetin",
+   "dose": "500mg",
+   "time": "midday",
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "mechanism": "Zink-Ionophor, hemmt Hyaluronidase, antiödematös, antioxidativ.",
+    "synergy": "Zwingend mit Zink. Bromelain erhöht Quercetin-Absorption.",
+    "caution": "Kann Schilddrüsenmedikamente beeinflussen.",
+    "natural": "Kapern, rote Zwiebeln, Äpfel (Schale), Heidelbeeren, Brokkoli."
+   },
+   "order": 8
+  },
+  {
+   "id": "supp-glucosamin-msm",
+   "type": "supplement",
+   "title": "Glucosamin + MSM",
+   "dose": "1500mg + 1000mg",
+   "time": "midday",
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "mechanism": "Glucosamin: Strukturbaustein für Knorpel und Gelenkkapsel. MSM: Schwefelquelle für Kollagen- und Bindegewebsmatrix.",
+    "synergy": "Klassische Kombination. Synergie mit Kollagen Typ II.",
+    "caution": "Glucosamin aus Schalentieren — Allergie beachten. Erst ab Refeeding-Phase.",
+    "natural": "Knochenbrühe (Glucosamin). Knoblauch, Zwiebeln, Eier, Brokkoli (Schwefel/MSM)."
+   },
+   "order": 9
+  },
+  {
+   "id": "supp-magnesium-bisglycinate",
+   "type": "supplement",
+   "title": "Magnesium Bisglycinate",
+   "dose": "400mg",
+   "time": "evening",
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "mechanism": "Co-Faktor für D3-Aktivierung und 300+ Enzymreaktionen. Verbessert Schlafarchitektur, senkt Cortisol, beruhigt Nervensystem.",
+    "synergy": "Notwendig für D3-Aktivierung. Synergie mit K2 und B6.",
+    "caution": "Bisglycinate: kein abführender Effekt. Bei Niereninsuffizienz vorsichtig.",
+    "natural": "Dunkle Schokolade (70%+), Kürbiskerne, Spinat, Mandeln, Avocado, Banane."
+   },
+   "order": 10
+  },
+  {
+   "id": "supp-nattokinase",
+   "type": "supplement",
+   "title": "Nattokinase",
+   "dose": "100mg (2000 FU)",
+   "time": "evening",
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "mechanism": "Fibrinolytisches Enzym. Baut Fibrinstrukturen ab, verbessert Mikrozirkulation, natürliche Thromboseprophylaxe.",
+    "synergy": "Synergie mit Omega-3 und Bromelain (alle verbessern Fließeigenschaften).",
+    "caution": "Additiv blutverdünnend — Gesamteffekt im Blick behalten.",
+    "natural": "Natto (fermentierte Sojabohnen) — täglich 50g entspricht ca. einer Supplementdosis."
+   },
+   "order": 11
+  },
+  {
+   "id": "supp-spm-faktoren-omega-3",
+   "type": "supplement",
+   "title": "SPM-Faktoren / Omega-3",
+   "dose": "lt. Packung",
+   "time": "evening",
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "mechanism": "Specialized Pro-resolving Mediators: aktive Entzündungsauflösung. Triggern Makrophagen-Shift M1→M2.",
+    "synergy": "Werden aus EPA/DHA gebildet. Synergie mit Fasten (Autophagie verstärkt M2-Polarisierung).",
+    "caution": "Qualität variiert stark — auf EPA/DHA-Derivate achten.",
+    "natural": "Fetter Seefisch 3–4× wöchentlich."
+   },
+   "order": 12
+  },
+  {
+   "id": "supp-magnesium-silizium",
+   "type": "supplement",
+   "title": "Magnesium + Silizium",
+   "dose": "lt. Packung",
+   "time": "evening",
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "mechanism": "Silizium für Kollagen-Quervernetzung und Knochenmatrix-Aufbau. Aktiviert Enzyme der Kollagenstabilisierung.",
+    "synergy": "Synergie mit Kollagen Typ II und Vit C.",
+    "caution": "Organisches Silizium (Schachtelhalm/Bambus) deutlich bioverfügbarer.",
+    "natural": "Hafer, Hirse, Bambus-Sprossen, Schachtelhalm-Tee, Bananen."
+   },
+   "order": 13
+  },
+  {
+   "id": "habit-sleep",
+   "type": "habit",
+   "title": "Geschlafen",
+   "dose": null,
+   "time": null,
+   "block": "morgen",
+   "schedule": {
+    "days": []
+   },
+   "xp": 20,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "mind. 6 Stunden",
+    "why": "Schlafentzug erhöht CRPS-Schmerzintensität messbar. 6h+ sind kein Luxus — Zellreparatur, Schmerzgedächtnis-Reset und Cortisolabbau finden nur im Tiefschlaf statt.",
+    "core": true
+   },
+   "order": 14
+  },
+  {
+   "id": "habit-foot_am",
+   "type": "habit",
+   "title": "Fuß-Aktivierung",
+   "dose": null,
+   "time": null,
+   "block": "morgen",
+   "schedule": {
+    "days": []
+   },
+   "xp": 12,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "3 Min · vor dem ersten Schritt",
+    "why": "Die erste Gewichtsbelastung nach der Nacht ist kritisch. 3 Min Aktivierung bringt Durchblutung und Propriozeption in den Fuß, bevor er Gewicht trägt.",
+    "core": true
+   },
+   "order": 15
+  },
+  {
+   "id": "habit-morning",
+   "type": "habit",
+   "title": "Morgenroutine",
+   "dose": null,
+   "time": null,
+   "block": "morgen",
+   "schedule": {
+    "days": []
+   },
+   "xp": 20,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "8 Min · Körper aufwecken",
+    "why": "8 Min Bewegung direkt nach dem Aufwachen senkt Cortisol, aktiviert Muskelketten und setzt Serotonin frei. Der Ton für den ganzen Tag wird in den ersten 30 Min gesetzt.",
+    "core": true
+   },
+   "order": 16
+  },
+  {
+   "id": "habit-breath",
+   "type": "habit",
+   "title": "Atemübung 4-7-8",
+   "dose": null,
+   "time": null,
+   "block": "morgen",
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "3 Runden · Nervensystem",
+    "why": "4-7-8 stimuliert den Vagusnerv direkt. Senkt Herzfrequenz und Entzündungsmarker, beruhigt das bei CRPS chronisch überreizte Nervensystem — in unter 3 Minuten.",
+    "core": true
+   },
+   "order": 17
+  },
+  {
+   "id": "habit-sunlight",
+   "type": "habit",
+   "title": "Draußen",
+   "dose": null,
+   "time": null,
+   "block": "morgen",
+   "schedule": {
+    "days": []
+   },
+   "xp": 5,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Tageslicht & frische Luft",
+    "why": "Tageslicht in den ersten 30 Min synchronisiert den Cortisol-Rhythmus und triggert Vitamin-D-Synthese. Beides direkt relevant für Schmerzregulation und Stimmung.",
+    "core": false
+   },
+   "order": 18
+  },
+  {
+   "id": "habit-noscreen_am",
+   "type": "habit",
+   "title": "Screen-frei",
+   "dose": null,
+   "time": null,
+   "block": "morgen",
+   "schedule": {
+    "days": []
+   },
+   "xp": 15,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Erste 30 Min nach dem Aufwachen",
+    "why": "Ohne Bildschirm kann das Gehirn beim Aufwachen die Schmerzverarbeitung neu kalibrieren. Displays aktivieren sofort den Sympathikus — der bei CRPS ohnehin überaktiv ist.",
+    "core": false
+   },
+   "order": 19
+  },
+  {
+   "id": "habit-teeth",
+   "type": "habit",
+   "title": "Zähne",
+   "dose": null,
+   "time": null,
+   "block": "morgen",
+   "schedule": {
+    "days": []
+   },
+   "xp": 5,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "2 Min + Zungenreiniger",
+    "why": "Orale Hygiene senkt systemische Entzündungslast. Bei CRPS verstärkt jeder Entzündungsreiz im Körper die Symptome — auch Entzündungen im Mund.",
+    "core": false
+   },
+   "order": 20
+  },
+  {
+   "id": "habit-movement",
+   "type": "habit",
+   "title": "Bewegungspause",
+   "dose": null,
+   "time": null,
+   "block": "tag",
+   "schedule": {
+    "days": []
+   },
+   "xp": 3,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "2 Min aufstehen · strecken",
+    "why": "2 Min aufstehen unterbricht die sympathische Dauerreizung durch langes Sitzen. Der Sympathikus ist bei CRPS chronisch überaktiv — jede Pause hilft.",
+    "core": false
+   },
+   "order": 21
+  },
+  {
+   "id": "habit-foot_noon",
+   "type": "habit",
+   "title": "Gangschulung",
+   "dose": null,
+   "time": null,
+   "block": "tag",
+   "schedule": {
+    "days": []
+   },
+   "xp": 15,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "4 Min · Muskel & Koordination",
+    "why": "Mittags ist der Körper warm und bereit. Gangschulung jetzt trainiert neuromuskuläre Kontrolle auf höchstem Level und normalisiert das durch KMÖ veränderte Gangbild.",
+    "core": true
+   },
+   "order": 22
+  },
+  {
+   "id": "habit-box",
+   "type": "habit",
+   "title": "Box Breathing",
+   "dose": null,
+   "time": null,
+   "block": "tag",
+   "schedule": {
+    "days": []
+   },
+   "xp": 10,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Stress abbauen · 5 Runden",
+    "why": "Box Breathing (4-4-4-4) ist die direkteste nicht-pharmakologische Methode zur Parasympathikus-Aktivierung. Nachweislich bei akutem Stress und Schmerzspitzen wirksam.",
+    "core": true
+   },
+   "order": 23
+  },
+  {
+   "id": "habit-learning",
+   "type": "habit",
+   "title": "Input",
+   "dose": null,
+   "time": null,
+   "block": "tag",
+   "schedule": {
+    "days": []
+   },
+   "xp": 15,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "10 Minuten Neues",
+    "why": "Kognitive Stimulation fördert Neuroplastizität — der zentrale Mechanismus, durch den das Gehirn Schmerzmuster umlernt. Lernen ist buchstäblich Schmerztherapie.",
+    "core": false
+   },
+   "order": 24
+  },
+  {
+   "id": "habit-cooking",
+   "type": "habit",
+   "title": "Gekocht",
+   "dose": null,
+   "time": null,
+   "block": "tag",
+   "schedule": {
+    "days": []
+   },
+   "xp": 15,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Eine Mahlzeit selbst gekocht",
+    "why": "Selbst kochen senkt den Anteil ultra-verarbeiteter Lebensmittel direkt. Fertigkost erhöht systemische Entzündungslast messbar.",
+    "core": false
+   },
+   "order": 25
+  },
+  {
+   "id": "habit-others",
+   "type": "habit",
+   "title": "Für andere",
+   "dose": null,
+   "time": null,
+   "block": "tag",
+   "schedule": {
+    "days": []
+   },
+   "xp": 20,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Etwas für jemand getan",
+    "why": "Echtes Geben setzt Oxytocin frei — ein direkter Schmerzdämpfer. Soziale Verbindung ist einer der wenigen kostenlosen Hebel mit nachgewiesenem Effekt auf Schmerztoleranz.",
+    "core": false
+   },
+   "order": 26
+  },
+  {
+   "id": "habit-strength",
+   "type": "habit",
+   "title": "Kräftigung",
+   "dose": null,
+   "time": null,
+   "block": "tag",
+   "schedule": {
+    "days": []
+   },
+   "xp": 20,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "5 Übungen · Kraft & Stabilität",
+    "why": "Starke Muskulatur entlastet Gelenke und normalisiert die CRPS-typische Schutzspannung. Jede Trainingseinheit baut dem Muskelabbau aktiv entgegen.",
+    "core": true
+   },
+   "order": 27
+  },
+  {
+   "id": "habit-protein",
+   "type": "habit",
+   "title": "Protein pro Mahlzeit",
+   "dose": null,
+   "time": null,
+   "block": "tag",
+   "schedule": {
+    "days": []
+   },
+   "xp": 10,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Jede Mahlzeit eine Proteinquelle",
+    "why": "~1,5 g Protein/kg Körpergewicht/Tag verteilt auf mehrere Mahlzeiten fördert Muskelproteinsynthese wirksamer als eine große Portion.",
+    "core": false
+   },
+   "order": 28
+  },
+  {
+   "id": "habit-social",
+   "type": "habit",
+   "title": "Sozialer Kontakt",
+   "dose": null,
+   "time": null,
+   "block": "tag",
+   "schedule": {
+    "days": []
+   },
+   "xp": 10,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Echtes Gespräch oder Zeit mit jemandem",
+    "why": "Soziale Isolation erhöht vorzeitige Sterblichkeit um bis zu 30 %. Echte Verbindung senkt Cortisol und Schmerzintensität messbar.",
+    "core": false
+   },
+   "order": 29
+  },
+  {
+   "id": "habit-meal_order",
+   "type": "habit",
+   "title": "Gemüse/Protein zuerst",
+   "dose": null,
+   "time": null,
+   "block": "tag",
+   "schedule": {
+    "days": []
+   },
+   "xp": 10,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Kohlenhydrate zuletzt essen",
+    "why": "Die Reihenfolge allein senkt den Blutzuckeranstieg um 20–40 %: Ballaststoffe und Protein verlangsamen die Magenentleerung und triggern GLP-1.",
+    "core": false
+   },
+   "order": 30
+  },
+  {
+   "id": "habit-post_meal_walk",
+   "type": "habit",
+   "title": "Nach dem Essen bewegen",
+   "dose": null,
+   "time": null,
+   "block": "tag",
+   "schedule": {
+    "days": []
+   },
+   "xp": 10,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "10 Min. leichtes Gehen",
+    "why": "10 Minuten Gehen direkt nach dem Essen senken die Blutzuckerspitze um 17–24 % (Meta-Review 2022).",
+    "core": false
+   },
+   "order": 31
+  },
+  {
+   "id": "habit-estim_noon",
+   "type": "habit",
+   "title": "Elektrostimulation",
+   "dose": null,
+   "time": null,
+   "block": "tag",
+   "schedule": {
+    "days": []
+   },
+   "xp": 20,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Fuß + Knie · TENS/EMS · Mittag",
+    "why": "TENS moduliert die Schmerzweiterleitung (Gate-Control-Theorie) und kann bei neuropathischem CRPS-Schmerz lindernd wirken. EMS erhält Muskelaktivität in der geschonten Extremität.",
+    "core": true
+   },
+   "order": 32
+  },
+  {
+   "id": "habit-estim_evening",
+   "type": "habit",
+   "title": "Elektrostimulation",
+   "dose": null,
+   "time": null,
+   "block": "abend",
+   "schedule": {
+    "days": []
+   },
+   "xp": 20,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Fuß + Knie · TENS/EMS · Abend",
+    "why": "Die zweite Session am Abend hält den analgetischen Effekt aufrecht. EMS-Arbeit gegen Ende des Tages reduziert die nächtliche Ödemneigung.",
+    "core": true
+   },
+   "order": 33
+  },
+  {
+   "id": "habit-foot_pm",
+   "type": "habit",
+   "title": "Fuß-Regeneration",
+   "dose": null,
+   "time": null,
+   "block": "abend",
+   "schedule": {
+    "days": []
+   },
+   "xp": 10,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "3 Min · Entstauung & Mobilisation",
+    "why": "Lymphatischer Rückfluss passiert hauptsächlich im Liegen. Aktiv unterstützen verhindert Ödem-Akkumulation über Nacht — die Hauptursache für Morgensteifigkeit bei KMÖ.",
+    "core": true
+   },
+   "order": 34
+  },
+  {
+   "id": "habit-stretch",
+   "type": "habit",
+   "title": "Dehnung",
+   "dose": null,
+   "time": null,
+   "block": "abend",
+   "schedule": {
+    "days": []
+   },
+   "xp": 10,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "10 Min · Faszien & Gelenke",
+    "why": "Faszienarbeit am Abend löst tagsüber aufgebaute Spannungen und bereitet das Nervensystem auf die Regenerationsphase des Schlafs vor.",
+    "core": true
+   },
+   "order": 35
+  },
+  {
+   "id": "habit-vagus_eve",
+   "type": "habit",
+   "title": "Vagus",
+   "dose": null,
+   "time": null,
+   "block": "abend",
+   "schedule": {
+    "days": []
+   },
+   "xp": 15,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "5 Min · Parasympathikus",
+    "why": "5 Min Vagus-Stimulation senkt den Ruhepuls messbar und erhöht die Herzratenvariabilität — beides direkte Marker für Nervensystemgesundheit bei CRPS.",
+    "core": true
+   },
+   "order": 36
+  },
+  {
+   "id": "habit-meditation",
+   "type": "habit",
+   "title": "Meditation",
+   "dose": null,
+   "time": null,
+   "block": "abend",
+   "schedule": {
+    "days": []
+   },
+   "xp": 15,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "10 Minuten",
+    "why": "10 Min Meditation verändert Schmerzperzeption auf neuraler Ebene — nachgewiesen durch veränderte Insula-Aktivität bei chronischen Schmerzpatienten.",
+    "core": true
+   },
+   "order": 37
+  },
+  {
+   "id": "habit-gratitude",
+   "type": "habit",
+   "title": "Dankbarkeit",
+   "dose": null,
+   "time": null,
+   "block": "abend",
+   "schedule": {
+    "days": []
+   },
+   "xp": 10,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Was war dein Up heute?",
+    "why": "Dankbarkeit aktiviert den präfrontalen Kortex und dämpft die Amygdala — direkte Auswirkung auf Schmerztoleranz und Schlafqualität. 3 Dinge reichen.",
+    "core": false
+   },
+   "order": 38
+  },
+  {
+   "id": "habit-no_alcohol",
+   "type": "habit",
+   "title": "Kein Alkohol",
+   "dose": null,
+   "time": null,
+   "block": "verzicht",
+   "schedule": {
+    "days": []
+   },
+   "xp": 20,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Jeder Tag ohne Alkohol zählt",
+    "why": "Alkohol verstärkt Neuroinflammation und zerstört Tiefschlaf. Beides sind die stärksten bekannten Trigger für CRPS-Verschlechterung — auch in kleinen Mengen.",
+    "core": true
+   },
+   "order": 39
+  },
+  {
+   "id": "habit-no_sugar",
+   "type": "habit",
+   "title": "Kein Zucker",
+   "dose": null,
+   "time": null,
+   "block": "verzicht",
+   "schedule": {
+    "days": []
+   },
+   "xp": 15,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Zucker entzündet",
+    "why": "Zucker erhöht CRP und andere Entzündungsmarker direkt. Bei CRPS, wo Entzündung ein Kernmechanismus ist, zählt jeder zuckerfreie Tag.",
+    "core": false
+   },
+   "order": 40
+  },
+  {
+   "id": "habit-no_drugs",
+   "type": "habit",
+   "title": "Drogenfrei",
+   "dose": null,
+   "time": null,
+   "block": "verzicht",
+   "schedule": {
+    "days": []
+   },
+   "xp": 20,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Jeder Tag ohne Drogen zählt",
+    "why": "Das Nervensystem braucht ungestörte Chemie um sich zu regulieren. Jeder drogenfreie Tag ist ein Tag, an dem Neuroplastizität ungehindert arbeiten kann.",
+    "core": true
+   },
+   "order": 41
+  },
+  {
+   "id": "habit-no_meat",
+   "type": "habit",
+   "title": "Kein Fleisch",
+   "dose": null,
+   "time": null,
+   "block": "verzicht",
+   "schedule": {
+    "days": []
+   },
+   "xp": 15,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Pflanzlich ist entzündungsärmer",
+    "why": "Rotes und verarbeitetes Fleisch erhöht Arachidonsäure und Pro-Entzündungs-Eicosanoide. Pflanzliche Tage senken die systemische Entzündungslast messbar.",
+    "core": false
+   },
+   "order": 42
+  },
+  {
+   "id": "habit-no_carbs",
+   "type": "habit",
+   "title": "Keine Kohlenhydrate",
+   "dose": null,
+   "time": null,
+   "block": "verzicht",
+   "schedule": {
+    "days": []
+   },
+   "xp": 15,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Low-Carb / ketogen",
+    "why": "Ketose senkt Insulinspiegel und Entzündungsmarker. Für CRPS-Betroffene kann die Reduktion von Blutzuckerspitzen die Schmerzintensität deutlich verringern.",
+    "core": false
+   },
+   "order": 43
+  },
+  {
+   "id": "habit-gluten_free",
+   "type": "habit",
+   "title": "Glutenfrei",
+   "dose": null,
+   "time": null,
+   "block": "verzicht",
+   "schedule": {
+    "days": []
+   },
+   "xp": 10,
+   "notify": false,
+   "active": true,
+   "details": {
+    "sub": "Ohne Weizen, Roggen, Gerste",
+    "why": "Auch ohne Zöliakie kann Gluten bei sensiblen Personen intestinale Entzündung und Neuroinflammation fördern.",
+    "core": false
+   },
+   "order": 44
+  },
+  {
+   "id": "exercise-box-breathing",
+   "type": "exercise",
+   "title": "Box Breathing",
+   "dose": null,
+   "time": null,
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 10,
+   "notify": false,
+   "active": true,
+   "details": {
+    "kind": "atmung",
+    "durationSec": 128,
+    "cue": null,
+    "rounds": 8,
+    "pattern": [
+     {
+      "label": "Einatmen",
+      "sec": 4
+     },
+     {
+      "label": "Halten",
+      "sec": 4
+     },
+     {
+      "label": "Ausatmen",
+      "sec": 4
+     },
+     {
+      "label": "Halten",
+      "sec": 4
+     }
+    ],
+    "linkedGoalId": "goal-from-box",
+    "anleitung": "4 ein, 4 halten, 4 aus, 4 halten. Ein Quadrat aus Luft, der Kreis zeigt dir, wo du gerade bist."
+   },
+   "order": 9000
+  },
+  {
+   "id": "exercise-478",
+   "type": "exercise",
+   "title": "4-7-8 Atmung",
+   "dose": null,
+   "time": null,
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 8,
+   "notify": false,
+   "active": true,
+   "details": {
+    "kind": "atmung",
+    "durationSec": 57,
+    "cue": null,
+    "rounds": 3,
+    "pattern": [
+     {
+      "label": "Einatmen",
+      "sec": 4
+     },
+     {
+      "label": "Halten",
+      "sec": 7
+     },
+     {
+      "label": "Ausatmen",
+      "sec": 8
+     }
+    ],
+    "linkedGoalId": "goal-from-breath",
+    "anleitung": "4 Sekunden durch die Nase ein, 7 halten, 8 langsam durch den Mund aus. Der gelbe Kreis gibt den Takt vor. Wird dir schwindelig, einfach normal weiteratmen."
+   },
+   "order": 9001
+  },
+  {
+   "id": "exercise-foot-activation",
+   "type": "exercise",
+   "title": "Fuß-Aktivierung",
+   "dose": null,
+   "time": null,
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 12,
+   "notify": false,
+   "active": true,
+   "details": {
+    "kind": "timer",
+    "durationSec": 180,
+    "cue": "Kreisen, wippen, Zehen spreizen",
+    "pattern": null,
+    "linkedGoalId": "goal-from-foot_am",
+    "anleitung": "Guten Morgen, Füße. Zehen 10× spreizen und einrollen, den Fuß 10× sanft kreisen lassen, die Fußspitze 10× zu dir ziehen und strecken. Wir wecken, wir zwingen nicht."
+   },
+   "order": 9002
+  },
+  {
+   "id": "exercise-stretch",
+   "type": "exercise",
+   "title": "Dehnung",
+   "dose": null,
+   "time": null,
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 10,
+   "notify": false,
+   "active": true,
+   "details": {
+    "kind": "timer",
+    "durationSec": 600,
+    "cue": "Faszien & Gelenke lockern",
+    "pattern": null,
+    "linkedGoalId": "goal-from-stretch",
+    "anleitung": "Wade, Oberschenkel, Hüfte, Rücken: jede Dehnung 30 Sekunden halten, ruhig weiteratmen, nicht wippen. Dehnen heißt nicht ziehen, bis es quietscht."
+   },
+   "order": 9003
+  },
+  {
+   "id": "exercise-vagus",
+   "type": "exercise",
+   "title": "Vagus-Stimulation",
+   "dose": null,
+   "time": null,
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 15,
+   "notify": false,
+   "active": true,
+   "details": {
+    "kind": "timer",
+    "durationSec": 300,
+    "cue": "Tief & langsam atmen, summen",
+    "pattern": null,
+    "linkedGoalId": "goal-from-vagus_eve",
+    "anleitung": "Summen, gurgeln, lange ausatmen: drei kleine Tricks für den Ruhenerv. Tief und brummig summen, als hättest du gute Laune. Irgendwann stimmt das sogar."
+   },
+   "order": 9004
+  },
+  {
+   "id": "exercise-4-6-lymph",
+   "type": "exercise",
+   "title": "4–6 Lymph-Atmung",
+   "dose": null,
+   "time": null,
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 10,
+   "notify": false,
+   "active": true,
+   "details": {
+    "kind": "atmung",
+    "durationSec": 600,
+    "cue": null,
+    "rounds": 60,
+    "pattern": [
+     {
+      "label": "Einatmen",
+      "sec": 4
+     },
+     {
+      "label": "Ausatmen",
+      "sec": 6
+     }
+    ],
+    "anleitung": "Wächst der Kreis, atmest du durch die Nase ein. Schrumpft er, lässt du die Luft langsam durch den Mund raus. Das lange Ausatmen bremst den Puls und schiebt Lymphe Richtung Herz."
+   },
+   "order": 9010
+  },
+  {
+   "id": "exercise-wimhof",
+   "type": "exercise",
+   "title": "Wim Hof",
+   "dose": null,
+   "time": null,
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 12,
+   "notify": false,
+   "active": true,
+   "details": {
+    "kind": "atmung",
+    "durationSec": 90,
+    "cue": "30 schnelle tiefe Atemzüge, dann ausatmen und die Luft so lange halten, wie es angenehm ist. Danach einmal tief einatmen und 15 Sekunden halten. Nur morgens, liegend, niemals im Wasser.",
+    "rounds": 30,
+    "pattern": [
+     {
+      "label": "Tief ein",
+      "sec": 2
+     },
+     {
+      "label": "Loslassen",
+      "sec": 1
+     }
+    ]
+   },
+   "order": 9011
+  },
+  {
+   "id": "exercise-vagus-session",
+   "type": "exercise",
+   "title": "Vagus-Session",
+   "dose": null,
+   "time": null,
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 20,
+   "notify": false,
+   "active": true,
+   "details": {
+    "kind": "schritte",
+    "cue": "Tägliche N.-Vagus-Aktivierung senkt TNF-α und reduziert Gelenkschwellungen.",
+    "steps": [
+     {
+      "name": "Tiefes Gurgeln",
+      "hint": "Mund voll Wasser nehmen. Kopf leicht zurück. 20–30 Sek tief und laut gurgeln. Vagus-Aktivierung via Pharynxmuskulatur.",
+      "sec": 30
+     },
+     {
+      "name": "Humming (Summen)",
+      "hint": "Lippen geschlossen, tief summen auf Ausatmung. Vibration im Brustkorb spüren. Aktiviert N. Vagus über Stimmlippen.",
+      "sec": 60
+     },
+     {
+      "name": "Zungen-Presse",
+      "hint": "Zungenspitze fest gegen Gaumen drücken. 5 Sek halten, lösen. 10 Wdh. Stimuliert Vagus-Äste im Mundboden.",
+      "sec": 60
+     },
+     {
+      "name": "Cold Face Splash",
+      "hint": "Kaltes Wasser ins Gesicht spritzen oder Kühlkissen auf Stirn/Schläfen. 30 Sek. Aktiviert Tauchreflex, senkt Herzrate, Vagus-Tonus steigt.",
+      "sec": 30
+     },
+     {
+      "name": "Langer Ausatem",
+      "hint": "Einatmen 4 Sek — Ausatmen 8–10 Sek. 6 Zyklen. Verlängerter Ausatem aktiviert parasympathischen Ast. HRV steigt.",
+      "sec": 90
+     }
+    ],
+    "award": {
+     "key": "vagus_drill_complete",
+     "label": "Vagus-Session"
+    },
+    "after": {
+     "type": "vagus"
+    },
+    "durationSec": 270
+   },
+   "order": 9020
+  },
+  {
+   "id": "exercise-mechano",
+   "type": "exercise",
+   "title": "Pulsatile Mechanobiologie",
+   "dose": null,
+   "time": null,
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 12,
+   "notify": false,
+   "active": true,
+   "details": {
+    "kind": "schritte",
+    "steps": [
+     {
+      "name": "Reiz: Dehnung / Isometrik",
+      "hint": "Fibroblasten reagieren auf kurze, intensive Reize (~10 Min) mit 6h refraktärer Phase danach. 3–4 Slots täglich verteilen.",
+      "sec": 600
+     }
+    ],
+    "award": {
+     "key": "mechano_start_{date}",
+     "label": "Mechano-Reiz"
+    },
+    "after": {
+     "type": "cooldown",
+     "key": "mechano_cooldown_until",
+     "hours": 6
+    },
+    "durationSec": 600
+   },
+   "order": 9021
+  },
+  {
+   "id": "exercise-sensory",
+   "type": "exercise",
+   "title": "Sensory Wake-Up",
+   "dose": null,
+   "time": null,
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 10,
+   "notify": false,
+   "active": true,
+   "details": {
+    "kind": "schritte",
+    "steps": [
+     {
+      "name": "Texturerkennung",
+      "hint": "Berühre den linken Fuß abwechselnd mit verschiedenen Materialien: Seide → Wolle → weiches Handtuch → harte Bürste → Eispack. Halte jede Textur 30–60 Sek. Das Ziel ist das Gehirn zu zwingen, sensorische Signale aus dem Fuß wieder zu verarbeiten — Desensibilisierung von Allodynie.",
+      "sec": 600
+     }
+    ],
+    "after": {
+     "type": "pain",
+     "module": "sensory",
+     "question": "Schmerzniveau danach"
+    },
+    "durationSec": 600
+   },
+   "order": 9022
+  },
+  {
+   "id": "exercise-imagery",
+   "type": "exercise",
+   "title": "Explicit Motor Imagery",
+   "dose": null,
+   "time": null,
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 10,
+   "notify": false,
+   "active": true,
+   "details": {
+    "kind": "schritte",
+    "steps": [
+     {
+      "name": "Mentale Bewegung",
+      "hint": "Lege dich hin. Augen schließen. Stelle dir vor, du bewegst die Zehen des linken Fußes — langsam spreizen, schließen, kreisen. Keine echte Bewegung, nur das mentale Bild. Halte 5 Sek pro Bewegung, dann Pause 3 Sek.",
+      "sec": 600
+     }
+    ],
+    "durationSec": 600
+   },
+   "order": 9023
+  },
+  {
+   "id": "exercise-scrubbing",
+   "type": "exercise",
+   "title": "Scrubbing — Stress Loading",
+   "dose": null,
+   "time": null,
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 200,
+   "notify": false,
+   "active": true,
+   "details": {
+    "kind": "schritte",
+    "steps": [
+     {
+      "name": "Bürsten",
+      "hint": "Nehme eine weiche Bürste und bürste mit konstantem, leichtem Druck den Fußrücken in langen Zügen — von den Zehen Richtung Knöchel. 3 Minuten kontinuierlich. Ab Tag 4 täglich, steigere den Druck minimal jede Woche.",
+      "sec": 180
+     }
+    ],
+    "award": {
+     "key": "scrubbing_{date}",
+     "label": "Scrubbing"
+    },
+    "after": {
+     "type": "pain",
+     "module": "scrubbing",
+     "question": "Schmerzniveau während Scrubbing",
+     "flag": "xp_award_ever_scrubbing_done"
+    },
+    "durationSec": 180
+   },
+   "order": 9024
+  },
+  {
+   "id": "exercise-viz",
+   "type": "exercise",
+   "title": "Knochen-Heilung — Visualisierung",
+   "dose": null,
+   "time": null,
+   "block": null,
+   "schedule": {
+    "days": []
+   },
+   "xp": 60,
+   "notify": false,
+   "active": true,
+   "details": {
+    "kind": "schritte",
+    "steps": [
+     {
+      "name": "Geführt, offline",
+      "hint": "Lege dich hin. Augen schließen. Fuß hochgelagert. Drei tiefe Atemzüge durch die Nase — langsam durch den Mund aus. Mit jedem Ausatmen wird die Spannung schwerer und sinkt in die Unterlage. Richte die Aufmerksamkeit auf den linken Fuß. Stell dir vor, wie ein klares Licht durch das Bein fließt — von der Leiste abwärts, durch den Unterschenkel, in den Knöchel hinein. Dieses Licht durchdringt den Knochen. Es füllt das Knochenmark. Es löst Entzündung auf wie Nebel im Wind. Stammzellen erwachen — kleine leuchtende Punkte bauen neue Knochenstruktur auf, Schicht um Schicht. Das Ödem löst sich, der Druck lässt nach. Bleibe noch fünf Minuten hier.",
+      "sec": 600
+     }
+    ],
+    "award": {
+     "key": "viz_meditation_{date}",
+     "label": "Visualisierung"
+    },
+    "durationSec": 600
+   },
+   "order": 9025
+  }
+ ],
+ "goals": [
+  {
+   "id": "goal-from-sleep",
+   "title": "Geschlafen",
+   "category": "koerper",
+   "icon": "bett",
+   "drawing": null,
+   "rhythm": "taeglich",
+   "time": null,
+   "xp": 20,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-sleep",
+   "paused": true
+  },
+  {
+   "id": "goal-from-morning",
+   "title": "Morgenroutine",
+   "category": "koerper",
+   "icon": "sonne",
+   "drawing": null,
+   "rhythm": "taeglich",
+   "time": "08:30",
+   "xp": 20,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-morning",
+   "kind": "routine",
+   "steps": [
+    {
+     "title": "Fuß-Aktivierung",
+     "sourceHabitId": "foot_am",
+     "sec": 180,
+     "mini": false
+    },
+    {
+     "title": "Morgenroutine",
+     "sourceHabitId": "morning",
+     "sec": 480,
+     "mini": true
+    },
+    {
+     "title": "Atemübung 4-7-8",
+     "sourceHabitId": "breath",
+     "sec": 120,
+     "mini": true
+    }
+   ],
+   "paused": false
+  },
+  {
+   "id": "goal-from-sunlight",
+   "title": "Draußen",
+   "category": "koerper",
+   "icon": "schritte",
+   "drawing": null,
+   "rhythm": "taeglich",
+   "time": null,
+   "xp": 5,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-sunlight",
+   "paused": false
+  },
+  {
+   "id": "goal-from-noscreen_am",
+   "title": "Screen-frei",
+   "category": "geist",
+   "icon": "blatt",
+   "drawing": null,
+   "rhythm": "taeglich",
+   "time": null,
+   "xp": 15,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-noscreen_am",
+   "paused": true
+  },
+  {
+   "id": "goal-from-teeth",
+   "title": "Zähne",
+   "category": "koerper",
+   "icon": "funke",
+   "drawing": null,
+   "rhythm": "taeglich",
+   "time": null,
+   "xp": 5,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-teeth",
+   "paused": true
+  },
+  {
+   "id": "goal-from-learning",
+   "title": "Input",
+   "category": "geist",
+   "icon": "buch",
+   "drawing": null,
+   "rhythm": "taeglich",
+   "time": null,
+   "xp": 15,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-learning",
+   "paused": true
+  },
+  {
+   "id": "goal-from-cooking",
+   "title": "Selbst kochen",
+   "category": "koerper",
+   "icon": "pfanne",
+   "drawing": null,
+   "rhythm": "taeglich",
+   "time": null,
+   "xp": 15,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-cooking",
+   "paused": false
+  },
+  {
+   "id": "goal-from-others",
+   "title": "Random Act of Kindness",
+   "category": "menschen",
+   "icon": "haende",
+   "drawing": null,
+   "rhythm": "gelegenheit",
+   "xp": 20,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-others",
+   "paused": false
+  },
+  {
+   "id": "goal-from-protein",
+   "title": "Protein pro Mahlzeit",
+   "category": "koerper",
+   "icon": "tasse",
+   "drawing": null,
+   "rhythm": "taeglich",
+   "time": null,
+   "xp": 10,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-protein",
+   "paused": true
+  },
+  {
+   "id": "goal-from-social",
+   "title": "Sozialer Kontakt",
+   "category": "menschen",
+   "icon": "sprechblase",
+   "drawing": null,
+   "rhythm": "taeglich",
+   "time": null,
+   "xp": 10,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-social",
+   "paused": true
+  },
+  {
+   "id": "goal-from-meal_order",
+   "title": "Gemüse/Protein zuerst",
+   "category": "koerper",
+   "icon": "tasse",
+   "drawing": null,
+   "rhythm": "taeglich",
+   "time": null,
+   "xp": 10,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-meal_order",
+   "paused": true
+  },
+  {
+   "id": "goal-from-post_meal_walk",
+   "title": "Nach dem Essen bewegen",
+   "category": "koerper",
+   "icon": "schritte",
+   "drawing": null,
+   "rhythm": "taeglich",
+   "time": null,
+   "xp": 10,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-post_meal_walk",
+   "paused": true
+  },
+  {
+   "id": "goal-from-no_alcohol",
+   "title": "Kein Alkohol",
+   "category": "verzicht",
+   "icon": "glas",
+   "drawing": null,
+   "xp": 20,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-no_alcohol",
+   "since": "2026-10-03",
+   "kind": "counter",
+   "paused": false
+  },
+  {
+   "id": "goal-from-no_sugar",
+   "title": "Kein Zucker",
+   "category": "verzicht",
+   "icon": "tropfen",
+   "drawing": null,
+   "xp": 15,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-no_sugar",
+   "since": "2026-10-22",
+   "kind": "counter",
+   "paused": false
+  },
+  {
+   "id": "goal-from-no_drugs",
+   "title": "Drogenfrei",
+   "category": "verzicht",
+   "icon": "blatt",
+   "drawing": null,
+   "xp": 20,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-no_drugs",
+   "since": "2026-09-04",
+   "kind": "counter",
+   "paused": false
+  },
+  {
+   "id": "goal-from-no_meat",
+   "title": "Kein Fleisch",
+   "category": "verzicht",
+   "icon": "pflanze",
+   "drawing": null,
+   "xp": 15,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-no_meat",
+   "since": "2026-10-25",
+   "kind": "counter",
+   "paused": false
+  },
+  {
+   "id": "goal-from-no_carbs",
+   "title": "Keine Kohlenhydrate",
+   "category": "verzicht",
+   "icon": "tropfen",
+   "drawing": null,
+   "xp": 15,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-no_carbs",
+   "since": "2026-10-30",
+   "kind": "counter",
+   "paused": false
+  },
+  {
+   "id": "goal-from-gluten_free",
+   "title": "Glutenfrei",
+   "category": "verzicht",
+   "icon": "pflanze",
+   "drawing": null,
+   "xp": 10,
+   "archived": false,
+   "createdAt": 1793704680071,
+   "sourceHabitId": "habit-gluten_free",
+   "since": "2026-09-19",
+   "kind": "counter",
+   "paused": false
+  },
+  {
+   "id": "goal-mittagsroutine",
+   "createdAt": 1793704680093,
+   "archived": false,
+   "paused": false,
+   "title": "Mittagsroutine",
+   "category": "koerper",
+   "icon": "puls",
+   "drawing": null,
+   "rhythm": "taeglich",
+   "time": "12:00",
+   "xp": 20,
+   "kind": "routine",
+   "steps": [
+    {
+     "title": "Bewegungspause",
+     "sourceHabitId": "movement",
+     "sec": 120,
+     "mini": true
+    },
+    {
+     "title": "Gangschulung",
+     "sourceHabitId": "foot_noon",
+     "sec": 240,
+     "mini": true
+    },
+    {
+     "title": "Box Breathing",
+     "sourceHabitId": "box",
+     "sec": 180,
+     "mini": false
+    },
+    {
+     "title": "Kräftigung",
+     "sourceHabitId": "strength",
+     "sec": 300,
+     "mini": false
+    },
+    {
+     "title": "Elektrostimulation",
+     "sourceHabitId": "estim_noon",
+     "sec": 300,
+     "mini": false
+    }
+   ]
+  },
+  {
+   "id": "goal-abendroutine",
+   "createdAt": 1793704680097,
+   "archived": false,
+   "paused": false,
+   "title": "Abendroutine",
+   "category": "koerper",
+   "icon": "mond",
+   "drawing": null,
+   "rhythm": "taeglich",
+   "time": "22:30",
+   "xp": 20,
+   "kind": "routine",
+   "steps": [
+    {
+     "title": "Elektrostimulation",
+     "sourceHabitId": "estim_evening",
+     "sec": 300,
+     "mini": true
+    },
+    {
+     "title": "Fuß-Regeneration",
+     "sourceHabitId": "foot_pm",
+     "sec": 180,
+     "mini": true
+    },
+    {
+     "title": "Dehnung",
+     "sourceHabitId": "stretch",
+     "sec": 600,
+     "mini": false
+    },
+    {
+     "title": "Vagus",
+     "sourceHabitId": "vagus_eve",
+     "sec": 300,
+     "mini": false
+    },
+    {
+     "title": "Meditation",
+     "sourceHabitId": "meditation",
+     "sec": 600,
+     "mini": false
+    }
+   ]
+  },
+  {
+   "id": "goal-mama-anrufen",
+   "title": "Mama anrufen",
+   "category": "menschen",
+   "icon": "telefon",
+   "rhythm": "woche",
+   "xp": 15,
+   "drawing": null,
+   "time": null,
+   "archived": false,
+   "paused": false,
+   "createdAt": 1793704680101
+  },
+  {
+   "id": "goal-abend-checkin",
+   "title": "Abend-Check-in",
+   "category": "geist",
+   "icon": "stift",
+   "rhythm": "taeglich",
+   "time": "22:30",
+   "xp": 15,
+   "drawing": null,
+   "archived": false,
+   "paused": false,
+   "kind": "checkin",
+   "createdAt": 1793704680101
+  },
+  {
+   "id": "goal-im-rahmen",
+   "title": "Im Rahmen",
+   "category": "verzicht",
+   "icon": "glasdurch",
+   "kind": "counter",
+   "since": "2026-10-03",
+   "archived": false,
+   "paused": false,
+   "createdAt": 1793704680108
+  }
+ ],
+ "logs": [
+  {
+   "id": "goal-from-morning__2026-11-02",
+   "goalId": "goal-from-morning",
+   "date": "2026-11-02",
+   "mut": false,
+   "at": 1793704682067,
+   "attachments": [],
+   "updatedAt": 1793704682067,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-11-01",
+   "goalId": "goal-from-morning",
+   "date": "2026-11-01",
+   "mut": false,
+   "at": 1793704682068,
+   "attachments": [],
+   "updatedAt": 1793704682068,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-31",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-31",
+   "mut": true,
+   "at": 1793704682069,
+   "attachments": [],
+   "updatedAt": 1793704682069,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-30",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-30",
+   "mut": false,
+   "at": 1793704682070,
+   "attachments": [],
+   "updatedAt": 1793704682070,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-29",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-29",
+   "mut": false,
+   "at": 1793704682071,
+   "attachments": [],
+   "updatedAt": 1793704682071,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-28",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-28",
+   "mut": false,
+   "at": 1793704682071,
+   "attachments": [],
+   "updatedAt": 1793704682071,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-27",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-27",
+   "mut": false,
+   "at": 1793704682072,
+   "attachments": [],
+   "updatedAt": 1793704682072,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-26",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-26",
+   "mut": false,
+   "at": 1793704682073,
+   "attachments": [],
+   "updatedAt": 1793704682073,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-25",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-25",
+   "mut": false,
+   "at": 1793704682074,
+   "attachments": [],
+   "updatedAt": 1793704682074,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-24",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-24",
+   "mut": false,
+   "at": 1793704682074,
+   "attachments": [],
+   "updatedAt": 1793704682074,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-22",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-22",
+   "mut": false,
+   "at": 1793704682075,
+   "attachments": [],
+   "updatedAt": 1793704682075,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-21",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-21",
+   "mut": false,
+   "at": 1793704682076,
+   "attachments": [],
+   "updatedAt": 1793704682076,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-20",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-20",
+   "mut": false,
+   "at": 1793704682076,
+   "attachments": [],
+   "updatedAt": 1793704682076,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-19",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-19",
+   "mut": true,
+   "at": 1793704682077,
+   "attachments": [],
+   "updatedAt": 1793704682077,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-18",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-18",
+   "mut": false,
+   "at": 1793704682078,
+   "attachments": [],
+   "updatedAt": 1793704682078,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-17",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-17",
+   "mut": false,
+   "at": 1793704682078,
+   "attachments": [],
+   "updatedAt": 1793704682078,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-16",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-16",
+   "mut": false,
+   "at": 1793704682079,
+   "attachments": [],
+   "updatedAt": 1793704682079,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-15",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-15",
+   "mut": false,
+   "at": 1793704682079,
+   "attachments": [],
+   "updatedAt": 1793704682079,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-14",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-14",
+   "mut": false,
+   "at": 1793704682080,
+   "attachments": [],
+   "updatedAt": 1793704682080,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-13",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-13",
+   "mut": false,
+   "at": 1793704682080,
+   "attachments": [],
+   "updatedAt": 1793704682080,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-12",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-12",
+   "mut": false,
+   "at": 1793704682081,
+   "attachments": [],
+   "updatedAt": 1793704682081,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-11",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-11",
+   "mut": false,
+   "at": 1793704682081,
+   "attachments": [],
+   "updatedAt": 1793704682081,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-10-10",
+   "goalId": "goal-from-morning",
+   "date": "2026-10-10",
+   "mut": false,
+   "at": 1793704682082,
+   "attachments": [],
+   "updatedAt": 1793704682082,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-mittagsroutine__2026-11-02",
+   "goalId": "goal-mittagsroutine",
+   "date": "2026-11-02",
+   "mut": false,
+   "at": 1793704682083,
+   "attachments": [],
+   "updatedAt": 1793704682083,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-mittagsroutine__2026-11-01",
+   "goalId": "goal-mittagsroutine",
+   "date": "2026-11-01",
+   "mut": false,
+   "at": 1793704682084,
+   "attachments": [],
+   "updatedAt": 1793704682084,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-mittagsroutine__2026-10-31",
+   "goalId": "goal-mittagsroutine",
+   "date": "2026-10-31",
+   "mut": false,
+   "at": 1793704682085,
+   "attachments": [],
+   "updatedAt": 1793704682085,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-mittagsroutine__2026-10-30",
+   "goalId": "goal-mittagsroutine",
+   "date": "2026-10-30",
+   "mut": false,
+   "at": 1793704682085,
+   "attachments": [],
+   "updatedAt": 1793704682085,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-mittagsroutine__2026-10-28",
+   "goalId": "goal-mittagsroutine",
+   "date": "2026-10-28",
+   "mut": false,
+   "at": 1793704682086,
+   "attachments": [],
+   "updatedAt": 1793704682086,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-mittagsroutine__2026-10-27",
+   "goalId": "goal-mittagsroutine",
+   "date": "2026-10-27",
+   "mut": false,
+   "at": 1793704682086,
+   "attachments": [],
+   "updatedAt": 1793704682086,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-mittagsroutine__2026-10-26",
+   "goalId": "goal-mittagsroutine",
+   "date": "2026-10-26",
+   "mut": false,
+   "at": 1793704682087,
+   "attachments": [],
+   "updatedAt": 1793704682087,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-mittagsroutine__2026-10-25",
+   "goalId": "goal-mittagsroutine",
+   "date": "2026-10-25",
+   "mut": false,
+   "at": 1793704682089,
+   "attachments": [],
+   "updatedAt": 1793704682089,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-11-02",
+   "goalId": "goal-abendroutine",
+   "date": "2026-11-02",
+   "mut": false,
+   "at": 1793704682090,
+   "attachments": [],
+   "updatedAt": 1793704682090,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-11-01",
+   "goalId": "goal-abendroutine",
+   "date": "2026-11-01",
+   "mut": true,
+   "at": 1793704682090,
+   "attachments": [],
+   "updatedAt": 1793704682090,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-10-31",
+   "goalId": "goal-abendroutine",
+   "date": "2026-10-31",
+   "mut": false,
+   "at": 1793704682091,
+   "attachments": [],
+   "updatedAt": 1793704682091,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-10-30",
+   "goalId": "goal-abendroutine",
+   "date": "2026-10-30",
+   "mut": false,
+   "at": 1793704682092,
+   "attachments": [],
+   "updatedAt": 1793704682092,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-10-29",
+   "goalId": "goal-abendroutine",
+   "date": "2026-10-29",
+   "mut": false,
+   "at": 1793704682092,
+   "attachments": [],
+   "updatedAt": 1793704682092,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-10-28",
+   "goalId": "goal-abendroutine",
+   "date": "2026-10-28",
+   "mut": false,
+   "at": 1793704682093,
+   "attachments": [],
+   "updatedAt": 1793704682093,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-10-26",
+   "goalId": "goal-abendroutine",
+   "date": "2026-10-26",
+   "mut": false,
+   "at": 1793704682094,
+   "attachments": [],
+   "updatedAt": 1793704682094,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-10-25",
+   "goalId": "goal-abendroutine",
+   "date": "2026-10-25",
+   "mut": false,
+   "at": 1793704682094,
+   "attachments": [],
+   "updatedAt": 1793704682094,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-10-24",
+   "goalId": "goal-abendroutine",
+   "date": "2026-10-24",
+   "mut": false,
+   "at": 1793704682095,
+   "attachments": [],
+   "updatedAt": 1793704682095,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-10-23",
+   "goalId": "goal-abendroutine",
+   "date": "2026-10-23",
+   "mut": false,
+   "at": 1793704682096,
+   "attachments": [],
+   "updatedAt": 1793704682096,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-10-22",
+   "goalId": "goal-abendroutine",
+   "date": "2026-10-22",
+   "mut": false,
+   "at": 1793704682097,
+   "attachments": [],
+   "updatedAt": 1793704682097,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-10-20",
+   "goalId": "goal-abendroutine",
+   "date": "2026-10-20",
+   "mut": false,
+   "at": 1793704682098,
+   "attachments": [],
+   "updatedAt": 1793704682098,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-10-19",
+   "goalId": "goal-abendroutine",
+   "date": "2026-10-19",
+   "mut": false,
+   "at": 1793704682098,
+   "attachments": [],
+   "updatedAt": 1793704682098,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-10-18",
+   "goalId": "goal-abendroutine",
+   "date": "2026-10-18",
+   "mut": false,
+   "at": 1793704682099,
+   "attachments": [],
+   "updatedAt": 1793704682099,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-10-17",
+   "goalId": "goal-abendroutine",
+   "date": "2026-10-17",
+   "mut": false,
+   "at": 1793704682100,
+   "attachments": [],
+   "updatedAt": 1793704682100,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abendroutine__2026-10-16",
+   "goalId": "goal-abendroutine",
+   "date": "2026-10-16",
+   "mut": false,
+   "at": 1793704682100,
+   "attachments": [],
+   "updatedAt": 1793704682100,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abend-checkin__2026-11-02",
+   "goalId": "goal-abend-checkin",
+   "date": "2026-11-02",
+   "mut": false,
+   "at": 1793704682101,
+   "attachments": [],
+   "updatedAt": 1793704682101,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abend-checkin__2026-11-01",
+   "goalId": "goal-abend-checkin",
+   "date": "2026-11-01",
+   "mut": false,
+   "at": 1793704682102,
+   "attachments": [],
+   "updatedAt": 1793704682102,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abend-checkin__2026-10-31",
+   "goalId": "goal-abend-checkin",
+   "date": "2026-10-31",
+   "mut": false,
+   "at": 1793704682102,
+   "attachments": [],
+   "updatedAt": 1793704682102,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abend-checkin__2026-10-30",
+   "goalId": "goal-abend-checkin",
+   "date": "2026-10-30",
+   "mut": false,
+   "at": 1793704682103,
+   "attachments": [],
+   "updatedAt": 1793704682103,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abend-checkin__2026-10-29",
+   "goalId": "goal-abend-checkin",
+   "date": "2026-10-29",
+   "mut": false,
+   "at": 1793704682103,
+   "attachments": [],
+   "updatedAt": 1793704682103,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abend-checkin__2026-10-28",
+   "goalId": "goal-abend-checkin",
+   "date": "2026-10-28",
+   "mut": false,
+   "at": 1793704682103,
+   "attachments": [],
+   "updatedAt": 1793704682103,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abend-checkin__2026-10-27",
+   "goalId": "goal-abend-checkin",
+   "date": "2026-10-27",
+   "mut": false,
+   "at": 1793704682104,
+   "attachments": [],
+   "updatedAt": 1793704682104,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abend-checkin__2026-10-26",
+   "goalId": "goal-abend-checkin",
+   "date": "2026-10-26",
+   "mut": false,
+   "at": 1793704682104,
+   "attachments": [],
+   "updatedAt": 1793704682104,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abend-checkin__2026-10-25",
+   "goalId": "goal-abend-checkin",
+   "date": "2026-10-25",
+   "mut": false,
+   "at": 1793704682105,
+   "attachments": [],
+   "updatedAt": 1793704682105,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abend-checkin__2026-10-24",
+   "goalId": "goal-abend-checkin",
+   "date": "2026-10-24",
+   "mut": false,
+   "at": 1793704682105,
+   "attachments": [],
+   "updatedAt": 1793704682105,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abend-checkin__2026-10-23",
+   "goalId": "goal-abend-checkin",
+   "date": "2026-10-23",
+   "mut": false,
+   "at": 1793704682106,
+   "attachments": [],
+   "updatedAt": 1793704682106,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abend-checkin__2026-10-22",
+   "goalId": "goal-abend-checkin",
+   "date": "2026-10-22",
+   "mut": false,
+   "at": 1793704682106,
+   "attachments": [],
+   "updatedAt": 1793704682106,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abend-checkin__2026-10-21",
+   "goalId": "goal-abend-checkin",
+   "date": "2026-10-21",
+   "mut": false,
+   "at": 1793704682107,
+   "attachments": [],
+   "updatedAt": 1793704682107,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-abend-checkin__2026-10-20",
+   "goalId": "goal-abend-checkin",
+   "date": "2026-10-20",
+   "mut": false,
+   "at": 1793704682107,
+   "attachments": [],
+   "updatedAt": 1793704682107,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-cooking__2026-11-02",
+   "goalId": "goal-from-cooking",
+   "date": "2026-11-02",
+   "mut": false,
+   "at": 1793704682108,
+   "attachments": [],
+   "updatedAt": 1793704682108,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-cooking__2026-10-31",
+   "goalId": "goal-from-cooking",
+   "date": "2026-10-31",
+   "mut": false,
+   "at": 1793704682109,
+   "attachments": [],
+   "updatedAt": 1793704682109,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-cooking__2026-10-30",
+   "goalId": "goal-from-cooking",
+   "date": "2026-10-30",
+   "mut": false,
+   "at": 1793704682110,
+   "attachments": [],
+   "updatedAt": 1793704682110,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-cooking__2026-10-29",
+   "goalId": "goal-from-cooking",
+   "date": "2026-10-29",
+   "mut": false,
+   "at": 1793704682110,
+   "attachments": [],
+   "updatedAt": 1793704682110,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-cooking__2026-10-27",
+   "goalId": "goal-from-cooking",
+   "date": "2026-10-27",
+   "mut": false,
+   "at": 1793704682111,
+   "attachments": [],
+   "updatedAt": 1793704682111,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-cooking__2026-10-26",
+   "goalId": "goal-from-cooking",
+   "date": "2026-10-26",
+   "mut": false,
+   "at": 1793704682112,
+   "attachments": [],
+   "updatedAt": 1793704682112,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-cooking__2026-10-24",
+   "goalId": "goal-from-cooking",
+   "date": "2026-10-24",
+   "mut": false,
+   "at": 1793704682112,
+   "attachments": [],
+   "updatedAt": 1793704682112,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-cooking__2026-10-23",
+   "goalId": "goal-from-cooking",
+   "date": "2026-10-23",
+   "mut": false,
+   "at": 1793704682113,
+   "attachments": [],
+   "updatedAt": 1793704682113,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-cooking__2026-10-21",
+   "goalId": "goal-from-cooking",
+   "date": "2026-10-21",
+   "mut": false,
+   "at": 1793704682113,
+   "attachments": [],
+   "updatedAt": 1793704682113,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-cooking__2026-10-20",
+   "goalId": "goal-from-cooking",
+   "date": "2026-10-20",
+   "mut": false,
+   "at": 1793704682114,
+   "attachments": [],
+   "updatedAt": 1793704682114,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-cooking__2026-10-19",
+   "goalId": "goal-from-cooking",
+   "date": "2026-10-19",
+   "mut": false,
+   "at": 1793704682114,
+   "attachments": [],
+   "updatedAt": 1793704682114,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-cooking__2026-10-17",
+   "goalId": "goal-from-cooking",
+   "date": "2026-10-17",
+   "mut": false,
+   "at": 1793704682115,
+   "attachments": [],
+   "updatedAt": 1793704682115,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-cooking__2026-10-16",
+   "goalId": "goal-from-cooking",
+   "date": "2026-10-16",
+   "mut": false,
+   "at": 1793704682116,
+   "attachments": [],
+   "updatedAt": 1793704682116,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-cooking__2026-10-14",
+   "goalId": "goal-from-cooking",
+   "date": "2026-10-14",
+   "mut": false,
+   "at": 1793704682116,
+   "attachments": [],
+   "updatedAt": 1793704682116,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-sunlight__2026-11-02",
+   "goalId": "goal-from-sunlight",
+   "date": "2026-11-02",
+   "mut": true,
+   "at": 1793704682117,
+   "attachments": [],
+   "updatedAt": 1793704682117,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-sunlight__2026-11-01",
+   "goalId": "goal-from-sunlight",
+   "date": "2026-11-01",
+   "mut": false,
+   "at": 1793704682117,
+   "attachments": [],
+   "updatedAt": 1793704682117,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-sunlight__2026-10-31",
+   "goalId": "goal-from-sunlight",
+   "date": "2026-10-31",
+   "mut": false,
+   "at": 1793704682118,
+   "attachments": [],
+   "updatedAt": 1793704682118,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-sunlight__2026-10-29",
+   "goalId": "goal-from-sunlight",
+   "date": "2026-10-29",
+   "mut": false,
+   "at": 1793704682118,
+   "attachments": [],
+   "updatedAt": 1793704682118,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-sunlight__2026-10-28",
+   "goalId": "goal-from-sunlight",
+   "date": "2026-10-28",
+   "mut": true,
+   "at": 1793704682119,
+   "attachments": [],
+   "updatedAt": 1793704682119,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-sunlight__2026-10-27",
+   "goalId": "goal-from-sunlight",
+   "date": "2026-10-27",
+   "mut": false,
+   "at": 1793704682119,
+   "attachments": [],
+   "updatedAt": 1793704682119,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-sunlight__2026-10-25",
+   "goalId": "goal-from-sunlight",
+   "date": "2026-10-25",
+   "mut": false,
+   "at": 1793704682120,
+   "attachments": [],
+   "updatedAt": 1793704682120,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-sunlight__2026-10-24",
+   "goalId": "goal-from-sunlight",
+   "date": "2026-10-24",
+   "mut": false,
+   "at": 1793704682120,
+   "attachments": [],
+   "updatedAt": 1793704682120,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-sunlight__2026-10-23",
+   "goalId": "goal-from-sunlight",
+   "date": "2026-10-23",
+   "mut": false,
+   "at": 1793704682121,
+   "attachments": [],
+   "updatedAt": 1793704682121,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-sunlight__2026-10-22",
+   "goalId": "goal-from-sunlight",
+   "date": "2026-10-22",
+   "mut": false,
+   "at": 1793704682122,
+   "attachments": [],
+   "updatedAt": 1793704682122,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-mama-anrufen__2026-11-01",
+   "goalId": "goal-mama-anrufen",
+   "date": "2026-11-01",
+   "mut": false,
+   "at": 1793704682122,
+   "attachments": [],
+   "updatedAt": 1793704682122,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-mama-anrufen__2026-10-25",
+   "goalId": "goal-mama-anrufen",
+   "date": "2026-10-25",
+   "mut": false,
+   "at": 1793704682123,
+   "attachments": [],
+   "updatedAt": 1793704682123,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-mama-anrufen__2026-10-18",
+   "goalId": "goal-mama-anrufen",
+   "date": "2026-10-18",
+   "mut": false,
+   "at": 1793704682124,
+   "attachments": [],
+   "updatedAt": 1793704682124,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-mama-anrufen__2026-10-11",
+   "goalId": "goal-mama-anrufen",
+   "date": "2026-10-11",
+   "mut": false,
+   "at": 1793704682125,
+   "attachments": [],
+   "updatedAt": 1793704682125,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-others__2026-10-31",
+   "goalId": "goal-from-others",
+   "date": "2026-10-31",
+   "mut": false,
+   "at": 1793704682125,
+   "attachments": [],
+   "updatedAt": 1793704682125,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-others__2026-10-24",
+   "goalId": "goal-from-others",
+   "date": "2026-10-24",
+   "mut": true,
+   "at": 1793704682126,
+   "attachments": [],
+   "updatedAt": 1793704682126,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-others__2026-10-17",
+   "goalId": "goal-from-others",
+   "date": "2026-10-17",
+   "mut": false,
+   "at": 1793704682127,
+   "attachments": [],
+   "updatedAt": 1793704682127,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  },
+  {
+   "id": "goal-from-morning__2026-11-03",
+   "goalId": "goal-from-morning",
+   "date": "2026-11-03",
+   "mut": false,
+   "at": 1793704682127,
+   "attachments": [],
+   "updatedAt": 1793704682127,
+   "deviceId": "2a8c0caa-10c8-4078-8ded-261ee854ab95"
+  }
+ ],
+ "earned": [
+  {
+   "id": "goal-from-sleep",
+   "tier": "gesperrt",
+   "at": 1793704680072
+  },
+  {
+   "id": "goal-from-morning",
+   "tier": "tusche",
+   "at": 1793704682073
+  },
+  {
+   "id": "goal-from-sunlight",
+   "tier": "tusche",
+   "at": 1793704682120
+  },
+  {
+   "id": "goal-from-noscreen_am",
+   "tier": "gesperrt",
+   "at": 1793704680076
+  },
+  {
+   "id": "goal-from-teeth",
+   "tier": "gesperrt",
+   "at": 1793704680077
+  },
+  {
+   "id": "goal-from-learning",
+   "tier": "gesperrt",
+   "at": 1793704680079
+  },
+  {
+   "id": "goal-from-cooking",
+   "tier": "tusche",
+   "at": 1793704682113
+  },
+  {
+   "id": "goal-from-others",
+   "tier": "skizze",
+   "at": 1793704682126
+  },
+  {
+   "id": "goal-from-protein",
+   "tier": "gesperrt",
+   "at": 1793704680081
+  },
+  {
+   "id": "goal-from-social",
+   "tier": "gesperrt",
+   "at": 1793704680081
+  },
+  {
+   "id": "goal-from-meal_order",
+   "tier": "gesperrt",
+   "at": 1793704680082
+  },
+  {
+   "id": "goal-from-post_meal_walk",
+   "tier": "gesperrt",
+   "at": 1793704680082
+  },
+  {
+   "id": "goal-from-no_alcohol",
+   "tier": "gesperrt",
+   "at": 1793704680088
+  },
+  {
+   "id": "goal-from-no_sugar",
+   "tier": "gesperrt",
+   "at": 1793704680088
+  },
+  {
+   "id": "goal-from-no_drugs",
+   "tier": "gesperrt",
+   "at": 1793704680089
+  },
+  {
+   "id": "goal-from-no_meat",
+   "tier": "gesperrt",
+   "at": 1793704680089
+  },
+  {
+   "id": "goal-from-no_carbs",
+   "tier": "gesperrt",
+   "at": 1793704680090
+  },
+  {
+   "id": "goal-from-gluten_free",
+   "tier": "gesperrt",
+   "at": 1793704680090
+  },
+  {
+   "id": "goal-mittagsroutine",
+   "tier": "tusche",
+   "at": 1793704682088
+  },
+  {
+   "id": "goal-abendroutine",
+   "tier": "tusche",
+   "at": 1793704682094
+  },
+  {
+   "id": "goal-mama-anrufen",
+   "tier": "tusche",
+   "at": 1793704682125
+  },
+  {
+   "id": "goal-abend-checkin",
+   "tier": "tusche",
+   "at": 1793704682104
+  },
+  {
+   "id": "goal-im-rahmen",
+   "tier": "gesperrt",
+   "at": 1793704680109
+  },
+  {
+   "id": "sys-overcome",
+   "tier": "glanz",
+   "at": 1793704682070
+  }
+ ]
+}

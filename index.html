@@ -16,6 +16,55 @@
 <meta name="description" content="REHAPP – mobile Web-App für Fasten, Bewegung, Supplemente und Heilungs-Gamification.">
 <meta name="color-scheme" content="light">
 <script>
+// Runde 5d Punkt 2: Demo-Modus mit fester Uhr. ?demo=2026-11-03T21:40
+// Läuft als ALLERERSTES Skript, damit alles danach (auch der Nacht-Check
+// direkt hierunter) schon die Demo-Uhr und den Demo-Speicher sieht.
+// - Uhr: Date wird global ersetzt. Ohne Argumente liefert es die Demo-Zeit
+//   (plus die seit dem Laden vergangene echte Zeit, damit Timer und IDs
+//   weiterlaufen). So greift die feste Uhr an allen ~100 Stellen, ohne
+//   jede einzelne umzuschreiben, und im Normalbetrieb ändert sich nichts.
+// - Speicher: localStorage wird durch einen Speicher im Arbeitsspeicher
+//   ersetzt (vorbelegt aus tests/fixtures/demo.json), IndexedDB heißt
+//   rehapp_demo und wird bei jedem Laden neu aufgebaut. Echte Daten in
+//   rehapp_content und localStorage werden weder gelesen noch geschrieben.
+// - Kein Service Worker, kein Push, kein Startbildschirm.
+(function () {
+  window.REHAPP_DEMO = null;
+  var m = /[?&]demo=([^&#]+)/.exec(location.search);
+  if (!m) return;
+  var iso = decodeURIComponent(m[1]);
+  var start = Date.parse(iso);
+  if (isNaN(start)) return;
+  var fixture = {};
+  try {
+    var x = new XMLHttpRequest();
+    x.open('GET', './tests/fixtures/demo.json', false);
+    x.send();
+    if (x.status === 200) fixture = JSON.parse(x.responseText);
+  } catch (e) {}
+  var RealDate = Date, t0 = performance.now();
+  var nowMs = function () { return start + Math.floor(performance.now() - t0); };
+  class DemoDate extends RealDate {
+    constructor(...a) { if (a.length) super(...a); else super(nowMs()); }
+    static now() { return nowMs(); }
+  }
+  window.Date = DemoDate;
+  var store = Object.assign({}, fixture.data || {});
+  var has = function (k) { return Object.prototype.hasOwnProperty.call(store, k); };
+  var mem = {
+    getItem: function (k) { return has(k) ? String(store[k]) : null; },
+    setItem: function (k, v) { store[k] = String(v); },
+    removeItem: function (k) { delete store[k]; },
+    clear: function () { Object.keys(store).forEach(function (k) { delete store[k]; }); },
+    key: function (i) { var ks = Object.keys(store); return i < ks.length ? ks[i] : null; },
+    get length() { return Object.keys(store).length; },
+  };
+  Object.defineProperty(window, 'localStorage', { value: mem, configurable: true });
+  try { indexedDB.deleteDatabase('rehapp_demo'); } catch (e) {}
+  window.REHAPP_DEMO = { iso: iso, start: start, fixture: fixture };
+})();
+</script>
+<script>
 // Runde 6a Punkt 5: Nachtmodus vor dem ersten Paint setzen, sonst blitzt
 // nachts kurz die helle Fläche auf. Dieselbe Regel wie resolveNightTheme().
 (function () {
@@ -702,7 +751,7 @@ button[aria-pressed]:active { transform: scale(.96); }
   var skip = false;
   try {
     var hash = location.hash.replace(/^#/, '');
-    skip = sessionStorage.getItem('rehapp_splash_shown') === '1'
+    skip = !!window.REHAPP_DEMO || sessionStorage.getItem('rehapp_splash_shown') === '1'
       || location.search.indexOf('aktion=') !== -1
       || /^(setup|ziel|routine|uebung)\//.test(hash);
     sessionStorage.setItem('rehapp_splash_shown', '1');
@@ -2498,7 +2547,7 @@ const HABIT_BLOCKS = [
 // synchronen Renderer. SUPP_DATA/HABITS bleiben als Seed-Quelle für die
 // einmalige Migration bestehen, werden sonst nirgends mehr gelesen.
 
-const CONTENT_DB_NAME = 'rehapp_content';
+const CONTENT_DB_NAME = window.REHAPP_DEMO ? 'rehapp_demo' : 'rehapp_content';
 // v2 (Hybrid Phase 3): + goals/logs/earned Stores für Ziele & Abzeichen.
 const CONTENT_DB_VERSION = 2;
 const CONTENT_STORE = 'items';
@@ -3609,7 +3658,7 @@ function renderHeuteInfoSlide(animate) {
   const labelEl = document.getElementById('h-info-label');
   const dotsEl = document.getElementById('h-heute-dots');
   const apply = () => {
-    if (valueEl) valueEl.textContent = info.value;
+    if (valueEl) { valueEl.textContent = info.value; fitBigNumber(valueEl); observeBigNumber(valueEl); }
     if (labelEl) labelEl.textContent = info.label;
     if (dotsEl) dotsEl.innerHTML = _heuteInfoCache.map((_, i) =>
       `<span style="width:6px;height:6px;border-radius:999px;background:${i === _heuteInfoIdx ? 'var(--ink)' : 'var(--line)'}"></span>`).join('');
@@ -3620,6 +3669,28 @@ function renderHeuteInfoSlide(animate) {
   } else {
     apply();
   }
+}
+// Die linke Kopfspalte in Heute ist auf 390px nur ~60px breit. Bei fester
+// Größe 64px wurden "45" oder "12:00" abgeschnitten ("N…"). Die Zahl
+// verkleinert sich darum in 4px-Schritten, bis sie passt (64px bis 36px).
+function fitBigNumber(el, max = 64, min = 36) {
+  if (!el.clientWidth) return; // noch nicht sichtbar, der ResizeObserver holt das nach
+  let size = max;
+  el.style.fontSize = size + 'px';
+  while (size > min && el.scrollWidth > el.clientWidth) {
+    size -= 4;
+    el.style.fontSize = size + 'px';
+  }
+}
+// Beim ersten Zeichnen ist die Spalte oft noch nicht ausgemessen (Tab
+// verborgen, Schrift lädt noch). Der Observer passt an, sobald sie eine
+// Breite hat oder sich ändert, auch bei Drehung und Fenstergröße.
+let _fitObserver = null;
+function observeBigNumber(el) {
+  if (_fitObserver || !('ResizeObserver' in window)) return;
+  _fitObserver = new ResizeObserver(() => fitBigNumber(el));
+  _fitObserver.observe(el.parentElement);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitBigNumber(el));
 }
 function advanceHeuteInfo() {
   if (!_heuteInfoCache.length) return;
@@ -7561,6 +7632,7 @@ function clearScheduledNotifications() {
   while (pendingNotificationTimeouts.length) clearTimeout(pendingNotificationTimeouts.pop());
 }
 function registerServiceWorker() {
+  if (window.REHAPP_DEMO) return;
   if (!('serviceWorker' in navigator)) return;
   // _swUserRequestedReload bleibt false, bis die Person wirklich auf die
   // Update-Pille tippt. self.clients.claim() im sw.js lässt controllerchange
@@ -7668,6 +7740,21 @@ function upsertEarnedRecord(rec) {
   const idx = _earnedCache.findIndex(e => e.id === rec.id);
   if (idx >= 0) _earnedCache[idx] = rec; else _earnedCache.push(rec);
 }
+// Demo-Modus: Inhalte, Ziele, Logs und Abzeichen aus tests/fixtures/demo.json
+// in die leere Demo-Datenbank schreiben (localStorage ist schon vorbelegt).
+async function loadDemoFixture() {
+  const f = window.REHAPP_DEMO.fixture || {};
+  for (const it of f.content || []) await saveItem(it);
+  await importGoalsLogsEarned(f);
+  const band = document.createElement('div');
+  band.className = 'h-demo-band';
+  // Nur im Demo-Modus, darum inline statt als Regel im Stylesheet (Grenze < 300).
+  band.style.cssText = 'position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:10000;pointer-events:none;background:var(--ink);color:var(--paper);font-size:12px;font-weight:500;padding:2px 10px;border-radius:0 0 8px 8px';
+  band.setAttribute('role', 'status');
+  band.textContent = 'Demo · ' + new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  document.body.appendChild(band);
+}
+
 async function importGoalsLogsEarned(parsed) {
   if (!Array.isArray(parsed.goals) && !Array.isArray(parsed.logs) && !Array.isArray(parsed.earned)) return;
   await initGoalsStore();
@@ -7765,6 +7852,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   await initContentStore();
+  if (window.REHAPP_DEMO) await loadDemoFixture();
   await initGoalsStore();
   await seedExercisesIfNeeded();
   await seedAtmungExercisesV2();
@@ -8307,6 +8395,7 @@ function requestNotifPermission() {
 }
 
 function scheduleNotifications() {
+  if (window.REHAPP_DEMO) return;
   clearScheduledNotifications();
   updateNotificationStatus();
   if (!('Notification' in window) || Notification.permission !== 'granted' || !timerStart || timerMode !== '100h') return;
@@ -8359,6 +8448,7 @@ function getPushDeviceId() {
 }
 
 function syncPushTimer() {
+  if (window.REHAPP_DEMO) return;
   if (!storageGet('push_subscription')) return; // nie abonniert — nichts zu synchronisieren
   fetch('/.netlify/functions/subscribe', {
     method: 'POST',
@@ -8368,6 +8458,7 @@ function syncPushTimer() {
 }
 
 async function subscribePush() {
+  if (window.REHAPP_DEMO) return;
   try {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
       toast('Push wird nicht unterstützt');
