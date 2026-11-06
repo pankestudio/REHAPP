@@ -654,6 +654,7 @@ button[aria-pressed]:active { transform: scale(.96); }
   opacity: 0; transition: opacity 200ms ease-out, transform 200ms ease-out; white-space: nowrap; max-width: min(90vw,400px); z-index: 700; pointer-events: none;
 }
 .h-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.h-toast--action.show { pointer-events: auto; }
 .h-toast--top { top: calc(16px + var(--safe-top)); bottom: auto; transform: translateX(-50%) translateY(-16px); }
 .h-toast--top.show { transform: translateX(-50%) translateY(0); }
 .h-sw-update-pill {
@@ -1719,6 +1720,9 @@ button[aria-pressed]:active { transform: scale(.96); }
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" style="cursor:default">
         <div class="h-row-body"><div class="h-row-title">App-Modus</div><div class="h-row-meta" id="install-status-copy">Wird geprüft …</div></div>
+      </div>
+      <div class="h-row" style="cursor:default">
+        <div class="h-row-body"><div class="h-row-title">Schnellaktionen am App-Icon</div><div class="h-row-meta">Lange auf das App-Icon drücken: „Glas Wasser" oder „Abend-Check-in". Das geht auf Android und in Chrome am Desktop — iOS unterstützt diese Schnellaktionen nicht.</div></div>
       </div>
       <div class="h-row" data-collapse-id="pwa" onclick="toggleCollapse('pwa')">
         <div class="h-row-body"><div class="h-row-title">Auf dem iPhone installieren</div></div>
@@ -3961,6 +3965,31 @@ function addWaterLiters(delta) {
   renderHeuteModuleList();
 }
 function formatLiters(l) { return l.toFixed(1).replace('.', ','); }
+function waterStatusText(prefix) { return `${prefix} · ${formatLiters(getWaterLiters())} / ${WATER_TARGET_L} L`; }
+// Ein Glas = 0,2 L, mit 5 s „Rückgängig" — „Als Nächstes" und die
+// Schnellaktion am App-Icon nutzen denselben Weg.
+function logGlassOfWater() {
+  addWaterLiters(0.2);
+  toast(waterStatusText('Glas Wasser'), {
+    duration: 5000,
+    action: { label: 'Rückgängig', onClick: () => { addWaterLiters(-0.2); toast(waterStatusText('Wasser')); } },
+  });
+}
+
+// Schnellaktionen am App-Icon (Runde 6a Punkt 6): die Manifest-shortcuts
+// öffnen index.html?aktion=…. Der Parameter wird sofort per replaceState
+// entfernt, damit ein Neuladen nicht doppelt zählt. Der Startbildschirm
+// läuft bei ?aktion= gar nicht erst (siehe Inline-Skript nach #h-splash).
+function handleQuickAction() {
+  const params = new URLSearchParams(location.search);
+  const aktion = params.get('aktion');
+  if (!aktion) return;
+  params.delete('aktion');
+  const qs = params.toString();
+  history.replaceState(history.state, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+  if (aktion === 'wasser') logGlassOfWater();
+  else if (aktion === 'checkin') openAbendCheckin();
+}
 
 // ══════════════ ALS NÄCHSTES (Runde 6a Punkt 4) ══════════════
 // nextUp(state, now) ist rein: kein DOM, kein Storage, keine Uhr — alles
@@ -4137,7 +4166,7 @@ function onNextUpAction() {
     case 'routine': openRoutinePlayer(nu.goalId); break;
     case 'done': onGoalRowArrowTap(null, nu.goalId); break;
     case 'fasten': openFastenSheet(); break;
-    case 'water': addWaterLiters(0.2); toast(`Wasser · ${formatLiters(getWaterLiters())} / ${WATER_TARGET_L} L`); break;
+    case 'water': logGlassOfWater(); break;
     case 'supp': openSupplementeSheet(); break;
   }
 }
@@ -7781,6 +7810,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateInstallStatus();
   updateNotificationStatus();
   maybeShowBackupReminder();
+  handleQuickAction();
   const backupInput = document.getElementById('backup-import');
   if (backupInput) backupInput.addEventListener('change', event => importAppDataFromFile(event.target.files[0]));
 
@@ -8791,15 +8821,27 @@ function setThemeAutoStart(value) {
 // ══════════════ TOAST ══════════════
 
 let _tt;
-function toast(msg) {
+// opts.action = { label, onClick } hängt einen Button an (z. B. „Rückgängig"),
+// opts.duration überschreibt die Standarddauer von 2,2 s.
+function toast(msg, opts = {}) {
   const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
+  el.textContent = msg;
+  el.classList.toggle('h-toast--action', !!opts.action);
+  if (opts.action) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = opts.action.label;
+    btn.style.cssText = 'background:none;border:none;color:inherit;font-weight:600;text-decoration:underline;cursor:pointer;min-height:44px;padding:0 8px;margin:-12px -8px -12px 10px';
+    btn.onclick = () => { el.classList.remove('show'); opts.action.onClick(); };
+    el.appendChild(btn);
+  }
+  el.classList.add('show');
   // Über einem offenen Sheet (Runde 5c Punkt 4) an den oberen Rand statt an
   // den unteren — unten liegen in Sheets häufig Eingabefelder, und die
   // feste Bottom-Position würde sie verdecken bzw. mit der Bildschirm-
   // tastatur kollidieren.
   el.classList.toggle('h-toast--top', !!document.querySelector('.h-sheet-overlay.open'));
-  clearTimeout(_tt); _tt = setTimeout(() => el.classList.remove('show'), 2200);
+  clearTimeout(_tt); _tt = setTimeout(() => el.classList.remove('show'), opts.duration || 2200);
 }
 
 

@@ -4,6 +4,8 @@ const ASSETS_OPTIONAL = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
+  './icons/shortcut-wasser.png',
+  './icons/shortcut-checkin.png',
   './fonts/HostGrotesk-latin.woff2',
   './fonts/HostGrotesk-latin-ext.woff2'
 ];

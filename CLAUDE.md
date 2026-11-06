@@ -174,8 +174,11 @@ ausliefern, damit würde Web Push stillschweigend nicht funktionieren.
 Kopiert zusätzlich zu `dist/`:
   index.html, sw.js, manifest.webmanifest, favicon.svg, favicon-32.png,
   favicon-16.png, icons/icon-192.png, icons/icon-512.png,
-  icons/apple-touch-icon.png, fonts/HostGrotesk-latin.woff2,
+  icons/apple-touch-icon.png, icons/shortcut-wasser.png,
+  icons/shortcut-checkin.png, fonts/HostGrotesk-latin.woff2,
   fonts/HostGrotesk-latin-ext.woff2
+(Die Skripte kopieren icons/*.png komplett, neue Icons kommen also
+automatisch mit.)
 (Bis Runde 6a kopierten `netlify.toml` und `package.json` die Icons/
 Favicons trotz dieser Checkliste tatsächlich nicht mit — daher die 404s.
 Beide Skripte sind jetzt synchron mit dieser Liste.)

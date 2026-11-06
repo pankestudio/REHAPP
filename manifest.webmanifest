@@ -15,5 +15,11 @@
       "type": "image/png", "purpose": "any maskable" },
     { "src": "./icons/apple-touch-icon.png", "sizes": "180x180",
       "type": "image/png" }
+  ],
+  "shortcuts": [
+    { "name": "Glas Wasser", "short_name": "Wasser", "url": "./index.html?aktion=wasser",
+      "icons": [{ "src": "./icons/shortcut-wasser.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Abend-Check-in", "short_name": "Check-in", "url": "./index.html?aktion=checkin",
+      "icons": [{ "src": "./icons/shortcut-checkin.png", "sizes": "96x96", "type": "image/png" }] }
   ]
 }
