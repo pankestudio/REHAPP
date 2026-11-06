@@ -1,11 +1,11 @@
 {
-  "name": "REHAPP — Regenerationsprotokoll",
+  "name": "REHAPP",
   "short_name": "REHAPP",
   "description": "Rehabilitations-Protokoll: CRPS, Fasten, Bewegung, Supplemente.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0f1012",
-  "theme_color": "#0f1012",
+  "background_color": "#14140F",
+  "theme_color": "#F4F3EF",
   "orientation": "portrait",
   "lang": "de",
   "icons": [
@@ -15,5 +15,11 @@
       "type": "image/png", "purpose": "any maskable" },
     { "src": "./icons/apple-touch-icon.png", "sizes": "180x180",
       "type": "image/png" }
+  ],
+  "shortcuts": [
+    { "name": "Glas Wasser", "short_name": "Wasser", "url": "./index.html?aktion=wasser",
+      "icons": [{ "src": "./icons/shortcut-wasser.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Abend-Check-in", "short_name": "Check-in", "url": "./index.html?aktion=checkin",
+      "icons": [{ "src": "./icons/shortcut-checkin.png", "sizes": "96x96", "type": "image/png" }] }
   ]
 }

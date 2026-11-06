@@ -1,183 +1,99 @@
-# REHAPP — Claude Code Context
+# REHAPP – Regeln für jede Arbeit an diesem Repo
 
-## Projektübersicht
-Gamifizierte Rehabilitations-PWA für CRPS (Complex Regional Pain Syndrome / Morbus Sudeck).
-Ärztlich begleitetes Protokoll: therapeutisches Fasten (Autophagie-Induktion), Supplemente,
-Bewegungstherapie (GMI/Graded Motor Imagery), Vagus-Stimulation, Lymphdrainage.
-Kein Essstörungs-Kontext — medizinisches Rehabilitationsprotokoll.
+REHAPP ist eine Single-File-PWA für ärztlich begleitete Reha (CRPS), Fasten, Routinen, Ziele und Ernährung.
+Medizinisches Rehabilitationsprotokoll, kein Essstörungs-Kontext.
 
-## Tech Stack
-- Vanilla JS + CSS, kein Framework
-- Vite + vite-plugin-singlefile → baut alles in eine einzige index.html
-- IndexedDB nativ (kein `idb`-Package — kein Bundler im Deploy-Pfad, siehe
-  Content-System) für Supplement-/Habit-/Übungs-/Aufgaben-Inhalte
-- PWA: sw.js (Cache-First), manifest.webmanifest, Icons in icons/
-- Netlify Functions (netlify/functions/) für Web-Push — einziger Server-Code im Projekt,
-  ausschließlich für Push-Zustellung bei geschlossenem Browser. Siehe „Push-Benachrichtigungen".
-- Deployment: `npm run deploy` (Netlify CLI) — Netlify Drop reicht NICHT mehr aus,
-  siehe Deployment-Checklist.
+## Stack (wie er wirklich ist)
+- **Die ganze App ist `index.html`** (HTML, CSS, JS in einer Datei, ~9000 Zeilen). Kein Vite-Build im Deploy-Pfad,
+  `src/` ist ein alter, ungenutzter Stand. Entwickelt wird direkt in `index.html`.
+- Daten: native IndexedDB `rehapp_content` (Stores für Items, Ziele, Logs, Abzeichen) mit synchronem
+  In-Memory-Cache, plus localStorage-Flags über `storageGet`/`storageSet` (Präfix siehe dort).
+- `sw.js` (Service Worker, `index.html` network-first), `manifest.webmanifest`, `icons/`, `fonts/` (Host Grotesk).
+- Netlify Functions in `netlify/functions/` nur für Web Push (VAPID). Scheduled Function `push-check` alle 5 Min.
+- Build = Kopieren nach `dist/` (`npm run build`, identisch mit `[build].command` in `netlify.toml`).
 
-## Architektur
-Die gesamte App lebt in `index.html` (~5300 Zeilen). CSS, HTML und JS in einer Datei.
-`src/main.js` existiert nicht — wir entwickeln direkt in index.html.
-Das Vite-Build würde die Datei durch singlefile weiterverarbeiten; aktuell ist
-index.html selbst das deploybare Artefakt.
+## Branches und Deploy
+- Arbeit auf `feature/hybrid`. `main` = Live-Stand. Der Garbicz-Branch wird **nie** in REHAPP gemergt.
+- Test: `npm run deploy:test` (= Build + Vergleichsseite + `npx netlify-cli deploy --alias hybrid`) → https://hybrid--rehapp.netlify.app
+- Live: `npm run deploy:prod`. **Nie ohne ausdrückliches OK des Nutzers im Chat.** Vorher Backup der echten Daten.
+- Vor jedem Deploy `CACHE_NAME` in Zeile 1 von `sw.js` erhöhen: `rehapp-JJJJ-MM-TT-rundeX`.
+- `.env` nie committen. `VAPID_PRIVATE` bleibt ein Netlify-Secret.
+- Nur **eine** Sitzung (Claude Code oder Claude im Chat) arbeitet gleichzeitig im Repo. Sonst überschreiben
+  sich die Änderungen in `index.html` gegenseitig.
 
-localStorage für Persistenz. Kernapp ohne Backend, vollständig offline-fähig.
-Einzige Ausnahme: Web-Push-Zustellung (optional, siehe unten) braucht Netzwerk
-und einen minimalen Server-Zustand (Subscription + Fastenstart pro Gerät).
+## Arbeitsweise
+- Ein Prompt = eine Runde. Nach **jedem** nummerierten Punkt committen: `Runde X, Punkt N: …`.
+- Vor dem letzten Commit: `npm run check` muss grün sein. Kein Punkt gilt als erledigt, solange eine Prüfung rot ist.
+- Am Ende jeder Runde: Abnahmeliste Punkt für Punkt mit „erledigt / offen + Grund“ beantworten.
+  Nichts als erledigt melden, das nicht im Browser bei 390 und 1440px geprüft wurde.
+- **Abnahme immer gegen die laufende Version:** Service Worker abmelden und Caches löschen oder einen
+  frischen Browser-Kontext nutzen. Ein alter SW zeigt sonst eine alte `index.html` (ist am 6.11. passiert).
+- Wenn etwas aus dem Prompt nicht umsetzbar ist: nachfragen oder als „offen“ melden, nicht still weglassen.
+- Keine Datenverluste: Migration mit Backup-Key und `verifyMigration`. Neue Seeds über ein eigenes
+  `*_seeded_vN`-Flag, bestehende Items nie überschreiben. Demo- und Testdaten nie in `rehapp_content`.
 
-## Bekannte kritische Bugs — höchste Priorität
+## Design – verbindlich
+- Referenzbilder liegen in `docs/design/`. Neuere Version gewinnt.
+- Papiere tagsüber über `data-paper` auf `<html>` (`loeschpapier` | `altpapier` | `washi`, Standard ohne Attribut = Plan).
+  Jedes Papier hat eigene Werte für `--paper`, `--grid`, `--line`, `--muted`, `--faint`, `--nav-off` und eine ruhige
+  Struktur (`--paper-tex`). Keine Fasern, keine Flecken. Nachts gilt immer Tusche.
+- **Nur Tokens** aus `:root` in `index.html` (`--paper`, `--ink`, `--yellow`, `--muted`, `--faint`, `--line`, …),
+  keine festen Farben in Komponenten. Nachtmodus über `[data-theme="nacht"]`, Text auf Gelb nutzt `--on-yellow`.
+- Gelb (`--yellow`) nur mit Bedeutung: Hauptaktion, Glanz, Überwindung, Atemkreis „jetzt“, „Weg zu Glanz“.
+  Jedes gelbe Element trägt `data-gelb="aktion|glanz|ueberwindung|atem|weg"`. Einzige weitere Stelle:
+  `marke` für die zwei P der Wortmarke im Nachtmodus (Entscheidung Runde 6a). `check-ui.mjs` prüft das.
+- Dekorative SVGs tragen `aria-hidden="true"`, Icon-Buttons haben ein `aria-label`.
+- Schrift: Host Grotesk, Schnitte 300/400/500/600, **kein 700**, **nichts unter 12px**.
+- Touch-Ziele mindestens 44×44px (kleine Elemente über `::before` erweitern). Jeder Tap gibt sichtbare
+  Rückmeldung (`:active`).
+- Kein `confirm()`, `alert()`, `prompt()`. Eigene Bestätigung über `openConfirmDialog()` mit Objekt und Verb.
+- Buttons beginnen mit einem Verb („Routine speichern“, „Übung starten“). Kein „OK“, „Absenden“, „Weiter“.
+- Erledigtes wird durchgestrichen (Pfeil quer durch den Titel) und bleibt an seiner Stelle. Kein Kreis mit Haken.
+- Stift-Linien (`.h-pen-draw`) werden per `drawPenStroke()`/`getTotalLength()` gezeichnet und sind im
+  Ruhezustand **immer vollständig sichtbar**. SVGs, die über einer absolut positionierten Kachel liegen,
+  brauchen `position: relative` (sonst verdeckt die Kachel sie).
+- Bewegung nur über die Dauer-Tokens 100/150/200/300ms (Stift 600ms), nur `transform` und `opacity`.
+  `prefers-reduced-motion` zeigt sofort den Endzustand.
+- `.ux-profile.md` hält fest, wo REHAPP bewusst vom Standard abweicht.
 
-### 1. loadProgress() crash beim Start (KRITISCH)
-`loadProgress()` läuft im DOMContentLoaded-Init und schreibt direkt auf:
-  document.getElementById('pain-slider').value = last.pain
-  document.getElementById('swell-slider').value = last.swell
-Diese Elemente existieren nicht mehr — das Schmerz/Ödem-Panel wurde entfernt.
-→ Fix: null-Guards für pain-slider, swell-slider, pain-val, swell-val, progress-trend in
-  loadProgress(), saveProgress() und updateSlider().
+## Inhalte
+- Medizinisch zurückhaltend formulieren, keine Heilversprechen, keine Diagnosen.
+- Keine persönlichen Dosierungsempfehlungen. Supplement-Texte und -Mengen, Fasten- und Dosierungsangaben
+  **nie eigenmächtig ändern**, auch nicht, um eine grep-Prüfung grün zu bekommen.
+- Keine Amazon- oder sonstigen Kauflinks.
+- Übungstexte: simpel, ermutigend, mit etwas Wortwitz. Der Nutzer korrigiert sie.
 
-### 2. Tote Funktionen (entfernte Features)
-completeMirrorSession() und startGMITimer_laterality_override() referenzieren
-DOM-Elemente die nicht mehr existieren (Spiegeltherapie + Laterality entfernt).
-→ Fix: Diese Funktionen und ihre XP-Keys (xp_award_ever_mirror_master,
-  xp_award_ever_laterality_done) vollständig entfernen.
+## Datenmodell (Kurzfassung)
+- Items: `{ id, type: 'supplement'|'exercise'|…, title, dose, time, block, schedule, xp, notify, active, details, order }`.
+  `id` ist stabil und wird nie geändert (daran hängen Fortschritt und XP-Dedup).
+- Übungen: `details.kind` = `timer` | `atmung` (mit `pattern`) | `schritte` (mit `steps: [{name, hint, sec}]`).
+  `schritte` läuft über `openProtocolPlayer()`. Optional `details.award` (alter XP-Schlüssel, `{date}`) und
+  `details.after` (`pain` | `cooldown` | `vagus`, plus `flag`) für das, was nach dem letzten Schritt passiert.
+- Ziele, Logs und verdiente Abzeichen liegen ebenfalls in `rehapp_content` (`getGoals`, `toggleLog`, `checkNewUnlocks`).
+- XP: `awardXP(key, punkte, label, { scope: 'day'|'ever' })`, Schlüssel nie umbenennen.
 
-### 3. TIMELESS_QUOTES falsch platziert
-Das Array ist innerhalb von renderDailyQuote() definiert → wird bei jedem Aufruf
-neu erstellt. Muss auf Modul-Ebene als const leben.
+## Push-Benachrichtigungen
+- `subscribe.js` speichert pro Gerät Subscription + Fastenstart in Netlify Blobs, `push-check.js` (scheduled)
+  verschickt fällige Fasten-Meilensteine, `push.js` Einzel-Push, `vapid-public-key.js`, `unsubscribe.js`.
+- Meilenstein-Liste muss mit `scheduleNotifications()` in `index.html` übereinstimmen
+  (dupliziert in `netlify/functions/lib/milestones.js`).
+- iOS liefert Web Push nur an zum Home-Bildschirm hinzugefügte PWAs.
+- Functions brauchen lokal `npm install` in `netlify/functions/` vor dem Deploy.
 
-### 4. 10 Monkey-Patches am Ende der Datei
-_origUpdateTimer, _origTimerAction, _origStart16_8Mode etc. — über Sessions
-aufgebaut, macht Debugging schwer. Mittelfristig konsolidieren.
-
-### 5. timerMode nicht persistent genug
-timerMode ist eine in-memory let-Variable. Wird über 16_8_active in localStorage
-gesichert, aber die Sync-Reihenfolge beim Init ist fragil (abhängig davon ob
-loadProgress() vorher crasht).
-
-## App-Struktur (Tabs)
-- pg-home: Timer-Hero, Wasser, Supplemente, Mood, Quick-Actions
-- pg-fast: Fasten-Info, Erlaubt/Verboten, Rezepte, 14-Tage Kalender, Masterplan
-- pg-move: Vagus, MLD-Link, BFR, Mechanobiologie, GMI (Sensory/Imagery/Scrubbing),
-           Meditationsvisualisierung
-- pg-supp: Vollständiger Supplement-Stack (Morgens/Mittags/Abends)
-- pg-xp: XP/Level, Missions, Budapest-Filter, Ödem-Tracker, Trophäen, PWA-Anleitung
-- pg-mld: Overlay — Lymphdrainage 7 Schritte mit Timer
-- pg-bfr: Overlay — BFR-Protokoll 5 Schritte
-- pg-emergency: Overlay — Notfall
-
-## Wichtige Funktionen
-- timerAction() — startet Fasten, kein Pause, nur Reset
-- switchTimerMode(mode) — 100h vs 16:8, öffnet Modal bei 16:8
-- toggleCollapse(id) — Panels auf/zuklappen, CSS: [id^="collapse-body-"].closed
-- awardXP(key, points, label, {scope}) — scope: 'day'|'ever'|undefined
-- buildSupplements() — rendert Supplement-Rows mit Expand/Collapse Detail
-- renderDailyQuote() — TIMELESS_QUOTES (tägl. rotierend) auf Home, CRPS_CALENDAR auf XP-Tab
-- refreshXPUI() — synct Chip (fixed), Home-Strip, XP-Tab
-- restoreCollapseState() — liest panel_open_{id} aus localStorage
-
-## Designprinzipien
-Dieter Rams: Weniger, aber besser. Kein Schmuck ohne Funktion.
-- Typografie: klare Hierarchie, hoher Kontrast
-- Farbe: zurückhaltend — var(--text), var(--text2), var(--text3), Amber/Red/Green nur für Status
-- Keine dekorativen Gradienten auf Surfaces
-- Aktive Tab-States: background: #e8e8ec, color: #0f1012, font-weight: 700 (weißer Fill, dunkler Text)
-- 8pt Spacing-Grid via CSS-Variablen (--space-1 bis --space-5)
-
-## CSS-Muster
-Aktive Tab-Kontrast (am Ende des <style>-Blocks, letzte Autorität):
-  .mode-btn.active, .fpill.active, .mood-btn.selected,
-  .phase-badge.active, .timer-mode-btn.active {
-    background: #e8e8ec !important; color: #0f1012 !important; ...
-  }
-
-Collapsibles:
-  [id^="collapse-body-"] { overflow: hidden; }
-  [id^="collapse-body-"].closed { display: none; }
-
-## Content-System (Phase 1, lokal — Sync folgt in Phase 2)
-Supplemente, Habits (später: Übungen/Aufgaben) sind seit dieser Phase kein
-hartkodiertes Array mehr, sondern Items in einem einheitlichen Modell:
-  { id, type: 'supplement'|'habit'|'exercise'|'task', title, dose, time,
-    block, schedule: { days: [] }, xp, notify, active, details, order }
-- id ist stabil (z.B. `supp-vitamin-d3`, `habit-sleep`) und NIE ändern —
-  daran hängen Tagesfortschritt und XP-Dedup.
-- time: 'morning'|'midday'|'evening'|null (Supplement-Slots). block: nur bei
-  Habits zusätzlich ('morgen'|'tag'|'abend'|'verzicht') — eigene Erweiterung,
-  weil Habits vier Gruppen haben, die nicht ins 3-Slot-time-Schema passen.
-- notify ist nur ein gespeichertes Flag — noch NICHT an echte Erinnerungen
-  angebunden (kein Scheduler für beliebige Item-Zeiten/Wochentage). Das wäre
-  ein eigenes Stück Arbeit, vergleichbar mit dem Push-System unten.
-- active=false blendet ein Item aus allen Renderern aus (ersetzt das alte
-  `hidden_habits`-Konzept).
-
-Datenschicht in index.html (kein externes Package, natives IndexedDB):
-  rehapp_content/items (keyPath id) + synchroner In-Memory-Cache
-  (_contentCache), weil die Renderer weiterhin synchron sind.
-  getItems(filter), saveItem(item), deleteItem(id), reorderItems(orderedIds).
-  initContentStore() MUSS vor dem ersten Renderer-Aufruf awaited werden
-  (siehe DOMContentLoaded) — seedet beim allerersten Start aus SUPP_DATA/
-  HABITS und migriert den heutigen Fortschritt + hidden_habits einmalig
-  (Flag: `content_migrated_v1` in localStorage). SUPP_DATA/HABITS bleiben nur
-  als Seed-Quelle bestehen, werden sonst nirgends mehr gelesen.
-
-Editor im Setup-Tab (`buildContentEditorPanel()` + `openItemEditor()`):
-  Liste pro Typ, Tap → Bearbeiten-Sheet (Titel/Dosis/Tageszeit/Wochentage/XP/
-  Benachrichtigung/Aktiv), "+ Neu" pro Typ, Löschen mit Bestätigung,
-  JSON-Export/Import nur für Items. Globales Backup (exportAppData/
-  importAppDataFromFile) nimmt die Items zusätzlich unter `content` mit.
-
-Bekannte Lücken (bewusst nicht in Phase 1):
-  - 'exercise'/'task' haben noch keine Quelldaten zur Migration (GMI/Vagus/
-    BFR/MLD sind eigene interaktive Module, keine einfachen Checkbox-Items)
-    und keinen Home-Tab-Renderer — nur über den Editor anlegbar/pflegbar.
-  - Neue Habits aus dem Editor landen immer im Block 'tag' (kein Block-Feld
-    im Editor-Formular) — bei Bedarf danach den Code anpassen.
-  - Kein Reorder-UI (reorderItems() existiert, aber keine Drag/Pfeil-Buttons).
-  - `confirmResetAll()` löscht jetzt auch die IndexedDB-Datenbank — bei neuen
-    Storage-Mechanismen immer prüfen, ob das NEU-STARTEN-Feature mitzieht.
-
-## Push-Benachrichtigungen (Web Push)
-Fasten-Meilensteine (12h/18h/24h/36h/48h/72h/100h) werden zusätzlich zur
-bestehenden lokalen `scheduleNotifications()` (funktioniert nur solange die
-Seite offen/im Hintergrund-Tab aktiv ist) per echtem Web Push zugestellt —
-das kommt auch bei komplett geschlossenem Browser an.
-
-Architektur, weil die App sonst keinen Server hat:
-- `netlify/functions/subscribe.js` — legt pro Gerät (deviceId in localStorage)
-  eine Subscription + aktuellen Fastenstart in Netlify Blobs ab. Wird von
-  `subscribePush()` und von `syncPushTimer()` (bei jedem Start/Reset des
-  Fasten-Timers) aufgerufen.
-- `netlify/functions/push-check.js` — Netlify Scheduled Function, läuft alle
-  5 Minuten (Cron in netlify.toml), unabhängig vom Client. Einziger Ort, der
-  wirklich weiß, wann ein Meilenstein fällig ist. Meilenstein-Liste MUSS mit
-  `scheduleNotifications()` in index.html übereinstimmen (dupliziert in
-  `netlify/functions/lib/milestones.js`, da kein gemeinsames Modul-Bundling).
-- `netlify/functions/push.js` — direkter Einzel-Push (manueller Test,
-  `sendPush(title, body)` im Client).
-- `netlify/functions/vapid-public-key.js` — liefert VAPID_PUBLIC an den
-  Client, damit der Key nicht hartcodiert werden muss.
-- `netlify/functions/unsubscribe.js` — löscht die Blob-Subscription.
-
-Setup (einmalig, macht der Mensch — nicht committen):
-  npx web-push generate-vapid-keys
-Netlify Dashboard → Site settings → Environment variables:
-  VAPID_PUBLIC, VAPID_PRIVATE, VAPID_EMAIL (mailto:...)
-
-iOS Safari liefert Web Push nur an zum Homescreen hinzugefügte PWAs, nicht an
-normale Browser-Tabs (siehe `updateInstallStatus()` / persistenter Speicher).
-
-## Deployment-Checklist
-`npm run deploy` (Netlify CLI) statt Netlify Drop — Drop kann keine Functions
-ausliefern, damit würde Web Push stillschweigend nicht funktionieren.
-Kopiert zusätzlich zu `dist/`:
-  index.html, sw.js, manifest.webmanifest, icons/icon-192.png,
-  icons/icon-512.png, icons/apple-touch-icon.png,
-  fonts/PlusJakartaSans-latin.woff2, fonts/PlusJakartaSans-latin-ext.woff2
-`netlify/functions/` wird direkt aus dem Repo deployt (nicht über dist/),
-braucht dafür lokal `npm install` in `netlify/functions/` (node_modules dort
-sind gitignored, esbuild bundelt beim Deploy aus dem lokalen node_modules).
-
-iPhone: Safari → URL öffnen → Teilen (□↑) → "Zum Home-Bildschirm"
-NICHT iCloud — öffnet als Quick Look, JavaScript blockiert.
+## Prüfen
+- `npm run check` = `validate.js` (Syntax aller Skript-Blöcke) + `scripts/check-ui.mjs`. Das Prüfskript rendert alle
+  Tabs und Sheets im Demo-Modus bei 390 und 1440px, hell und Nacht (52 Zustände), und prüft die Regeln oben:
+  Tokens, Gelb mit `data-gelb`, Schrift, Touch-Ziele, Stift-Linien, Überlauf, Kontrast, SVG/img, Systemdialoge.
+  `--out datei.txt` schreibt die Befunde in eine Datei.
+- `pre-push`-Hook einmal einrichten: `npm run hooks`. Ein roter Check bricht den Push ab.
+- `npm run shots`: 56 Screenshots im Demo-Modus (14 Screens × 390/1440 × hell/Nacht, deviceScaleFactor 2) nach
+  `screenshots/aktuell/`, Vergleich gegen `screenshots/basis/` (höchstens 1 % abweichende Pixel) und Vergleichsseite
+  `screenshots/report.html` (Referenzbild aus `docs/design/` neben dem aktuellen Stand plus Regel-Meldungen aus
+  `screenshots/check.txt`). Zuordnung in `tests/visual/referenzen.json`.
+- Gewollte Änderung: `npm run shots -- --update` und **eigener Commit** mit dem Grund. Die Basis immer auf dem Rechner
+  erzeugen, auf dem geprüft wird (macOS und Linux rendern Schrift unterschiedlich).
+- `npm run deploy:test` legt die Vergleichsseite unter `/_abnahme/report.html` mit ab, nur auf dem Alias `hybrid`.
+- Demo-Modus: `?demo=2026-11-03T21:40` (feste Uhr, Demodaten aus `tests/fixtures/demo.json` in Arbeitsspeicher
+  und IndexedDB `rehapp_demo`, Band oben), optional `&theme=night`. Demodaten neu: `npm run demo-fixture`.
+- Playwright braucht einmalig `npx playwright install chromium`.
+- iPhone-Test: Safari → URL → Teilen → „Zum Home-Bildschirm“. Nicht über iCloud öffnen (Quick Look blockiert JS).

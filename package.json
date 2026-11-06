@@ -4,6 +4,16 @@
   "private": true,
   "scripts": {
     "validate": "node validate.js",
-    "deploy": "mkdir -p dist/fonts && cp index.html sw.js manifest.webmanifest dist/ && cp fonts/*.woff2 dist/fonts/ && npx netlify deploy --prod --dir dist"
+    "check-ui": "node scripts/check-ui.mjs",
+    "build": "mkdir -p dist/fonts dist/icons && cp index.html sw.js manifest.webmanifest favicon.svg favicon-32.png favicon-16.png dist/ && cp fonts/*.woff2 dist/fonts/ && cp icons/*.png dist/icons/ && mkdir -p dist/tests/fixtures && cp tests/fixtures/demo.json dist/tests/fixtures/",
+    "deploy:test": "npm run build && sh scripts/abnahme-dist.sh && npx netlify-cli deploy --alias hybrid --dir dist",
+    "deploy:prod": "npm run build && npx netlify-cli deploy --prod --dir dist",
+    "demo-fixture": "node scripts/make-demo-fixture.mjs",
+    "check": "node validate.js && node scripts/check-ui.mjs --out screenshots/check.txt",
+    "hooks": "sh scripts/install-hooks.sh",
+    "shots": "node scripts/shots.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
   }
 }

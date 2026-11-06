@@ -1,0 +1,97 @@
+check-ui.mjs, 2026-11-06T10:22:08.999Z
+52 Zustände, 94 Befund(e)
+
+✗ [heute@390] Gelb ohne data-gelb: #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute@390] SVG ohne aria-hidden oder Label: div.h-ring-wrap > svg, button.h-section-chevron > svg, div.h-heute-last-badge > svg, div.h-nav-icon > svg
+✗ [heute-fasten-sheet@390] Gelb ohne data-gelb: #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute-fasten-sheet@390] SVG ohne aria-hidden oder Label: div.h-ring-wrap > svg, button.h-section-chevron > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg, div.h-nav-icon > svg
+✗ [heute-wasser-sheet@390] Gelb ohne data-gelb: #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute-wasser-sheet@390] SVG ohne aria-hidden oder Label: div.h-ring-wrap > svg, button.h-section-chevron > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg, div.h-nav-icon > svg
+✗ [heute-supplemente-sheet@390] Gelb ohne data-gelb: #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute-supplemente-sheet@390] SVG ohne aria-hidden oder Label: div.h-ring-wrap > svg, button.h-section-chevron > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg, div.h-nav-icon > svg
+✗ [heute-ziel-sheet@390] Gelb ohne data-gelb: #h-next-action, button.h-pill.h-pill--shadow, path
+✗ [heute-ziel-sheet@390] SVG ohne aria-hidden oder Label: div.h-ring-wrap > svg, button.h-section-chevron > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg, div > svg, button > svg, div.h-nav-icon > svg
+✗ [uebungen@390] SVG ohne aria-hidden oder Label: button.h-section-chevron > svg, button.h-circle-btn.h-circle-btn--sm > svg, div.h-nav-icon > svg
+✗ [uebungen-player@390] Gelb ohne data-gelb: #player-start-btn
+✗ [uebungen-player@390] SVG ohne aria-hidden oder Label: button.h-circle-btn.h-circle-btn--sm > svg, #player-next-btn > svg, #player-reset-btn > svg, button.h-section-chevron > svg, div.h-nav-icon > svg
+✗ [sammlung@390] Gelb ohne data-gelb: path
+✗ [sammlung@390] SVG ohne aria-hidden oder Label: div > svg, button.h-section-chevron > svg, button > svg, div.h-nav-icon > svg
+✗ [sammlung-verlauf@390] SVG ohne aria-hidden oder Label: div > svg, div.h-nav-icon > svg
+✗ [wissen@390] SVG ohne aria-hidden oder Label: button.h-section-chevron > svg, div.h-nav-icon > svg
+✗ [setup@390] SVG ohne aria-hidden oder Label: button.h-section-chevron > svg, button.h-circle-btn.h-circle-btn--sm > svg, div > svg, div.h-nav-icon > svg
+✗ [setup-routine-sheet@390] Gelb ohne data-gelb: button.h-pill.h-pill--shadow
+✗ [setup-routine-sheet@390] SVG ohne aria-hidden oder Label: button.h-section-chevron > svg, button.h-circle-btn.h-circle-btn--sm > svg, div > svg, button > svg, div.h-nav-icon > svg
+✗ [setup-uebung-sheet@390] Gelb ohne data-gelb: button.h-pill.h-pill--shadow
+✗ [setup-uebung-sheet@390] SVG ohne aria-hidden oder Label: button.h-circle-btn.h-circle-btn--sm > svg, button.h-section-chevron > svg, div > svg, div.h-nav-icon > svg
+✗ [heute-nacht@390] Gelb ohne data-gelb: #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute-nacht@390] SVG ohne aria-hidden oder Label: div.h-ring-wrap > svg, button.h-section-chevron > svg, div.h-heute-last-badge > svg, div.h-nav-icon > svg
+✗ [heute-fasten-sheet-nacht@390] Gelb ohne data-gelb: #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute-fasten-sheet-nacht@390] SVG ohne aria-hidden oder Label: div.h-ring-wrap > svg, button.h-section-chevron > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg, div.h-nav-icon > svg
+✗ [heute-wasser-sheet-nacht@390] Gelb ohne data-gelb: #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute-wasser-sheet-nacht@390] SVG ohne aria-hidden oder Label: div.h-ring-wrap > svg, button.h-section-chevron > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg, div.h-nav-icon > svg
+✗ [heute-supplemente-sheet-nacht@390] Gelb ohne data-gelb: #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute-supplemente-sheet-nacht@390] SVG ohne aria-hidden oder Label: div.h-ring-wrap > svg, button.h-section-chevron > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg, div.h-nav-icon > svg
+✗ [heute-ziel-sheet-nacht@390] Gelb ohne data-gelb: #h-next-action, button.h-pill.h-pill--shadow, path
+✗ [heute-ziel-sheet-nacht@390] SVG ohne aria-hidden oder Label: div.h-ring-wrap > svg, button.h-section-chevron > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg, div > svg, button > svg, div.h-nav-icon > svg
+✗ [uebungen-nacht@390] SVG ohne aria-hidden oder Label: button.h-section-chevron > svg, button.h-circle-btn.h-circle-btn--sm > svg, div.h-nav-icon > svg
+✗ [uebungen-player-nacht@390] Gelb ohne data-gelb: #player-start-btn
+✗ [uebungen-player-nacht@390] SVG ohne aria-hidden oder Label: button.h-circle-btn.h-circle-btn--sm > svg, #player-next-btn > svg, #player-reset-btn > svg, button.h-section-chevron > svg, div.h-nav-icon > svg
+✗ [sammlung-nacht@390] Gelb ohne data-gelb: path
+✗ [sammlung-nacht@390] SVG ohne aria-hidden oder Label: div > svg, button.h-section-chevron > svg, button > svg, div.h-nav-icon > svg
+✗ [sammlung-verlauf-nacht@390] SVG ohne aria-hidden oder Label: div > svg, div.h-nav-icon > svg
+✗ [wissen-nacht@390] SVG ohne aria-hidden oder Label: button.h-section-chevron > svg, div.h-nav-icon > svg
+✗ [setup-nacht@390] SVG ohne aria-hidden oder Label: button.h-section-chevron > svg, button.h-circle-btn.h-circle-btn--sm > svg, div > svg, div.h-nav-icon > svg
+✗ [setup-routine-sheet-nacht@390] Gelb ohne data-gelb: button.h-pill.h-pill--shadow
+✗ [setup-routine-sheet-nacht@390] SVG ohne aria-hidden oder Label: button.h-section-chevron > svg, button.h-circle-btn.h-circle-btn--sm > svg, div > svg, button > svg, div.h-nav-icon > svg
+✗ [setup-uebung-sheet-nacht@390] Gelb ohne data-gelb: button.h-pill.h-pill--shadow
+✗ [setup-uebung-sheet-nacht@390] SVG ohne aria-hidden oder Label: button.h-circle-btn.h-circle-btn--sm > svg, button.h-section-chevron > svg, div > svg, div.h-nav-icon > svg
+✗ [heute@1440] Gelb ohne data-gelb: #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg, div.h-ring-wrap > svg, div.h-heute-last-badge > svg
+✗ [heute-fasten-sheet@1440] Gelb ohne data-gelb: #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute-fasten-sheet@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg, div.h-ring-wrap > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg
+✗ [heute-wasser-sheet@1440] Gelb ohne data-gelb: #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute-wasser-sheet@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg, div.h-ring-wrap > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg
+✗ [heute-supplemente-sheet@1440] Gelb ohne data-gelb: #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute-supplemente-sheet@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg, div.h-ring-wrap > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg
+✗ [heute-ziel-sheet@1440] Gelb ohne data-gelb: #h-next-action, button.h-pill.h-pill--shadow, path
+✗ [heute-ziel-sheet@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg, div.h-ring-wrap > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg, div > svg, button > svg
+✗ [uebungen@1440] Gelb ohne data-gelb: button.h-pill.h-pill--shadow
+✗ [uebungen@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, div.h-heute-last-badge > svg, button.h-section-chevron > svg, button.h-circle-btn.h-circle-btn--sm > svg
+✗ [uebungen-player@1440] Gelb ohne data-gelb: #player-start-btn, button.h-pill.h-pill--shadow
+✗ [uebungen-player@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-circle-btn.h-circle-btn--sm > svg, #player-next-btn > svg, #player-reset-btn > svg, div.h-heute-last-badge > svg, button.h-section-chevron > svg
+✗ [sammlung@1440] Gelb ohne data-gelb: path, div.h-bar-fill.h-bar-fill--glanz, #bd-open-goal-btn
+✗ [sammlung@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, div > svg, button > svg, button.h-sm-badge-selected > svg, #bd-badge > svg
+✗ [sammlung-verlauf@1440] Gelb ohne data-gelb: div.h-bar-fill.h-bar-fill--glanz, #bd-open-goal-btn
+✗ [sammlung-verlauf@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, div > svg, #bd-badge > svg
+✗ [wissen@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg
+✗ [setup@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg, button.h-circle-btn.h-circle-btn--sm > svg, div > svg
+✗ [setup-routine-sheet@1440] Gelb ohne data-gelb: button.h-pill.h-pill--shadow
+✗ [setup-routine-sheet@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg, button.h-circle-btn.h-circle-btn--sm > svg, div > svg, button > svg
+✗ [setup-uebung-sheet@1440] Gelb ohne data-gelb: button.h-pill.h-pill--shadow
+✗ [setup-uebung-sheet@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-circle-btn.h-circle-btn--sm > svg, button.h-section-chevron > svg, div > svg
+✗ [heute-nacht@1440] Gelb ohne data-gelb: path.h-pen, #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute-nacht@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg, div.h-ring-wrap > svg, div.h-heute-last-badge > svg
+✗ [heute-fasten-sheet-nacht@1440] Gelb ohne data-gelb: path.h-pen, #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute-fasten-sheet-nacht@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg, div.h-ring-wrap > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg
+✗ [heute-wasser-sheet-nacht@1440] Gelb ohne data-gelb: path.h-pen, #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute-wasser-sheet-nacht@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg, div.h-ring-wrap > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg
+✗ [heute-supplemente-sheet-nacht@1440] Gelb ohne data-gelb: path.h-pen, #h-next-action, button.h-pill.h-pill--shadow
+✗ [heute-supplemente-sheet-nacht@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg, div.h-ring-wrap > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg
+✗ [heute-ziel-sheet-nacht@1440] Gelb ohne data-gelb: path.h-pen, #h-next-action, button.h-pill.h-pill--shadow, path
+✗ [heute-ziel-sheet-nacht@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg, div.h-ring-wrap > svg, div.h-heute-last-badge > svg, button.h-circle-btn.h-circle-btn--sm > svg, div > svg, button > svg
+✗ [uebungen-nacht@1440] Gelb ohne data-gelb: path.h-pen, button.h-pill.h-pill--shadow
+✗ [uebungen-nacht@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, div.h-heute-last-badge > svg, button.h-section-chevron > svg, button.h-circle-btn.h-circle-btn--sm > svg
+✗ [uebungen-player-nacht@1440] Gelb ohne data-gelb: path.h-pen, #player-start-btn, button.h-pill.h-pill--shadow
+✗ [uebungen-player-nacht@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-circle-btn.h-circle-btn--sm > svg, #player-next-btn > svg, #player-reset-btn > svg, div.h-heute-last-badge > svg, button.h-section-chevron > svg
+✗ [sammlung-nacht@1440] Gelb ohne data-gelb: path.h-pen, path, div.h-bar-fill.h-bar-fill--glanz, #bd-open-goal-btn
+✗ [sammlung-nacht@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, div > svg, button > svg, button.h-sm-badge-selected > svg, #bd-badge > svg
+✗ [sammlung-verlauf-nacht@1440] Gelb ohne data-gelb: path.h-pen, div.h-bar-fill.h-bar-fill--glanz, #bd-open-goal-btn
+✗ [sammlung-verlauf-nacht@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, div > svg, #bd-badge > svg
+✗ [wissen-nacht@1440] Gelb ohne data-gelb: path.h-pen
+✗ [wissen-nacht@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg
+✗ [setup-nacht@1440] Gelb ohne data-gelb: path.h-pen
+✗ [setup-nacht@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg, button.h-circle-btn.h-circle-btn--sm > svg, div > svg
+✗ [setup-routine-sheet-nacht@1440] Gelb ohne data-gelb: path.h-pen, button.h-pill.h-pill--shadow
+✗ [setup-routine-sheet-nacht@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-section-chevron > svg, button.h-circle-btn.h-circle-btn--sm > svg, div > svg, button > svg
+✗ [setup-uebung-sheet-nacht@1440] Gelb ohne data-gelb: path.h-pen, button.h-pill.h-pill--shadow
+✗ [setup-uebung-sheet-nacht@1440] SVG ohne aria-hidden oder Label: div.h-nav-icon > svg, button.h-circle-btn.h-circle-btn--sm > svg, button.h-section-chevron > svg, div > svg
