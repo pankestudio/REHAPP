@@ -14,7 +14,7 @@ Medizinisches Rehabilitationsprotokoll, kein Essstörungs-Kontext.
 
 ## Branches und Deploy
 - Arbeit auf `feature/hybrid`. `main` = Live-Stand. Der Garbicz-Branch wird **nie** in REHAPP gemergt.
-- Test: `npm run deploy:test` (= Build + `npx netlify-cli deploy --alias hybrid`) → https://hybrid--rehapp.netlify.app
+- Test: `npm run deploy:test` (= Build + Vergleichsseite + `npx netlify-cli deploy --alias hybrid`) → https://hybrid--rehapp.netlify.app
 - Live: `npm run deploy:prod`. **Nie ohne ausdrückliches OK des Nutzers im Chat.** Vorher Backup der echten Daten.
 - Vor jedem Deploy `CACHE_NAME` in Zeile 1 von `sw.js` erhöhen: `rehapp-JJJJ-MM-TT-rundeX`.
 - `.env` nie committen. `VAPID_PRIVATE` bleibt ein Netlify-Secret.
@@ -83,6 +83,13 @@ Medizinisches Rehabilitationsprotokoll, kein Essstörungs-Kontext.
   Tokens, Gelb mit `data-gelb`, Schrift, Touch-Ziele, Stift-Linien, Überlauf, Kontrast, SVG/img, Systemdialoge.
   `--out datei.txt` schreibt die Befunde in eine Datei.
 - `pre-push`-Hook einmal einrichten: `npm run hooks`. Ein roter Check bricht den Push ab.
+- `npm run shots`: 56 Screenshots im Demo-Modus (14 Screens × 390/1440 × hell/Nacht, deviceScaleFactor 2) nach
+  `screenshots/aktuell/`, Vergleich gegen `screenshots/basis/` (höchstens 1 % abweichende Pixel) und Vergleichsseite
+  `screenshots/report.html` (Referenzbild aus `docs/design/` neben dem aktuellen Stand plus Regel-Meldungen aus
+  `screenshots/check.txt`). Zuordnung in `tests/visual/referenzen.json`.
+- Gewollte Änderung: `npm run shots -- --update` und **eigener Commit** mit dem Grund. Die Basis immer auf dem Rechner
+  erzeugen, auf dem geprüft wird (macOS und Linux rendern Schrift unterschiedlich).
+- `npm run deploy:test` legt die Vergleichsseite unter `/_abnahme/report.html` mit ab, nur auf dem Alias `hybrid`.
 - Demo-Modus: `?demo=2026-11-03T21:40` (feste Uhr, Demodaten aus `tests/fixtures/demo.json` in Arbeitsspeicher
   und IndexedDB `rehapp_demo`, Band oben), optional `&theme=night`. Demodaten neu: `npm run demo-fixture`.
 - Playwright braucht einmalig `npx playwright install chromium`.

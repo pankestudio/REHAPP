@@ -293,6 +293,12 @@ async function auditStateBase(page, label) {
   FORBIDDEN_STRINGS.forEach(s => {
     if (result.text.includes(s)) fail(`[${label}] verbotener String im sichtbaren Text: "${s}"`);
   });
+  // Runde 5d: keine Versalien-Wörter im Text (V3-Reste wie "// FASTENZEIT").
+  // text-transform fängt das nicht, wenn der String selbst groß geschrieben ist.
+  const caps = [...new Set((result.text.match(/(?<![\p{L}])[A-ZÄÖÜ]{5,}(?![\p{L}])/gu) || []))]
+    .filter(w => !['REHAPP', 'REHAB'].includes(w));
+  if (caps.length) fail(`[${label}] Wörter in Versalien: ${caps.join(', ')}`);
+  if (/(^|\s)\/\/\s/.test(result.text)) fail(`[${label}] "// "-Präfix im sichtbaren Text (Rest aus V3)`);
 
   console.log(`  geprüft: ${label} (Screenshot: screenshots/${shotName})`);
 }

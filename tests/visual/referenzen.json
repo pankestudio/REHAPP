@@ -1,0 +1,17 @@
+{
+  "_hinweis": "Zuordnung Screen → Referenzbild in docs/design/ je Viewport (390/1440). check = Präfix der passenden Zustände aus check-ui.mjs. Neue Referenzbilder hier eintragen.",
+  "heute-0705": { "390": "mobil-heute.png", "1440": "desktop-heute.png", "check": "heute" },
+  "heute-1118": { "390": "mobil-heute.png", "1440": "desktop-heute.png", "check": "heute" },
+  "heute-1540": { "390": "mobil-heute.png", "1440": "desktop-heute.png", "check": "heute" },
+  "heute-2140": { "390": "mobil-heute.png", "1440": "desktop-heute.png", "check": "heute" },
+  "heute-alles-erledigt": { "390": "mobil-heute.png", "1440": "desktop-heute.png", "check": "heute" },
+  "uebungen": { "1440": "desktop-uebungen.png", "check": "uebungen" },
+  "uebungsdetail": { "1440": "desktop-uebungen.png", "check": "uebungen" },
+  "player-timer": { "390": "mobil-player-timer.png", "check": "uebungen-player" },
+  "player-atmung": { "390": "mobil-player-atmung.png", "check": "uebungen-player" },
+  "sammlung-detail": { "390": "mobil-sammlung-detail.png", "1440": "desktop-sammlung.png", "check": "sammlung" },
+  "wissen": { "check": "wissen" },
+  "setup": { "check": "setup" },
+  "checkin": { "check": "checkin" },
+  "ziel-anlegen": { "390": "mobil-ziel-editor.png", "check": "heute-ziel-sheet" }
+}
