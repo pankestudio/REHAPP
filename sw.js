@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rehapp-2026-11-06-masterplan'; // Bump bei jedem Deploy
+const CACHE_NAME = 'rehapp-2026-11-06-player-ios'; // Bump bei jedem Deploy
 const ASSETS_REQUIRED = ['./', './index.html', './manifest.webmanifest'];
 const ASSETS_OPTIONAL = [
   './icons/icon-192.png',

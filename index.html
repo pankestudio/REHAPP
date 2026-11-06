@@ -5530,9 +5530,16 @@ function updatePlayerStepsBar(seq, elapsed, totalSec) {
   });
 }
 
+// Uhr des Players: normalerweise die Audio-Uhr (Töne und Anzeige laufen
+// synchron). Auf iOS kann der AudioContext "suspended" oder "interrupted"
+// bleiben, dann steht currentTime bei 0 und der Timer liefe nie los. In dem
+// Fall zählt der Player mit performance.now() weiter, notfalls ohne Ton.
+function playerClock() {
+  return _playerState && _playerState.clock === 'perf' ? performance.now() / 1000 : _playerAudioCtx.currentTime;
+}
 function playerTick() {
   if (!_playerState || !_playerState.running) return;
-  const elapsed = _playerAudioCtx.currentTime - _playerState.startAudioTime;
+  const elapsed = playerClock() - _playerState.startAudioTime;
   if (elapsed >= _playerState.totalSec) {
     updatePlayerDisplay(_playerState.totalSec);
     finishPlayerExercise();
@@ -5544,11 +5551,15 @@ function playerTick() {
 
 async function resumePlayer() {
   const ctx = ensurePlayerAudioCtx();
-  if (ctx.state === 'suspended') await ctx.resume();
-  const now = ctx.currentTime;
+  if (ctx.state !== 'running') {
+    // resume() kann auf iOS hängen bleiben, darum höchstens 500 ms warten.
+    try { await Promise.race([ctx.resume(), new Promise(r => setTimeout(r, 500))]); } catch (err) {}
+  }
+  _playerState.clock = ctx.state === 'running' ? 'audio' : 'perf';
+  const now = playerClock();
   const freshStart = _playerState.elapsedAtPause === 0;
   _playerState.startAudioTime = now - _playerState.elapsedAtPause;
-  scheduleTicksFrom(now, _playerState.elapsedAtPause);
+  if (_playerState.clock === 'audio') scheduleTicksFrom(now, _playerState.elapsedAtPause);
   _playerState.running = true;
   document.getElementById('player-start-btn').textContent = 'Pause';
   requestWakeLock();
@@ -5562,7 +5573,7 @@ async function resumePlayer() {
 function pausePlayer() {
   if (!_playerState) return;
   cancelAnimationFrame(_playerState.rafId);
-  _playerState.elapsedAtPause = _playerAudioCtx.currentTime - _playerState.startAudioTime;
+  _playerState.elapsedAtPause = playerClock() - _playerState.startAudioTime;
   clearScheduledTicks();
   _playerState.running = false;
   document.getElementById('player-start-btn').textContent = 'Weiter';
@@ -5648,7 +5659,7 @@ async function finishPlayerExercise() {
   await new Promise(r => setTimeout(r, _reducedMotion ? 0 : 650));
 
   const chordPack = _playerState.soundPack;
-  if (chordPack !== 'stumm') scheduleCompletionChord(_playerAudioCtx.currentTime, chordPack);
+  if (chordPack !== 'stumm' && _playerAudioCtx.state === 'running') scheduleCompletionChord(_playerAudioCtx.currentTime, chordPack);
 
   const ex = _playerState.exercise;
   const linkedGoalId = seq ? seq.routineGoalId : (ex.details && ex.details.linkedGoalId);
