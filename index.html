@@ -15,6 +15,23 @@
 <meta name="theme-color" content="#F4F3EF">
 <meta name="description" content="REHAPP — Regenerationsprotokoll als mobile Web-App für Fasten, Bewegung, Supplemente und Heilungs-Gamification.">
 <meta name="color-scheme" content="light">
+<script>
+// Runde 6a Punkt 5: Nachtmodus vor dem ersten Paint setzen, sonst blitzt
+// nachts kurz die helle Fläche auf. Dieselbe Regel wie resolveNightTheme().
+(function () {
+  try {
+    var mode = localStorage.getItem('theme_mode') || 'auto';
+    var night = mode === 'night';
+    if (mode === 'system') night = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (mode === 'auto') {
+      var s = (localStorage.getItem('theme_auto_start') || localStorage.getItem('theme_auto_default') || '21:00').split(':');
+      var start = s[0] * 60 + Number(s[1]), d = new Date(), m = d.getHours() * 60 + d.getMinutes();
+      night = start > 300 ? (m >= start || m < 300) : (m >= start && m < 300);
+    }
+    if (night) document.documentElement.setAttribute('data-theme', 'nacht');
+  } catch (e) {}
+})();
+</script>
 <title>REHAPP // Regenerationsprotokoll</title>
 <style>
 
@@ -45,6 +62,9 @@
   --line:    #D9D4C7;
   --grid:    #EAE6DC;
   --lock:    #BDB8AC;
+  --on-yellow: #14140F;
+  /* Startbildschirm: immer Tusche, kippt mit data-theme="nacht" nicht mit. */
+  --splash-bg: #14140F; --splash-ink: #F4F3EF; --splash-muted: #A8A496;
   --ease:    cubic-bezier(.65,0,.35,1);
   --dur-in:  220ms;
   --dur-out: 150ms;
@@ -52,6 +72,18 @@
   --ui:      'Host Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bot: env(safe-area-inset-bottom, 0px);
+}
+
+/* Tusche-Nacht (Runde 6a Punkt 5): nur die Tokens kippen, keine zweite
+   Komponente. --yellow und --on-yellow bleiben gleich. applyTheme() setzt
+   das Attribut, alle vier Modi aus Setup → Darstellung laufen darüber. */
+:root[data-theme="nacht"] {
+  --paper: #14140F; --ink: #F4F3EF; --muted: #A8A496; --faint: #8E8A7E;
+  --nav-off: #8E8A7E; --line: #36352D; --grid: #22211B; --lock: #4F4D44;
+}
+.h-theme-fade, .h-theme-fade * {
+  transition: background-color var(--dur-m) var(--ease), color var(--dur-m) var(--ease),
+    border-color var(--dur-m) var(--ease), fill var(--dur-m) var(--ease), stroke var(--dur-m) var(--ease) !important;
 }
 
 /* ════════════════ RESET ════════════════ */
@@ -468,10 +500,7 @@ input[type=text], input[type=number], input[type=time], input[type=search], inpu
 input:focus, textarea:focus, select:focus { border-color: var(--ink); }
 
 /* ════════════════ RING ════════════════ */
-.h-ring-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto 20px; }
-.h-ring-wrap svg.h-ring { width: 160px; height: 160px; }
 .h-ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-.h-ring-label .h-num-xl { font-size: 44px; }
 
 /* ════════════════ BADGE ════════════════ */
 .h-badge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0 24px; }
@@ -513,7 +542,7 @@ button[aria-pressed]:active { transform: scale(.96); }
 /* Atmung (Runde 5 Punkt 2): Zahl entfällt, stattdessen die Phase groß und
    zentriert im Grid-Stack — #player-cue verlässt dafür die absolute
    Positionierung und wird selbst der einzige Flex-Child (siehe JS). */
-#player-cue.h-player-cue-phase { position: static; transform: none; top: auto; left: auto; font-family: var(--ui); font-weight: 300; font-size: 34px; color: var(--ink); min-height: 0; }
+#player-cue.h-player-cue-phase { position: static; transform: none; top: auto; left: auto; font-family: var(--ui); font-weight: 300; font-size: 34px; color: var(--on-yellow); min-height: 0; }
 .h-player-head { display: flex; align-items: flex-start; justify-content: space-between; width: 100%; margin-bottom: 8px; }
 .h-player-step-wrap { position: relative; min-height: 38px; overflow: hidden; text-align: right; }
 .h-player-step-wrap > div, .h-player-title-wrap > div { transition: transform 200ms ease-out, opacity 200ms ease-out; }
@@ -582,9 +611,8 @@ button[aria-pressed]:active { transform: scale(.96); }
 :root[data-theme="nacht"] .h-wordmark-p path { stroke: var(--yellow); }
 
 /* Startbildschirm (Runde 6a Punkt 2) — Fläche ist IMMER Tusche, auch
-   tagsüber/im Nachtmodus unverändert, deshalb eigene fixe Tokens statt
-   --ink/--paper, die sich mit data-theme="nacht" umdrehen würden. */
-:root { --splash-bg: #14140F; --splash-ink: #F4F3EF; --splash-muted: #A8A496; }
+   tagsüber/im Nachtmodus unverändert, deshalb eigene fixe --splash-*
+   Tokens (in :root) statt --ink/--paper, die mit data-theme="nacht" kippen. */
 .h-splash {
   position: fixed; inset: 0; z-index: 9999; background: var(--splash-bg);
   display: flex; align-items: center; justify-content: center;
@@ -658,7 +686,7 @@ button[aria-pressed]:active { transform: scale(.96); }
   <filter id="w3" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.3" xChannelSelector="R" yChannelSelector="G"/></filter>
   <filter id="w4" x="-40%" y="-40%" width="180%" height="180%"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/></filter>
   <filter id="wb" x="-20%" y="-60%" width="140%" height="220%"><feTurbulence type="fractalNoise" baseFrequency="0.15" numOctaves="1" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2" xChannelSelector="R" yChannelSelector="G"/></filter>
-  <pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" stroke="#14140F" stroke-width="1.2"/></pattern>
+  <pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" style="stroke:var(--ink)" stroke-width="1.2"/></pattern>
 </defs></svg>
 <!-- Runde 6a Punkt 2: Startbildschirm "Rehab wird Rehapp" — einmal pro
      Sitzung, nicht bei Deep-Links. Der Skip-Check läuft synchron direkt
@@ -1665,6 +1693,10 @@ button[aria-pressed]:active { transform: scale(.96); }
     </div>
   </div></div></div>
 
+  <div class="h-section" data-section-key="settings:darstellung"><div class="h-section-row" onclick="toggleSection('settings:darstellung')"><div class="h-section-title" style="font-size:28px">Darstellung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:darstellung"><div>
+    <div class="h-list" id="set-theme-list" role="radiogroup" aria-label="Darstellung" style="margin-top:12px"></div>
+  </div></div></div>
+
   <div class="h-section" data-section-key="settings:routinen"><div class="h-section-row" onclick="toggleSection('settings:routinen')"><div class="h-section-title" style="font-size:28px">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:routinen"><div>
     <div class="h-list" id="set-routine-list" style="margin-top:12px"></div>
     <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToRoutineEditor(null)">+ Routine</button>
@@ -2157,7 +2189,7 @@ function pulseXPHud() {
   if (!strip) return;
   strip.style.transition = 'transform 0.18s ease, box-shadow 0.18s ease';
   strip.style.transform = 'scale(1.02)';
-  strip.style.boxShadow = '0 0 24px rgba(255,255,255,0.12)';
+  strip.style.boxShadow = '0 0 24px var(--line)';
   clearTimeout(pulseXPHud._t);
   pulseXPHud._t = setTimeout(() => { strip.style.transform = ''; strip.style.boxShadow = ''; }, 280);
 }
@@ -2329,9 +2361,9 @@ function renderBadge({ cat, tier, icon = null, drawing = null, size = 84 }) {
   const shape = BADGE_SHAPES[cat] || BADGE_SHAPES.koerper;
   const flaecheFill = tier === 'skizze' ? 'url(#hatch)' : tier === 'tusche' ? 'var(--ink)' : tier === 'glanz' ? 'var(--yellow)' : 'none';
   const flaecheOpacity = tier === 'skizze' ? '.32' : '1';
-  const konturColor = tier === 'gesperrt' ? 'var(--lock)' : 'var(--ink)';
+  const konturColor = tier === 'gesperrt' ? 'var(--lock)' : tier === 'glanz' ? 'var(--on-yellow)' : 'var(--ink)';
   const konturDash = tier === 'gesperrt' ? 'stroke-dasharray:6 7;' : '';
-  const symbolColor = tier === 'tusche' ? 'var(--paper)' : tier === 'gesperrt' ? 'var(--lock)' : 'var(--ink)';
+  const symbolColor = tier === 'tusche' ? 'var(--paper)' : tier === 'gesperrt' ? 'var(--lock)' : tier === 'glanz' ? 'var(--on-yellow)' : 'var(--ink)';
   // Schatten (Runde 6a Punkt 3: Gelb auf 5 Bedeutungen beschränkt, Badge-
   // Schatten gehören nicht dazu): Tusche -> --line, Glanz -> ink, Skizze/
   // gesperrt -> kein Schatten. Direkt darüber eine Papierfläche in Badge-
@@ -2372,7 +2404,7 @@ function renderBadge({ cat, tier, icon = null, drawing = null, size = 84 }) {
 
   // 6. Nur Glanz: Glanzstern oben rechts
   if (tier === 'glanz') {
-    svg += `<path d="M12 2c.7 5.2 3.3 8 9 9-5.7 1-8.3 3.8-9 10-.7-6.2-3.3-9-9-10 5.7-1 8.3-3.8 9-9z" transform="translate(72 -8) scale(1.25)" style="fill:var(--yellow);stroke:var(--ink);stroke-width:1.5" filter="url(#w3)"/>`;
+    svg += `<path d="M12 2c.7 5.2 3.3 8 9 9-5.7 1-8.3 3.8-9 10-.7-6.2-3.3-9-9-10 5.7-1 8.3-3.8 9-9z" transform="translate(72 -8) scale(1.25)" style="fill:var(--yellow);stroke:var(--on-yellow);stroke-width:1.5" filter="url(#w3)"/>`;
   }
 
   svg += `</svg>`;
@@ -3647,7 +3679,7 @@ function buildHeuteHeaderInfo() {
         </div>
         <div style="min-width:0">
           <div class="h-text" style="font-weight:600;font-size:16px">Ziele</div>
-          <div class="h-meta" id="h-overcome-chip" style="color:var(--yellow);font-weight:600;white-space:nowrap"></div>
+          <div class="h-meta" id="h-overcome-chip" style="background:var(--yellow);color:var(--on-yellow);font-weight:600;white-space:nowrap;padding:2px 8px;border-radius:999px;margin-top:4px"></div>
         </div>
       </div>`;
     if (!_reducedMotion) {
@@ -3786,7 +3818,7 @@ function buildHeuteScreen() {
   const overcomeChip = document.getElementById('h-overcome-chip');
   if (overcomeChip) {
     overcomeChip.textContent = `${overcomeCount} Überwindung`;
-    overcomeChip.style.display = overcomeCount ? '' : 'none';
+    overcomeChip.style.display = overcomeCount ? 'inline-block' : 'none';
   }
   const sectionCountEl = document.getElementById('h-goal-section-count');
   if (sectionCountEl) sectionCountEl.textContent = String(total);
@@ -4150,21 +4182,21 @@ function renderHeuteModuleList() {
     <div class="h-row" onclick="openFastenSheet()" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer">
       <div style="display:flex;align-items:flex-end;justify-content:space-between">
         <div><div class="h-text" style="font-size:17px">Fasten</div><div class="h-meta" style="font-size:13.5px">${escapeHtml(fastenSub)}</div></div>
-        <div class="h-meta" style="font-size:13.5px;color:var(--text)">${escapeHtml(fastenVal)} →</div>
+        <div class="h-meta" style="font-size:13.5px;color:var(--ink)">${escapeHtml(fastenVal)} →</div>
       </div>
       ${renderBar(fastenPct, 'h-bar--row')}
     </div>
     <div class="h-row" onclick="openWasserSheet()" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer">
       <div style="display:flex;align-items:flex-end;justify-content:space-between">
         <div class="h-text" style="font-size:17px">Wasser</div>
-        <div class="h-meta" style="font-size:13.5px;color:var(--text)">${waterL} / 3 L →</div>
+        <div class="h-meta" style="font-size:13.5px;color:var(--ink)">${waterL} / 3 L →</div>
       </div>
       ${renderBar(waterPct, 'h-bar--row')}
     </div>
     <div class="h-row" onclick="openSupplementeSheet()" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;cursor:pointer">
       <div style="display:flex;align-items:flex-end;justify-content:space-between">
         <div><div class="h-text" style="font-size:17px">Supplemente</div><div class="h-meta" style="font-size:13.5px">${suppLabel}</div></div>
-        <div class="h-meta" style="font-size:13.5px;color:var(--text)">${suppDone}/${suppItems.length} →</div>
+        <div class="h-meta" style="font-size:13.5px;color:var(--ink)">${suppDone}/${suppItems.length} →</div>
       </div>
       ${renderBar(suppPct, 'h-bar--row')}
     </div>
@@ -6179,7 +6211,7 @@ function drawGoalSheetLiveStroke() {
   const canvas = document.getElementById('gs-draw-canvas');
   redrawGoalSheetCanvas();
   const ctx = _gsCanvasCtx;
-  ctx.strokeStyle = '#14140F'; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.strokeStyle = cssToken('--ink'); ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   ctx.beginPath();
   _gsRawStroke.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
   ctx.stroke();
@@ -6189,7 +6221,7 @@ function redrawGoalSheetCanvas() {
   const canvas = document.getElementById('gs-draw-canvas');
   if (!canvas || !_gsCanvasCtx) return;
   _gsCanvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-  _gsCanvasCtx.strokeStyle = '#14140F'; _gsCanvasCtx.lineWidth = 3; _gsCanvasCtx.lineCap = 'round'; _gsCanvasCtx.lineJoin = 'round';
+  _gsCanvasCtx.strokeStyle = cssToken('--ink'); _gsCanvasCtx.lineWidth = 3; _gsCanvasCtx.lineCap = 'round'; _gsCanvasCtx.lineJoin = 'round';
   (_goalSheetState.drawing || []).forEach(d => {
     const pts = pathDToPoints(d);
     _gsCanvasCtx.beginPath();
@@ -7726,6 +7758,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   await initGoalsStore();
   await seedExercisesIfNeeded();
   await seedAtmungExercisesV2();
+  storageSet('theme_auto_default', computeThemeAutoDefault());
+  applyTheme(false);
+  renderThemeSettings();
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => applyTheme());
   buildHeuteScreen();
   maybeShowNextCelebration();
   buildWater(); buildSupplements(); buildRecipes();
@@ -7753,6 +7789,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setInterval(() => {
     updateHeuteClock();
     renderNextUp();
+    applyTheme();
     const nowDate = new Date().toDateString();
     if (nowDate !== _watchedDate) {
       _watchedDate = nowDate;
@@ -8673,6 +8710,82 @@ function scrollToSection(key) {
   applySectionCollapseVisual(section, false);
   storageSet('collapsed:' + key, '0');
   section.scrollIntoView({ block: 'start', behavior: 'smooth' });
+}
+
+// ══════════════ DARSTELLUNG / TUSCHE-NACHT (Runde 6a Punkt 5) ══════════════
+// Vier Modi, aber nur ein CSS-Schalter: applyTheme() löst den Modus auf und
+// setzt/entfernt data-theme="nacht". Das Inline-Skript im <head> macht beim
+// Laden dasselbe vorab, damit nachts nichts hell aufblitzt.
+const THEME_MODES = [
+  { id: 'auto',   label: 'Automatisch' },
+  { id: 'system', label: 'Wie das System' },
+  { id: 'light',  label: 'Immer hell' },
+  { id: 'night',  label: 'Immer Nacht' },
+];
+const THEME_AUTO_END = '05:00';
+function cssToken(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function getThemeMode() {
+  const m = storageGet('theme_mode');
+  return THEME_MODES.some(t => t.id === m) ? m : 'auto';
+}
+function getThemeAutoStart() { return storageGet('theme_auto_start') || storageGet('theme_auto_default') || '21:00'; }
+function computeThemeAutoDefault() {
+  const r = getGoal('goal-abendroutine');
+  if (!r || !r.time) return '21:00';
+  const m = (nextUpMinutes(r.time) - 90 + 1440) % 1440;
+  return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+}
+function resolveNightTheme(mode, startHHMM, now, systemDark) {
+  if (mode === 'light') return false;
+  if (mode === 'night') return true;
+  if (mode === 'system') return systemDark;
+  const start = nextUpMinutes(startHHMM), end = nextUpMinutes(THEME_AUTO_END);
+  const m = now.getHours() * 60 + now.getMinutes();
+  return start > end ? (m >= start || m < end) : (m >= start && m < end);
+}
+function applyTheme(animate = true) {
+  const root = document.documentElement;
+  const night = resolveNightTheme(getThemeMode(), getThemeAutoStart(), new Date(),
+    window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const changed = night !== (root.getAttribute('data-theme') === 'nacht');
+  if (changed && animate && !_reducedMotion) {
+    root.classList.add('h-theme-fade');
+    clearTimeout(applyTheme._t);
+    applyTheme._t = setTimeout(() => root.classList.remove('h-theme-fade'), 300);
+  }
+  if (night) root.setAttribute('data-theme', 'nacht'); else root.removeAttribute('data-theme');
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', cssToken('--paper'));
+  document.querySelector('meta[name="color-scheme"]').setAttribute('content', night ? 'dark' : 'light');
+  if (changed && _goalSheetState) redrawGoalSheetCanvas();
+}
+function renderThemeSettings() {
+  const el = document.getElementById('set-theme-list');
+  if (!el) return;
+  const mode = getThemeMode();
+  const check = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
+  el.innerHTML = THEME_MODES.map(t => `
+    <button type="button" class="h-row" role="radio" aria-checked="${t.id === mode}" onclick="setThemeMode('${t.id}')"
+      style="width:100%;background:none;border:none;border-bottom:1px solid var(--line);text-align:left;color:inherit">
+      <div class="h-row-body"><div class="h-row-title">${t.label}</div>${t.id === 'auto' ? `<div class="h-row-meta">ab ${getThemeAutoStart()} bis ${THEME_AUTO_END}</div>` : ''}</div>
+      ${t.id === mode ? check : ''}
+    </button>`).join('') +
+    (mode === 'auto' ? `
+    <div class="h-row" style="cursor:default">
+      <label class="h-row-body" for="set-theme-start"><div class="h-row-title">Nacht ab</div><div class="h-row-meta">Vorbelegt mit 90 Min vor der Abendroutine</div></label>
+      <input type="time" id="set-theme-start" value="${getThemeAutoStart()}" onchange="setThemeAutoStart(this.value)"
+        style="min-height:44px;background:transparent;border:1px solid var(--line);padding:8px 10px;color:var(--ink);font-family:var(--ui);font-size:14px">
+    </div>` : '');
+}
+function setThemeMode(id) {
+  storageSet('theme_mode', id);
+  applyTheme();
+  renderThemeSettings();
+}
+function setThemeAutoStart(value) {
+  if (!/^\d{2}:\d{2}$/.test(value)) return;
+  storageSet('theme_auto_start', value);
+  applyTheme();
+  renderThemeSettings();
 }
 
 // ══════════════ TOAST ══════════════

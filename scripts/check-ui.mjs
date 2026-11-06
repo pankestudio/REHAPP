@@ -39,6 +39,8 @@ const FORBIDDEN_STRINGS = ['LV', '// V3', 'Guten Tag'];
 const ALLOWED_HEX = new Set([
   '#f4f3ef', '#14140f', '#ffe14d', '#5e5c55', '#6e6b63', '#6b6860', '#d9d4c7',
   '#eae6dc', '#bdb8ac',
+  // Tusche-Nacht (Runde 6a Punkt 5)
+  '#a8a496', '#8e8a7e', '#36352d', '#22211b', '#4f4d44',
 ]);
 
 let failures = [];
@@ -55,7 +57,7 @@ function rgbToHex(rgb) {
   return hex;
 }
 
-async function auditState(page, label) {
+async function auditStateBase(page, label) {
   checkedStates++;
   await mkdir(SCREENSHOT_DIR, { recursive: true });
   const shotName = label.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.png';
@@ -215,10 +217,41 @@ async function main() {
     if (!css.includes("'Host Grotesk'")) fail('Kein @font-face für Host Grotesk im <style>-Block');
   }
 
+  // Runde 6a Punkt 5: keine fest codierten Tusche-/Papier-/Weißwerte in
+  // Komponenten. Erlaubt sind nur Token-Definitionen (--name: #…) und die
+  // vorbelegte theme-color im <head>, die applyTheme() überschreibt.
+  const hardcoded = html.split('\n')
+    .map((line, i) => ({ line, n: i + 1 }))
+    .filter(({ line }) => /#14140f|#f4f3ef|#fff\b|#ffffff/i.test(line))
+    .filter(({ line }) => !/--[a-z-]+:\s*#/i.test(line) && !line.includes('<meta name="theme-color"'));
+  if (hardcoded.length) fail(`Fest codierte Farben in Komponenten: ${hardcoded.map(h => 'Zeile ' + h.n).join(', ')}`);
+
   const server = await startServer();
   const browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
   const consoleErrors = [];
+  await sweep(browser, '', consoleErrors);
+  await sweep(browser, '-nacht', consoleErrors);
+
+  if (consoleErrors.length) fail(`Konsolenfehler während des Durchlaufs: ${JSON.stringify(consoleErrors)}`);
+
+  await browser.close();
+  server.close();
+
+  console.log(`\n${checkedStates} Zustände geprüft.\n`);
+  if (failures.length) {
+    console.log(`FEHLGESCHLAGEN — ${failures.length} Befund(e):\n`);
+    failures.forEach(f => console.log('  ✗ ' + f));
+    process.exitCode = 1;
+  } else {
+    console.log('ALLE PRÜFUNGEN BESTANDEN.');
+  }
+}
+
+// Ein Durchlauf über alle Tabs + Sheets. suffix '-nacht' wiederholt alles
+// mit theme_mode=night (Tusche-Nacht, Runde 6a Punkt 5) — gleiche Regeln,
+// Screenshots landen als <zustand>-nacht.png daneben.
+async function sweep(browser, suffix, consoleErrors) {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
   page.on('pageerror', e => consoleErrors.push(String(e)));
   page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
 
@@ -226,11 +259,17 @@ async function main() {
   // begrenzte (<1,4s) Design-Ausnahme mit eigener, nicht kippender Farbe —
   // für die Audits hier soll er erst gar nicht laufen, nicht Teil des zu
   // prüfenden "echten" App-Zustands.
-  await page.addInitScript(() => { try { sessionStorage.setItem('rehapp_splash_shown', '1'); } catch (err) {} });
+  await page.addInitScript(night => {
+    try {
+      sessionStorage.setItem('rehapp_splash_shown', '1');
+      localStorage.setItem('theme_mode', night ? 'night' : 'light');
+    } catch (err) {}
+  }, suffix === '-nacht');
   await page.goto(`http://localhost:${PORT}/index.html`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(500);
+  const auditState = (p, label) => auditStateBase(p, label + suffix);
 
-  console.log('\nBesuche Tabs + Sheets …');
+  console.log(`\nBesuche Tabs + Sheets${suffix ? ' (Nacht)' : ''} …`);
   await auditState(page, 'heute');
 
   await page.evaluate(() => openFastenSheet());
@@ -285,20 +324,7 @@ async function main() {
   await auditState(page, 'setup-uebung-sheet');
   await page.click('#exercise-editor-overlay .h-circle-btn');
   await page.waitForTimeout(200);
-
-  if (consoleErrors.length) fail(`Konsolenfehler während des Durchlaufs: ${JSON.stringify(consoleErrors)}`);
-
-  await browser.close();
-  server.close();
-
-  console.log(`\n${checkedStates} Zustände geprüft.\n`);
-  if (failures.length) {
-    console.log(`FEHLGESCHLAGEN — ${failures.length} Befund(e):\n`);
-    failures.forEach(f => console.log('  ✗ ' + f));
-    process.exitCode = 1;
-  } else {
-    console.log('ALLE PRÜFUNGEN BESTANDEN.');
-  }
+  await page.close();
 }
 
 main().catch(err => { console.error(err); process.exitCode = 1; });
