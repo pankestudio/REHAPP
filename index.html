@@ -50,6 +50,9 @@
   }
   window.Date = DemoDate;
   var store = Object.assign({}, fixture.data || {});
+  // &theme=night|light für Prüfungen und Screenshots (Demo-Speicher ist frisch)
+  var th = /[?&]theme=(night|light|auto|system)/.exec(location.search);
+  if (th) store.theme_mode = th[1];
   var has = function (k) { return Object.prototype.hasOwnProperty.call(store, k); };
   var mem = {
     getItem: function (k) { return has(k) ? String(store[k]) : null; },
@@ -814,7 +817,7 @@ button[aria-pressed]:active { transform: scale(.96); }
           <div class="h-next-title" id="h-next-title" aria-live="polite"></div>
           <div class="h-meta h-next-meta" id="h-next-meta" style="font-size:14px;margin-top:4px"></div>
         </div>
-        <button type="button" class="h-pill h-pill--shadow" id="h-next-action" style="min-height:44px;padding:0 18px;font-size:15px;flex-shrink:0" onclick="onNextUpAction()"></button>
+        <button type="button" class="h-pill h-pill--shadow" data-gelb="aktion" id="h-next-action" style="min-height:44px;padding:0 18px;font-size:15px;flex-shrink:0" onclick="onNextUpAction()"></button>
       </div>
       <div class="h-next-foot" id="h-next-foot" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)">
         <span class="h-meta h-next-after" id="h-next-after" style="flex:1;min-width:0"></span>
@@ -823,13 +826,13 @@ button[aria-pressed]:active { transform: scale(.96); }
     </section>
 
     <div id="h-backup-notice"></div>
-    <div class="h-section" data-section-key="home:ziele" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('home:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count" id="h-goal-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:ziele"><div>
+    <div class="h-section" data-section-key="home:ziele" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('home:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count" id="h-goal-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:ziele"><div>
     </div></div></div>
     <div class="h-list" id="h-goal-list" style="margin-top:4px"></div>
     <div id="h-goal-empty" style="display:none"></div>
     <div id="h-gelegenheit-list"></div>
 
-    <div class="h-section" data-section-key="home:heute-noch"><div class="h-section-row" onclick="toggleSection('home:heute-noch')"><div class="h-section-title" style="font-size:28px">Heute noch</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:heute-noch"><div>
+    <div class="h-section" data-section-key="home:heute-noch"><div class="h-section-row" onclick="toggleSection('home:heute-noch')"><div class="h-section-title" style="font-size:28px">Heute noch</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:heute-noch"><div>
     </div></div></div>
     <div class="h-list" id="h-module-list" style="margin-top:4px"></div>
     <div class="h-heute-last" id="h-heute-last"></div>
@@ -845,7 +848,7 @@ button[aria-pressed]:active { transform: scale(.96); }
       <div class="h-header">
         <div class="h-title" style="font-size:24px">Fasten</div>
         <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeFastenSheet()" aria-label="Schließen">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
         </button>
       </div>
       <div class="h-seg" id="timer-mode-seg" style="margin-bottom:20px">
@@ -941,7 +944,7 @@ button[aria-pressed]:active { transform: scale(.96); }
       <div class="h-header">
         <div class="h-title" style="font-size:24px">Wasser</div>
         <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeWasserSheet()" aria-label="Schließen">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
         </button>
       </div>
       <div class="h-meta" style="margin-bottom:4px">3L Ziel · 8 × 0,4L</div>
@@ -957,7 +960,7 @@ button[aria-pressed]:active { transform: scale(.96); }
       <div class="h-header">
         <div class="h-title" style="font-size:24px">Supplemente</div>
         <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeSupplementeSheet()" aria-label="Schließen">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
         </button>
       </div>
       <div class="h-seg" id="supp-time-tabs" style="margin-bottom:20px">
@@ -978,7 +981,7 @@ button[aria-pressed]:active { transform: scale(.96); }
       <div class="h-header">
         <div class="h-title" style="font-size:24px">Abend-Check-in</div>
         <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeAbendCheckin()" aria-label="Schließen">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
         </button>
       </div>
       <div class="h-meta" style="margin-bottom:10px">Wie war der Tag?</div>
@@ -1003,7 +1006,7 @@ button[aria-pressed]:active { transform: scale(.96); }
       <div class="h-meta" style="margin-bottom:6px">Up des Tages</div>
       <div class="h-meta" style="color:var(--faint);font-size:12px;margin-bottom:6px">Was war heute gut?</div>
       <textarea id="checkin-up-text" rows="3" style="width:100%;background:transparent;border:1px solid var(--line);padding:10px;color:var(--ink);font-family:var(--ui);font-size:15px;box-sizing:border-box;resize:vertical;margin-bottom:24px"></textarea>
-      <button type="button" class="h-pill h-pill--shadow" style="width:100%" onclick="saveAbendCheckin()">Check-in abschließen</button>
+      <button type="button" class="h-pill h-pill--shadow" data-gelb="aktion" style="width:100%" onclick="saveAbendCheckin()">Check-in abschließen</button>
     </div>
   </div>
 
@@ -1018,7 +1021,7 @@ button[aria-pressed]:active { transform: scale(.96); }
           <div class="h-meta" id="gd-meta"></div>
         </div>
         <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeGoalDetailSheet()" aria-label="Schließen">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
         </button>
       </div>
       <div id="gd-body"></div>
@@ -1034,7 +1037,7 @@ button[aria-pressed]:active { transform: scale(.96); }
     <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
       <div class="h-header" style="justify-content:flex-start;gap:16px">
         <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeGoalSheet()" aria-label="Zurück">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
         <div class="h-title" id="gs-title" style="font-size:24px">Neues Ziel</div>
       </div>
@@ -1101,7 +1104,7 @@ button[aria-pressed]:active { transform: scale(.96); }
         <button type="button" class="h-pill h-pill--outline" id="gs-notify-btn" style="min-height:40px;padding:0 16px;font-size:14px;flex-shrink:0" onclick="toggleGoalSheetNotify()">Aus</button>
       </div>
 
-      <button type="button" class="h-pill h-pill--shadow" style="width:100%" onclick="saveGoalFromSheet()">Ziel speichern</button>
+      <button type="button" class="h-pill h-pill--shadow" data-gelb="aktion" style="width:100%" onclick="saveGoalFromSheet()">Ziel speichern</button>
       <button type="button" class="h-pill h-pill--outline" id="gs-archive-btn" style="width:100%;margin-top:12px;display:none" onclick="archiveGoalFromSheet()">Archivieren</button>
     </div>
   </div>
@@ -1112,7 +1115,7 @@ button[aria-pressed]:active { transform: scale(.96); }
       <div class="h-header">
         <div class="h-title" style="font-size:24px">Alle Vorlagen</div>
         <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeAllTemplatesSheet()" aria-label="Schließen">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
         </button>
       </div>
       <div id="all-templates-body"></div>
@@ -1181,14 +1184,14 @@ button[aria-pressed]:active { transform: scale(.96); }
         <div class="h-meta h-sm-detail-label">Ausgewählt</div>
         <div style="display:flex;justify-content:flex-end" class="h-sm-detail-close">
           <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeBadgeDetail()" aria-label="Schließen">
-            <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
           </button>
         </div>
         <div id="bd-badge" style="margin:12px 0 20px"></div>
         <div class="h-title" id="bd-title" style="font-size:28px;margin-bottom:8px"></div>
         <div class="h-meta" id="bd-meta" style="margin-bottom:12px"></div>
         <div id="bd-bar" style="display:none;margin-bottom:20px;text-align:left"></div>
-        <button type="button" class="h-pill h-pill--shadow" id="bd-open-goal-btn" style="width:100%;display:none" onclick="openGoalFromBadgeDetail()">Ziel öffnen</button>
+        <button type="button" class="h-pill h-pill--shadow" data-gelb="aktion" id="bd-open-goal-btn" style="width:100%;display:none" onclick="openGoalFromBadgeDetail()">Ziel öffnen</button>
       </div>
     </div>
   </div>
@@ -1199,7 +1202,7 @@ button[aria-pressed]:active { transform: scale(.96); }
     <div id="unlock-badge" class="h-unlock-badge-in"></div>
     <div class="h-title" style="font-size:28px;margin:20px 0 6px" id="unlock-title">Neues Abzeichen</div>
     <div class="h-meta" id="unlock-meta" style="margin-bottom:28px"></div>
-    <button type="button" class="h-pill h-pill--shadow" id="unlock-next-btn" onclick="advanceUnlockQueue()">Zur Sammlung</button>
+    <button type="button" class="h-pill h-pill--shadow" data-gelb="aktion" id="unlock-next-btn" onclick="advanceUnlockQueue()">Zur Sammlung</button>
     <button type="button" class="h-pill h-pill--outline" style="margin-top:12px" onclick="replayUnlockCelebration()">Moment wiederholen</button>
     <div class="h-meta" id="unlock-queue-note" style="margin-top:14px"></div>
   </div>
@@ -1210,7 +1213,7 @@ button[aria-pressed]:active { transform: scale(.96); }
     <div class="h-embed" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;position:relative;box-sizing:border-box">
       <div class="h-player-head">
         <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closePlayer()" aria-label="Zurück">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
         <div class="h-player-step-wrap" id="player-step-wrap">
           <div class="h-meta" id="player-ctx-label" style="font-weight: 600;color:var(--ink)"></div>
@@ -1234,7 +1237,7 @@ button[aria-pressed]:active { transform: scale(.96); }
             transform="rotate(-90 150 150)" filter="url(#w1)"/>
         </svg>
         <svg class="h-player-blob-svg" id="player-blob-svg" viewBox="0 0 300 300" aria-hidden="true" style="display:none">
-          <circle cx="150" cy="150" r="115" fill="var(--yellow)" filter="url(#w4)" id="player-blob-circle"/>
+          <circle cx="150" cy="150" r="115" fill="var(--yellow)" filter="url(#w4)" id="player-blob-circle" data-gelb="atem"/>
         </svg>
         <div class="h-player-ring-label">
           <div class="h-num-xxl" id="player-countdown" style="font-size:96px">00:00</div>
@@ -1255,14 +1258,14 @@ button[aria-pressed]:active { transform: scale(.96); }
       </div>
       <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
         <button type="button" class="h-circle-btn" id="player-prev-btn" onclick="prevPlayerStep()" aria-label="Vorheriger Schritt" style="display:none">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
         </button>
-        <button type="button" class="h-pill h-pill--shadow" id="player-start-btn" onclick="togglePlayerRun()">Übung starten</button>
+        <button type="button" class="h-pill h-pill--shadow" data-gelb="aktion" id="player-start-btn" onclick="togglePlayerRun()">Übung starten</button>
         <button type="button" class="h-circle-btn" id="player-next-btn" onclick="nextPlayerStep()" aria-label="Nächster Schritt" style="display:none">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
         </button>
         <button type="button" class="h-circle-btn" id="player-reset-btn" onclick="resetPlayer()" aria-label="Zurücksetzen">
-          <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
         </button>
       </div>
       <div id="player-after" style="display:none;margin-top:16px"></div>
@@ -1280,7 +1283,7 @@ button[aria-pressed]:active { transform: scale(.96); }
     <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
       <div class="h-header" style="justify-content:flex-start;gap:16px">
         <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeExerciseEditor()" aria-label="Zurück">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
         <div class="h-title" id="ee-sheet-title" style="font-size:24px">Übung bearbeiten</div>
       </div>
@@ -1346,7 +1349,7 @@ button[aria-pressed]:active { transform: scale(.96); }
         <button type="button" class="h-switch" id="ee-active-switch" onclick="toggleExerciseActive()" aria-label="Aktiv"></button>
       </div>
 
-      <button type="button" class="h-pill h-pill--shadow" style="width:100%" onclick="saveExerciseFromEditor()">Übung sichern</button>
+      <button type="button" class="h-pill h-pill--shadow" data-gelb="aktion" style="width:100%" onclick="saveExerciseFromEditor()">Übung sichern</button>
       <button type="button" class="h-pill h-pill--outline" id="ee-delete-btn" style="width:100%;margin-top:12px" onclick="deleteExerciseFromEditor()">Übung löschen</button>
     </div>
   </div>
@@ -1362,17 +1365,17 @@ button[aria-pressed]:active { transform: scale(.96); }
 
   <div class="h-ue-detail" id="ue-detail-panel"></div>
 
-  <div class="h-section" data-section-key="move:routinen" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('move:routinen')"><div class="h-section-title">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:routinen"><div>
+  <div class="h-section" data-section-key="move:routinen" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('move:routinen')"><div class="h-section-title">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:routinen"><div>
     <div class="h-list" id="ue-routine-list" style="margin-top:12px"></div>
     <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToRoutineEditor(null)">+ Routine</button>
   </div></div></div>
 
-  <div class="h-section" data-section-key="move:atmung"><div class="h-section-row" onclick="toggleSection('move:atmung')"><div class="h-section-title">Atmung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:atmung"><div>
+  <div class="h-section" data-section-key="move:atmung"><div class="h-section-row" onclick="toggleSection('move:atmung')"><div class="h-section-title">Atmung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:atmung"><div>
     <div class="h-list" id="ue-atmung-list" style="margin-top:12px"></div>
     <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToExerciseEditor(null)">+ Übung</button>
   </div></div></div>
 
-  <div class="h-section" data-section-key="move:protokolle"><div class="h-section-row" onclick="toggleSection('move:protokolle')"><div class="h-section-title">Protokolle</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:protokolle"><div>
+  <div class="h-section" data-section-key="move:protokolle"><div class="h-section-row" onclick="toggleSection('move:protokolle')"><div class="h-section-title">Protokolle</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:protokolle"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" onclick="openMldProtocolPlayer()">
         <div class="h-row-body"><div class="h-row-title">Lymphdrainage — Selbst-MLD</div><div class="h-row-meta">7 Schritte mit Einzel-Timer</div></div>
@@ -1386,14 +1389,14 @@ button[aria-pressed]:active { transform: scale(.96); }
     <div id="collapse-body-bfr-info" class="closed">
       <div class="h-expand-copy">Phase 2 passiv (nur Kompression). Phase 3 aktiv: 30-15-15-15-Schema. GH-Ausschüttung ohne Gelenkbelastung. Fibroblasten-Aktivierung für Kapsel &amp; Bänder.</div>
       <div class="h-notice" style="cursor:default">
-        <div class="h-notice-icon"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div class="h-notice-icon"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
         <div><div class="h-notice-title">Sicherheit</div><div class="h-notice-text">Manschettendruck 60–80% LOP. Puls distal tastbar lassen. Bei Taubheit, Blaufärbung oder Schmerz sofort lösen.</div></div>
       </div>
       <button type="button" class="h-pill" style="width:100%;margin-top:4px" onclick="openBfrProtocolPlayer()">BFR-Protokoll im Player starten</button>
     </div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="move:einzeluebungen"><div class="h-section-row" onclick="toggleSection('move:einzeluebungen')"><div class="h-section-title">Einzelübungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:einzeluebungen"><div>
+  <div class="h-section" data-section-key="move:einzeluebungen"><div class="h-section-row" onclick="toggleSection('move:einzeluebungen')"><div class="h-section-title">Einzelübungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-move:einzeluebungen"><div>
     <div class="h-list" id="ue-list" style="margin-top:12px"></div>
     <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToExerciseEditor(null)">+ Übung</button>
 
@@ -1411,11 +1414,11 @@ button[aria-pressed]:active { transform: scale(.96); }
   </div>
   <div class="h-toc-desktop" id="supp-toc"></div>
 
-  <div class="h-section" data-section-key="supp:supplemente" style="margin-top:20px"><div class="h-section-row" onclick="toggleSection('supp:supplemente')"><div class="h-section-title" style="font-size:28px">Supplemente</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:supplemente"><div>
+  <div class="h-section" data-section-key="supp:supplemente" style="margin-top:20px"><div class="h-section-row" onclick="toggleSection('supp:supplemente')"><div class="h-section-title" style="font-size:28px">Supplemente</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:supplemente"><div>
     <div class="h-list" style="margin-top:12px" id="supp-wissen-list"></div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="supp:protokolle"><div class="h-section-row" onclick="toggleSection('supp:protokolle')"><div class="h-section-title" style="font-size:28px">Protokolle</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:protokolle"><div>
+  <div class="h-section" data-section-key="supp:protokolle"><div class="h-section-row" onclick="toggleSection('supp:protokolle')"><div class="h-section-title" style="font-size:28px">Protokolle</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:protokolle"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" data-collapse-id="wissen-mld" onclick="toggleCollapse('wissen-mld')">
         <div class="h-row-body"><div class="h-row-title">Lymphdrainage — Hintergrund</div></div>
@@ -1436,7 +1439,7 @@ button[aria-pressed]:active { transform: scale(.96); }
     </div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="supp:atmung"><div class="h-section-row" onclick="toggleSection('supp:atmung')"><div class="h-section-title" style="font-size:28px">Atmung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:atmung"><div>
+  <div class="h-section" data-section-key="supp:atmung"><div class="h-section-row" onclick="toggleSection('supp:atmung')"><div class="h-section-title" style="font-size:28px">Atmung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:atmung"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" data-collapse-id="wissen-atmung" onclick="toggleCollapse('wissen-atmung')">
         <div class="h-row-body"><div class="h-row-title">Techniken im Überblick</div></div>
@@ -1453,7 +1456,7 @@ button[aria-pressed]:active { transform: scale(.96); }
     </div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="supp:fasten"><div class="h-section-row" onclick="toggleSection('supp:fasten')"><div class="h-section-title" style="font-size:28px">Fasten</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:fasten"><div>
+  <div class="h-section" data-section-key="supp:fasten"><div class="h-section-row" onclick="toggleSection('supp:fasten')"><div class="h-section-title" style="font-size:28px">Fasten</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:fasten"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" data-collapse-id="masterplan" onclick="toggleCollapse('masterplan')">
         <div class="h-row-body"><div class="h-row-title">14-Tage Masterplan</div><div class="h-row-meta">Phasenübersicht</div></div>
@@ -1485,7 +1488,7 @@ button[aria-pressed]:active { transform: scale(.96); }
     </div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="supp:rezepte"><div class="h-section-row" onclick="toggleSection('supp:rezepte')"><div class="h-section-title" style="font-size:28px">Rezepte</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:rezepte"><div>
+  <div class="h-section" data-section-key="supp:rezepte"><div class="h-section-row" onclick="toggleSection('supp:rezepte')"><div class="h-section-title" style="font-size:28px">Rezepte</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-supp:rezepte"><div>
     <div class="h-meta" style="margin:12px 0">Nach mehrtägigem Fasten den Kostaufbau mit der Ärztin abstimmen.</div>
     <div class="h-seg" id="recipe-filter-seg" style="margin-bottom:16px">
       <button type="button" class="h-seg-btn active" aria-pressed="true" onclick="filterRecipes('Alle',this)">Alle<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg></button>
@@ -1632,11 +1635,11 @@ button[aria-pressed]:active { transform: scale(.96); }
   </div>
   <div class="h-toc-desktop" id="settings-toc"></div>
 
-  <div class="h-section" data-section-key="settings:klang" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('settings:klang')"><div class="h-section-title" style="font-size:28px">Klang</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:klang"><div>
+  <div class="h-section" data-section-key="settings:klang" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('settings:klang')"><div class="h-section-title" style="font-size:28px">Klang</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:klang"><div>
     <div style="display:flex;align-items:center;gap:12px;margin:16px 0 24px">
       <div class="h-seg" id="set-sound-packs" style="flex:1"></div>
       <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="previewCurrentSoundPack()" aria-label="Vorhören">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
       </button>
     </div>
     <div class="h-row" style="cursor:default">
@@ -1649,29 +1652,29 @@ button[aria-pressed]:active { transform: scale(.96); }
     </div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="settings:darstellung"><div class="h-section-row" onclick="toggleSection('settings:darstellung')"><div class="h-section-title" style="font-size:28px">Darstellung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:darstellung"><div>
+  <div class="h-section" data-section-key="settings:darstellung"><div class="h-section-row" onclick="toggleSection('settings:darstellung')"><div class="h-section-title" style="font-size:28px">Darstellung</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:darstellung"><div>
     <div class="h-list" id="set-theme-list" role="radiogroup" aria-label="Darstellung" style="margin-top:12px"></div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="settings:routinen"><div class="h-section-row" onclick="toggleSection('settings:routinen')"><div class="h-section-title" style="font-size:28px">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:routinen"><div>
+  <div class="h-section" data-section-key="settings:routinen"><div class="h-section-row" onclick="toggleSection('settings:routinen')"><div class="h-section-title" style="font-size:28px">Routinen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:routinen"><div>
     <div class="h-list" id="set-routine-list" style="margin-top:12px"></div>
     <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToRoutineEditor(null)">+ Routine</button>
   </div></div></div>
 
-  <div class="h-section" data-section-key="settings:uebungen"><div class="h-section-row" onclick="toggleSection('settings:uebungen')"><div class="h-section-title" style="font-size:28px">Übungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:uebungen"><div>
+  <div class="h-section" data-section-key="settings:uebungen"><div class="h-section-row" onclick="toggleSection('settings:uebungen')"><div class="h-section-title" style="font-size:28px">Übungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:uebungen"><div>
     <div class="h-list" id="set-exercise-list" style="margin-top:12px"></div>
     <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToExerciseEditor(null)">+ Übung</button>
   </div></div></div>
 
-  <div class="h-section" data-section-key="settings:ziele"><div class="h-section-row" onclick="toggleSection('settings:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:ziele"><div>
+  <div class="h-section" data-section-key="settings:ziele"><div class="h-section-row" onclick="toggleSection('settings:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:ziele"><div>
     <div class="h-list" id="set-goals-list" style="margin-top:12px"></div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="settings:erinnerungen"><div class="h-section-row" onclick="toggleSection('settings:erinnerungen')"><div class="h-section-title" style="font-size:28px">Erinnerungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:erinnerungen"><div>
+  <div class="h-section" data-section-key="settings:erinnerungen"><div class="h-section-row" onclick="toggleSection('settings:erinnerungen')"><div class="h-section-title" style="font-size:28px">Erinnerungen</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:erinnerungen"><div>
     <div class="h-list" id="set-reminders-list" style="margin-top:12px"></div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="settings:app"><div class="h-section-row" onclick="toggleSection('settings:app')"><div class="h-section-title" style="font-size:28px">App</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:app"><div>
+  <div class="h-section" data-section-key="settings:app"><div class="h-section-row" onclick="toggleSection('settings:app')"><div class="h-section-title" style="font-size:28px">App</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:app"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" style="cursor:default">
         <div class="h-row-body"><div class="h-row-title">App-Modus</div><div class="h-row-meta" id="install-status-copy">Wird geprüft …</div></div>
@@ -1703,11 +1706,11 @@ button[aria-pressed]:active { transform: scale(.96); }
     </div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="settings:inhalte"><div class="h-section-row" onclick="toggleSection('settings:inhalte')"><div class="h-section-title" style="font-size:28px">Inhalte</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:inhalte"><div>
+  <div class="h-section" data-section-key="settings:inhalte"><div class="h-section-row" onclick="toggleSection('settings:inhalte')"><div class="h-section-title" style="font-size:28px">Inhalte</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:inhalte"><div>
     <div id="set-content-editor" style="margin-top:12px"></div>
   </div></div></div>
 
-  <div class="h-section" data-section-key="settings:daten"><div class="h-section-row" onclick="toggleSection('settings:daten')"><div class="h-section-title" style="font-size:28px">Daten</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:daten"><div>
+  <div class="h-section" data-section-key="settings:daten"><div class="h-section-row" onclick="toggleSection('settings:daten')"><div class="h-section-title" style="font-size:28px">Daten</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:daten"><div>
     <div class="h-list" style="margin-top:12px">
       <div class="h-row" onclick="exportAppData()">
         <div class="h-row-body"><div class="h-row-title">Backup exportieren</div></div>
@@ -1733,7 +1736,7 @@ button[aria-pressed]:active { transform: scale(.96); }
     <div class="h-sheet-body">
       <div class="h-sheet-head" style="justify-content:flex-start;gap:16px">
         <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeRoutineEditor()" aria-label="Zurück">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
         <div class="h-title" id="re-title">Routine</div>
       </div>
@@ -1782,7 +1785,7 @@ button[aria-pressed]:active { transform: scale(.96); }
         <button type="button" class="h-switch" id="re-active-switch" onclick="toggleRoutineActive()" aria-label="Aktiv"></button>
       </div>
 
-      <button type="button" class="h-pill h-pill--shadow" style="width:100%" onclick="saveRoutineFromEditor()">Routine speichern</button>
+      <button type="button" class="h-pill h-pill--shadow" data-gelb="aktion" style="width:100%" onclick="saveRoutineFromEditor()">Routine speichern</button>
     </div>
   </div>
 
@@ -1815,7 +1818,7 @@ function renderWordmark(size = 30, { drawOnLoad = false } = {}) {
   const pH = (size * 0.68).toFixed(1);
   const pStroke = (size * 0.1).toFixed(2);
   const drawCls = drawOnLoad ? ' h-wordmark-draw' : '';
-  return `<span class="h-wordmark" style="--wm-size:${size}px" role="img" aria-label="REHAPP">
+  return `<span class="h-wordmark" style="--wm-size:${size}px" role="img" aria-label="REHAPP" data-gelb="marke">
     <span class="h-wordmark-text" aria-hidden="true">REHA</span>
     <span class="h-wordmark-b${drawOnLoad ? '' : ' h-wordmark-b-struck'}" aria-hidden="true">B<svg class="h-wordmark-strike${drawCls}" viewBox="0 0 40 40" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen" d="M1 33C14 23 26 15 39 6" stroke-width="4.6" fill="none" stroke-linecap="round"/></svg></span><svg class="h-wordmark-p${drawCls}" viewBox="0 0 24 32" width="${pW}" height="${pH}" aria-hidden="true" style="transform:rotate(-5deg)"><path class="h-pen" d="M5 30V4C14 2 21 5 20 11C19 17 12 18 6 17" stroke-width="${pStroke}" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="h-wordmark-p${drawCls}" viewBox="0 0 24 32" width="${pW}" height="${pH}" aria-hidden="true" style="transform:rotate(4deg)"><path class="h-pen" d="M5 30V4C14 2 21 5 20 11C19 17 12 18 6 17" stroke-width="${pStroke}" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </span>`;
@@ -1875,20 +1878,20 @@ function renderNavChrome() {
   const bottom = document.getElementById('h-nav-bottom');
   if (bottom) bottom.innerHTML = NAV_ITEMS.map(n => `
     <button type="button" class="h-nav-item" data-page="${n.page}" id="nav-${n.slug}" onclick="showPage('${n.page}')">
-      <div class="h-nav-icon"><svg viewBox="0 0 24 24"${n.svgAttrs}>${n.inner}</svg></div>
+      <div class="h-nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24"${n.svgAttrs}>${n.inner}</svg></div>
       <div class="h-nav-label">${n.label}</div>
       <svg class="h-nav-underline" viewBox="0 0 60 8" aria-hidden="true"><path class="h-pen h-pen-draw" d="M3 4.5C18 3.6 40 5.2 57 4"/></svg>
     </button>`).join('');
   const rail = document.getElementById('h-rail');
   if (rail) rail.innerHTML = NAV_ITEMS.map(n => `
     <button type="button" class="h-nav-item h-rail-item" data-page="${n.page}" id="rail-${n.slug}" onclick="showPage('${n.page}')">
-      <div class="h-nav-icon"><svg viewBox="0 0 24 24"${n.svgAttrs}>${n.inner}</svg></div>
+      <div class="h-nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24"${n.svgAttrs}>${n.inner}</svg></div>
       <div class="h-nav-label">${n.label}</div>
     </button>`).join('');
   const side = document.getElementById('h-sidenav-items');
   if (side) side.innerHTML = NAV_ITEMS.map(n => `
     <button type="button" class="h-nav-item h-side-item" data-page="${n.page}" id="side-${n.slug}" onclick="showPage('${n.page}')">
-      <div class="h-nav-icon"><svg viewBox="0 0 24 24"${n.svgAttrs}>${n.inner}</svg></div>
+      <div class="h-nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24"${n.svgAttrs}>${n.inner}</svg></div>
       <div class="h-nav-label">${n.label}</div>
     </button>`).join('');
 }
@@ -2330,7 +2333,7 @@ function renderBadge({ cat, tier, icon = null, drawing = null, size = 84 }) {
   // Schatten nicht durchscheinen lässt.
   const schattenFarbe = tier === 'glanz' ? 'var(--ink)' : tier === 'tusche' ? 'var(--line)' : null;
 
-  let svg = `<svg viewBox="0 0 100 100" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">`;
+  let svg = `<svg viewBox="0 0 100 100" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"${tier === 'glanz' ? ' data-gelb="glanz"' : ''}>`;
 
   // 0. Schatten + Papierfläche
   if (schattenFarbe) {
@@ -3625,7 +3628,7 @@ function buildHeuteHeaderInfo() {
       </div>
       <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;border-left:1px solid var(--line);padding-left:16px">
         <div class="h-ring-wrap" style="position:relative;width:72px;height:72px;margin:0;flex-shrink:0">
-          <svg class="h-ring" viewBox="0 0 160 160" style="width:72px;height:72px">
+          <svg aria-hidden="true" class="h-ring" viewBox="0 0 160 160" style="width:72px;height:72px">
             <circle cx="80" cy="80" r="70" stroke="var(--line)" stroke-width="3" fill="none" filter="url(#w1)"/>
             <circle class="h-ring-progress" cx="80" cy="80" r="70" stroke="var(--ink)" stroke-width="4" fill="none"
               stroke-linecap="round" id="h-ring-progress"
@@ -3638,7 +3641,7 @@ function buildHeuteHeaderInfo() {
         </div>
         <div style="min-width:0">
           <div class="h-text" style="font-weight:600;font-size:16px">Ziele</div>
-          <div class="h-meta" id="h-overcome-chip" style="background:var(--yellow);color:var(--on-yellow);font-weight:600;white-space:nowrap;padding:2px 8px;border-radius:999px;margin-top:4px"></div>
+          <div class="h-meta" id="h-overcome-chip" data-gelb="ueberwindung" style="background:var(--yellow);color:var(--on-yellow);font-weight:600;white-space:nowrap;padding:2px 8px;border-radius:999px;margin-top:4px"></div>
         </div>
       </div>`;
     if (!_reducedMotion) {
@@ -3829,7 +3832,7 @@ function buildHeuteScreen() {
     const existingTitles = new Set(goals.map(g => g.title));
     const available = GOAL_TEMPLATES.filter(t => !existingTitles.has(t.title));
     templatesEl.innerHTML = `<div class="h-meta" style="margin-bottom:10px">Vorlagen</div><div style="display:flex;flex-wrap:wrap;gap:8px">` +
-      `<button class="h-pill h-pill--shadow" style="min-height:40px;padding:0 18px;font-size:14px" onclick="goToGoalEditor()">+ Eigenes Ziel</button>` +
+      `<button class="h-pill h-pill--shadow" data-gelb="aktion" style="min-height:40px;padding:0 18px;font-size:14px" onclick="goToGoalEditor()">+ Eigenes Ziel</button>` +
       available.slice(0, 4).map(t => `<button class="h-pill h-pill--outline" style="min-height:40px;padding:0 18px;font-size:14px" onclick="addGoalFromTemplate('${slugifyId(t.title)}')">${escapeHtml(t.title)}</button>`).join('') +
       `</div>` +
       (available.length > 4 ? `<div class="h-row" style="cursor:pointer;border-bottom:none;padding:10px 0 0" onclick="openAllTemplatesSheet()"><div class="h-row-body"><div class="h-meta">Alle Vorlagen ›</div></div></div>` : '');
@@ -3897,7 +3900,7 @@ function renderHeuteLastBadge() {
 // Bar-Komponente (Runde 5 Punkt 3): Pillenform mit gelber Füllung.
 function renderBar(pct, sizeClass = '', glanz = false) {
   const p = Math.max(0, Math.min(100, pct || 0));
-  return `<div class="h-bar ${sizeClass}"><div class="h-bar-fill${glanz ? ' h-bar-fill--glanz' : ''}" style="width:${p}%"></div></div>`;
+  return `<div class="h-bar ${sizeClass}"><div class="h-bar-fill${glanz ? ' h-bar-fill--glanz' : ''}"${glanz ? ' data-gelb="weg"' : ''} style="width:${p}%"></div></div>`;
 }
 // Fortschritt zur nächsten Stufe als {current,total,unit,nextTierLabel} für
 // die Bar im Abzeichen-Detail — dieselbe Schwellen-Logik wie describeNextTier().
@@ -4437,15 +4440,15 @@ function openGoalDetailSheet(goalId) {
           </div>
         `).join('')}
       </div>
-      <button type="button" class="h-pill h-pill--shadow" style="width:100%;margin-bottom:12px" onclick="closeGoalDetailSheet();openRoutinePlayer('${g.id}')">Starten</button>
+      <button type="button" class="h-pill h-pill--shadow" data-gelb="aktion" style="width:100%;margin-bottom:12px" onclick="closeGoalDetailSheet();openRoutinePlayer('${g.id}')">Starten</button>
       <button type="button" class="h-pill h-pill--outline" style="width:100%" onclick="closeGoalDetailSheet();openRoutinePlayer('${g.id}', true)">Mini starten</button>
     `;
   } else {
     const progress = describeBadgeProgress(g, tier);
     const next = describeNextTier(g, tier);
     const primaryBtn = (g.hasTimer && !done)
-      ? `<button type="button" class="h-pill h-pill--shadow" style="width:100%" onclick="closeGoalDetailSheet();openGoalTimerPlayer('${g.id}')">Starten · ${g.timerMin || 5} Min</button>`
-      : `<button type="button" class="h-pill${done ? '' : ' h-pill--shadow'}" style="width:100%" onclick="toggleGoalDetailDone('${g.id}')">${done ? 'Rückgängig' : 'Erledigt'}</button>`;
+      ? `<button type="button" class="h-pill h-pill--shadow" data-gelb="aktion" style="width:100%" onclick="closeGoalDetailSheet();openGoalTimerPlayer('${g.id}')">Starten · ${g.timerMin || 5} Min</button>`
+      : `<button type="button" class="h-pill${done ? '' : ' h-pill--shadow'}" data-gelb="aktion" style="width:100%" onclick="toggleGoalDetailDone('${g.id}')">${done ? 'Rückgängig' : 'Erledigt'}</button>`;
     body.innerHTML = `
       <div class="h-meta" style="margin-bottom:20px;line-height:1.5">${progress}${next ? ' · ' + next : ''}</div>
       ${primaryBtn}
@@ -4471,7 +4474,7 @@ function openSupplementDetailSheet(suppId) {
   if (!s) return;
   _goalDetailCurrent = { type: 'supplement', id: suppId };
   const d = s.details || {};
-  document.getElementById('gd-badge').innerHTML = `<div class="h-circle-btn h-circle-btn--sm" style="pointer-events:none"><svg width="18" height="18" viewBox="0 0 24 24" stroke="var(--ink)" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-1.5 17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1z"/><path d="M7.5 10h9"/></svg></div>`;
+  document.getElementById('gd-badge').innerHTML = `<div class="h-circle-btn h-circle-btn--sm" style="pointer-events:none"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" stroke="var(--ink)" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-1.5 17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1z"/><path d="M7.5 10h9"/></svg></div>`;
   document.getElementById('gd-title').textContent = s.title;
   const timeLabel = { morning: 'Morgens', midday: 'Mittags', evening: 'Abends' }[s.time] || '';
   document.getElementById('gd-meta').textContent = [s.dose, timeLabel].filter(Boolean).join(' · ');
@@ -4586,7 +4589,7 @@ function buildSammlungBadges() {
         <div class="h-section-title">${escapeHtml(title)}</div>
         <div class="h-section-count"></div>
         <button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen">
-          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
         </button>
       </div>
       <div class="h-section-body" id="sb-sammlung:${key}"><div>${bodyHtml}</div></div>
@@ -5082,7 +5085,7 @@ function buildUebungenList() {
         <div class="h-meta">${formatMMSS(ex.details.durationSec || 0)} min${legacyListNote(ex)}${ex.details.pattern ? ' · ' + ex.details.pattern.map(p => p.label).join('/') : ''}${ex.details.kind === 'schritte' ? ' · ' + (ex.details.steps || []).length + ((ex.details.steps || []).length === 1 ? ' Schritt' : ' Schritte') : ''}</div>
       </div>
       <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="openPlayer('${ex.id}')" aria-label="${escapeHtml(ex.title)} starten">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
       </button>
     </div>
   `).join('') : `<div class="h-meta">Noch keine Übungen angelegt.</div>`;
@@ -5102,7 +5105,7 @@ function buildAtmungList() {
       </div>
       ${ex.id === 'exercise-box-breathing' ? `<button type="button" class="h-pill h-pill--outline" style="min-height:32px;padding:0 12px;font-size:12px;flex-shrink:0" onclick="event.stopPropagation();openPlayer('${ex.id}')">2 Min Box</button>` : ''}
       <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="openPlayer('${ex.id}')" aria-label="${escapeHtml(ex.title)} starten">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
       </button>
     </div>
   `).join('');
@@ -5121,7 +5124,7 @@ function buildRoutineList() {
       </div>
       <button type="button" class="h-pill h-pill--outline" style="min-height:32px;padding:0 12px;font-size:12px;flex-shrink:0" onclick="openRoutinePlayer('${g.id}', true)">Mini</button>
       <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="openRoutinePlayer('${g.id}')" aria-label="${escapeHtml(g.title)} starten">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
       </button>
     </div>
   `).join('');
@@ -5161,7 +5164,7 @@ function renderUebungDetailPanel() {
     <div class="h-ue-detail-title">${escapeHtml(g.title)}</div>
     <div class="h-meta" style="margin-bottom:20px">${g.time ? escapeHtml(g.time) + ' · ' : ''}${g.steps.length} Schritte · ca. ${Math.round(totalSec / 60)} Min</div>
     <div style="display:flex;gap:10px;margin-bottom:28px">
-      <button type="button" class="h-pill h-pill--shadow" onclick="openRoutinePlayer('${g.id}')">Starten</button>
+      <button type="button" class="h-pill h-pill--shadow" data-gelb="aktion" onclick="openRoutinePlayer('${g.id}')">Starten</button>
       <button type="button" class="h-pill h-pill--outline" onclick="openRoutinePlayer('${g.id}', true)">Mini${miniSec ? ' · ' + Math.round(miniSec / 60) + ' Min' : ''}</button>
     </div>
     <div class="h-ue-detail-steps">
@@ -5238,7 +5241,7 @@ function drawPenStroke(path, durationMs = 600) {
 // Zeichnet alle .h-pen-draw-Elemente innerhalb eines frisch gerenderten
 // Containers nach (Pfeil/Durchstreichen in neu eingefügten Zeilen, Ellipse
 // in neu aufgebauten Segmented-Listen, …). .h-pen-draw sitzt entweder direkt
-// auf dem path/circle, oder auf einem umgebenden <svg> (dann wird der erste
+// auf dem path/circle, oder auf einem umgebenden <svg aria-hidden="true"> (dann wird der erste
 // innere path/circle genommen, z.B. beim Durchstreichen im Player).
 function drawPenStrokesIn(container) {
   if (!container) return;
@@ -6028,7 +6031,7 @@ function renderExerciseStepsList() {
   el.innerHTML = steps.length ? steps.map((s, i) => `
     <div class="h-row">
       <button type="button" class="h-circle-btn h-circle-btn--sm" style="width:28px;height:28px;flex-shrink:0" ${i === 0 ? 'disabled' : ''} onclick="moveExerciseStep(${i},-1)" aria-label="Nach oben">
-        <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+        <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
       </button>
       <div class="h-row-body">
         <input type="text" value="${escapeHtml(s.name || '')}" placeholder="Name" oninput="updateExerciseStepField(${i},'name',this.value)" style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);padding:4px 0;color:var(--ink);font-family:var(--ui);font-size:15px;margin-bottom:4px">
@@ -6422,13 +6425,13 @@ function renderIconGrid({ gridId, group, query, selected, showDrawCell, drawActi
   const cell = (iconKey, isSel, onclickCall, label) => `
     <button type="button" style="position:relative;width:46px;height:46px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="${onclickCall}" aria-label="${escapeHtml(label)}" aria-pressed="${isSel}">
       ${isSel ? `<svg width="46" height="46" viewBox="0 0 46 46" style="position:absolute;inset:0" aria-hidden="true"><ellipse cx="23" cy="23" rx="20" ry="20" fill="none" stroke="var(--ink)" stroke-width="1.6" filter="url(#w2)"/></svg>` : ''}
-      <svg viewBox="0 0 24 24" width="20" height="20" style="position:relative"><g style="fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round">${BADGE_ICONS[iconKey]}</g></svg>
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" style="position:relative"><g style="fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round">${BADGE_ICONS[iconKey]}</g></svg>
     </button>`;
   let html = keys.map(k => cell(k, selected === k && !drawActive, `${onPick}('${k}')`, ICON_LABELS[k] || k)).join('');
   if (showDrawCell && !query) {
     html += `<button type="button" style="position:relative;width:46px;height:46px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="${onDrawPick}()" aria-label="Selbst zeichnen" aria-pressed="${drawActive}">
       ${drawActive ? `<svg width="46" height="46" viewBox="0 0 46 46" style="position:absolute;inset:0" aria-hidden="true"><ellipse cx="23" cy="23" rx="20" ry="20" fill="none" stroke="var(--ink)" stroke-width="1.6" filter="url(#w2)"/></svg>` : ''}
-      <svg viewBox="0 0 24 24" width="20" height="20" style="position:relative"><g style="fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><path d="M3 21l4-1 12-12-3-3L4 17z"/><path d="M14 6l3 3"/></g></svg>
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" style="position:relative"><g style="fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><path d="M3 21l4-1 12-12-3-3L4 17z"/><path d="M14 6l3 3"/></g></svg>
     </button>`;
   }
   el.innerHTML = html;
@@ -6945,7 +6948,7 @@ function renderRoutineStepsList() {
   el.innerHTML = steps.length ? steps.map((s, i) => `
     <div class="h-row">
       <button type="button" class="h-circle-btn h-circle-btn--sm" style="width:28px;height:28px;flex-shrink:0" ${i === 0 ? 'disabled' : ''} onclick="moveRoutineStep(${i},-1)" aria-label="Nach oben">
-        <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+        <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
       </button>
       <div class="h-row-body">${escapeHtml(s.title)}<div class="h-row-meta">${formatMMSS(s.sec)} min</div></div>
       <div class="h-row-trail"><span class="h-meta">Mini</span><button type="button" class="h-switch${s.mini ? ' on' : ''}" onclick="toggleRoutineStepMini(${i})" aria-label="Mini-Version ${escapeHtml(s.title)}"></button></div>
@@ -7369,7 +7372,7 @@ function buildWater() {
     d.className = 'h-circle-btn h-circle-btn--sm' + (saved.includes(i) ? ' h-circle-btn--fill' : '');
     d.setAttribute('aria-label', '0,4L');
     d.innerHTML = saved.includes(i)
-      ? '<svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+      ? '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
       : '<span style="font-size:12.5px">0,4</span>';
     d.onclick = () => {
       const sv = JSON.parse(storageGet('water6_'+today) || '[]');

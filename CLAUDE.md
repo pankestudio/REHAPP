@@ -37,7 +37,9 @@ Medizinisches Rehabilitationsprotokoll, kein Essstörungs-Kontext.
 - **Nur Tokens** aus `:root` in `index.html` (`--paper`, `--ink`, `--yellow`, `--muted`, `--faint`, `--line`, …),
   keine festen Farben in Komponenten. Nachtmodus über `[data-theme="nacht"]`, Text auf Gelb nutzt `--on-yellow`.
 - Gelb (`--yellow`) nur mit Bedeutung: Hauptaktion, Glanz, Überwindung, Atemkreis „jetzt“, „Weg zu Glanz“.
-  Jedes gelbe Element trägt `data-gelb="aktion|glanz|ueberwindung|atem|weg"`.
+  Jedes gelbe Element trägt `data-gelb="aktion|glanz|ueberwindung|atem|weg"`. Einzige weitere Stelle:
+  `marke` für die zwei P der Wortmarke im Nachtmodus (Entscheidung Runde 6a). `check-ui.mjs` prüft das.
+- Dekorative SVGs tragen `aria-hidden="true"`, Icon-Buttons haben ein `aria-label`.
 - Schrift: Host Grotesk, Schnitte 300/400/500/600, **kein 700**, **nichts unter 12px**.
 - Touch-Ziele mindestens 44×44px (kleine Elemente über `::before` erweitern). Jeder Tap gibt sichtbare
   Rückmeldung (`:active`).
@@ -76,8 +78,12 @@ Medizinisches Rehabilitationsprotokoll, kein Essstörungs-Kontext.
 - Functions brauchen lokal `npm install` in `netlify/functions/` vor dem Deploy.
 
 ## Prüfen
-- `npm run check` = Syntax-Check aller Skripte + `scripts/check-ui.mjs` (rendert alle Tabs und Sheets hell und
-  Nacht mit Playwright und prüft die Design-Regeln oben automatisch). Läuft als `pre-push`-Hook
-  (`scripts/install-hooks.sh` einmal ausführen).
+- `npm run check` = `validate.js` (Syntax aller Skript-Blöcke) + `scripts/check-ui.mjs`. Das Prüfskript rendert alle
+  Tabs und Sheets im Demo-Modus bei 390 und 1440px, hell und Nacht (52 Zustände), und prüft die Regeln oben:
+  Tokens, Gelb mit `data-gelb`, Schrift, Touch-Ziele, Stift-Linien, Überlauf, Kontrast, SVG/img, Systemdialoge.
+  `--out datei.txt` schreibt die Befunde in eine Datei.
+- `pre-push`-Hook einmal einrichten: `npm run hooks`. Ein roter Check bricht den Push ab.
+- Demo-Modus: `?demo=2026-11-03T21:40` (feste Uhr, Demodaten aus `tests/fixtures/demo.json` in Arbeitsspeicher
+  und IndexedDB `rehapp_demo`, Band oben), optional `&theme=night`. Demodaten neu: `npm run demo-fixture`.
 - Playwright braucht einmalig `npx playwright install chromium`.
 - iPhone-Test: Safari → URL → Teilen → „Zum Home-Bildschirm“. Nicht über iCloud öffnen (Quick Look blockiert JS).
