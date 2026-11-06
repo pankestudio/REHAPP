@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rehapp-2026-11-06-runde6a-fix1'; // Bump bei jedem Deploy
+const CACHE_NAME = 'rehapp-2026-11-06-runde6a-fix2'; // Bump bei jedem Deploy
 const ASSETS_REQUIRED = ['./', './index.html', './manifest.webmanifest'];
 const ASSETS_OPTIONAL = [
   './icons/icon-192.png',

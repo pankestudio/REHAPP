@@ -1216,6 +1216,7 @@ button[aria-pressed]:active { transform: scale(.96); }
           <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
         </button>
       </div>
+      <div id="player-after" style="display:none;margin-top:16px"></div>
       <div style="display:none;gap:12px;align-items:center;margin-top:8px" id="player-done-btns">
         <button type="button" class="h-pill" id="player-done-btn" onclick="closePlayerDone()">Zur Sammlung</button>
         <button type="button" class="h-pill h-pill--outline" onclick="restartPlayerExercise()">Übung wiederholen</button>
@@ -1347,104 +1348,6 @@ button[aria-pressed]:active { transform: scale(.96); }
     <div class="h-list" id="ue-list" style="margin-top:12px"></div>
     <button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:12px" onclick="goToExerciseEditor(null)">+ Übung</button>
 
-    <div class="h-list" id="ue-extra-list">
-      <div class="h-row" data-collapse-id="vagus" onclick="toggleCollapse('vagus')">
-        <div class="h-row-body"><div class="h-row-title">Vagus-Stimulation</div><div class="h-row-meta">3× täglich, je 2–3 Min</div></div>
-        <div class="h-row-chevron open" id="collapse-arrow-vagus">›</div>
-      </div>
-      <div id="collapse-body-vagus">
-        <div class="h-expand-copy">Tägliche N.-Vagus-Aktivierung senkt TNF-α und reduziert Gelenkschwellungen.</div>
-        <div id="vagus-steps-container"></div>
-        <div style="display:flex;gap:12px;align-items:center;padding-bottom:16px">
-          <button type="button" class="h-pill h-pill--outline" onclick="completeVagusSession()">Session abschließen</button>
-          <span class="h-meta" id="vagus-session-status"></span>
-        </div>
-      </div>
-
-      <div class="h-row" data-collapse-id="mechano" onclick="toggleCollapse('mechano')">
-        <div class="h-row-body"><div class="h-row-title">Pulsatile Mechanobiologie</div><div class="h-row-meta">Phase 3 · ~10 Min</div></div>
-        <div class="h-row-chevron" id="collapse-arrow-mechano">›</div>
-      </div>
-      <div id="collapse-body-mechano" class="closed">
-        <div class="h-expand-copy">Fibroblasten reagieren auf kurze, intensive Reize (~10 Min) mit 6h refraktärer Phase danach. 3–4 Slots täglich verteilen.</div>
-        <div class="h-meta" id="mechano-status" style="margin-bottom:10px">Nächster Reiz: bereit</div>
-        <div style="padding-bottom:16px">
-          <button type="button" class="h-pill h-pill--outline" id="mechano-btn" onclick="startMechanoTimer()">10-Min-Reiz starten</button>
-          <div class="h-meta" id="mechano-countdown" style="margin-top:10px"></div>
-        </div>
-      </div>
-
-      <div class="h-row" data-collapse-id="gmi-sensory" onclick="toggleGMI('sensory')">
-        <div class="h-row-body"><div class="h-row-title">Sensory Wake-Up</div><div class="h-row-meta">Texturerkennung · 10 Min</div></div>
-        <div class="h-row-chevron" id="gmi-arrow-sensory">›</div>
-      </div>
-      <div class="h-expand-copy" id="gmi-body-sensory" style="display:none">
-        Berühre den linken Fuß abwechselnd mit verschiedenen Materialien: <strong>Seide → Wolle → weiches Handtuch → harte Bürste → Eispack</strong>. Halte jede Textur 30–60 Sek. Das Ziel ist das Gehirn zu zwingen, sensorische Signale aus dem Fuß wieder zu verarbeiten — Desensibilisierung von Allodynie.
-        <div style="display:flex;gap:12px;align-items:center;margin:14px 0">
-          <button type="button" class="h-pill h-pill--outline" onclick="startGMITimer('sensory',600)" id="gmi-start-sensory">10-Min-Session starten</button>
-          <div class="h-meta" id="gmi-time-sensory"></div>
-        </div>
-        <div class="h-meta" style="margin-bottom:8px">Schmerzniveau danach</div>
-        <div class="h-chip-row">
-          <button type="button" class="h-pill h-pill--outline" style="min-height:40px;padding:0 16px;font-size:14px" onclick="logGMIPain('sensory',0,this)">0</button>
-          <button type="button" class="h-pill h-pill--outline" style="min-height:40px;padding:0 16px;font-size:14px" onclick="logGMIPain('sensory',2,this)">1–2</button>
-          <button type="button" class="h-pill h-pill--outline" style="min-height:40px;padding:0 16px;font-size:14px" onclick="logGMIPain('sensory',4,this)">3–4</button>
-          <button type="button" class="h-pill h-pill--outline" style="min-height:40px;padding:0 16px;font-size:14px" onclick="logGMIPain('sensory',6,this)">5–6</button>
-          <button type="button" class="h-pill h-pill--outline" style="min-height:40px;padding:0 16px;font-size:14px" onclick="logGMIPain('sensory',8,this)">7+</button>
-        </div>
-      </div>
-
-      <div class="h-row" data-collapse-id="gmi-imagery" onclick="toggleGMI('imagery')">
-        <div class="h-row-body"><div class="h-row-title">Explicit Motor Imagery</div><div class="h-row-meta">Mentale Bewegung · 10 Min</div></div>
-        <div class="h-row-chevron" id="gmi-arrow-imagery">›</div>
-      </div>
-      <div class="h-expand-copy" id="gmi-body-imagery" style="display:none">
-        Lege dich hin. Augen schließen. Stelle dir vor, du bewegst die Zehen des linken Fußes — <strong>langsam spreizen, schließen, kreisen</strong>. Keine echte Bewegung, nur das mentale Bild. Halte 5 Sek pro Bewegung, dann Pause 3 Sek.
-        <div style="display:flex;gap:12px;align-items:center;margin:14px 0 2px">
-          <button type="button" class="h-pill h-pill--outline" onclick="startGMITimer('imagery',600)" id="gmi-start-imagery">10-Min-Session starten</button>
-          <div class="h-meta" id="gmi-time-imagery"></div>
-        </div>
-      </div>
-
-      <div class="h-row" data-collapse-id="gmi-scrubbing" onclick="toggleGMI('scrubbing')">
-        <div class="h-row-body"><div class="h-row-title">Scrubbing — Stress Loading</div><div class="h-row-meta">Gewebereiz · 3 Min</div></div>
-        <div class="h-row-chevron" id="gmi-arrow-scrubbing">›</div>
-      </div>
-      <div class="h-expand-copy" id="gmi-body-scrubbing" style="display:none">
-        Nehme eine <strong>weiche Bürste</strong> und bürste mit konstantem, leichtem Druck den Fußrücken in langen Zügen — von den Zehen Richtung Knöchel. 3 Minuten kontinuierlich. Ab Tag 4 täglich, steigere den Druck minimal jede Woche.
-        <div style="display:flex;gap:12px;align-items:center;margin:14px 0">
-          <button type="button" class="h-pill h-pill--outline" onclick="startGMITimer('scrubbing',180)" id="gmi-start-scrubbing">3-Min-Timer starten</button>
-          <div class="h-meta" id="gmi-time-scrubbing"></div>
-        </div>
-        <div class="h-meta" style="margin-bottom:8px">Schmerzniveau während Scrubbing</div>
-        <div class="h-chip-row" style="margin-bottom:14px">
-          <button type="button" class="h-pill h-pill--outline" style="min-height:40px;padding:0 16px;font-size:14px" onclick="logGMIPain('scrubbing',0,this)">0</button>
-          <button type="button" class="h-pill h-pill--outline" style="min-height:40px;padding:0 16px;font-size:14px" onclick="logGMIPain('scrubbing',2,this)">1–2</button>
-          <button type="button" class="h-pill h-pill--outline" style="min-height:40px;padding:0 16px;font-size:14px" onclick="logGMIPain('scrubbing',4,this)">3–4</button>
-          <button type="button" class="h-pill h-pill--outline" style="min-height:40px;padding:0 16px;font-size:14px" onclick="logGMIPain('scrubbing',6,this)">5–6</button>
-          <button type="button" class="h-pill h-pill--outline" style="min-height:40px;padding:0 16px;font-size:14px" onclick="logGMIPain('scrubbing',8,this)">7+</button>
-        </div>
-        <button type="button" class="h-pill" style="width:100%" onclick="completeScrubbingSession()">Session abschließen</button>
-      </div>
-
-      <div class="h-row" data-collapse-id="meditation" onclick="toggleCollapse('meditation')">
-        <div class="h-row-body"><div class="h-row-title">Knochen-Heilung — Visualisierung</div><div class="h-row-meta">Geführt, offline · 10 Min</div></div>
-        <div class="h-row-chevron" id="collapse-arrow-meditation">›</div>
-      </div>
-      <div id="collapse-body-meditation" class="closed">
-        <div class="h-expand-copy">
-          <p><strong>Lege dich hin. Augen schließen. Fuß hochgelagert.</strong></p>
-          <p style="margin-top:10px">Drei tiefe Atemzüge durch die Nase — langsam durch den Mund aus. Mit jedem Ausatmen wird die Spannung schwerer und sinkt in die Unterlage.</p>
-          <p style="margin-top:10px">Richte die Aufmerksamkeit auf den linken Fuß. Stell dir vor, wie ein klares Licht durch das Bein fließt — von der Leiste abwärts, durch den Unterschenkel, in den Knöchel hinein.</p>
-          <p style="margin-top:10px">Dieses Licht durchdringt den Knochen. Es füllt das Knochenmark. Es löst Entzündung auf wie Nebel im Wind.</p>
-          <p style="margin-top:10px">Stammzellen erwachen — kleine leuchtende Punkte bauen neue Knochenstruktur auf, Schicht um Schicht. Das Ödem löst sich, der Druck lässt nach. Bleibe noch fünf Minuten hier.</p>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;padding-bottom:16px">
-          <button type="button" class="h-pill h-pill--outline" id="viz-timer-btn" onclick="startVizTimer()">10 Min starten</button>
-          <div class="h-meta" id="viz-timer-display"></div>
-        </div>
-      </div>
-    </div>
   </div></div></div>
   <div class="h-meta" id="ue-disclaimer" style="font-size:13px;margin:20px 0 4px">Diese Anleitungen ersetzen keine Therapie. Was dir verordnet wurde, geht vor.</div>
 </div>
@@ -4984,6 +4887,112 @@ function seedAtmungExercisesV2() {
   }))).then(() => { storageSet('exercises_seeded_v2', '1'); });
 }
 
+// Die früheren Inline-Blöcke unter "Einzelübungen" (Vagus-Session,
+// Mechanobiologie, Sensory Wake-Up, Motor Imagery, Scrubbing, Knochen-
+// Visualisierung) laufen jetzt als Schritt-Übungen im Player. Texte sind
+// wortgleich übernommen. Was die alten Blöcke zusätzlich konnten, steckt in
+// details.after und läuft nach dem letzten Schritt (renderPlayerAfter):
+//   pain      – Schmerzfrage, gleicher Schlüssel gmi_pain_{modul}_{datum}
+//   cooldown  – Sperrzeit, gleicher Schlüssel mechano_cooldown_until
+//   vagus     – Session-Zähler und check_{datum}_vagus wie früher
+//   flag      – Dauer-Flag (z. B. xp_award_ever_scrubbing_done)
+// details.award hält die alten XP-Schlüssel, damit Abzeichen und Verlauf
+// nicht doppelt zählen ({date} wird beim Abschluss ersetzt).
+function seedLegacyProtocolsV3() {
+  if (storageGet('exercises_seeded_v3_legacy') === '1') return Promise.resolve();
+  const one = (name, hint, sec) => [{ name, hint, sec }];
+  const seeds = [
+    { id: 'exercise-vagus-session', title: 'Vagus-Session', xp: 20, details: {
+      kind: 'schritte', cue: 'Tägliche N.-Vagus-Aktivierung senkt TNF-α und reduziert Gelenkschwellungen.',
+      steps: VAGUS_DRILLS.map(d => ({ name: d.title, hint: d.desc, sec: d.sec })),
+      award: { key: 'vagus_drill_complete', label: 'Vagus-Session' }, after: { type: 'vagus' },
+    } },
+    { id: 'exercise-mechano', title: 'Pulsatile Mechanobiologie', xp: 12, details: {
+      kind: 'schritte',
+      steps: one('Reiz: Dehnung / Isometrik', 'Fibroblasten reagieren auf kurze, intensive Reize (~10 Min) mit 6h refraktärer Phase danach. 3–4 Slots täglich verteilen.', 600),
+      award: { key: 'mechano_start_{date}', label: 'Mechano-Reiz' }, after: { type: 'cooldown', key: 'mechano_cooldown_until', hours: 6 },
+    } },
+    { id: 'exercise-sensory', title: 'Sensory Wake-Up', xp: 10, details: {
+      kind: 'schritte',
+      steps: one('Texturerkennung', 'Berühre den linken Fuß abwechselnd mit verschiedenen Materialien: Seide → Wolle → weiches Handtuch → harte Bürste → Eispack. Halte jede Textur 30–60 Sek. Das Ziel ist das Gehirn zu zwingen, sensorische Signale aus dem Fuß wieder zu verarbeiten — Desensibilisierung von Allodynie.', 600),
+      after: { type: 'pain', module: 'sensory', question: 'Schmerzniveau danach' },
+    } },
+    { id: 'exercise-imagery', title: 'Explicit Motor Imagery', xp: 10, details: {
+      kind: 'schritte',
+      steps: one('Mentale Bewegung', 'Lege dich hin. Augen schließen. Stelle dir vor, du bewegst die Zehen des linken Fußes — langsam spreizen, schließen, kreisen. Keine echte Bewegung, nur das mentale Bild. Halte 5 Sek pro Bewegung, dann Pause 3 Sek.', 600),
+    } },
+    { id: 'exercise-scrubbing', title: 'Scrubbing — Stress Loading', xp: 200, details: {
+      kind: 'schritte',
+      steps: one('Bürsten', 'Nehme eine weiche Bürste und bürste mit konstantem, leichtem Druck den Fußrücken in langen Zügen — von den Zehen Richtung Knöchel. 3 Minuten kontinuierlich. Ab Tag 4 täglich, steigere den Druck minimal jede Woche.', 180),
+      award: { key: 'scrubbing_{date}', label: 'Scrubbing' }, after: { type: 'pain', module: 'scrubbing', question: 'Schmerzniveau während Scrubbing', flag: 'xp_award_ever_scrubbing_done' },
+    } },
+    { id: 'exercise-viz', title: 'Knochen-Heilung — Visualisierung', xp: 60, details: {
+      kind: 'schritte',
+      steps: one('Geführt, offline', 'Lege dich hin. Augen schließen. Fuß hochgelagert. Drei tiefe Atemzüge durch die Nase — langsam durch den Mund aus. Mit jedem Ausatmen wird die Spannung schwerer und sinkt in die Unterlage. Richte die Aufmerksamkeit auf den linken Fuß. Stell dir vor, wie ein klares Licht durch das Bein fließt — von der Leiste abwärts, durch den Unterschenkel, in den Knöchel hinein. Dieses Licht durchdringt den Knochen. Es füllt das Knochenmark. Es löst Entzündung auf wie Nebel im Wind. Stammzellen erwachen — kleine leuchtende Punkte bauen neue Knochenstruktur auf, Schicht um Schicht. Das Ödem löst sich, der Druck lässt nach. Bleibe noch fünf Minuten hier.', 600),
+      award: { key: 'viz_meditation_{date}', label: 'Visualisierung' },
+    } },
+  ];
+  seeds.forEach(sd => { sd.details.durationSec = sd.details.steps.reduce((a, st) => a + st.sec, 0); });
+  const existingIds = new Set(getItems({ type: 'exercise' }).map(i => i.id));
+  const toCreate = seeds.filter(sd => !existingIds.has(sd.id));
+  return Promise.all(toCreate.map((sd, i) => saveItem({
+    id: sd.id, type: 'exercise', title: sd.title, dose: null, time: null, block: null,
+    schedule: { days: [] }, xp: sd.xp, notify: false, active: true, details: sd.details, order: 9020 + i,
+  }))).then(() => { storageSet('exercises_seeded_v3_legacy', '1'); });
+}
+
+function cooldownUntil(after) {
+  if (!after || after.type !== 'cooldown') return 0;
+  const until = parseInt(storageGet(after.key) || '0', 10);
+  if (until && until <= Date.now()) { storageRemove(after.key); return 0; }
+  return until;
+}
+function formatClockTime(ts) {
+  return new Date(ts).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+}
+function legacyListNote(ex) {
+  const until = cooldownUntil(ex.details && ex.details.after);
+  return until ? ` · Pause bis ${formatClockTime(until)}` : '';
+}
+
+const PAIN_LEVELS = [{ label: '0', v: 0 }, { label: '1–2', v: 2 }, { label: '3–4', v: 4 }, { label: '5–6', v: 6 }, { label: '7+', v: 8 }];
+
+function renderPlayerAfter(after) {
+  const box = document.getElementById('player-after');
+  if (!box) return;
+  box.innerHTML = '';
+  box.style.display = 'none';
+  if (!after) return;
+  if (after.flag) storageSet(after.flag, '1');
+  if (after.type === 'vagus') {
+    storageSet('xp_award_ever_vagus_drill_complete', '1');
+    const count = parseInt(storageGet('vagus_session_count') || '0', 10) + 1;
+    storageSet('vagus_session_count', String(count));
+    storageSet(`check_${new Date().toDateString()}_vagus`, '1');
+    return;
+  }
+  if (after.type === 'cooldown') {
+    const until = Date.now() + after.hours * 3600000;
+    storageSet(after.key, String(until));
+    box.innerHTML = `<div class="h-meta">Pause bis ${formatClockTime(until)}. Erst danach wirkt der nächste Reiz.</div>`;
+    box.style.display = 'block';
+    return;
+  }
+  if (after.type === 'pain') {
+    const saved = storageGet(`gmi_pain_${after.module}_${getLocalDateKey()}`);
+    box.innerHTML = `<div class="h-meta" style="margin-bottom:8px">${escapeHtml(after.question)}</div>
+      <div class="h-chip-row" style="justify-content:center">${PAIN_LEVELS.map(l => `<button type="button" class="h-pill ${saved === String(l.v) ? '' : 'h-pill--outline'}" aria-pressed="${saved === String(l.v)}" onclick="logPlayerPain('${after.module}', ${l.v}, this)">${l.label}</button>`).join('')}</div>`;
+    box.style.display = 'block';
+  }
+}
+function logPlayerPain(module, level, btn) {
+  btn.parentElement.querySelectorAll('.h-pill').forEach(b => { b.classList.add('h-pill--outline'); b.setAttribute('aria-pressed', 'false'); });
+  btn.classList.remove('h-pill--outline');
+  btn.setAttribute('aria-pressed', 'true');
+  storageSet(`gmi_pain_${module}_${getLocalDateKey()}`, String(level));
+  if (level <= 2) awardXP(`gmi_${module}_low_pain_${getLocalDateKey()}`, 20, 'Niedriger Schmerz', { scope: 'day' });
+}
+
 function formatMMSS(sec) {
   const s = Math.max(0, Math.ceil(sec));
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
@@ -4999,7 +5008,7 @@ function buildUebungenList() {
     <div class="h-row">
       <div style="flex:1">
         <div class="h-text">${escapeHtml(ex.title)}</div>
-        <div class="h-meta">${formatMMSS(ex.details.durationSec || 0)} min${ex.details.pattern ? ' · ' + ex.details.pattern.map(p => p.label).join('/') : ''}${ex.details.kind === 'schritte' ? ' · ' + (ex.details.steps || []).length + ' Schritte' : ''}</div>
+        <div class="h-meta">${formatMMSS(ex.details.durationSec || 0)} min${legacyListNote(ex)}${ex.details.pattern ? ' · ' + ex.details.pattern.map(p => p.label).join('/') : ''}${ex.details.kind === 'schritte' ? ' · ' + (ex.details.steps || []).length + ((ex.details.steps || []).length === 1 ? ' Schritt' : ' Schritte') : ''}</div>
       </div>
       <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="openPlayer('${ex.id}')" aria-label="${escapeHtml(ex.title)} starten">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -5559,8 +5568,9 @@ async function finishPlayerExercise() {
   else if (seq.completionAward) awardXP(seq.completionAward.key, seq.completionAward.amount, seq.completionAward.label, { scope: 'day', silent: true });
 
   _playerState.pendingUnlocks = unlocked;
-  document.getElementById('player-done-btn').textContent = seq ? 'Routine beenden' : 'Zur Sammlung';
+  document.getElementById('player-done-btn').textContent = seq ? (seq.routineGoalId ? 'Routine beenden' : 'Übung beenden') : 'Zur Sammlung';
   document.getElementById('player-done-btns').style.display = 'flex';
+  if (seq && seq.after) renderPlayerAfter(seq.after);
 }
 
 function closePlayerDone() {
@@ -5576,6 +5586,7 @@ function restartPlayerExercise() {
   document.getElementById('player-done-btns').style.display = 'none';
   document.getElementById('player-start-btn').style.display = '';
   document.getElementById('player-reset-btn').style.display = '';
+  renderPlayerAfter(null);
   if (seq) { loadPlayerStep(0); } else { resetPlayer(); }
 }
 
@@ -5583,8 +5594,13 @@ function openPlayer(exerciseId) {
   const ex = getItems({ type: 'exercise' }).find(i => i.id === exerciseId);
   if (!ex) return;
   if (ex.details.kind === 'schritte' && (ex.details.steps || []).length) {
-    openProtocolPlayer(ex.details.steps.map(s => ({ title: s.name, desc: s.hint, sec: s.sec })), ex.title,
-      { key: 'exercise_' + ex.id + '_' + getLocalDateKey(), amount: ex.xp || 10, label: ex.title + ' abgeschlossen' });
+    const until = cooldownUntil(ex.details.after);
+    if (until) { toast(`${ex.title}: Pause bis ${formatClockTime(until)}`); return; }
+    const aw = ex.details.award;
+    const award = aw
+      ? { key: aw.key.replace('{date}', getLocalDateKey()), amount: ex.xp || 10, label: aw.label }
+      : { key: 'exercise_' + ex.id + '_' + getLocalDateKey(), amount: ex.xp || 10, label: ex.title + ' abgeschlossen' };
+    openProtocolPlayer(ex.details.steps.map(s => ({ title: s.name, desc: s.hint, sec: s.sec })), ex.title, award, ex.details.after || null);
     return;
   }
   startStandaloneExercise(ex);
@@ -5652,13 +5668,14 @@ function openRoutinePlayer(routineGoalId, mini = false) {
 // Geführte Protokolle (MLD/BFR) laufen über denselben Player-Mechanismus
 // wie Routinen, nur ohne verknüpftes Ziel — Abschluss vergibt stattdessen
 // direkt XP (wie bisher completeVagusSession()/completeBFRSession()).
-function openProtocolPlayer(stepsRaw, title, completionAward) {
+function openProtocolPlayer(stepsRaw, title, completionAward, after = null) {
   const steps = stepsRaw.map(s => ({ title: s.title, cue: s.desc, sec: s.sec }));
   _playerState = {
     exercise: null, totalSec: 0, soundPack: getSoundPack(),
     running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null, lastPopRemaining: null,
-    sequence: { steps, idx: 0, routineGoalId: null, title, completionAward },
+    sequence: { steps, idx: 0, routineGoalId: null, title, completionAward, after },
   };
+  renderPlayerAfter(null);
   renderSoundPackPicker();
   document.getElementById('player-overlay').classList.add('open');
   loadPlayerStep(0);
@@ -7029,56 +7046,6 @@ function completeCRPSDay(day) {
   toast(`Tag ${day} abgeschlossen`);
 }
 
-// ══════════════ GMI MODULES ══════════════
-
-const gmiTimers = {};
-const GMI_LABELS = { sensory: 'Sensory Wake-Up', imagery: 'Explicit Motor Imagery', scrubbing: 'Scrubbing' };
-
-function toggleGMI(id) {
-  const body = document.getElementById(`gmi-body-${id}`);
-  const arrow = document.getElementById(`gmi-arrow-${id}`);
-  if (!body) return;
-  const open = body.style.display === 'none';
-  body.style.display = open ? 'block' : 'none';
-  if (arrow) arrow.classList.toggle('open', open);
-}
-
-function startGMITimer(id, seconds) {
-  if (gmiTimers[id]) { clearInterval(gmiTimers[id]); }
-  const btn = document.getElementById(`gmi-start-${id}`);
-  const disp = document.getElementById(`gmi-time-${id}`);
-  let rem = seconds;
-  if (disp) disp.textContent = formatClockFromMs(rem * 1000);
-  if (btn) { btn.textContent = 'Läuft …'; btn.disabled = true; }
-  gmiTimers[id] = setInterval(() => {
-    rem--;
-    if (disp) disp.textContent = rem > 0 ? formatClockFromMs(rem * 1000) : 'FERTIG';
-    if (rem <= 0) {
-      clearInterval(gmiTimers[id]);
-      safeVibrate([60, 30, 60]);
-      playTone(440, 0.15); setTimeout(() => playTone(550, 0.2), 180);
-      if (btn) { btn.textContent = 'Nochmal starten'; btn.disabled = false; }
-      toast(`${GMI_LABELS[id] || id} — Session beendet`);
-    }
-  }, 1000);
-}
-
-function logGMIPain(module, level, btn) {
-  document.querySelectorAll(`#gmi-body-${module} .h-chip-row .h-pill`).forEach(b => b.classList.add('h-pill--outline'));
-  btn.classList.remove('h-pill--outline');
-  storageSet(`gmi_pain_${module}_${getLocalDateKey()}`, String(level));
-  if (level <= 2) awardXP(`gmi_${module}_low_pain_${getLocalDateKey()}`, 20, 'Niedriger Schmerz', { scope: 'day' });
-}
-
-function completeScrubbingSession() {
-  awardXP(`scrubbing_${getLocalDateKey()}`, 200, 'Scrubbing', { scope: 'day' });
-  storageSet('xp_award_ever_scrubbing_done', '1');
-  safeVibrate([40, 20, 40, 20, 60]);
-  toast('Scrubbing abgeschlossen');
-  refreshXPUI();
-}
-
-
 // ══════════════ BUDAPEST FILTER ══════════════
 
 function buildBudapestFilter() {
@@ -7728,7 +7695,7 @@ function importAppDataFromFile(file) {
       }
       await importGoalsLogsEarned(parsed);
       buildWater(); buildSupplements(); buildRecipes();
-      buildVagus(); buildMasterplan();
+      buildMasterplan();
       buildCRPSCalendar(); buildBudapestFilter(); renderOedemTrend();
       restorePreferences(); refreshXPUI(); updateInstallStatus(); updateNotificationStatus();
       initSuppTab(); renderDailyQuote(); buildHeuteScreen();
@@ -7801,6 +7768,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await initGoalsStore();
   await seedExercisesIfNeeded();
   await seedAtmungExercisesV2();
+  await seedLegacyProtocolsV3();
   storageSet('theme_auto_default', computeThemeAutoDefault());
   applyTheme(false);
   renderThemeSettings();
@@ -7808,10 +7776,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   buildHeuteScreen();
   maybeShowNextCelebration();
   buildWater(); buildSupplements(); buildRecipes();
-  buildVagus(); buildMasterplan();
+  buildMasterplan();
   buildCRPSCalendar(); buildBudapestFilter(); renderOedemTrend();
   restorePreferences();
-  restoreMechanoState();
   restoreCollapseState();
   restoreSectionCollapseState();
   initSuppTab();
@@ -8516,161 +8483,6 @@ function completeMasterplanPhase() {
   buildMasterplan();
   safeVibrate([20, 15, 20, 15, 40]);
   toast(`Phase ${currentPhase.phase} — ${currentPhase.title}`);
-}
-
-// ══════════════ VAGUS ══════════════
-
-let vagusTimerInterval = null;
-
-function buildVagus() {
-  const root = document.getElementById('vagus-steps-container');
-  if (!root) return;
-  root.innerHTML = VAGUS_DRILLS.map((d, i) => `
-    <div class="h-row" style="align-items:flex-start;cursor:default">
-      <div class="h-row-body">
-        <div class="h-row-title" id="vn-${i}">${d.title}</div>
-        <div class="h-row-meta">${d.desc}</div>
-      </div>
-      <div class="h-row-trail" style="flex-direction:column;align-items:flex-end;gap:6px">
-        <button type="button" class="h-pill h-pill--outline" style="min-height:32px;padding:0 14px;font-size:12px" onclick="startVagusDrill(${i})">${d.sec}s Timer</button>
-        <span class="h-meta" id="vt-${i}"></span>
-      </div>
-    </div>`).join('');
-  const todayDone = storageGet('xp_award_day_' + getLocalDateKey() + '_vagus_drill_complete') === '1';
-  const status = document.getElementById('vagus-session-status');
-  if (status) status.textContent = todayDone ? '✓ Heute erledigt' : '';
-}
-
-function startVagusDrill(idx) {
-  if (vagusTimerInterval) clearInterval(vagusTimerInterval);
-  document.querySelectorAll('[id^="vn-"]').forEach((n, i) => n.classList.toggle('current', i === idx));
-  let rem = VAGUS_DRILLS[idx].sec;
-  const disp = document.getElementById(`vt-${idx}`);
-  disp.textContent = rem + 's';
-  vagusTimerInterval = setInterval(() => {
-    rem--;
-    disp.textContent = rem > 0 ? rem + 's' : 'Fertig';
-    if (rem <= 0) {
-      clearInterval(vagusTimerInterval);
-      safeVibrate([50, 30, 50]);
-      toast(`Drill ${idx + 1} ${idx < VAGUS_DRILLS.length - 1 ? '— weiter' : '— Session fast fertig'}`);
-    }
-  }, 1000);
-}
-
-function completeVagusSession() {
-  awardXP('vagus_drill_complete', 20, 'Vagus-Session', { scope: 'day' });
-  storageSet('xp_award_ever_vagus_drill_complete', '1');
-  const today = new Date().toDateString();
-  const count = parseInt(storageGet('vagus_session_count') || '0', 10) + 1;
-  storageSet('vagus_session_count', String(count));
-  storageSet(`check_${today}_vagus`, '1');
-  buildVagus();
-  refreshXPUI();
-  safeVibrate([20, 15, 30]);
-  playTone(440, 0.15); setTimeout(() => playTone(550, 0.2), 180);
-  toast('Vagus-Session abgeschlossen');
-}
-
-// ══════════════ MECHANOBIOLOGIE ══════════════
-
-let mechanoInterval = null;
-let mechanoMode = 'idle'; // 'active' | 'cooldown' | 'idle'
-
-function startMechanoTimer() {
-  if (mechanoMode !== 'idle') return;
-  const btn = document.getElementById('mechano-btn');
-  const status = document.getElementById('mechano-status');
-  const cd = document.getElementById('mechano-countdown');
-  mechanoMode = 'active';
-  if (btn) { btn.textContent = 'Läuft …'; btn.disabled = true; }
-  let rem = 600; // 10 min
-  if (cd) cd.textContent = formatClockFromMs(rem * 1000);
-  if (status) status.textContent = 'Reiz aktiv — Dehnung / Isometrik';
-  awardXP('mechano_start_' + getLocalDateKey(), 12, 'Mechano-Reiz', { scope: 'day' });
-  safeVibrate([20, 10, 20]);
-  toast('Mechanobiologie — 10 Min Reiz läuft');
-  mechanoInterval = setInterval(() => {
-    rem--;
-    if (cd) cd.textContent = formatClockFromMs(rem * 1000);
-    if (rem <= 0) {
-      clearInterval(mechanoInterval);
-      mechanoMode = 'cooldown';
-      safeVibrate([60, 30, 60]);
-      toast('Reiz beendet — 6h Refraktärphase startet');
-      if (status) status.textContent = 'Refraktärphase — 6h Pause einhalten';
-      if (btn) { btn.textContent = 'Cooldown läuft'; btn.disabled = true; }
-      const cooldownEnd = Date.now() + 6 * 3600000;
-      storageSet('mechano_cooldown_until', String(cooldownEnd));
-      let cRem = 6 * 3600000;
-      mechanoInterval = setInterval(() => {
-        cRem = Math.max(0, parseInt(storageGet('mechano_cooldown_until') || '0', 10) - Date.now());
-        if (cd) cd.textContent = cRem > 0 ? `Cooldown: ${formatClockFromMs(cRem)}` : '';
-        if (cRem <= 0) {
-          clearInterval(mechanoInterval);
-          mechanoMode = 'idle';
-          if (btn) { btn.textContent = '10-Min-Reiz starten'; btn.disabled = false; }
-          if (status) status.textContent = 'Nächster Reiz: bereit';
-          if (cd) cd.textContent = '';
-          storageRemove('mechano_cooldown_until');
-          toast('Mechano bereit — nächster Reiz möglich');
-        }
-      }, 5000);
-    }
-  }, 1000);
-}
-
-function restoreMechanoState() {
-  const until = parseInt(storageGet('mechano_cooldown_until') || '0', 10);
-  if (until > Date.now()) {
-    mechanoMode = 'cooldown';
-    const btn = document.getElementById('mechano-btn');
-    const status = document.getElementById('mechano-status');
-    if (btn) { btn.textContent = 'Cooldown läuft'; btn.disabled = true; }
-    if (status) status.textContent = 'Refraktärphase — 6h Pause einhalten';
-    const cd = document.getElementById('mechano-countdown');
-    mechanoInterval = setInterval(() => {
-      const rem = Math.max(0, parseInt(storageGet('mechano_cooldown_until') || '0', 10) - Date.now());
-      if (cd) cd.textContent = rem > 0 ? `Cooldown: ${formatClockFromMs(rem)}` : '';
-      if (rem <= 0) {
-        clearInterval(mechanoInterval);
-        mechanoMode = 'idle';
-        if (btn) { btn.textContent = '10-Min-Reiz starten'; btn.disabled = false; }
-        if (status) status.textContent = 'Nächster Reiz: bereit';
-        if (cd) cd.textContent = '';
-        storageRemove('mechano_cooldown_until');
-      }
-    }, 5000);
-  }
-}
-
-// ══════════════ VISUALIZATION TIMER ══════════════
-
-let vizTimerInterval = null;
-
-function startVizTimer() {
-  const btn = document.getElementById('viz-timer-btn');
-  const disp = document.getElementById('viz-timer-display');
-  if (vizTimerInterval) { clearInterval(vizTimerInterval); }
-  let rem = 600; // 10 min
-  if (btn) { btn.textContent = 'Läuft …'; btn.disabled = true; }
-  if (disp) disp.textContent = formatClockFromMs(rem * 1000);
-  vizTimerInterval = setInterval(() => {
-    rem--;
-    if (disp) disp.textContent = rem > 0 ? formatClockFromMs(rem * 1000) : '✓ FERTIG';
-    if (rem <= 0) {
-      clearInterval(vizTimerInterval);
-      vizTimerInterval = null;
-      awardXP('viz_meditation_' + getLocalDateKey(), 60, 'Visualisierung', { scope: 'day' });
-      if (btn) { btn.textContent = 'Nochmal starten'; btn.disabled = false; }
-      safeVibrate([40, 30, 40]);
-      playTone(440, 0.15); setTimeout(() => playTone(550, 0.2), 180);
-      toast('Visualisierung abgeschlossen');
-      refreshXPUI();
-    }
-  }, 1000);
-  awardXP('viz_start_' + getLocalDateKey(), 5, 'Visualisierung gestartet', { scope: 'day', silent: true });
-  toast('Visualisierung gestartet — 10 Min');
 }
 
 // ══════════════ COLLAPSIBLE PANELS ══════════════
