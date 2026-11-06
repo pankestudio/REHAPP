@@ -27,7 +27,8 @@ const OUT = path.join(ROOT, 'screenshots');
 const AKTUELL = path.join(OUT, 'aktuell');
 const BASIS = path.join(OUT, 'basis');
 const REFERENZ = path.join(OUT, 'referenz');
-const PORT = 8744;
+// Freier Port vom System (0), damit parallele oder hängende Läufe nicht kollidieren.
+let PORT = 0;
 const MAX_DIFF = 0.01;
 const UPDATE = process.argv.includes('--update');
 
@@ -69,7 +70,7 @@ function startServer() {
         res.end(data);
       } catch { res.writeHead(404); res.end(); }
     });
-    server.listen(PORT, () => resolve(server));
+    server.listen(0, '127.0.0.1', () => { PORT = server.address().port; resolve(server); });
   });
 }
 
@@ -108,7 +109,7 @@ async function main() {
         const page = await ctx.newPage();
         page.on('pageerror', e => errors.push(`${s.id}@${vp.name}-${theme}: ${e.message}`));
         const t = s.time || DEFAULT_TIME;
-        await page.goto(`http://localhost:${PORT}/index.html?demo=${t}&theme=${theme === 'nacht' ? 'night' : 'light'}`, { waitUntil: 'networkidle' });
+        await page.goto(`http://127.0.0.1:${PORT}/index.html?demo=${t}&theme=${theme === 'nacht' ? 'night' : 'light'}`, { waitUntil: 'networkidle' });
         await page.waitForTimeout(800);
         if (s.run) { await page.evaluate(s.run); await page.waitForTimeout(700); }
         const file = `${s.id}-${vp.name}-${theme}.png`;

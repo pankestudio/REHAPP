@@ -36,7 +36,8 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SCREENSHOT_DIR = path.join(ROOT, 'screenshots');
-const PORT = 8743;
+// Freier Port vom System (0), damit parallele oder hängende Läufe nicht kollidieren.
+let PORT = 0;
 
 const FORBIDDEN_CLASS_PREFIXES = [
   'panel', 'page-header', 'bottom-nav', 'hero', 'xp', 'supp-', 'mld-', 'bfr-',
@@ -48,6 +49,10 @@ const ALLOWED_HEX = new Set([
   '#eae6dc', '#bdb8ac',
   // Tusche-Nacht (Runde 6a Punkt 5)
   '#a8a496', '#8e8a7e', '#36352d', '#22211b', '#4f4d44',
+  // Papiere (Setup → Darstellung): Löschpapier, altes Papier, Washi
+  '#f2e1de', '#e8d3cf', '#d8c2be', '#5c5552', '#5e5652',
+  '#efe6d3', '#e4d9c2', '#d3c6ac', '#5b5548', '#5e574b',
+  '#f1f0ea', '#e6e5dd', '#d6d4ca', '#64615a',
 ]);
 
 const DEMO_TIME = '2026-11-03T11:18';
@@ -319,7 +324,7 @@ function startServer() {
         res.writeHead(404); res.end('not found');
       }
     });
-    server.listen(PORT, () => resolve(server));
+    server.listen(0, '127.0.0.1', () => { PORT = server.address().port; resolve(server); });
   });
 }
 
@@ -358,6 +363,10 @@ async function main() {
     await sweep(browser, '', consoleErrors, vp);
     await sweep(browser, '-nacht', consoleErrors, vp);
   }
+  // Papiere tagsüber: alle drei bei 390, Löschpapier (geringster Kontrast) auch bei 1440.
+  for (const [paper, vp] of [['loeschpapier', { w: 390, h: 844 }], ['altpapier', { w: 390, h: 844 }], ['washi', { w: 390, h: 844 }], ['loeschpapier', { w: 1440, h: 900 }]]) {
+    await sweep(browser, '', consoleErrors, vp, paper);
+  }
 
   if (consoleErrors.length) fail(`Konsolenfehler während des Durchlaufs: ${JSON.stringify(consoleErrors)}`);
 
@@ -382,7 +391,7 @@ async function main() {
 // Ein Durchlauf über alle Tabs + Sheets. suffix '-nacht' wiederholt alles
 // mit theme_mode=night (Tusche-Nacht, Runde 6a Punkt 5) — gleiche Regeln,
 // Screenshots landen als <zustand>-nacht.png daneben.
-async function sweep(browser, suffix, consoleErrors, vp) {
+async function sweep(browser, suffix, consoleErrors, vp, paper = null) {
   const page = await browser.newPage({ viewport: { width: vp.w, height: vp.h } });
   page.on('pageerror', e => consoleErrors.push(String(e)));
   page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
@@ -398,15 +407,15 @@ async function sweep(browser, suffix, consoleErrors, vp) {
     } catch (err) {}
   }, suffix === '-nacht');
   const theme = suffix === '-nacht' ? 'night' : 'light';
-  await page.goto(`http://localhost:${PORT}/index.html?demo=${DEMO_TIME}&theme=${theme}`, { waitUntil: 'networkidle' });
+  await page.goto(`http://127.0.0.1:${PORT}/index.html?demo=${DEMO_TIME}&theme=${theme}${paper ? '&paper=' + paper : ''}`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(900);
-  const auditState = async (p, label) => { await p.waitForTimeout(700); return auditStateBase(p, label + suffix + '@' + vp.w); };
+  const auditState = async (p, label) => { await p.waitForTimeout(700); return auditStateBase(p, label + suffix + (paper ? '-' + paper : '') + '@' + vp.w); };
 
-  console.log(`\nBesuche Tabs + Sheets bei ${vp.w}px${suffix ? ' (Nacht)' : ''} …`);
+  console.log(`\nBesuche Tabs + Sheets bei ${vp.w}px${suffix ? ' (Nacht)' : ''}${paper ? ' auf ' + paper : ''} …`);
   // Einklappen muss wirklich einklappen (Runde 6b-Vorlauf): pro Tab jede
   // Sektion zu- und wieder aufklappen, die Seite muss dabei kürzer werden.
   // Nur im ersten Durchlauf (390 hell), die Logik hängt nicht am Viewport-Theme.
-  if (!suffix && vp.w === 390) {
+  if (!suffix && !paper && vp.w === 390) {
     for (const pg of ['pg-home', 'pg-move', 'pg-sammlung', 'pg-supp', 'pg-settings']) {
       const bad = await page.evaluate(async pid => {
         showPage(pid);
