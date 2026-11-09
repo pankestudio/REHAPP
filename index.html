@@ -456,7 +456,8 @@ body {
 .h-section[data-section-key="home:ziele"].collapsed ~ #h-goal-empty,
 .h-section[data-section-key="home:ziele"].collapsed ~ #h-gelegenheit-list,
 .h-section[data-section-key="home:heute-noch"].collapsed ~ #h-module-list,
-.h-section[data-section-key="home:heute-noch"].collapsed ~ .h-heute-last { display: none; }
+.h-section[data-section-key="home:heute-noch"].collapsed ~ .h-heute-last,
+.h-section[data-section-key="home:drei"].collapsed ~ #h-tasks-list { display: none; }
 
 /* ════════════════ PILL / CIRCLEBUTTON ════════════════ */
 .h-pill {
@@ -855,6 +856,10 @@ button[aria-pressed]:active { transform: scale(.96); }
     <div class="h-list" id="h-goal-list" style="margin-top:4px"></div>
     <div id="h-goal-empty" style="display:none"></div>
     <div id="h-gelegenheit-list"></div>
+
+    <div class="h-section" data-section-key="home:drei"><div class="h-section-row" onclick="toggleSection('home:drei')"><div class="h-section-title" style="font-size:28px">Drei für heute</div><div class="h-section-count" id="h-tasks-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body"><div>
+    </div></div></div>
+    <div class="h-list" id="h-tasks-list" style="margin-top:4px"></div>
 
     <div class="h-section" data-section-key="home:heute-noch"><div class="h-section-row" onclick="toggleSection('home:heute-noch')"><div class="h-section-title" style="font-size:28px">Heute noch</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:heute-noch"><div>
     </div></div></div>
@@ -3522,7 +3527,7 @@ function computeHeuteCounters() {
 // XP werden rein aus den Logs berechnet (keine Level, keine Missionen) —
 // unabhängig vom alten awardXP()/xp_total-System (XP-Tab, Trophäen, Chip
 // bleiben unverändert bestehen, das hier ist nur für den Heute-Kopf).
-const XP_RULES = { ziel: 10, routine: 20, gelegenheit: 10, checkin: 10 };
+const XP_RULES = { ziel: 10, routine: 20, gelegenheit: 10, checkin: 10, aufgabe: 10 };
 // Einmalig den alten V3-XP-Stand (xp_total, Level/Missionen-System) als
 // Sockel übernehmen, damit "gesamt" im neuen Heute-Kopf nicht bei 0 beginnt.
 function migrateXpLegacyTotal() {
@@ -3545,6 +3550,14 @@ function computeHeuteHeaderXP() {
     total += amount;
     if (log.date === todayKey) today += amount;
   });
+  // Drei für heute: +10 je erledigter Aufgabe, gespeichert pro Tag (tasks_JJJJ-MM-TT).
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (!k || !k.startsWith('tasks_')) continue;
+    const n = getTasks(k.slice(6)).filter(t => t.t && t.done).length * XP_RULES.aufgabe;
+    total += n;
+    if (k === 'tasks_' + todayKey) today += n;
+  }
   const legacy = parseInt(storageGet('xp_legacy_total') || '0', 10);
   return { today, total: total + legacy };
 }
@@ -3739,7 +3752,8 @@ function renderGoalRow(g, done, todayKey) {
 // Listener-Verluste) — bei jedem Aufruf idempotent in die Zielreihenfolge.
 const HEUTE_LEFT_SELECTORS = [
   '.h-heute-title-desktop', '#h-next', '#h-backup-notice', '.h-section[data-section-key="home:ziele"]',
-  '#h-goal-list', '#h-goal-empty', '#h-gelegenheit-list', '.h-templates',
+  '#h-goal-list', '#h-goal-empty', '#h-gelegenheit-list',
+  '.h-section[data-section-key="home:drei"]', '#h-tasks-list', '.h-templates',
 ];
 const HEUTE_RIGHT_SELECTORS = [
   '#h-counters', '#h-heute-sep2',
@@ -3752,20 +3766,120 @@ function layoutHeuteColumns() {
   if (desktop) {
     const left = document.getElementById('h-heute-left');
     const right = document.getElementById('h-heute-right');
-    HEUTE_LEFT_SELECTORS.forEach(sel => { const el = root.querySelector(sel); if (el) left.appendChild(el); });
-    HEUTE_RIGHT_SELECTORS.forEach(sel => { const el = root.querySelector(sel); if (el) right.appendChild(el); });
+    placeInOrder(left, HEUTE_LEFT_SELECTORS.map(sel => root.querySelector(sel)));
+    placeInOrder(right, HEUTE_RIGHT_SELECTORS.map(sel => root.querySelector(sel)));
   } else {
     // Exakte ursprüngliche Quelltext-Reihenfolge (Mobil-Lesefluss).
     const order = [
       '.h-header', '.h-heute-title-desktop', '#h-counters',
       '#h-heute-sep2', '#h-next', '#h-backup-notice',
       '.h-section[data-section-key="home:ziele"]', '#h-goal-list', '#h-goal-empty', '#h-gelegenheit-list',
+      '.h-section[data-section-key="home:drei"]', '#h-tasks-list',
       '.h-section[data-section-key="home:heute-noch"]', '#h-module-list', '.h-heute-last', '.h-templates',
     ];
-    order.forEach(sel => { const el = root.querySelector(sel); if (el) root.appendChild(el); });
+    placeInOrder(root, order.map(sel => root.querySelector(sel)));
   }
 }
+// Nur verschieben, wenn die Reihenfolge wirklich abweicht: appendChild()
+// auf ein fokussiertes Element nimmt ihm den Fokus (Eingabe in "Drei für
+// heute" brach sonst bei jedem Neuaufbau von Heute ab).
+function placeInOrder(parent, els) {
+  const list = els.filter(Boolean);
+  const current = Array.from(parent.children).filter(c => list.includes(c));
+  if (current.length === list.length && current.every((c, i) => c === list[i]) && list.every(e => e.parentElement === parent)) return;
+  list.forEach(el => parent.appendChild(el));
+}
 window.addEventListener('resize', () => { if (currentPage === 'pg-home') layoutHeuteColumns(); });
+
+// ══════════════ DREI FÜR HEUTE ══════════════
+// Drei freie Aufgaben pro Tag direkt in Heute. Leere Zeile = Eingabefeld,
+// Enter speichert. Abhaken über den Pfeil (wie Ziele), je +10 XP (aus
+// tasks_JJJJ-MM-TT berechnet, Rückgängig zieht sie wieder ab). Am nächsten
+// Tag sind die Zeilen leer; alte Tage bleiben für XP und Backup gespeichert.
+let _taskEditIdx = null, _taskJustDone = null;
+function getTasks(dateKey = getLocalDateKey()) {
+  let arr = [];
+  try { arr = JSON.parse(storageGet('tasks_' + dateKey) || '[]'); } catch (err) {}
+  return [0, 1, 2].map(i => ({ t: (arr[i] && arr[i].t) || '', done: !!(arr[i] && arr[i].done) }));
+}
+function saveTasks(tasks) {
+  if (tasks.every(t => !t.t)) storageRemove('tasks_' + getLocalDateKey());
+  else storageSet('tasks_' + getLocalDateKey(), JSON.stringify(tasks));
+}
+function renderHeuteTasks(force = false) {
+  const list = document.getElementById('h-tasks-list');
+  const sec = document.querySelector('.h-section[data-section-key="home:drei"]');
+  if (!list || !sec) return;
+  // Während getippt wird nicht neu zeichnen (sonst ginge der Fokus verloren).
+  if (!force && list.contains(document.activeElement) && document.activeElement.tagName === 'INPUT') return;
+  const on = getHeuteModules().drei;
+  sec.style.display = on ? '' : 'none';
+  list.style.display = on ? '' : 'none';
+  if (!on) return;
+  const tasks = getTasks();
+  const filled = tasks.filter(t => t.t);
+  const countEl = document.getElementById('h-tasks-count');
+  if (countEl) countEl.textContent = filled.length ? `${filled.filter(t => t.done).length}/${filled.length}` : '';
+  const firstEmpty = tasks.findIndex(t => !t.t);
+  list.innerHTML = tasks.map((task, i) => {
+    if (!task.t || _taskEditIdx === i) {
+      const ph = i === firstEmpty && !filled.length ? 'Was steht heute an?' : 'Noch etwas?';
+      return `<div class="h-row" style="padding:4px 0;cursor:text">
+        <div class="h-goalrow-arrow" aria-hidden="true" style="color:var(--faint);font-size:15px">${i + 1}</div>
+        <input type="text" class="h-task-input" data-task="${i}" value="${escapeHtml(task.t)}" placeholder="${ph}" aria-label="Aufgabe ${i + 1}" maxlength="80" enterkeyhint="done"
+          onkeydown="onTaskKey(event, ${i})" onblur="commitTask(${i}, this.value)"
+          style="flex:1;min-width:0;min-height:44px;border:none;border-bottom:1px dashed var(--line);background:transparent;color:var(--ink);font-size:17px;padding:0 16px 0 0;border-radius:0">
+      </div>`;
+    }
+    const done = task.done;
+    return `<div class="h-row" data-task-row="${i}" style="padding:0;align-items:stretch;justify-content:space-between">
+      <button type="button" class="h-goalrow-arrow" onclick="toggleTask(${i})" aria-label="„${escapeHtml(task.t)}“ ${done ? 'wieder öffnen' : 'abhaken'}">
+        ${done ? '' : `<svg class="h-goalrow-arrow-tile" viewBox="0 0 40 40" aria-hidden="true"><rect x="1" y="1" width="38" height="38" rx="11" fill="var(--grid)" filter="url(#w1)"/></svg><svg class="h-arrow-open" viewBox="0 0 32 32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="h-pen h-pen-draw" filter="url(#w3)" d="M4 17C10 15 17 18 26 16 M19 9.5C22 12 24.5 14 27 16 24.5 18 22 20 19.5 23"/></svg>`}
+      </button>
+      <button type="button" onclick="editTask(${i})" aria-label="„${escapeHtml(task.t)}“ bearbeiten" style="display:flex;align-items:center;flex:1;min-width:0;padding:13px 16px 13px 0;background:none;border:none;text-align:left;color:inherit;cursor:pointer">
+        <div style="position:relative;display:inline-block;max-width:100%">
+          <span class="h-text" ${done ? 'style="color:var(--faint)"' : ''}>${escapeHtml(task.t)}</span>
+          ${done ? `<svg class="h-strike-shaft" style="position:absolute;left:-3%;top:38%;width:106%;overflow:visible" viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen h-pen-draw" d="M2 7C60 5 120 8 180 6S270 5 298 6M290 1L298 6L290 11" stroke-width="3"/></svg>` : ''}
+        </div>
+      </button>
+    </div>`;
+  }).join('');
+  if (_taskEditIdx !== null) {
+    const inp = list.querySelector(`input[data-task="${_taskEditIdx}"]`);
+    if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+  }
+  if (_taskJustDone !== null) {
+    list.querySelectorAll(`[data-task-row="${_taskJustDone}"] .h-pen-draw`).forEach(pth => drawPenStroke(pth));
+    _taskJustDone = null;
+  }
+}
+function onTaskKey(e, i) {
+  if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); }
+  else if (e.key === 'Escape') { _taskEditIdx = null; e.target.value = getTasks()[i].t; e.target.blur(); }
+}
+function commitTask(i, value) {
+  const tasks = getTasks();
+  const v = value.trim();
+  if (v !== tasks[i].t) { tasks[i] = { t: v, done: v ? tasks[i].done : false }; saveTasks(tasks); }
+  _taskEditIdx = null;
+  // nach dem Tippen direkt zur nächsten leeren Zeile springen
+  setTimeout(() => { renderHeuteTasks(true); buildHeuteHeaderInfo(); }, 0);
+}
+function editTask(i) { _taskEditIdx = i; renderHeuteTasks(true); }
+function toggleTask(i) {
+  const tasks = getTasks();
+  if (!tasks[i].t) return;
+  tasks[i].done = !tasks[i].done;
+  saveTasks(tasks);
+  if (tasks[i].done) {
+    _taskJustDone = i;
+    if (navigator.vibrate) navigator.vibrate(20);
+    playTone(523, 0.08);
+    setTimeout(() => playTone(659, 0.1), 100);
+  }
+  renderHeuteTasks(true);
+  buildHeuteHeaderInfo();
+}
 
 function buildHeuteScreen() {
   const root = document.getElementById('h-heute');
@@ -3779,6 +3893,7 @@ function buildHeuteScreen() {
   const total = goals.length;
   const done = doneToday.size;
 
+  renderHeuteTasks();
   buildHeuteHeaderInfo();
 
   const ring = document.getElementById('h-ring-progress');
@@ -6782,6 +6897,7 @@ function getHeuteModules() {
     fasten: f === 'immer' || (f === 'auto' && isFastingActive()),
     wasser: storageGet('heute_wasser') !== '0',
     supp: storageGet('heute_supp') !== '0',
+    drei: storageGet('heute_drei') !== '0',
   };
 }
 function hhmmAdd(hhmm, deltaMin) {
@@ -6815,7 +6931,7 @@ function setTagZeit(key, value) {
 function setHeuteFasten(v) { storageSet('heute_fasten', v); renderMeinTagSettings(); renderHeuteModuleList(); }
 function toggleHeuteModul(key) {
   storageSet(key, storageGet(key) === '0' ? '1' : '0');
-  renderMeinTagSettings(); renderHeuteModuleList();
+  renderMeinTagSettings(); renderHeuteModuleList(); renderHeuteTasks();
 }
 function adjustWaterTarget(delta) {
   const v = Math.min(6, Math.max(1, Math.round((getWaterTarget() + delta) * 4) / 4));
@@ -6848,6 +6964,7 @@ function renderMeinTagSettings() {
         <div class="h-seg" role="group" aria-label="Fasten in Heute" style="flex-basis:100%">${seg('auto', 'Wenn aktiv')}${seg('immer', 'Immer')}${seg('aus', 'Aus')}</div></div>
       <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Wasser</div></div>${sw('heute_wasser', mods.wasser, 'Wasser in Heute zeigen')}</div>
       <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Supplemente</div></div>${sw('heute_supp', mods.supp, 'Supplemente in Heute zeigen')}</div>
+      <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Drei für heute</div><div class="h-row-meta">Drei eigene Aufgaben pro Tag, je +10 XP</div></div>${sw('heute_drei', mods.drei, 'Drei für heute zeigen')}</div>
       ${isFastingActive() ? '' : `<div class="h-row" onclick="openFastenSheet()"><div class="h-row-body"><div class="h-row-title">Fasten starten</div><div class="h-row-meta">16:8 oder 100 h</div></div><div class="h-row-chevron">›</div></div>`}
     </div>
     <div class="h-meta" style="margin:20px 0 2px">Wasser</div>
