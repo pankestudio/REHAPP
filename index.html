@@ -186,7 +186,7 @@ body {
      die 0.01ms oben machen Transforms nur unhörbar schnell, nicht weg. */
   .h-pill:active, .h-pill--shadow:active, .h-circle-btn:active, .h-seg-btn:active,
   .h-switch:active, .h-section-chevron:active, .h-badge-grid button:active,
-  button[aria-pressed]:active, .h-goalrow-arrow:active, .h-row:active {
+  button[aria-pressed]:active, .h-goalrow-arrow:active, .h-task-cal:active, .h-row:active {
     transform: none !important;
   }
 }
@@ -246,17 +246,17 @@ body {
   /* Heute — zwei wirklich unabhängige Spalten (layoutHeuteColumns()
      verschiebt die Elemente per JS in h-heute-left/-right), siehe
      desktop-heute.png (Runde 5 Punkt 1, Spalten-Fix in 5b Punkt 10) */
-  #h-heute { display: flex; align-items: flex-start; gap: 48px; padding-top: 0; max-width: 1240px; }
+  #h-heute { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0 48px; padding-top: 0; max-width: 1240px; }
   #h-heute > .h-header { display: none; }
   .h-heute-col { display: flex; flex-direction: column; }
   #h-heute-left { flex: 1; min-width: 0; }
-  #h-heute-right { width: 420px; flex-shrink: 0; }
+  #h-heute-right, #h-heute-top > #h-counters { width: 420px; flex-shrink: 0; }
   /* UX-Audit Block 10: Uhrzeit überlappte oben rechts das Zähler-Paar in
      der rechten Spalte — wandert in dieselbe Zeile wie der Seitentitel,
      rechtsbündig, statt in die rechte Spalte reinparentet zu werden
      (siehe layoutHeuteColumns(), .h-heute-clock-desktop nicht mehr in
      HEUTE_RIGHT_SELECTORS). */
-  #h-heute .h-heute-title-desktop { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+  #h-heute .h-heute-title-desktop { flex: 1; min-width: 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
   #h-heute .h-heute-clock-desktop { display: block; }
   /* Runde 6a Punkt 3.6: "Ziele"/"Heute noch" wirken neben der 54px
      Seitenüberschrift wie ein zweiter Titel — auf dem Desktop kleiner und
@@ -520,7 +520,7 @@ body {
   display: flex; align-items: center; justify-content: center;
   transition: transform 100ms ease-out;
 }
-.h-goalrow-arrow:active { transform: scale(.9); }
+.h-goalrow-arrow:active, .h-task-cal:active { transform: scale(.9); }
 .h-goalrow-arrow svg { width: 32px; height: 32px; }
 .h-row-body { flex: 1; min-width: 0; }
 .h-row-title { font-size: 17px; color: var(--ink); }
@@ -811,6 +811,8 @@ button[aria-pressed]:active { transform: scale(.96); }
          Spalten, weil ein einziges Grid mit geteilten Zeilennummern bei
          unterschiedlich hohem Inhalt (z.B. eine lange Ziele-Liste) Löcher
          in der jeweils anderen Spalte reißt. Auf Mobil bleiben sie leer. -->
+    <div id="h-heute-top" style="display:flex;align-items:flex-start;gap:48px;width:100%"></div>
+    <div id="h-heute-band" style="width:100%;margin-bottom:8px"></div>
     <div class="h-heute-col" id="h-heute-left"></div>
     <div class="h-heute-col" id="h-heute-right"></div>
     <div class="h-header">
@@ -851,15 +853,16 @@ button[aria-pressed]:active { transform: scale(.96); }
     </section>
 
     <div id="h-backup-notice"></div>
-    <div class="h-section" data-section-key="home:ziele" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('home:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count" id="h-goal-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:ziele"><div>
+    <div class="h-section" data-section-key="home:drei" style="margin-top:0;border-top:none;padding-top:0"><div class="h-section-row" onclick="toggleSection('home:drei')"><div class="h-section-title" style="font-size:28px">Drei für heute</div><div class="h-section-count" id="h-tasks-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body"><div>
+    </div></div></div>
+    <div class="h-list" id="h-tasks-list" style="margin-top:4px"></div>
+
+    <div class="h-section" data-section-key="home:ziele"><div class="h-section-row" onclick="toggleSection('home:ziele')"><div class="h-section-title" style="font-size:28px">Ziele</div><div class="h-section-count" id="h-goal-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:ziele"><div>
     </div></div></div>
     <div class="h-list" id="h-goal-list" style="margin-top:4px"></div>
     <div id="h-goal-empty" style="display:none"></div>
     <div id="h-gelegenheit-list"></div>
 
-    <div class="h-section" data-section-key="home:drei"><div class="h-section-row" onclick="toggleSection('home:drei')"><div class="h-section-title" style="font-size:28px">Drei für heute</div><div class="h-section-count" id="h-tasks-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body"><div>
-    </div></div></div>
-    <div class="h-list" id="h-tasks-list" style="margin-top:4px"></div>
 
     <div class="h-section" data-section-key="home:heute-noch"><div class="h-section-row" onclick="toggleSection('home:heute-noch')"><div class="h-section-title" style="font-size:28px">Heute noch</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-home:heute-noch"><div>
     </div></div></div>
@@ -1488,7 +1491,7 @@ button[aria-pressed]:active { transform: scale(.96); }
       </div>
 
       <div class="h-row" style="cursor:default">
-        <div class="h-row-body"><div class="h-row-title">Erinnerungen exportieren</div><div class="h-row-meta">Täglich wiederkehrende Einträge für alle Maßnahmen</div></div>
+        <div class="h-row-body"><div class="h-row-title">Erinnerungen exportieren</div><div class="h-row-meta">Routinen und Supplemente mit Uhrzeit, täglich mit Erinnerung</div></div>
       </div>
       <div style="display:flex;gap:8px;padding-bottom:16px">
         <button type="button" class="h-pill h-pill--outline" style="flex:1" onclick="exportCalendar('apple')">Apple Kalender</button>
@@ -3626,8 +3629,8 @@ function buildHeuteHeaderInfo() {
     el.style.cssText = 'display:flex;align-items:flex-start;justify-content:space-between;gap:16px';
     el.innerHTML = `
       <div class="h-heute-info" onclick="advanceHeuteInfo()" style="cursor:pointer;flex:1;min-width:0">
-        <div class="h-num-lg" id="h-info-value" style="font-size:64px;transition:opacity 300ms ease-out;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
-        <div class="h-meta" id="h-info-label" style="transition:opacity 300ms ease-out"></div>
+        <div class="h-num-lg" id="h-info-value" style="font-size:64px;height:52px;line-height:52px;transition:opacity 300ms ease-out;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+        <div class="h-meta" id="h-info-label" style="display:grid;transition:opacity 300ms ease-out"></div>
         <div class="h-heute-dots" id="h-heute-dots" style="display:flex;gap:6px;margin-top:10px"></div>
       </div>
       <div style="text-align:left;border-left:1px solid var(--line);padding-left:16px;flex-shrink:0;max-width:120px">
@@ -3669,7 +3672,11 @@ function renderHeuteInfoSlide(animate) {
   const dotsEl = document.getElementById('h-heute-dots');
   const apply = () => {
     if (valueEl) { valueEl.textContent = info.value; fitBigNumber(valueEl); observeBigNumber(valueEl); }
-    if (labelEl) labelEl.textContent = info.label;
+    // Alle Beschriftungen liegen übereinander im selben Grid-Feld, nur die
+    // aktuelle ist sichtbar. Die Höhe richtet sich so nach der längsten,
+    // und der Kopf springt beim Wechsel nicht mehr.
+    if (labelEl) labelEl.innerHTML = _heuteInfoCache.map((inf, i) =>
+      `<span style="grid-area:1/1${i === _heuteInfoIdx ? '' : ';visibility:hidden'}"${i === _heuteInfoIdx ? '' : ' aria-hidden="true"'}>${escapeHtml(inf.label)}</span>`).join('');
     if (dotsEl) dotsEl.innerHTML = _heuteInfoCache.map((_, i) =>
       `<span style="width:6px;height:6px;border-radius:999px;background:${i === _heuteInfoIdx ? 'var(--ink)' : 'var(--line)'}"></span>`).join('');
   };
@@ -3750,15 +3757,26 @@ function renderGoalRow(g, done, todayKey) {
 // Liste zwischen "Ziele"-Titel und "Heute noch"). appendChild() auf ein
 // bereits im DOM stehendes Element verschiebt es nur (keine Zustands-/
 // Listener-Verluste) — bei jedem Aufruf idempotent in die Zielreihenfolge.
+// Runde 6a-Nachtrag (10.11.): oben ein Band über die ganze Breite (Titel +
+// Zähler, darunter "Als Nächstes"), danach zwei Spalten. So beginnen
+// "Drei für heute" links und "Heute noch" rechts auf derselben Höhe.
+const HEUTE_TOP_SELECTORS = ['.h-heute-title-desktop', '#h-counters'];
+const HEUTE_BAND_SELECTORS = ['#h-heute-sep2', '#h-next', '#h-backup-notice'];
 const HEUTE_LEFT_SELECTORS = [
-  '.h-heute-title-desktop', '#h-next', '#h-backup-notice', '.h-section[data-section-key="home:ziele"]',
-  '#h-goal-list', '#h-goal-empty', '#h-gelegenheit-list',
-  '.h-section[data-section-key="home:drei"]', '#h-tasks-list', '.h-templates',
+  '.h-section[data-section-key="home:drei"]', '#h-tasks-list',
+  '.h-section[data-section-key="home:ziele"]', '#h-goal-list', '#h-goal-empty', '#h-gelegenheit-list',
+  '.h-templates',
 ];
 const HEUTE_RIGHT_SELECTORS = [
-  '#h-counters', '#h-heute-sep2',
   '.h-section[data-section-key="home:heute-noch"]', '#h-module-list', '.h-heute-last',
 ];
+// Die erste Sektion einer Spalte hat keinen Trennstrich oben.
+function setFirstSection(sec, first) {
+  if (!sec) return;
+  sec.style.marginTop = first ? '0' : '';
+  sec.style.borderTop = first ? 'none' : '';
+  sec.style.paddingTop = first ? '0' : '';
+}
 function layoutHeuteColumns() {
   const root = document.getElementById('h-heute');
   if (!root) return;
@@ -3766,6 +3784,8 @@ function layoutHeuteColumns() {
   if (desktop) {
     const left = document.getElementById('h-heute-left');
     const right = document.getElementById('h-heute-right');
+    placeInOrder(document.getElementById('h-heute-top'), HEUTE_TOP_SELECTORS.map(sel => root.querySelector(sel)));
+    placeInOrder(document.getElementById('h-heute-band'), HEUTE_BAND_SELECTORS.map(sel => root.querySelector(sel)));
     placeInOrder(left, HEUTE_LEFT_SELECTORS.map(sel => root.querySelector(sel)));
     placeInOrder(right, HEUTE_RIGHT_SELECTORS.map(sel => root.querySelector(sel)));
   } else {
@@ -3773,12 +3793,13 @@ function layoutHeuteColumns() {
     const order = [
       '.h-header', '.h-heute-title-desktop', '#h-counters',
       '#h-heute-sep2', '#h-next', '#h-backup-notice',
-      '.h-section[data-section-key="home:ziele"]', '#h-goal-list', '#h-goal-empty', '#h-gelegenheit-list',
       '.h-section[data-section-key="home:drei"]', '#h-tasks-list',
+      '.h-section[data-section-key="home:ziele"]', '#h-goal-list', '#h-goal-empty', '#h-gelegenheit-list',
       '.h-section[data-section-key="home:heute-noch"]', '#h-module-list', '.h-heute-last', '.h-templates',
     ];
     placeInOrder(root, order.map(sel => root.querySelector(sel)));
   }
+  setFirstSection(root.querySelector('.h-section[data-section-key="home:heute-noch"]'), desktop);
 }
 // Nur verschieben, wenn die Reihenfolge wirklich abweicht: appendChild()
 // auf ein fokussiertes Element nimmt ihm den Fokus (Eingabe in "Drei für
@@ -3796,11 +3817,11 @@ window.addEventListener('resize', () => { if (currentPage === 'pg-home') layoutH
 // Enter speichert. Abhaken über den Pfeil (wie Ziele), je +10 XP (aus
 // tasks_JJJJ-MM-TT berechnet, Rückgängig zieht sie wieder ab). Am nächsten
 // Tag sind die Zeilen leer; alte Tage bleiben für XP und Backup gespeichert.
-let _taskEditIdx = null, _taskJustDone = null;
+let _taskEditIdx = null, _taskJustDone = null, _taskCalIdx = null;
 function getTasks(dateKey = getLocalDateKey()) {
   let arr = [];
   try { arr = JSON.parse(storageGet('tasks_' + dateKey) || '[]'); } catch (err) {}
-  return [0, 1, 2].map(i => ({ t: (arr[i] && arr[i].t) || '', done: !!(arr[i] && arr[i].done) }));
+  return [0, 1, 2].map(i => ({ t: (arr[i] && arr[i].t) || '', done: !!(arr[i] && arr[i].done), at: (arr[i] && arr[i].at) || '' }));
 }
 function saveTasks(tasks) {
   if (tasks.every(t => !t.t)) storageRemove('tasks_' + getLocalDateKey());
@@ -3815,6 +3836,8 @@ function renderHeuteTasks(force = false) {
   const on = getHeuteModules().drei;
   sec.style.display = on ? '' : 'none';
   list.style.display = on ? '' : 'none';
+  // Ist "Drei für heute" aus, steht Ziele oben und braucht keinen Strich.
+  setFirstSection(document.querySelector('.h-section[data-section-key="home:ziele"]'), !on);
   if (!on) return;
   const tasks = getTasks();
   const filled = tasks.filter(t => t.t);
@@ -3832,17 +3855,31 @@ function renderHeuteTasks(force = false) {
       </div>`;
     }
     const done = task.done;
+    const calOpen = !done && _taskCalIdx === i;
+    const at = task.at || nextFullHour();
+    const links = calOpen ? taskCalLinks(task.t, at) : null;
     return `<div class="h-row" data-task-row="${i}" style="padding:0;align-items:stretch;justify-content:space-between">
       <button type="button" class="h-goalrow-arrow" onclick="toggleTask(${i})" aria-label="„${escapeHtml(task.t)}“ ${done ? 'wieder öffnen' : 'abhaken'}">
         ${done ? '' : `<svg class="h-goalrow-arrow-tile" viewBox="0 0 40 40" aria-hidden="true"><rect x="1" y="1" width="38" height="38" rx="11" fill="var(--grid)" filter="url(#w1)"/></svg><svg class="h-arrow-open" viewBox="0 0 32 32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="h-pen h-pen-draw" filter="url(#w3)" d="M4 17C10 15 17 18 26 16 M19 9.5C22 12 24.5 14 27 16 24.5 18 22 20 19.5 23"/></svg>`}
       </button>
-      <button type="button" onclick="editTask(${i})" aria-label="„${escapeHtml(task.t)}“ bearbeiten" style="display:flex;align-items:center;flex:1;min-width:0;padding:13px 16px 13px 0;background:none;border:none;text-align:left;color:inherit;cursor:pointer">
+      <button type="button" onclick="editTask(${i})" aria-label="„${escapeHtml(task.t)}“ bearbeiten" style="display:flex;flex-direction:column;align-items:flex-start;justify-content:center;flex:1;min-width:0;padding:13px 8px 13px 0;background:none;border:none;text-align:left;color:inherit;cursor:pointer">
         <div style="position:relative;display:inline-block;max-width:100%">
           <span class="h-text" ${done ? 'style="color:var(--faint)"' : ''}>${escapeHtml(task.t)}</span>
           ${done ? `<svg class="h-strike-shaft" style="position:absolute;left:-3%;top:38%;width:106%;overflow:visible" viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path class="h-pen h-pen-draw" d="M2 7C60 5 120 8 180 6S270 5 298 6M290 1L298 6L290 11" stroke-width="3"/></svg>` : ''}
         </div>
+        ${task.at && !done ? `<span class="h-meta" style="margin-top:2px">um ${escapeHtml(task.at)} Uhr</span>` : ''}
       </button>
-    </div>`;
+      ${done ? '' : `<button type="button" class="h-task-cal" onclick="toggleTaskCal(${i})" aria-expanded="${calOpen}" aria-label="„${escapeHtml(task.t)}“ in den Kalender eintragen" style="width:44px;min-height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:none;border:none;padding:0;color:${task.at || calOpen ? 'var(--ink)' : 'var(--muted)'};cursor:pointer">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+      </button>`}
+    </div>${calOpen ? `
+    <div class="h-row" style="cursor:default;flex-wrap:wrap;gap:8px 12px;padding:4px 0 14px 44px">
+      <label class="h-meta" for="task-at-${i}" style="display:flex;align-items:center;gap:10px;font-size:14px">Uhrzeit
+        <input type="time" id="task-at-${i}" value="${at}" onchange="setTaskTime(${i}, this.value)" style="min-height:44px;background:transparent;border:1px solid var(--line);padding:8px 10px;color:var(--ink);font-size:16px;border-radius:10px;font-family:inherit">
+      </label>
+      <a class="h-pill h-pill--outline" id="task-ics-${i}" href="${links.ics}" target="_blank" rel="noopener" onclick="onTaskCalOpen(${i})" style="min-height:44px;padding:0 16px;font-size:15px;text-decoration:none;display:inline-flex;align-items:center">Termin eintragen</a>
+      <a class="h-pill h-pill--outline" id="task-gcal-${i}" href="${links.google}" target="_blank" rel="noopener" onclick="onTaskCalOpen(${i})" style="min-height:44px;padding:0 16px;font-size:15px;text-decoration:none;display:inline-flex;align-items:center">Google Kalender öffnen</a>
+    </div>` : ''}`;
   }).join('');
   if (_taskEditIdx !== null) {
     const inp = list.querySelector(`input[data-task="${_taskEditIdx}"]`);
@@ -3860,17 +3897,65 @@ function onTaskKey(e, i) {
 function commitTask(i, value) {
   const tasks = getTasks();
   const v = value.trim();
-  if (v !== tasks[i].t) { tasks[i] = { t: v, done: v ? tasks[i].done : false }; saveTasks(tasks); }
+  if (v !== tasks[i].t) { tasks[i] = { t: v, done: v ? tasks[i].done : false, at: v ? tasks[i].at : '' }; saveTasks(tasks); }
   _taskEditIdx = null;
   // nach dem Tippen direkt zur nächsten leeren Zeile springen
   setTimeout(() => { renderHeuteTasks(true); buildHeuteHeaderInfo(); }, 0);
 }
-function editTask(i) { _taskEditIdx = i; renderHeuteTasks(true); }
+function editTask(i) { _taskEditIdx = i; _taskCalIdx = null; renderHeuteTasks(true); }
+// Kalender: Aufgabe mit Uhrzeit als Termin (30 Min, Erinnerung 10 Min vorher).
+// "Termin eintragen" öffnet eine .ics von /.netlify/functions/ics (Apple
+// Kalender am iPhone und Mac), daneben der Google-Kalender-Link.
+function toggleTaskCal(i) { _taskCalIdx = _taskCalIdx === i ? null : i; renderHeuteTasks(true); }
+function nextFullHour() { return String(Math.min(23, new Date().getHours() + 1)).padStart(2, '0') + ':00'; }
+function calLocalStamp(d) {
+  const p = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}T${p(d.getHours())}${p(d.getMinutes())}00`;
+}
+function calIcsUrl(data) {
+  const b = btoa(unescape(encodeURIComponent(JSON.stringify(data)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return '/.netlify/functions/ics?d=' + b;
+}
+function calGoogleUrl(title, start, end, recur) {
+  let u = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${start}/${end}`;
+  try { u += '&ctz=' + encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone); } catch (err) {}
+  if (recur) u += '&recur=' + encodeURIComponent(recur);
+  return u;
+}
+function calAt(hhmm, plusMin = 0) {
+  const [h, m] = hhmm.split(':').map(Number);
+  const d = new Date(); d.setHours(h, m + plusMin, 0, 0);
+  return calLocalStamp(d);
+}
+function taskCalLinks(title, at) {
+  return {
+    ics: calIcsUrl({ events: [{ title, local: calAt(at), dur: 30, alarm: 10 }] }),
+    google: calGoogleUrl(title, calAt(at), calAt(at, 30)),
+  };
+}
+function setTaskTime(i, v) {
+  if (!/^\d{2}:\d{2}$/.test(v)) return;
+  const tasks = getTasks();
+  if (!tasks[i].t) return;
+  tasks[i].at = v;
+  saveTasks(tasks);
+  const l = taskCalLinks(tasks[i].t, v);
+  const a = document.getElementById('task-ics-' + i), g = document.getElementById('task-gcal-' + i);
+  if (a) a.href = l.ics;
+  if (g) g.href = l.google;
+}
+function onTaskCalOpen(i) {
+  const inp = document.getElementById('task-at-' + i);
+  if (inp) setTaskTime(i, inp.value);
+  // erst nach dem Öffnen des Links neu zeichnen (sonst verschwindet er vorher)
+  setTimeout(() => { _taskCalIdx = null; renderHeuteTasks(true); }, 400);
+}
 function toggleTask(i) {
   const tasks = getTasks();
   if (!tasks[i].t) return;
   tasks[i].done = !tasks[i].done;
   saveTasks(tasks);
+  if (_taskCalIdx === i) _taskCalIdx = null;
   if (tasks[i].done) {
     _taskJustDone = i;
     if (navigator.vibrate) navigator.vibrate(20);
@@ -4266,7 +4351,9 @@ function renderHeuteModuleList() {
   const fastenLabel = document.getElementById('timer-mode-label');
   const fastenValue = document.getElementById('timer-display');
   const fastenSub = (fastenLabel && fastenLabel.textContent.replace(/^\/\/\s*/, '')) || 'Bereit';
-  const fastenVal = (fastenValue && fastenValue.textContent) || '00:00:00';
+  const fastenRaw = (fastenValue && fastenValue.textContent) || '00:00:00';
+  // Restzeit (100 h und 16:8 zählen herunter)
+  const fastenVal = /^\d+:\d\d:\d\d$/.test(fastenRaw) && fastenRaw !== '00:00:00' ? 'noch ' + fastenRaw : fastenRaw;
 
   const waterL = formatLiters(getWaterLiters());
 
@@ -7898,25 +7985,41 @@ function registerServiceWorker() {
 // Statt automatisch neu zu laden (würde Formulareingaben/offene Sheets
 // verwerfen), zeigt die App unten eine Pille und lädt nur auf Tipp neu.
 function watchForSWUpdate(reg, markUserRequested) {
-  if (reg.waiting) showSWUpdateBanner(reg.waiting, markUserRequested);
+  // Wurde gerade erst wegen einer neuen Version neu geladen und wartet der
+  // Worker trotzdem noch, die Pille nicht sofort wieder zeigen (sonst Schleife).
+  let recent = false;
+  try { recent = Date.now() - parseInt(sessionStorage.getItem('sw_reload_at') || '0', 10) < 15000; } catch (err) {}
+  if (reg.waiting && !recent) showSWUpdateBanner(reg.waiting, markUserRequested, reg);
   reg.addEventListener('updatefound', () => {
     const nw = reg.installing;
     if (!nw) return;
     nw.addEventListener('statechange', () => {
       if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-        showSWUpdateBanner(nw, markUserRequested);
+        showSWUpdateBanner(nw, markUserRequested, reg);
       }
     });
   });
 }
-function showSWUpdateBanner(worker, markUserRequested) {
+function showSWUpdateBanner(worker, markUserRequested, reg) {
   if (document.getElementById('sw-update-pill')) return;
   const el = document.createElement('button');
   el.type = 'button';
   el.id = 'sw-update-pill';
   el.className = 'h-pill h-pill--outline h-sw-update-pill';
   el.textContent = 'Neue Version · Jetzt laden';
-  el.onclick = () => { markUserRequested(); worker.postMessage({ type: 'SKIP_WAITING' }); };
+  el.onclick = () => {
+    if (el.disabled) return;
+    el.disabled = true;
+    el.textContent = 'Neue Version wird geladen …';
+    markUserRequested();
+    try { ((reg && reg.waiting) || worker).postMessage({ type: 'SKIP_WAITING' }); } catch (err) {}
+    // controllerchange bleibt manchmal aus (iOS-Web-App, alter Worker schon
+    // ersetzt). Dann trotzdem neu laden, damit die Pille verschwindet.
+    setTimeout(() => {
+      try { sessionStorage.setItem('sw_reload_at', String(Date.now())); } catch (err) {}
+      window.location.reload();
+    }, 1500);
+  };
   document.body.appendChild(el);
 }
 function notificationPermissionLabel() {
@@ -8377,7 +8480,7 @@ function updateTimer() {
     clearScheduledNotifications();
     document.getElementById('timer-start-btn').textContent = '16:8 Aktivieren';
     document.getElementById('timer-start-btn').onclick = start16_8Mode;
-    document.getElementById('timer-display').textContent = '100:00:00';
+    document.getElementById('timer-display').textContent = '00:00:00';
     document.getElementById('timer-mode-label').textContent = '100 h erreicht';
     document.getElementById('timer-milestone').style.display = 'none';
     awardXP('fast_100h', 120, '100h abgeschlossen', { scope: 'ever' });
@@ -8386,9 +8489,16 @@ function updateTimer() {
     return;
   }
 
-  const h = Math.floor(elapsed / 3600000);
-  const m = Math.floor((elapsed % 3600000) / 60000);
-  const s = Math.floor((elapsed % 60000) / 1000);
+  // Im 16:8-Modus schreibt nur update16_8Display() in die Anzeige.
+  if (timerMode === '16_8') {
+    if (!parseInt(storageGet('refeedUntil') || '0', 10) && totalH >= 100 && !refeedInterval) startRefeedWindow();
+    return;
+  }
+  // Die Anzeige zählt die verbleibende Zeit bis 100 h herunter.
+  const left = Math.max(0, 100 * 3600000 - elapsed);
+  const h = Math.floor(left / 3600000);
+  const m = Math.floor((left % 3600000) / 60000);
+  const s = Math.floor((left % 60000) / 1000);
   document.getElementById('timer-display').textContent = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 
   if (totalH >= 18) { document.getElementById('ms-ketose').classList.add('reached'); awardXP('milestone_18h', 18, 'Ketose erreicht', { scope: 'ever', silent: true }); }
@@ -8415,6 +8525,7 @@ function updateTimer() {
   else if (totalH < 72) { mode = 'Autophagie-Peak'; sub = `Noch ${Math.ceil(72-totalH)}h bis Stammzellaktivierung`; }
   else { mode = 'Stammzellen aktiv'; sub = `Noch ${Math.ceil(100-totalH)}h bis Fastenende`; }
 
+  mode += ` · ${Math.floor(totalH)} h gefastet`;
   const modeEl = document.getElementById('timer-mode-label');
   if (modeEl && modeEl.textContent !== mode) modeEl.textContent = mode;
   const phases = ['Glykogen wird abgebaut. Ketose setzt bei ~18h ein. Hunger am stärksten — nach 18h deutlich reduziert.',
@@ -8601,39 +8712,37 @@ function selectMood(btn, mood) {
 
 // ══════════════ CALENDAR ══════════════
 
+// Erinnerungen aus den aktuellen Daten: aktive Ziele und Routinen mit
+// Uhrzeit plus je ein Termin pro Supplement-Tageszeit (nur Namen, keine
+// Mengen). Täglich für 90 Tage, Erinnerung 10 Minuten vorher.
+function calendarExportEvents() {
+  const p = previewRhythmus();
+  const ev = getGoals()
+    .filter(g => !g.paused && !g.archived && g.active !== false && /^\d{2}:\d{2}$/.test(g.time || ''))
+    .map(g => ({ title: g.title, at: g.time }));
+  const SLOT = {
+    morning: ['morgens', (getGoal('goal-from-morning') || {}).time || p.morgen],
+    midday: ['mittags', '12:30'],
+    evening: ['abends', (getGoal('goal-abendroutine') || {}).time || p.abend],
+  };
+  const supp = getItems({ type: 'supplement', activeOnly: true });
+  Object.keys(SLOT).forEach(k => {
+    const names = supp.filter(x => x.time === k).map(x => x.title);
+    if (names.length) ev.push({ title: `Supplemente ${SLOT[k][0]}: ${names.join(', ')}`, at: SLOT[k][1] });
+  });
+  return ev.sort((x, y) => x.at.localeCompare(y.at));
+}
 function exportCalendar(type) {
-  const now = new Date();
-  const fmt = d => d.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
-  const events = [
-    { s: 'Supplemente Morgens — D3 K2 Omega-3 Kollagen', h: 8 },
-    { s: 'Supplemente Mittags — Boswellia Curcumin Zink', h: 12 },
-    { s: 'Heparin-Injektion + Supplemente Abends', h: 20 },
-    { s: 'Quarkwickel 1 — 20-40 Min', h: 9 },
-    { s: 'Quarkwickel 2 — 20-40 Min', h: 16 },
-    { s: 'Lymphdrainage — 20 Min', h: 11 },
-    { s: 'Atemübung — 10 Min', h: 18 },
-    { s: 'Wasser-Check — 3L Ziel', h: 14 },
-  ];
+  const events = calendarExportEvents();
+  if (!events.length) { toast('Noch keine Termine mit Uhrzeit'); return; }
   if (type === 'apple') {
-    let ics = 'BEGIN:VCALENDAR\nVERSION:2.0\nCALSCALE:GREGORIAN\nPRODID:-//REHAPP//DE\n';
-    events.forEach(ev => {
-      const s = new Date(now); s.setHours(ev.h,0,0,0);
-      const e = new Date(s); e.setMinutes(30);
-      ics += `BEGIN:VEVENT\nSUMMARY:${ev.s}\nDTSTART:${fmt(s)}\nDTEND:${fmt(e)}\nRRULE:FREQ=DAILY;COUNT=90\nEND:VEVENT\n`;
-    });
-    ics += 'END:VCALENDAR';
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([ics], { type:'text/calendar' }));
-    a.download = 'regen-protokoll.ics';
-    a.click();
+    window.open(calIcsUrl({ name: 'REHAPP', events: events.map(e => ({ title: e.title, local: calAt(e.at), dur: 15, alarm: 10, daily: 90 })) }), '_blank', 'noopener');
     awardXP('calendar_apple', 10, 'Kalender exportiert', { scope: 'day' });
-    toast('ICS exportiert');
+    toast(`${events.length} Erinnerungen für den Kalender`);
   } else {
-    // Open each event sequentially — browser may block popups after first; use delay
-    events.forEach((ev, i) => {
-      const s = new Date(now); s.setHours(ev.h, 0, 0, 0);
-      const e = new Date(s); e.setMinutes(30);
-      const url = `https://calendar.google.com/calendar/r/eventedit?text=${encodeURIComponent(ev.s)}&dates=${fmt(s)}/${fmt(e)}&recur=RRULE:FREQ%3DDAILY;COUNT%3D90`;
+    // Ein Fenster pro Termin. Manche Browser blocken alle außer dem ersten.
+    events.forEach((e, i) => {
+      const url = calGoogleUrl(e.title, calAt(e.at), calAt(e.at, 15), 'RRULE:FREQ=DAILY;COUNT=90');
       setTimeout(() => window.open(url, '_blank', 'noopener,noreferrer'), i * 400);
     });
     awardXP('calendar_google', 10, 'Google Kalender geöffnet', { scope: 'day' });
