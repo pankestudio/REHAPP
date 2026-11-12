@@ -6352,7 +6352,7 @@ function buildSetGoalsList() {
     <div class="h-row" id="setrow-ziel-${g.id}" ${g.kind ? '' : `onclick="goToGoalEditor('${g.id}')"`}>
       <div style="flex-shrink:0">${renderBadge({ cat: g.category, tier: computeTier(g), icon: g.icon, drawing: g.drawing, size: 28 })}</div>
       <div style="flex:1">${escapeHtml(g.title)}${g.kind === 'routine' ? ' · Routine' : g.kind === 'checkin' ? ' · Check-in' : ''}</div>
-      ${!g.kind ? `<button type="button" class="h-pill h-pill--outline" style="min-height:32px;padding:0 14px;font-size:12px;flex-shrink:0" onclick="event.stopPropagation();pauseGoal('${g.id}')">Pausieren</button>` : ''}
+      <button type="button" class="h-pill h-pill--outline" style="min-height:32px;padding:0 14px;font-size:12px;flex-shrink:0" onclick="event.stopPropagation();pauseGoal('${g.id}')" aria-label="„${escapeHtml(g.title)}“ pausieren">Pausieren</button>
     </div>
   `).join('') : `<div class="h-meta">Noch keine Ziele.</div>`;
   if (counters.length) {
@@ -6386,7 +6386,7 @@ async function pauseGoal(id) {
   await saveGoal(g);
   buildSetGoalsList();
   buildHeuteScreen();
-  toast('Ziel pausiert');
+  toast(`${g.title} pausiert`);
 }
 async function reactivateGoal(id) {
   const g = getGoal(id);
