@@ -1733,7 +1733,7 @@ button[aria-pressed]:active { transform: scale(.96); }
       </div>
       <label class="h-row" style="cursor:pointer">
         <div class="h-row-body"><div class="h-row-title">Backup importieren</div></div>
-        <input type="file" id="set-backup-import" accept="application/json" style="display:none" onchange="importAppDataFromFile(this.files[0])">
+        <input type="file" id="set-backup-import" accept="application/json,.json" style="display:none" onchange="importAppDataFromFile(this.files[0])">
       </label>
       <div class="h-row" onclick="runMigrationCheck()">
         <div class="h-row-body"><div class="h-row-title">Migration prüfen</div></div>
@@ -3823,9 +3823,41 @@ function getTasks(dateKey = getLocalDateKey()) {
   try { arr = JSON.parse(storageGet('tasks_' + dateKey) || '[]'); } catch (err) {}
   return [0, 1, 2].map(i => ({ t: (arr[i] && arr[i].t) || '', done: !!(arr[i] && arr[i].done), at: (arr[i] && arr[i].at) || '' }));
 }
-function saveTasks(tasks) {
-  if (tasks.every(t => !t.t)) storageRemove('tasks_' + getLocalDateKey());
-  else storageSet('tasks_' + getLocalDateKey(), JSON.stringify(tasks));
+function saveTasks(tasks, dateKey = getLocalDateKey()) {
+  if (tasks.every(t => !t.t)) storageRemove('tasks_' + dateKey);
+  else storageSet('tasks_' + dateKey, JSON.stringify(tasks));
+}
+// Am Ende der Abendroutine: die drei Aufgaben für morgen festlegen. Sie
+// stehen am nächsten Tag automatisch in "Drei für heute". Nach Mitternacht
+// (bis 5 Uhr) gilt der laufende Tag als "morgen".
+function planDateKey() {
+  const d = new Date();
+  if (d.getHours() >= 5) d.setDate(d.getDate() + 1);
+  return getLocalDateKey(d);
+}
+function renderTomorrowTasks() {
+  const box = document.getElementById('player-after');
+  if (!box || !getHeuteModules().drei) return;
+  const tasks = getTasks(planDateKey());
+  box.innerHTML = `<div style="text-align:left">
+    <div class="h-text" style="font-weight:600;margin-bottom:2px">Drei für morgen</div>
+    <div class="h-meta" style="margin-bottom:6px">Stehen morgen früh in Heute.</div>
+    ${tasks.map((t, i) => `<div class="h-row" style="padding:4px 0;cursor:text">
+      <div class="h-goalrow-arrow" aria-hidden="true" style="color:var(--faint);font-size:15px">${i + 1}</div>
+      <input type="text" class="h-task-input" value="${escapeHtml(t.t)}" placeholder="${i ? 'Noch etwas?' : 'Was steht morgen an?'}" aria-label="Aufgabe ${i + 1} für morgen" maxlength="80" enterkeyhint="${i < 2 ? 'next' : 'done'}"
+        onchange="setTomorrowTask(${i}, this.value)" onkeydown="if (event.key === 'Enter') { event.preventDefault(); const n = this.closest('.h-row').nextElementSibling; const ni = n && n.querySelector('input'); if (ni) ni.focus(); else this.blur(); }"
+        style="flex:1;min-width:0;min-height:44px;border:none;border-bottom:1px dashed var(--line);background:transparent;color:var(--ink);font-size:17px;padding:0 16px 0 0;border-radius:0">
+    </div>`).join('')}
+  </div>`;
+  box.style.display = 'block';
+}
+function setTomorrowTask(i, value) {
+  const key = planDateKey();
+  const tasks = getTasks(key);
+  const v = value.trim();
+  if (v === tasks[i].t) return;
+  tasks[i] = { t: v, done: false, at: v ? tasks[i].at : '' };
+  saveTasks(tasks, key);
 }
 function renderHeuteTasks(force = false) {
   const list = document.getElementById('h-tasks-list');
@@ -4279,7 +4311,7 @@ function collectNextUpState() {
   const counters = [
     { key: 'wasser', title: 'Wasser', current: getWaterLiters(), target: getWaterTarget(), unit: 'L' },
     { key: 'supplemente', title: 'Supplemente', current: supps.filter(s => doneItems.has(s.id)).length, target: supps.length, unit: '' },
-  ];
+  ].filter(c => !(c.key === 'supplemente' && suppPausedByFast()));
   return { goals, fastEndsAt, counters, snoozed: readNextUpSnoozes() };
 }
 
@@ -5843,6 +5875,7 @@ async function finishPlayerExercise() {
   document.getElementById('player-done-btn').textContent = seq ? (seq.routineGoalId ? 'Routine beenden' : 'Übung beenden') : 'Zur Sammlung';
   document.getElementById('player-done-btns').style.display = 'flex';
   if (seq && seq.after) renderPlayerAfter(seq.after);
+  if (seq && seq.routineGoalId === 'goal-abendroutine') renderTomorrowTasks();
 }
 
 function closePlayerDone() {
@@ -5932,6 +5965,7 @@ function openRoutinePlayer(routineGoalId, mini = false) {
     running: false, elapsedAtPause: 0, scheduledNodes: [], rafId: null, lastPopRemaining: null,
     sequence: { steps, idx: 0, routineGoalId, title: goal.title, pauseSec: goal.pauseSec || 5 },
   };
+  renderPlayerAfter(null);
   renderSoundPackPicker();
   document.getElementById('player-overlay').classList.add('open');
   loadPlayerStep(0);
@@ -6975,6 +7009,11 @@ function importContentItems(e) {
 // zeigt, Wasserziel, Supplemente. Schlüssel: tag_aufstehen, tag_schlafen,
 // heute_fasten (auto|immer|aus), heute_wasser, heute_supp ('0' = aus),
 // water_target_l.
+// Während des 100-h-Fastens sind alle Supplemente aus: nicht in Heute,
+// nicht in "Als Nächstes". Im 16:8-Modus und in der Refeed-Phase bleiben sie.
+function suppPausedByFast() {
+  return !!(timerStart && timerRunning && timerMode === '100h');
+}
 function isFastingActive() {
   return !!(timerStart && timerRunning) || storageGet('16_8_active') === '1';
 }
@@ -6983,7 +7022,7 @@ function getHeuteModules() {
   return {
     fasten: f === 'immer' || (f === 'auto' && isFastingActive()),
     wasser: storageGet('heute_wasser') !== '0',
-    supp: storageGet('heute_supp') !== '0',
+    supp: storageGet('heute_supp') !== '0' && !suppPausedByFast(),
     drei: storageGet('heute_drei') !== '0',
   };
 }
@@ -7050,7 +7089,7 @@ function renderMeinTagSettings() {
       <div class="h-row" style="cursor:default;flex-wrap:wrap;gap:8px 12px"><div class="h-row-body"><div class="h-row-title">Fasten</div><div class="h-row-meta">${isFastingActive() ? 'Timer läuft' : 'Kein Timer aktiv'}</div></div>
         <div class="h-seg" role="group" aria-label="Fasten in Heute" style="flex-basis:100%">${seg('auto', 'Wenn aktiv')}${seg('immer', 'Immer')}${seg('aus', 'Aus')}</div></div>
       <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Wasser</div></div>${sw('heute_wasser', mods.wasser, 'Wasser in Heute zeigen')}</div>
-      <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Supplemente</div></div>${sw('heute_supp', mods.supp, 'Supplemente in Heute zeigen')}</div>
+      <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Supplemente</div><div class="h-row-meta">Während des 100-h-Fastens ausgeblendet</div></div>${sw('heute_supp', storageGet('heute_supp') !== '0', 'Supplemente in Heute zeigen')}</div>
       <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Drei für heute</div><div class="h-row-meta">Drei eigene Aufgaben pro Tag, je +10 XP</div></div>${sw('heute_drei', mods.drei, 'Drei für heute zeigen')}</div>
       ${isFastingActive() ? '' : `<div class="h-row" onclick="openFastenSheet()"><div class="h-row-body"><div class="h-row-title">Fasten starten</div><div class="h-row-meta">16:8 oder 100 h</div></div><div class="h-row-chevron">›</div></div>`}
     </div>
@@ -8054,15 +8093,32 @@ function exportAppData() {
     payload[key] = localStorage.getItem(key);
   }
   const content = getItems({});
-  const blob = new Blob([JSON.stringify({
+  const json = JSON.stringify({
     exportedAt: new Date().toISOString(), app: 'REHAPP', data: payload, content,
     goals: _goalsCache, logs: _logsCache, earned: _earnedCache,
-  }, null, 2)], { type: 'application/json' });
+  }, null, 2);
+  const name = `rehapp-backup-${getLocalDateKey()}.json`;
+  // iPhone/iPad: Teilen-Menü (AirDrop, Dateien, iCloud, Google Drive …).
+  // Sonst wie bisher als Download.
+  let file = null;
+  try { file = new File([json], name, { type: 'application/json' }); } catch (err) {}
+  if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+    navigator.share({ files: [file], title: 'REHAPP-Backup' })
+      .then(() => onBackupExported())
+      .catch(err => { if (!err || err.name !== 'AbortError') downloadBackup(json, name); });
+    return;
+  }
+  downloadBackup(json, name);
+}
+function downloadBackup(json, name) {
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `regen-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.href = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+  a.download = name;
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  onBackupExported();
+}
+function onBackupExported() {
   storageSet('last_export_ts', String(Date.now()));
   awardXP('backup_export', 15, 'Backup exportiert', { scope: 'day' });
   toast('Backup exportiert');
