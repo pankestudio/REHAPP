@@ -4162,6 +4162,44 @@ function addWaterLiters(delta) {
   updateWaterHome();
   renderHeuteModuleList();
 }
+// Zähl-Module wie Wasser (Mein Tag): ein Tipp zählt einen Schritt dazu,
+// 5 s "Rückgängig". Wert pro Tag unter tally_{key}_{JJJJ-MM-TT}, Ziel unter
+// tally_target_{key}. Ziel erreicht = einmal am Tag XP.
+const TALLY_MODULES = [
+  { key: 'liegestuetze', title: 'Liegestütze', step: 10, target: 50, min: 10, max: 300, xp: 15 },
+  { key: 'schritte', title: 'Schritte', step: 1000, target: 8000, min: 1000, max: 30000, xp: 15 },
+];
+function getTallyDef(key) { return TALLY_MODULES.find(t => t.key === key); }
+function getTallyTarget(key) {
+  const d = getTallyDef(key);
+  const v = parseInt(storageGet('tally_target_' + key), 10);
+  return v >= d.min && v <= d.max ? v : d.target;
+}
+function getTally(key, dateKey = getLocalDateKey()) { return Math.max(0, parseInt(storageGet(`tally_${key}_${dateKey}`) || '0', 10) || 0); }
+function fmtCount(n) { return Math.round(n).toLocaleString('de-DE'); }
+function addTally(key, delta) {
+  const d = getTallyDef(key);
+  const v = Math.max(0, getTally(key) + delta);
+  storageSet(`tally_${key}_${getLocalDateKey()}`, String(v));
+  if (v >= getTallyTarget(key)) awardXP(`tally_${key}_${getLocalDateKey()}`, d.xp, `${d.title} geschafft`, { scope: 'day', silent: true });
+  renderHeuteModuleList();
+  return v;
+}
+function logTally(key) {
+  const d = getTallyDef(key);
+  const v = addTally(key, d.step);
+  if (navigator.vibrate) navigator.vibrate(15);
+  toast(`${d.title} · ${fmtCount(v)} / ${fmtCount(getTallyTarget(key))}`, {
+    duration: 5000,
+    action: { label: 'Rückgängig', onClick: () => { const w = addTally(key, -d.step); toast(`${d.title} · ${fmtCount(w)}`); } },
+  });
+}
+function adjustTallyTarget(key, dir) {
+  const d = getTallyDef(key);
+  const v = Math.min(d.max, Math.max(d.min, getTallyTarget(key) + dir * d.step));
+  storageSet('tally_target_' + key, String(v));
+  renderMeinTagSettings(); renderHeuteModuleList();
+}
 function formatLiters(l) { return l.toFixed(1).replace('.', ','); }
 function waterStatusText(prefix) { return `${prefix} · ${formatLiters(getWaterLiters())} / ${formatLiters(getWaterTarget())} L`; }
 // Ein Glas = 0,2 L, mit 5 s „Rückgängig" — „Als Nächstes" und die
@@ -4264,11 +4302,11 @@ function nextUp(state, now) {
     .filter(x => x.behind >= 0.2)
     .sort((a, b) => b.behind - a.behind)
     .forEach(({ c, soll }) => {
-      const fmt = v => c.unit === 'L' ? formatLiters(v) : String(Math.round(v));
+      const fmt = v => c.unit === 'L' ? formatLiters(v) : Math.round(v).toLocaleString('de-DE');
       const unit = c.unit ? ' ' + c.unit : '';
       cands.push({ rule: 4, key: c.key, goalId: null, title: c.title,
-        meta: `${fmt(c.current)} von ${c.target}${unit} · Soll ${fmt(soll)}${unit}`, when: 'Jetzt',
-        action: c.key === 'wasser' ? { label: '+ 0,2 L', type: 'water' } : { label: 'Ansehen', type: 'supp' } });
+        meta: `${fmt(c.current)} von ${fmt(c.target)}${unit} · Soll ${fmt(soll)}${unit}`, when: 'Jetzt',
+        action: c.action || (c.key === 'wasser' ? { label: '+ 0,2 L', type: 'water' } : { label: 'Ansehen', type: 'supp' }) });
     });
 
   // 5. Offenes tägliches Ziel ohne Uhrzeit, das erste in der Liste
@@ -4310,6 +4348,8 @@ function collectNextUpState() {
   const doneItems = getItemsDoneToday();
   const counters = [
     { key: 'wasser', title: 'Wasser', current: getWaterLiters(), target: getWaterTarget(), unit: 'L' },
+    ...TALLY_MODULES.filter(t => getHeuteModules()[t.key]).map(t => ({ key: t.key, title: t.title, current: getTally(t.key), target: getTallyTarget(t.key), unit: '',
+      action: { label: '+ ' + fmtCount(t.step), type: 'tally', key: t.key } })),
     { key: 'supplemente', title: 'Supplemente', current: supps.filter(s => doneItems.has(s.id)).length, target: supps.length, unit: '' },
   ].filter(c => !(c.key === 'supplemente' && suppPausedByFast()));
   return { goals, fastEndsAt, counters, snoozed: readNextUpSnoozes() };
@@ -4365,6 +4405,7 @@ function onNextUpAction() {
     case 'done': onGoalRowArrowTap(null, nu.goalId); break;
     case 'fasten': openFastenSheet(); break;
     case 'water': logGlassOfWater(); break;
+    case 'tally': logTally(nu.action.key); break;
     case 'supp': openSupplementeSheet(); break;
   }
 }
@@ -4436,6 +4477,17 @@ function renderHeuteModuleList() {
       ${renderBar(waterPct, 'h-bar--row')}
     </div>
 ` : '',
+    ...TALLY_MODULES.filter(t => mods[t.key]).map(t => {
+      const cur = getTally(t.key), tgt = getTallyTarget(t.key);
+      return `
+    <div class="h-row" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;border-bottom:1px solid var(--line);cursor:default">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div><div class="h-text" style="font-size:17px">${t.title}</div><div class="h-meta" style="font-size:13.5px">${fmtCount(cur)} / ${fmtCount(tgt)}${cur >= tgt ? ' · geschafft' : ''}</div></div>
+        <button type="button" class="h-pill h-pill--outline" style="min-height:40px;padding:0 16px;font-size:15px;flex-shrink:0" onclick="logTally('${t.key}')" aria-label="${t.title}: plus ${fmtCount(t.step)}">+ ${fmtCount(t.step)}</button>
+      </div>
+      ${renderBar(Math.min(100, cur / tgt * 100), 'h-bar--row')}
+    </div>`;
+    }),
     mods.supp ? `
     <div class="h-row" onclick="openSupplementeSheet()" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;cursor:pointer">
       <div style="display:flex;align-items:flex-end;justify-content:space-between">
@@ -4447,7 +4499,7 @@ function renderHeuteModuleList() {
 ` : '',
   ].join('');
   const listSec = document.querySelector('.h-section[data-section-key="home:heute-noch"]');
-  if (listSec) listSec.style.display = (mods.fasten || mods.wasser || mods.supp) ? '' : 'none';
+  if (listSec) listSec.style.display = (mods.fasten || mods.wasser || mods.supp || TALLY_MODULES.some(t => mods[t.key])) ? '' : 'none';
   renderNextUp();
 }
 
@@ -7024,6 +7076,8 @@ function getHeuteModules() {
     wasser: storageGet('heute_wasser') !== '0',
     supp: storageGet('heute_supp') !== '0' && !suppPausedByFast(),
     drei: storageGet('heute_drei') !== '0',
+    liegestuetze: storageGet('heute_liegestuetze') !== '0',
+    schritte: storageGet('heute_schritte') !== '0',
   };
 }
 function hhmmAdd(hhmm, deltaMin) {
@@ -7089,6 +7143,7 @@ function renderMeinTagSettings() {
       <div class="h-row" style="cursor:default;flex-wrap:wrap;gap:8px 12px"><div class="h-row-body"><div class="h-row-title">Fasten</div><div class="h-row-meta">${isFastingActive() ? 'Timer läuft' : 'Kein Timer aktiv'}</div></div>
         <div class="h-seg" role="group" aria-label="Fasten in Heute" style="flex-basis:100%">${seg('auto', 'Wenn aktiv')}${seg('immer', 'Immer')}${seg('aus', 'Aus')}</div></div>
       <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Wasser</div></div>${sw('heute_wasser', mods.wasser, 'Wasser in Heute zeigen')}</div>
+      ${TALLY_MODULES.map(t => `<div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">${t.title}</div><div class="h-row-meta">${fmtCount(getTallyTarget(t.key))} am Tag, in ${fmtCount(t.step)}er-Schritten</div></div>${sw('heute_' + t.key, mods[t.key], t.title + ' in Heute zeigen')}</div>`).join('')}
       <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Supplemente</div><div class="h-row-meta">Während des 100-h-Fastens ausgeblendet</div></div>${sw('heute_supp', storageGet('heute_supp') !== '0', 'Supplemente in Heute zeigen')}</div>
       <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Drei für heute</div><div class="h-row-meta">Drei eigene Aufgaben pro Tag, je +10 XP</div></div>${sw('heute_drei', mods.drei, 'Drei für heute zeigen')}</div>
       ${isFastingActive() ? '' : `<div class="h-row" onclick="openFastenSheet()"><div class="h-row-body"><div class="h-row-title">Fasten starten</div><div class="h-row-meta">16:8 oder 100 h</div></div><div class="h-row-chevron">›</div></div>`}
@@ -7098,6 +7153,11 @@ function renderMeinTagSettings() {
       <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Tagesziel</div><div class="h-row-meta">Ein Glas = 0,2 L</div></div>
         <div class="h-stepper"><button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustWaterTarget(-0.25)" aria-label="Wasserziel verringern">−</button><div class="h-stepper-val">${formatLiters(getWaterTarget())} L</div><button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustWaterTarget(0.25)" aria-label="Wasserziel erhöhen">+</button></div></div>
     </div>
+    ${TALLY_MODULES.map(t => `<div class="h-meta" style="margin:20px 0 2px">${t.title}</div>
+    <div class="h-list">
+      <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Tagesziel</div><div class="h-row-meta">Ein Tipp = ${fmtCount(t.step)}</div></div>
+        <div class="h-stepper"><button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustTallyTarget('${t.key}', -1)" aria-label="${t.title}-Ziel verringern">−</button><div class="h-stepper-val">${fmtCount(getTallyTarget(t.key))}</div><button type="button" class="h-circle-btn h-circle-btn--sm" onclick="adjustTallyTarget('${t.key}', 1)" aria-label="${t.title}-Ziel erhöhen">+</button></div></div>
+    </div>`).join('')}
     <div class="h-meta" style="margin:20px 0 2px">Supplemente</div>
     <div class="h-list">
       <div class="h-row" onclick="scrollToSection('settings:inhalte')"><div class="h-row-body"><div class="h-row-title">Meine Supplemente</div><div class="h-row-meta">${suppCount} aktiv · Mengen und Uhrzeit im Editor</div></div><div class="h-row-chevron">›</div></div>

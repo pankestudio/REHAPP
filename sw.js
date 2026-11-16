@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rehapp-2026-11-15-morgen';
+const CACHE_NAME = 'rehapp-2026-11-16-zaehler';
 const ASSETS_REQUIRED = ['./', './index.html', './manifest.webmanifest'];
 const ASSETS_OPTIONAL = [
   './icons/icon-192.png',
