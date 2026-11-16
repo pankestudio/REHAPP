@@ -1812,6 +1812,344 @@ button[aria-pressed]:active { transform: scale(.96); }
 </div>
 </div><!-- /.h-shell -->
 
+<script id="vorsorge-logik">
+// ══════════════ VORSORGE & SELBSTTESTS — reine Logik (Runde 7) ══════════════
+// Grundlage: docs/longevity-spezifikation.md, Modul 6, Modul 7, Warnflaggen.
+// Dieser Block hat KEINEN Zugriff auf DOM, Speicher oder Uhr: alles kommt als
+// Argument herein (today = 'JJJJ-MM-TT'). tests/unit/vorsorge.test.mjs lädt
+// genau diesen Block in eine Node-VM und prüft die Funktionen.
+// Kein XP, keine Abzeichen, keine Serien: Vorsorge ist Fürsorge, kein Spiel.
+
+// ── Datum (reine Kalenderrechnung auf 'JJJJ-MM-TT', ohne Zeitzone) ──
+function vsParse(key) { const [y, m, d] = String(key).split('-').map(Number); return { y, m, d }; }
+function vsKey(y, m, d) { return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`; }
+function vsAddMonths(key, months) {
+  const { y, m, d } = vsParse(key);
+  const total = (y * 12 + (m - 1)) + months;
+  const ny = Math.floor(total / 12), nm = total % 12 + 1;
+  const last = new Date(Date.UTC(ny, nm, 0)).getUTCDate();
+  return vsKey(ny, nm, Math.min(d, last));
+}
+function vsDaysBetween(a, b) {
+  const pa = vsParse(a), pb = vsParse(b);
+  return Math.round((Date.UTC(pb.y, pb.m - 1, pb.d) - Date.UTC(pa.y, pa.m - 1, pa.d)) / 864e5);
+}
+const VS_MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+function vsFormatDate(key) { const { y, m, d } = vsParse(key); return `${d}. ${VS_MONTHS[m - 1]} ${y}`; }
+function vsAge(profile, today) { return profile && profile.birthYear ? vsParse(today).y - Number(profile.birthYear) : null; }
+function vsFormatNumber(v, digits = 1) { return Number(v).toLocaleString('de-DE', { maximumFractionDigits: digits }); }
+
+// ── Hilfen für Bedingungen ──
+const vsLogsOf = (logs, id) => (logs || []).filter(l => l.checkId === id).sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+const vsLast = (logs, id) => { const l = vsLogsOf(logs, id); return l.length ? l[l.length - 1] : null; };
+// Gewählter Darmkrebs-Weg: der jüngste Eintrag aus Stuhltest oder Darmspiegelung.
+function vsCrcMode(logs) {
+  const a = vsLast(logs, 'ifobt'), b = vsLast(logs, 'colo');
+  if (!a && !b) return null;
+  if (!b) return 'ifobt';
+  if (!a) return 'colo';
+  return a.date > b.date ? 'ifobt' : 'colo';
+}
+const vsPsaChosen = logs => vsLogsOf(logs, 'psa_followup').length > 0 || (vsLast(logs, 'psa_decision') || {}).note === 'ja';
+
+// ── PSA: Intervall nach Wert (S3-Leitlinie 2025, Spezifikation Modul 6) ──
+const PSA_HINT_HIGH = 'Kontrolle in 3 Monaten, bei Bestätigung Urologie und MRT vor einer Biopsie';
+function nextPsaDate(value, date) {
+  const v = Number(value);
+  const months = v < 1.5 ? 60 : v < 3 ? 24 : 3;
+  return { months, date: vsAddMonths(date, months), hint: months === 3 ? PSA_HINT_HIGH : null };
+}
+
+// ── Blutdruck-Messwoche ──
+const BP_LIMIT = { sys: 135, dia: 85 };
+function bpMean(readings) {
+  const ok = (readings || []).filter(r => r && Number(r[0]) > 0 && Number(r[1]) > 0);
+  if (!ok.length) return null;
+  const sys = Math.round(ok.reduce((s, r) => s + Number(r[0]), 0) / ok.length);
+  const dia = Math.round(ok.reduce((s, r) => s + Number(r[1]), 0) / ok.length);
+  return { sys, dia, n: ok.length, high: sys >= BP_LIMIT.sys || dia >= BP_LIMIT.dia };
+}
+
+// ── Vorsorge-Kalender (Modul 6). IDs, Intervalle und Bedingungen aus der Tabelle. ──
+// intervalMonths: Zahl, Funktion (age, last) → Zahl, oder null = einmalig.
+// minAge: ab wann relevant; startAge(profile) überschreibt das (crc_family).
+// sex: null = für alle, 'm' = nur Männer. condition(profile, logs) blendet aus.
+// nextDue(last, profile, logs) überschreibt die Intervallrechnung.
+const CHECKS = [
+  { id: 'checkup35', title: 'Gesundheits-Check-up', intervalMonths: 36, minAge: 35, sex: null,
+    info: 'In der Hausarztpraxis: Blutdruck, Blutzucker, Blutfette, Urin, Impfstatus und ein Gespräch über deine Risiken. Ab 35 alle drei Jahre.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'lpa_once', title: 'Lp(a) einmal messen', intervalMonths: null, minAge: 18, sex: null,
+    info: 'Lipoprotein(a) ist ein erblich festgelegter Blutfettwert, der das Herz-Kreislauf-Risiko erhöhen kann. Er ändert sich im Leben kaum, darum reicht eine Messung.',
+    cost: 'Meist Selbstzahler; bei Vorbelastung in der Familie mit der Praxis klären.' },
+  { id: 'skin', title: 'Hautkrebs-Screening', intervalMonths: 24, minAge: 35, sex: null,
+    info: 'Die Haut wird am ganzen Körper angesehen, auch Kopfhaut und Fußsohlen. Ab 35 alle zwei Jahre.',
+    cost: 'Kassenleistung (GKV), Stand 2026. Der G-BA prüft das Screening bis 2027.' },
+  { id: 'psa_decision', title: 'PSA: Entscheidung', intervalMonths: null, minAge: 45, sex: 'm',
+    condition: (p, logs) => !vsPsaChosen(logs),
+    nextDue: last => last && last.note === 'verzicht' ? { due: vsAddMonths(last.date, 24), hideUntilDue: true } : { due: null },
+    info: 'Der PSA-Wert im Blut kann Prostatakrebs früher zeigen; in großen Studien sterben mit regelmäßigem Test etwas weniger Männer daran. Der Test findet aber auch Tumoren, die nie Beschwerden gemacht hätten, und deren Behandlung kann Inkontinenz oder Erektionsprobleme hinterlassen. Die Leitlinie empfiehlt ab 45 ein Beratungsgespräch, danach entscheidest du selbst.',
+    cost: 'Bisher Selbstzahler (IGeL). Über PSA plus MRT als Kassenleistung berät der G-BA bis voraussichtlich 2027.' },
+  { id: 'psa_followup', title: 'PSA-Wert', intervalMonths: null, minAge: 45, sex: 'm',
+    condition: (p, logs) => vsPsaChosen(logs),
+    nextDue: last => last && last.value != null ? { due: nextPsaDate(last.value, last.date).date, hint: nextPsaDate(last.value, last.date).hint } : { due: null },
+    info: 'Wann der nächste PSA-Test sinnvoll ist, hängt vom letzten Wert ab: unter 1,5 ng/ml nach fünf Jahren, von 1,5 bis 2,99 nach zwei Jahren, ab 3 Kontrolle nach drei Monaten.',
+    cost: 'Bisher Selbstzahler (IGeL).' },
+  { id: 'crc_start', title: 'Darmkrebs-Vorsorge: Weg wählen', intervalMonths: null, minAge: 50, sex: null,
+    condition: (p, logs) => !vsCrcMode(logs),
+    info: 'Ab 50 gibt es zwei Wege: einen Stuhltest auf verstecktes Blut (iFOBT) alle zwei Jahre oder eine Darmspiegelung, die bei unauffälligem Befund zehn Jahre reicht. Beide senken das Risiko, an Darmkrebs zu sterben.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'ifobt', title: 'Stuhltest (iFOBT)', intervalMonths: 24, minAge: 50, sex: null,
+    condition: (p, logs) => vsCrcMode(logs) === 'ifobt',
+    info: 'Immunologischer Stuhltest auf verstecktes Blut, alle zwei Jahre. Ist er auffällig, folgt eine Darmspiegelung.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'colo', title: 'Darmspiegelung', intervalMonths: 120, minAge: 50, sex: null,
+    condition: (p, logs) => vsCrcMode(logs) === 'colo',
+    info: 'Bei unauffälligem Befund reicht die nächste Darmspiegelung nach zehn Jahren.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'crc_family', title: 'Darmspiegelung (Familie)', intervalMonths: 120, minAge: 45, sex: null,
+    condition: p => !!p.familyCRC,
+    startAge: p => Math.min(Number(p.familyCRCAge) > 0 ? Number(p.familyCRCAge) - 10 : 45, 45),
+    info: 'Hatten Eltern oder Geschwister Darmkrebs, beginnt die Vorsorge früher: zehn Jahre vor deren Alter bei der Diagnose, spätestens mit 45. Danach meist Darmspiegelung alle zehn Jahre.',
+    cost: 'Mit der Praxis klären, die Kasse zahlt das nicht automatisch.' },
+  { id: 'lung_ldct', title: 'Lungen-CT (Niedrigdosis)', intervalMonths: 12, minAge: 50, maxAge: 75, sex: null,
+    condition: p => !!p.smokerProfile,
+    info: 'Für starke Raucherinnen und Raucher von 50 bis 75: mindestens 25 Jahre geraucht und mindestens 15 Packungsjahre. Jährlich, in spezialisierten Zentren.',
+    cost: 'Seit 2026 als Kassenleistung vorgesehen; die Voraussetzungen klärt die Praxis.' },
+  { id: 'td', title: 'Tetanus und Diphtherie', intervalMonths: 120, minAge: 18, sex: null,
+    info: 'Auffrischung alle zehn Jahre. Die nächste fällige Dosis einmal als Kombination mit Keuchhusten (Tdap).',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'fsme', title: 'FSME-Impfung', intervalMonths: 60, minAge: 18, sex: null,
+    condition: p => !!p.tbeArea,
+    info: 'Schutz vor der von Zecken übertragenen Hirnhautentzündung, wenn du dich in Risikogebieten aufhältst. Auffrischung meist nach fünf Jahren, genau laut Fachinformation des Impfstoffs.',
+    cost: 'Kassenleistung in Risikogebieten (GKV).' },
+  { id: 'flu', title: 'Grippe-Impfung', intervalMonths: 12, minAge: 60, sex: null,
+    info: 'Jedes Jahr im Herbst. Ab 60, mit besonderer Indikation auch früher.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'zoster', title: 'Gürtelrose-Impfung', intervalMonths: null, minAge: 60, sex: null,
+    info: 'Totimpfstoff in zwei Dosen im Abstand von zwei bis sechs Monaten. Ab 60, mit Grunderkrankung auch früher.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'pcv20', title: 'Pneumokokken-Impfung', intervalMonths: null, minAge: 60, sex: null,
+    info: 'Einmalig ab 60, schützt vor schweren Lungenentzündungen durch Pneumokokken.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'covid', title: 'Covid-19-Auffrischung', intervalMonths: 12, minAge: 75, sex: null,
+    info: 'Jährlich, bevorzugt im Herbst. Ab 75, mit besonderer Indikation auch früher.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'dental', title: 'Zahnärztliche Kontrolle', intervalMonths: 6, minAge: 18, sex: null,
+    info: 'Kontrolle alle sechs Monate, dazu alle zwei Jahre ein Parodontitis-Screening. Das Bonusheft sichert Zuschüsse beim Zahnersatz.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'eyes', title: 'Augenuntersuchung', intervalMonths: age => age >= 60 ? 30 : 60, minAge: 40, sex: null,
+    info: 'Augeninnendruck und Sehnerv werden angesehen, um ein Glaukom früh zu erkennen. Alle fünf Jahre, ab 60 alle zweieinhalb Jahre, bei Risiko öfter.',
+    cost: 'Selbstzahler (IGeL), außer bei Beschwerden oder bekanntem Risiko.' },
+  { id: 'bp_week', title: 'Blutdruck-Messwoche', intervalMonths: (age, last) => last && (Number(last.value) >= BP_LIMIT.sys || Number(last.value2) >= BP_LIMIT.dia) ? 1 : 12, minAge: 18, sex: null,
+    info: 'Sieben Tage zu Hause messen, morgens und abends je zweimal, im Sitzen nach fünf Minuten Ruhe. Der Mittelwert sagt mehr als eine einzelne Messung in der Praxis.',
+    cost: 'Eigenes Messgerät, Oberarm-Manschette.' },
+  { id: 'hearing', title: 'Hörtest', intervalMonths: 36, minAge: 50, sex: null,
+    info: 'Ab 50 alle drei Jahre, oder früher, sobald dir Gespräche in lauter Umgebung schwerer fallen.',
+    cost: 'Beim Hörakustiker meist kostenlos; HNO-Praxis bei Beschwerden Kassenleistung.' },
+];
+const CHECKS_NOT_OFFERED = 'Ganzkörper-MRT und Krebs-Bluttests sind hier bewusst nicht aufgeführt: ein Nutzen ist nicht belegt.';
+const CHECKS_SEX_PENDING = 'Weitere Vorsorge für dich ist noch nicht hinterlegt.';
+const VS_SOON_DAYS = 60;
+
+// status: 'faellig' | 'bald' | 'aktuell' | 'erledigt' | 'spaeter' | 'hidden'
+// logs: alle checkLogs (Sonderfälle schauen auf Nachbar-Einträge, z. B. PSA).
+function dueStatus(check, logs, profile, today) {
+  logs = (logs || []).filter(l => !l.kind || l.kind === 'log');
+  const age = vsAge(profile, today);
+  if (age == null) return { status: 'hidden' };
+  if (check.sex && profile.sex !== check.sex) return { status: 'hidden' };
+  if (check.condition && !check.condition(profile, logs)) return { status: 'hidden' };
+  if (check.maxAge && age > check.maxAge) return { status: 'hidden' };
+  const own = vsLogsOf(logs, check.id);
+  const last = own.length ? own[own.length - 1] : null;
+  const startAge = check.startAge ? check.startAge(profile) : check.minAge;
+  if (age < startAge) return { status: 'spaeter', startAge, last };
+  let due = null, hint = null;
+  if (check.nextDue) {
+    const r = check.nextDue(last, profile, logs);
+    due = r.due; hint = r.hint || null;
+    if (r.hideUntilDue && due && vsDaysBetween(today, due) > 0) return { status: 'hidden', due, last };
+  } else if (last) {
+    const iv = typeof check.intervalMonths === 'function' ? check.intervalMonths(age, last) : check.intervalMonths;
+    if (iv == null) return { status: 'erledigt', last };
+    due = vsAddMonths(last.date, iv);
+  }
+  if (!due) return { status: 'faellig', due: null, last, hint };
+  const days = vsDaysBetween(today, due);
+  const status = days <= 0 ? 'faellig' : days <= VS_SOON_DAYS ? 'bald' : 'aktuell';
+  return { status, due, last, hint };
+}
+
+const VS_STATUS_RANK = { faellig: 0, bald: 1, aktuell: 2, erledigt: 3, spaeter: 4 };
+function checkList(profile, logs, today) {
+  return CHECKS.map((check, i) => ({ check, i, ...dueStatus(check, logs, profile, today) }))
+    .filter(r => r.status !== 'hidden')
+    .sort((a, b) => (VS_STATUS_RANK[a.status] - VS_STATUS_RANK[b.status])
+      || (a.status === 'spaeter' ? a.startAge - b.startAge : 0) || a.i - b.i);
+}
+function countDueChecks(profile, logs, today) {
+  return checkList(profile, logs, today).filter(r => r.status === 'faellig').length;
+}
+
+// ── Selbsttests (Modul 7) ──
+// PHQ: offizielle deutsche Fassung, Wortlaut unverändert (KBV-Formular,
+// Deutsche Version © Prof. Dr. Bernd Löwe, 2015, UKE Hamburg).
+const PHQ_STEM = 'Wie oft fühlten Sie sich im Verlauf der letzten 2 Wochen durch die folgenden Beschwerden beeinträchtigt?';
+const PHQ_OPTIONS = ['Überhaupt nicht', 'An einzelnen Tagen', 'An mehr als der Hälfte der Tage', 'Beinahe jeden Tag'];
+const PHQ9_ITEMS = [
+  'Wenig Interesse oder Freude an Ihren Tätigkeiten',
+  'Niedergeschlagenheit, Schwermut oder Hoffnungslosigkeit.',
+  'Schwierigkeiten ein- oder durchzuschlafen oder vermehrter Schlaf',
+  'Müdigkeit oder Gefühl, keine Energie zu haben',
+  'Verminderter Appetit oder übermäßiges Bedürfnis zu essen',
+  'Schlechte Meinung von sich selbst; Gefühl, ein Versager zu sein oder die Familie enttäuscht zu haben',
+  'Schwierigkeiten, sich auf etwas zu konzentrieren, z.B. beim Zeitunglesen oder Fernsehen',
+  'Waren Ihre Bewegungen oder Ihre Sprache so verlangsamt, dass es auch anderen auffallen würde? Oder waren Sie im Gegenteil „zappelig“ oder ruhelos und hatten dadurch einen stärkeren Bewegungsdrang als sonst?',
+  'Gedanken, dass Sie lieber tot wären oder sich Leid zufügen möchten',
+];
+const PHQ_SOURCE = 'Englische Version: Patient Health Questionnaire-9 (PHQ-9). Deutsche Version: © Prof. Dr. Bernd Löwe, 2015, Universitätsklinikum Hamburg-Eppendorf.';
+// Zusatzfragen zu typischen Zeichen bei Männern (Stufe 3), nur mit Profil 'm'.
+const MEN_EXTRA_STEM = 'In den letzten 4 Wochen:';
+const MEN_EXTRA_ITEMS = [
+  'Warst du öfter gereizt als sonst?',
+  'Hattest du Wutausbrüche?',
+  'Hast du mehr Alkohol getrunken als sonst?',
+  'Hast du mehr riskiert als sonst, zum Beispiel im Straßenverkehr, beim Sport oder mit Geld?',
+];
+const VS_CONTACT_GP = 'Hausarztpraxis oder ärztlicher Bereitschaftsdienst 116 117.';
+
+function scorePhq2(answers, extra) {
+  const score = (Number(answers[0]) || 0) + (Number(answers[1]) || 0);
+  const extraYes = (extra || []).filter(Boolean).length;
+  const offerPhq9 = score >= 2 || extraYes >= 2;
+  const actions = [];
+  if (offerPhq9) actions.push('Direkt im Anschluss den PHQ-9 ausfüllen.');
+  if (score >= 3) actions.push('Mit der Hausarztpraxis sprechen.');
+  return { score, extraYes, offerPhq9, gp: score >= 3, label: score >= 2 ? 'auffällig, mehr Fragen helfen bei der Einordnung' : 'unauffällig', actions };
+}
+
+// Frage 9 über 0 → Krisenseite, unabhängig von der Gesamtpunktzahl.
+function scorePhq9(answers) {
+  const a = (answers || []).map(v => Number(v) || 0);
+  const score = a.reduce((s, v) => s + v, 0);
+  const crisis = a[8] > 0;
+  let label, action;
+  if (score >= 20) { label = 'starke Beschwerden'; action = 'Zeitnah abklären lassen.'; }
+  else if (score >= 15) { label = 'deutliche Beschwerden'; action = 'Zeitnah abklären lassen.'; }
+  else if (score >= 10) { label = 'mittlere Beschwerden'; action = 'Ärztlich oder psychotherapeutisch abklären lassen.'; }
+  else if (score >= 5) { label = 'leichte Beschwerden'; action = 'In 4 Wochen noch einmal ausfüllen.'; }
+  else { label = 'kaum Beschwerden'; action = null; }
+  return { score, crisis, label, action, contacts: score >= 10 };
+}
+
+const STOPBANG_ITEMS = [
+  'Schnarchst du laut, lauter als Sprechen oder durch eine geschlossene Tür hörbar?',
+  'Bist du tagsüber oft müde, erschöpft oder schläfrig?',
+  'Hat jemand beobachtet, dass du im Schlaf aufhörst zu atmen, nach Luft schnappst oder würgst?',
+  'Hast du Bluthochdruck oder wirst du dagegen behandelt?',
+  'Liegt dein BMI über 35 kg/m²?',
+  'Bist du älter als 50 Jahre?',
+  'Ist dein Halsumfang größer als 40 cm?',
+  'Bist du männlich?',
+];
+// Alter und Geschlecht aus dem Profil vorbelegen (Frage 6 und 8).
+function stopBangPrefill(profile, today) {
+  const age = vsAge(profile, today);
+  const a = new Array(8).fill(null);
+  if (age != null) a[5] = age > 50 ? 1 : 0;
+  if (profile && ['m', 'w', 'd'].includes(profile.sex)) a[7] = profile.sex === 'm' ? 1 : 0;
+  return a;
+}
+const STOPBANG_ACTION = 'Schlafapnoe ärztlich abklären lassen (Hausarzt, dann Polygraphie).';
+function stopBangRisk(answers, profile) {
+  const a = (answers || []).map(v => v ? 1 : 0);
+  const score = a.reduce((s, v) => s + v, 0);
+  const stop = a.slice(0, 4).reduce((s, v) => s + v, 0);
+  const male = (profile && profile.sex === 'm') || a[7] === 1;
+  const risk = score >= 3 || (stop >= 2 && male);
+  return { score, stop, risk, label: risk ? 'erhöhtes Risiko für Schlafapnoe' : 'geringes Risiko', action: risk ? STOPBANG_ACTION : null };
+}
+
+const UCLA_ITEMS = [
+  'Wie oft hast du das Gefühl, dass dir Gesellschaft fehlt?',
+  'Wie oft hast du das Gefühl, außen vor zu sein?',
+  'Wie oft fühlst du dich von anderen isoliert?',
+];
+const UCLA_OPTIONS = ['Fast nie', 'Manchmal', 'Oft'];
+// Antworten 1–3, Summe 3–9. Ab 6 ein ruhiger Hinweis, keine Diagnose-Sprache.
+function scoreUcla(answers) {
+  const score = (answers || []).reduce((s, v) => s + (Number(v) || 0), 0);
+  const often = score >= 6;
+  return { score, often, label: often ? 'du fühlst dich oft allein' : 'du fühlst dich meist verbunden',
+    action: often ? 'Vielleicht tut gerade ein kleiner Schritt auf andere zu gut: ein Anruf, ein Spaziergang zu zweit oder ein fester Termin in einer Gruppe oder einem Verein.' : null };
+}
+
+// Epworth und ISI werden NICHT nachgebaut (Lizenz): nur Link und Punktzahl.
+function epworthResult(score) {
+  const s = Number(score);
+  const actions = [];
+  if (s >= 11) actions.push('Ärztlich abklären lassen.');
+  if (s >= 16) actions.push('Bis zur Klärung bei Müdigkeit nicht Auto fahren.');
+  return { score: s, label: s >= 16 ? 'starke Tagesmüdigkeit' : s >= 11 ? 'erhöhte Tagesmüdigkeit' : 'im üblichen Bereich', actions };
+}
+function isiResult(score) {
+  const s = Number(score);
+  const actions = [];
+  if (s >= 8) actions.push('Kognitive Verhaltenstherapie für Schlaf (CBT-I) ist die erste Wahl, auch als Selbsthilfe.');
+  if (s >= 15) actions.push('Eine DiGA auf Rezept fragen: HelloBetter Schlafen oder somnio.');
+  return { score: s, label: s >= 22 ? 'starke Schlafprobleme' : s >= 15 ? 'deutliche Schlafprobleme' : s >= 8 ? 'leichte Schlafprobleme' : 'kaum Schlafprobleme', actions };
+}
+
+const SELF_TESTS = [
+  { id: 'phq2', title: 'Stimmung (PHQ-2)', rhythmMonths: 3, desc: 'Zwei Fragen zu den letzten zwei Wochen, bei Bedarf neun.' },
+  { id: 'stopbang', title: 'Schlafapnoe (STOP-Bang)', rhythmMonths: 12, desc: 'Acht Ja-oder-Nein-Fragen zu Schnarchen und Atmung im Schlaf.' },
+  { id: 'ucla', title: 'Verbundenheit (UCLA-3)', rhythmMonths: 3, desc: 'Drei Fragen dazu, wie verbunden du dich fühlst.' },
+  { id: 'epworth', title: 'Tagesmüdigkeit (Epworth)', rhythmMonths: null, external: true, max: 24,
+    desc: 'Acht Alltagssituationen: Wie leicht nickst du ein? Bei Bedarf.',
+    url: 'https://epworthsleepinessscale.com/about-the-ess/', source: 'epworthsleepinessscale.com' },
+  { id: 'isi', title: 'Schlafprobleme (ISI)', rhythmMonths: null, external: true, max: 28,
+    desc: 'Sieben Fragen zu Ein- und Durchschlafen und den Folgen am Tag. Bei Schlafproblemen.',
+    url: 'https://eprovide.mapi-trust.org/isi-insomnia-severity-index', source: 'ePROVIDE, Mapi Research Trust' },
+];
+// Ergebnis in Worten für die Verlaufsliste.
+function selfTestSummary(rec) {
+  if (rec.testId === 'phq2') return scorePhq2(rec.answers, rec.extra).label;
+  if (rec.testId === 'phq9') return scorePhq9(rec.answers).label;
+  if (rec.testId === 'stopbang') return stopBangRisk(rec.answers, { sex: rec.sex }).label;
+  if (rec.testId === 'ucla') return scoreUcla(rec.answers).label;
+  if (rec.testId === 'epworth') return epworthResult(rec.score).label;
+  if (rec.testId === 'isi') return isiResult(rec.score).label;
+  return '';
+}
+function selfTestDue(test, tests, today) {
+  const own = (tests || []).filter(t => t.testId === test.id || (test.id === 'phq2' && t.testId === 'phq9'))
+    .sort((a, b) => a.date < b.date ? -1 : 1);
+  const last = own.length ? own[own.length - 1] : null;
+  if (!test.rhythmMonths) return { status: last ? 'aktuell' : 'offen', last, due: null };
+  if (!last) return { status: 'faellig', last: null, due: null };
+  const due = vsAddMonths(last.date, test.rhythmMonths);
+  const days = vsDaysBetween(today, due);
+  return { status: days <= 0 ? 'faellig' : days <= VS_SOON_DAYS ? 'bald' : 'aktuell', last, due };
+}
+
+// ── Krisenkontakte. checkedAt einmal jährlich prüfen (Modul 7). ──
+const CRISIS_CONTACTS = {
+  checkedAt: '2026-11-16',
+  groups: [
+    { title: 'TelefonSeelsorge', meta: 'Rund um die Uhr, kostenlos, auch per Chat',
+      numbers: [{ label: '0800 111 0 111', tel: '08001110111' }, { label: '0800 111 0 222', tel: '08001110222' }, { label: '116 123', tel: '116123' }],
+      chat: { label: 'Chat der TelefonSeelsorge öffnen', url: 'https://online.telefonseelsorge.de' } },
+    { title: 'Ärztlicher Bereitschaftsdienst', meta: 'Wenn die Praxis zu hat', numbers: [{ label: '116 117', tel: '116117' }] },
+    { title: 'Notruf', meta: 'Bei akuter Gefahr', numbers: [{ label: '112', tel: '112' }] },
+  ],
+};
+const CRISIS_TEXT = [
+  'Wenn gerade alles zu viel ist, musst du das nicht allein tragen.',
+  'Unter diesen Nummern hören dir Menschen zu, rund um die Uhr und kostenlos.',
+];
+function crisisCheckOverdue(today) { return vsDaysBetween(vsAddMonths(CRISIS_CONTACTS.checkedAt, 12), today) > 0; }
+</script>
 <script>
 // ══════════════ NAV ITEMS — eine Liste für BottomNav/Rail/SideNav (Runde 5 Punkt 1) ══════════════
 const NAV_ITEMS = [
@@ -2561,11 +2899,14 @@ const HABIT_BLOCKS = [
 
 const CONTENT_DB_NAME = window.REHAPP_DEMO ? 'rehapp_demo' : 'rehapp_content';
 // v2 (Hybrid Phase 3): + goals/logs/earned Stores für Ziele & Abzeichen.
-const CONTENT_DB_VERSION = 2;
+// v3 (Runde 7): + checks (Vorsorge-Einträge, Selbsttests, Vorsorge-Profil).
+const CONTENT_DB_VERSION = 3;
 const CONTENT_STORE = 'items';
 const GOAL_STORE = 'goals';
 const LOG_STORE = 'logs';
 const EARNED_STORE = 'earned';
+const CHECK_STORE = 'checks';
+const CHECKS_BACKUP_KEY = 'backup_before_checks_v1';
 
 let _contentDB = null;
 let _contentCache = [];
@@ -2579,9 +2920,66 @@ function slugifyId(str) {
     .replace(/^-+|-+$/g, '');
 }
 
-function openContentDB() {
+// Runde 7: Vor dem Upgrade auf v3 die bestehende Datenbank OHNE Versions-
+// angabe öffnen (= kein Upgrade), alle Stores lesen, zählen und unter
+// backup_before_checks_v1 sichern. Erst danach läuft onupgradeneeded, das nur
+// den neuen Store checks anlegt. verifyMigration() vergleicht die Zählung.
+const MIGRATION_STORES = [CONTENT_STORE, GOAL_STORE, LOG_STORE, EARNED_STORE];
+let _checksMigration = null;
+function snapshotBeforeChecksUpgrade() {
+  return new Promise(resolve => {
+    let req;
+    try { req = indexedDB.open(CONTENT_DB_NAME); } catch (err) { resolve(null); return; }
+    req.onerror = () => resolve(null);
+    req.onsuccess = async () => {
+      const db = req.result;
+      try {
+        if (db.version >= 3 || !db.objectStoreNames.contains(CONTENT_STORE)) { resolve(null); return; }
+        const data = {}, counts = {};
+        for (const name of MIGRATION_STORES) {
+          data[name] = db.objectStoreNames.contains(name) ? await idbGetAll(db, name) : [];
+          counts[name] = data[name].length;
+        }
+        if (!storageGet(CHECKS_BACKUP_KEY)) {
+          const full = JSON.stringify({ at: new Date().toISOString(), fromVersion: db.version, counts, data });
+          // Passt der volle Stand nicht in den Speicher, bleibt wenigstens die
+          // Zählung als Beleg; die Daten selbst werden beim Upgrade nicht angefasst.
+          if (!storageSet(CHECKS_BACKUP_KEY, full)) storageSet(CHECKS_BACKUP_KEY, JSON.stringify({ at: new Date().toISOString(), fromVersion: db.version, counts, data: null }));
+        }
+        resolve({ fromVersion: db.version, counts });
+      } catch (err) {
+        console.warn('Backup vor checks-Migration fehlgeschlagen', err);
+        resolve(null);
+      } finally {
+        db.close();
+      }
+    };
+  });
+}
+
+async function verifyMigration(before, db) {
+  const after = {};
+  for (const name of MIGRATION_STORES) after[name] = (await idbGetAll(db, name)).length;
+  const hasChecks = db.objectStoreNames.contains(CHECK_STORE);
+  const backup = !!storageGet(CHECKS_BACKUP_KEY);
+  const sameCounts = MIGRATION_STORES.every(n => before.counts[n] === after[n]);
+  const ok = hasChecks && backup && sameCounts;
+  const result = { ok, at: new Date().toISOString(), fromVersion: before.fromVersion, before: before.counts, after, hasChecks, backup };
+  storageSet('checks_migration_v1', JSON.stringify(result));
+  if (!ok) console.warn('checks-Migration: Abweichung', result, 'Backup unter ' + CHECKS_BACKUP_KEY);
+  return result;
+}
+
+async function openContentDB() {
+  if (!('indexedDB' in window)) throw new Error('IndexedDB nicht verfügbar');
+  const before = await snapshotBeforeChecksUpgrade();
+  const db = await openContentDBRaw();
+  if (before) _checksMigration = await verifyMigration(before, db);
+  return db;
+}
+
+function openContentDBRaw() {
   return new Promise((resolve, reject) => {
-    if (!('indexedDB' in window)) { reject(new Error('IndexedDB nicht verfügbar')); return; }
     const req = indexedDB.open(CONTENT_DB_NAME, CONTENT_DB_VERSION);
     req.onupgradeneeded = () => {
       const db = req.result;
@@ -2597,8 +2995,15 @@ function openContentDB() {
       if (!db.objectStoreNames.contains(EARNED_STORE)) {
         db.createObjectStore(EARNED_STORE, { keyPath: 'id' });
       }
+      if (!db.objectStoreNames.contains(CHECK_STORE)) {
+        db.createObjectStore(CHECK_STORE, { keyPath: 'id' });
+      }
     };
-    req.onsuccess = () => resolve(req.result);
+    req.onsuccess = () => {
+      // Spätere Upgrades aus einem anderen Tab nicht blockieren.
+      req.result.onversionchange = () => req.result.close();
+      resolve(req.result);
+    };
     req.onerror = () => reject(req.error);
   });
 }
@@ -2724,6 +3129,7 @@ async function initContentStore() {
         if (!alreadyMigrated) storageSet('content_migrated_v1', '1');
       }
       _contentCache.sort((a, b) => a.order - b.order);
+      await initChecksStore();
     } catch (err) {
       console.warn('Content-Store nicht verfügbar, Fallback ohne Persistenz', err);
       _contentDB = null;
@@ -2731,6 +3137,37 @@ async function initContentStore() {
     }
   })();
   return _contentReady;
+}
+
+// ── Vorsorge-Store (Runde 7). Ein Store, Datensätze mit kind:
+//   'profile'  { id:'check-profile', kind, birthYear, sex, smokerProfile, familyCRC, familyCRCAge?, tbeArea, flags:{} }
+//   'log'      { id, kind, checkId, date, value?, value2?, note? }   (Vorsorge erledigt, z. B. PSA-Wert)
+//   'selftest' { id, kind, testId, date, answers:number[], score, extra?, sex? }
+//   'bpweek'   { id, kind, start, readings:{ 'T-m1': [sys, dia], … }, done }
+let _checksCache = [];
+async function initChecksStore() {
+  if (!_contentDB || !_contentDB.objectStoreNames.contains(CHECK_STORE)) return;
+  try { _checksCache = await idbGetAll(_contentDB, CHECK_STORE); }
+  catch (err) { console.warn('Vorsorge-Store nicht verfügbar', err); _checksCache = []; }
+}
+function getCheckProfile() { return _checksCache.find(r => r.kind === 'profile') || null; }
+function getCheckLogs() { return _checksCache.filter(r => r.kind === 'log'); }
+function getSelfTestRecords() { return _checksCache.filter(r => r.kind === 'selftest'); }
+function getOpenBpWeek() { return _checksCache.find(r => r.kind === 'bpweek' && !r.done) || null; }
+async function saveCheckRecord(rec) {
+  if (!rec.id) rec.id = `${rec.kind}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+  const idx = _checksCache.findIndex(r => r.id === rec.id);
+  if (idx >= 0) _checksCache[idx] = rec; else _checksCache.push(rec);
+  if (_contentDB) { try { await idbPutAll(_contentDB, [rec], CHECK_STORE); } catch (err) { console.warn('Vorsorge speichern fehlgeschlagen', err); } }
+  return rec;
+}
+async function deleteCheckRecord(id) {
+  _checksCache = _checksCache.filter(r => r.id !== id);
+  if (_contentDB) { try { await idbDelete(_contentDB, id, CHECK_STORE); } catch (err) { console.warn('Vorsorge löschen fehlgeschlagen', err); } }
+}
+async function importChecks(records) {
+  if (!Array.isArray(records) || !records.length) return;
+  for (const r of records) if (r && r.id) await saveCheckRecord({ ...r });
 }
 
 function getItems(filter = {}) {
@@ -7118,7 +7555,12 @@ function toggleCountdownPreroll() {
 
 function runMigrationCheck() {
   const ok = verifyGoalsMigrationV2();
-  toast(ok ? 'Migration passt zur ursprünglichen Verteilung (8 aktiv · 8 pausiert · 6 Zähler).' : 'Abweichung von der ursprünglichen Verteilung — seitdem selbst Ziele geändert? Details in der Konsole.');
+  let checksNote = '';
+  try {
+    const m = JSON.parse(storageGet('checks_migration_v1') || 'null');
+    if (m) checksNote = m.ok ? ' Vorsorge-Speicher: Zählung vorher und nachher gleich.' : ' Vorsorge-Speicher: Abweichung, Backup liegt unter ' + CHECKS_BACKUP_KEY + '.';
+  } catch (err) {}
+  toast((ok ? 'Migration passt zur ursprünglichen Verteilung (8 aktiv · 8 pausiert · 6 Zähler).' : 'Abweichung von der ursprünglichen Verteilung — seitdem selbst Ziele geändert? Details in der Konsole.') + checksNote);
 }
 
 // ── Erinnerungen: Push-Master-Switch + eine Zeile pro Ziel mit Uhrzeit.
@@ -8056,7 +8498,7 @@ function exportAppData() {
   const content = getItems({});
   const blob = new Blob([JSON.stringify({
     exportedAt: new Date().toISOString(), app: 'REHAPP', data: payload, content,
-    goals: _goalsCache, logs: _logsCache, earned: _earnedCache,
+    goals: _goalsCache, logs: _logsCache, earned: _earnedCache, checks: _checksCache,
   }, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -8087,6 +8529,7 @@ async function loadDemoFixture() {
   const f = window.REHAPP_DEMO.fixture || {};
   for (const it of f.content || []) await saveItem(it);
   await importGoalsLogsEarned(f);
+  await importChecks(f.checks);
   const band = document.createElement('div');
   band.className = 'h-demo-band';
   // Nur im Demo-Modus, darum inline statt als Regel im Stylesheet (Grenze < 300).
@@ -8122,6 +8565,7 @@ function importAppDataFromFile(file) {
         for (const it of parsed.content) await saveItem(it);
       }
       await importGoalsLogsEarned(parsed);
+      await importChecks(parsed.checks);
       buildWater(); buildSupplements(); buildRecipes();
       buildMasterplan();
       buildCRPSCalendar(); buildBudapestFilter(); renderOedemTrend();

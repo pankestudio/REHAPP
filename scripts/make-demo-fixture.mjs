@@ -3,7 +3,7 @@ import http from 'node:http'; import { readFile, writeFile, mkdir } from 'node:f
 // Erzeugt tests/fixtures/demo.json neu: startet die App im Demo-Modus ohne
 // Fixture (= frische Standarddaten), baut über die App-eigenen Funktionen den
 // Stand der Referenzbilder nach und schreibt Speicher, Inhalte, Ziele, Logs und
-// Abzeichen heraus. Nutzung: node scripts/make-demo-fixture.mjs
+// Abzeichen heraus. Nutzung: node scripts/make-demo-fixture.mjs [--nur-vorsorge]
 import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outFile = path.join(root, 'tests/fixtures/demo.json');
@@ -37,11 +37,34 @@ const fixture = await p.evaluate(async()=>{
   const morning=getItems({type:'supplement'}).filter(i=>i.time==='morning').slice(0,3);
   morning.forEach(i=>toggleItemDone(i.id));
   checkNewUnlocks();
+  // Runde 7: Vorsorge-Profil (Jahrgang 1981, m) und einige Einträge. Am Demo-Tag
+  // 2026-11-03 sind psa_decision und bp_week fällig, dental bald, der Rest aktuell.
+  await saveCheckRecord({ id:'check-profile', kind:'profile', birthYear:1981, sex:'m', smokerProfile:false, familyCRC:false, tbeArea:false, flags:{} });
+  const vlog = (checkId, date, extra={}) => saveCheckRecord({ id:'demo-log-'+checkId, kind:'log', checkId, date, ...extra });
+  await vlog('checkup35','2024-02-12'); await vlog('lpa_once','2023-06-20'); await vlog('skin','2025-03-12');
+  await vlog('td','2017-05-10'); await vlog('dental','2026-05-20'); await vlog('eyes','2024-09-03');
+  await vlog('bp_week','2025-10-10',{ value:128, value2:82, note:'28 Messungen' });
+  // Laufende Messwoche: Tag 1 = 28.10., Tag 7 = heute, heute nur morgens gemessen.
+  const readings={};
+  for (let d=0; d<7; d++) ['m1','m2','a1','a2'].forEach((slot,j)=>{ if (d===6 && slot[0]==='a') return; const k=d*4+j; readings[d+'-'+slot]=[132+(k*7)%11, 82+(k*5)%9]; });
+  await saveCheckRecord({ id:'demo-bpweek', kind:'bpweek', start:'2026-10-28', readings, done:false });
+  await saveCheckRecord({ id:'demo-test-phq2', kind:'selftest', testId:'phq2', date:'2026-08-12', answers:[1,0], extra:[0,0,0,0], score:1 });
+  await saveCheckRecord({ id:'demo-test-ucla', kind:'selftest', testId:'ucla', date:'2026-08-12', answers:[1,2,1], score:4 });
+  await saveCheckRecord({ id:'demo-test-stopbang', kind:'selftest', testId:'stopbang', date:'2026-02-02', answers:[1,0,0,0,0,0,0,1], score:2, sex:'m' });
   // Feiermomente nicht beim Laden der Demo abspielen
   const data={}; for (let i=0;i<localStorage.length;i++){const k=localStorage.key(i); data[k]=localStorage.getItem(k);}
-  return { app:'REHAPP', demo:'2026-11-03', data, content:getItems({}), goals:_goalsCache, logs:_logsCache, earned:_earnedCache };
+  return { app:'REHAPP', demo:'2026-11-03', data, content:getItems({}), goals:_goalsCache, logs:_logsCache, earned:_earnedCache, checks:_checksCache };
 });
 await mkdir(path.dirname(outFile),{recursive:true});
-await writeFile(outFile, JSON.stringify(fixture,null,1));
-console.log(JSON.stringify({goals:fixture.goals.length, logs:fixture.logs.length, earned:fixture.earned.length, earnedTiers:fixture.earned.map(e=>e.tier||e.stufe||Object.keys(e).join('|')).slice(0,20), lsKeys:Object.keys(fixture.data).length, errs}));
+// --nur-vorsorge: bestehende Fixture behalten und nur checks ersetzen. Ein voller
+// Neuaufbau verschiebt sonst Zeitstempel (Zeitzone des Rechners) und ändert
+// Heute-Screenshots, die mit Vorsorge nichts zu tun haben (Runde 7).
+if (process.argv.includes('--nur-vorsorge')) {
+  const old = JSON.parse(await readFile(outFile, 'utf8'));
+  old.checks = fixture.checks;
+  await writeFile(outFile, JSON.stringify(old,null,1));
+} else {
+  await writeFile(outFile, JSON.stringify(fixture,null,1));
+}
+console.log(JSON.stringify({goals:fixture.goals.length, logs:fixture.logs.length, earned:fixture.earned.length, earnedTiers:fixture.earned.map(e=>e.tier||e.stufe||Object.keys(e).join('|')).slice(0,20), lsKeys:Object.keys(fixture.data).length, checks:fixture.checks.length, errs}));
 await b.close(); srv.close();
