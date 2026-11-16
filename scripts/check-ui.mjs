@@ -495,6 +495,27 @@ async function sweep(browser, suffix, consoleErrors, vp, paper = null) {
   await auditState(page, 'setup-uebung-sheet');
   await page.evaluate(() => document.querySelector('#exercise-editor-overlay .h-circle-btn').click());
   await page.waitForTimeout(200);
+
+  // Runde 7: Vorsorge, Selbsttests, Krisenseite (kein Gelb, gleiche Regeln).
+  await page.evaluate(() => openVorsorge());
+  await auditState(page, 'vorsorge');
+  await page.evaluate(() => vsEditProfile());
+  await auditState(page, 'vorsorge-profil');
+  await page.evaluate(() => { vsCancelProfile(); openCheckSheet('dental'); });
+  await auditState(page, 'vorsorge-sheet');
+  await page.evaluate(() => { openCheckSheet('psa_decision'); vsPsaChooseValue(); document.getElementById('vs-psa').value = '3,4'; vsPsaPreview(); });
+  await auditState(page, 'vorsorge-psa');
+  await page.evaluate(() => openCheckSheet('bp_week'));
+  await auditState(page, 'vorsorge-messwoche');
+  await page.evaluate(() => { closeCheckSheet(); openSelfTest('phq2'); });
+  await auditState(page, 'vorsorge-selbsttest');
+  await page.evaluate(() => { vsAnswer('answers', 0, 1); vsAnswer('answers', 1, 1); [1, 1, 0, 0].forEach((v, i) => vsAnswer('extra', i, v)); return vsEvaluateTest(); });
+  await auditState(page, 'vorsorge-ergebnis');
+  await page.evaluate(() => openSelfTest('epworth'));
+  await auditState(page, 'vorsorge-epworth');
+  await page.evaluate(() => { openSelfTest('phq9'); vsAnswer('answers', 8, 1); });
+  await auditState(page, 'vorsorge-krise');
+  await page.evaluate(() => { closeCrisisSheet(); closeSelfTest(); closeVorsorge(); });
   await page.close();
 }
 

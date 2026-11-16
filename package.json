@@ -9,7 +9,8 @@
     "deploy:test": "npm run build && sh scripts/abnahme-dist.sh && npx netlify-cli deploy --alias hybrid --dir dist",
     "deploy:prod": "npm run build && npx netlify-cli deploy --prod --dir dist",
     "demo-fixture": "node scripts/make-demo-fixture.mjs",
-    "check": "node validate.js && node scripts/check-ui.mjs --out screenshots/check.txt",
+    "test": "node --test tests/unit/",
+    "check": "node validate.js && node --test tests/unit/ && node scripts/check-ui.mjs --out screenshots/check.txt",
     "hooks": "sh scripts/install-hooks.sh",
     "shots": "node scripts/shots.mjs"
   },

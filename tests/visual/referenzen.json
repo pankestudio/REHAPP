@@ -13,5 +13,12 @@
   "wissen": { "check": "wissen" },
   "setup": { "check": "setup" },
   "checkin": { "check": "checkin" },
-  "ziel-anlegen": { "390": "mobil-ziel-editor.png", "check": "heute-ziel-sheet" }
+  "ziel-anlegen": { "390": "mobil-ziel-editor.png", "check": "heute-ziel-sheet" },
+  "vorsorge-liste": { "check": "vorsorge" },
+  "vorsorge-sheet": { "check": "vorsorge-sheet" },
+  "vorsorge-psa": { "check": "vorsorge-psa" },
+  "vorsorge-messwoche": { "check": "vorsorge-messwoche" },
+  "selbsttest-phq2": { "check": "vorsorge-selbsttest" },
+  "selbsttest-ergebnis": { "check": "vorsorge-ergebnis" },
+  "krisenseite": { "check": "vorsorge-krise" }
 }
