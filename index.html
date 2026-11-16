@@ -2066,7 +2066,7 @@ function scorePhq2(answers, extra) {
   const actions = [];
   if (offerPhq9) actions.push('Direkt im Anschluss den PHQ-9 ausfüllen.');
   if (score >= 3) actions.push('Mit der Hausarztpraxis sprechen.');
-  return { score, extraYes, offerPhq9, gp: score >= 3, label: score >= 2 ? 'auffällig, mehr Fragen helfen bei der Einordnung' : 'unauffällig', actions };
+  return { score, extraYes, offerPhq9, gp: score >= 3, label: score >= 2 ? 'erhöhter Wert' : 'unauffälliger Wert', actions };
 }
 
 // Frage 9 über 0 → Krisenseite, unabhängig von der Gesamtpunktzahl.
@@ -8022,6 +8022,222 @@ document.addEventListener('keydown', e => {
     if (el && el.classList.contains('open')) { close(); return; }
   }
 });
+
+// ══════════════ SELBSTTESTS (Runde 7 Punkt 3) ══════════════
+// PHQ-2/PHQ-9 im offiziellen Wortlaut, STOP-Bang und UCLA-3 in der App,
+// Epworth und ISI NICHT nachgebaut (Lizenz): nur Link und Punktzahl.
+// Ergebnisse als Verlaufsliste in Worten. Keine Kurve, keine Ampel, kein Gelb, kein XP.
+const VS_TEST_NAMES = { phq2: 'PHQ-2', phq9: 'PHQ-9', stopbang: 'STOP-Bang', ucla: 'UCLA-3', epworth: 'Epworth', isi: 'ISI' };
+const VS_TEST_MAX = { phq2: 6, phq9: 27, stopbang: 8, ucla: 9, epworth: 24, isi: 28 };
+
+function vsSelfTestSectionHtml() {
+  const tests = getSelfTestRecords();
+  const today = vsToday();
+  const rows = SELF_TESTS.map(t => {
+    const d = selfTestDue(t, tests, today);
+    const status = !t.rhythmMonths ? 'bei Bedarf' : VS_STATUS_LABEL[d.status];
+    const meta = d.last ? `Zuletzt: ${vsFormatDate(d.last.date)} · ${VS_TEST_NAMES[d.last.testId]} ${d.last.score} Punkte` : t.desc;
+    return `<button type="button" class="h-row" onclick="openSelfTest('${t.id}')" style="${VS_ROW}">
+      <div class="h-row-body"><div class="h-row-title">${escapeHtml(t.title)}</div><div class="h-row-meta">${escapeHtml(meta)}</div></div>
+      <div class="h-row-trail"${d.status === 'faellig' && t.rhythmMonths ? ' style="font-weight:600"' : ''}>${escapeHtml(status)}</div>
+      <div class="h-row-chevron" aria-hidden="true">›</div>
+    </button>`;
+  }).join('');
+  return vsSectionHead('Selbsttests')
+    + `<div class="h-meta" style="margin-top:12px;max-width:60ch">Fragebögen zur Selbsteinschätzung. Sie ersetzen kein Gespräch in der Praxis und stellen keine Diagnose.</div>`
+    + `<div class="h-list" id="vs-test-list" style="margin-top:12px">${rows}</div>`
+    + vsTestHistoryHtml(tests);
+}
+function vsTestHistoryHtml(tests, onlyIds) {
+  const list = tests.filter(t => !onlyIds || onlyIds.includes(t.testId)).sort((a, b) => a.date < b.date ? 1 : a.date > b.date ? -1 : 0).slice(0, 12);
+  if (!list.length) return '';
+  return `<div class="h-meta" style="margin:24px 0 6px">Verlauf</div><div class="h-list">${list.map(t => `
+    <div class="h-row" style="cursor:default">
+      <div class="h-row-body"><div class="h-row-title">${escapeHtml(vsFormatDate(t.date))} · ${escapeHtml(VS_TEST_NAMES[t.testId] || t.testId)}</div>
+      <div class="h-row-meta">${t.score} von ${VS_TEST_MAX[t.testId]} Punkten · ${escapeHtml(selfTestSummary(t))}</div></div>
+    </div>`).join('')}</div>`;
+}
+
+let _vsTest = null;
+function openSelfTest(id) {
+  const profile = getCheckProfile() || {};
+  const today = vsToday();
+  if (id === 'phq2') _vsTest = { id, step: 'phq2', answers: [null, null], extra: profile.sex === 'm' ? [null, null, null, null] : [] };
+  else if (id === 'phq9') _vsTest = { id, step: 'phq9', answers: new Array(9).fill(null), extra: [] };
+  else if (id === 'stopbang') _vsTest = { id, step: 'stopbang', answers: stopBangPrefill(profile, today) };
+  else if (id === 'ucla') _vsTest = { id, step: 'ucla', answers: [null, null, null] };
+  else _vsTest = { id, step: 'external' };
+  renderSelfTest();
+  vsOpenOverlay('vs-test-overlay');
+}
+function closeSelfTest() {
+  vsCloseOverlay('vs-test-overlay');
+  _vsTest = null;
+  renderVorsorge();
+}
+
+function vsQuestionHtml(group, i, text, options, value, values) {
+  const btns = options.map((label, k) => vsSegBtn(label, value === values[k], `vsAnswer('${group}',${i},${values[k]})`)).join('');
+  return `<div class="h-row" style="cursor:default;flex-direction:column;align-items:stretch;gap:8px" role="group" aria-label="${escapeHtml(text)}">
+    <div class="h-text">${escapeHtml(text)}</div>
+    <div class="h-seg" style="gap:4px 12px">${btns}</div>
+  </div>`;
+}
+function vsAnswer(group, i, v) {
+  _vsTest[group][i] = v;
+  // PHQ-9 Frage 9 über 0: Krisenseite SOFORT, unabhängig von der Gesamtpunktzahl.
+  if (_vsTest.step === 'phq9' && group === 'answers' && i === 8 && v > 0 && typeof openCrisisSheet === 'function') {
+    vsRerenderTestKeepScroll();
+    openCrisisSheet();
+    return;
+  }
+  vsRerenderTestKeepScroll();
+}
+function vsRerenderTestKeepScroll() {
+  const ov = document.getElementById('vs-test-overlay');
+  const y = ov.scrollTop;
+  renderSelfTest();
+  ov.scrollTop = y;
+}
+function vsAllAnswered() {
+  return _vsTest.answers.every(v => v !== null) && (_vsTest.extra || []).every(v => v !== null);
+}
+function vsSubmitHtml(label = 'Antworten auswerten') {
+  return `<button type="button" class="h-pill" style="width:100%;margin-top:24px" onclick="vsEvaluateTest()"${vsAllAnswered() ? '' : ' disabled'}>${label}</button>`;
+}
+function vsContactsHtml() {
+  return `<div class="h-meta" style="margin:24px 0 6px">Kontaktwege</div><div class="h-list">
+    <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Hausarztpraxis</div><div class="h-row-meta">Erste Anlaufstelle, auch für eine Überweisung</div></div></div>
+    <a class="h-row" href="tel:116117" style="color:inherit;text-decoration:none"><div class="h-row-body"><div class="h-row-title">116 117</div><div class="h-row-meta">Ärztlicher Bereitschaftsdienst, wenn die Praxis zu hat</div></div><div class="h-row-chevron" aria-hidden="true">›</div></a>
+  </div>`;
+}
+function vsCrisisLinkHtml() {
+  return typeof vsCrisisRowHtml === 'function' ? vsCrisisRowHtml(true) : '';
+}
+
+function renderSelfTest() {
+  const t = _vsTest;
+  const test = SELF_TESTS.find(x => x.id === t.id) || { title: 'Stimmung (PHQ-9)' };
+  const titleEl = document.getElementById('vs-test-title');
+  let html = '';
+  const yesNo = ['Ja', 'Nein'], yn = [1, 0];
+  if (t.step === 'phq2' || t.step === 'phq9') {
+    titleEl.textContent = t.step === 'phq2' ? 'Stimmung (PHQ-2)' : 'Stimmung (PHQ-9)';
+    const n = t.step === 'phq2' ? 2 : 9;
+    html += `<div class="h-text" style="font-weight:500">${escapeHtml(PHQ_STEM)}</div>
+      <div class="h-meta" style="margin:6px 0 12px">Offizielle deutsche Fassung, darum in der Sie-Form.</div><div class="h-list">`;
+    for (let i = 0; i < n; i++) html += vsQuestionHtml('answers', i, `${'abcdefghi'[i]}. ${PHQ9_ITEMS[i]}`, PHQ_OPTIONS, t.answers[i], [0, 1, 2, 3]);
+    html += `</div>`;
+    if (t.step === 'phq2' && t.extra.length) {
+      html += `<div class="h-text" style="font-weight:500;margin-top:28px">${escapeHtml(MEN_EXTRA_STEM)}</div>
+        <div class="h-meta" style="margin:6px 0 12px">Zusatzfragen zu Zeichen, die sich bei Männern oft anders zeigen.</div><div class="h-list">`;
+      MEN_EXTRA_ITEMS.forEach((q, i) => { html += vsQuestionHtml('extra', i, q, yesNo, t.extra[i], yn); });
+      html += `</div>`;
+    }
+    html += vsSubmitHtml() + `<div class="h-meta" style="margin-top:16px">${escapeHtml(PHQ_SOURCE)}</div>`;
+  } else if (t.step === 'stopbang') {
+    titleEl.textContent = test.title;
+    html += `<div class="h-meta" style="margin-bottom:12px">Alter und Geschlecht sind aus deinem Profil vorbelegt.</div><div class="h-list">`;
+    STOPBANG_ITEMS.forEach((q, i) => { html += vsQuestionHtml('answers', i, q, yesNo, t.answers[i], yn); });
+    html += `</div>` + vsSubmitHtml();
+  } else if (t.step === 'ucla') {
+    titleEl.textContent = test.title;
+    html += `<div class="h-list">`;
+    UCLA_ITEMS.forEach((q, i) => { html += vsQuestionHtml('answers', i, q, UCLA_OPTIONS, t.answers[i], [1, 2, 3]); });
+    html += `</div>` + vsSubmitHtml();
+  } else if (t.step === 'external') {
+    titleEl.textContent = test.title;
+    html += vsExternalHtml(test);
+  } else if (t.step === 'result') {
+    html += t.resultHtml;
+  }
+  html += vsCrisisLinkHtml();
+  document.getElementById('vs-test-content').innerHTML = html;
+}
+
+function vsResultHead(score, max, label) {
+  return `<div class="h-num-row" style="margin:8px 0 4px"><div class="h-title" style="font-size:56px">${score}</div><div class="h-num-suffix" style="font-size:22px;margin-top:22px">&nbsp;von ${max}</div></div>
+    <div class="h-text" style="margin-bottom:16px">${escapeHtml(label.charAt(0).toUpperCase() + label.slice(1))}</div>`;
+}
+function vsActionsHtml(actions) {
+  return actions.length ? `<div class="h-list">${actions.map(a => `<div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">${escapeHtml(a)}</div></div></div>`).join('')}</div>` : '';
+}
+async function vsEvaluateTest() {
+  const t = _vsTest;
+  if (!vsAllAnswered()) return;
+  const date = vsToday();
+  const profile = getCheckProfile() || {};
+  let html = '';
+  const back = `<button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:24px" onclick="closeSelfTest()">Zur Übersicht zurück</button>`;
+  if (t.step === 'phq2') {
+    const r = scorePhq2(t.answers, t.extra);
+    await saveCheckRecord({ kind: 'selftest', testId: 'phq2', date, answers: t.answers.slice(), extra: t.extra.slice(), score: r.score });
+    document.getElementById('vs-test-title').textContent = 'Ergebnis PHQ-2';
+    html += vsResultHead(r.score, 6, r.label);
+    if (r.extraYes >= 2 && r.score < 2) html += `<div class="h-text" style="margin-bottom:12px">${r.extraYes} von 4 Zusatzfragen mit Ja. Die neun Fragen des PHQ-9 helfen, das besser einzuordnen.</div>`;
+    html += vsActionsHtml(r.actions);
+    if (r.offerPhq9) html += `<button type="button" class="h-pill" style="width:100%;margin-top:24px" onclick="vsStartPhq9()">PHQ-9 jetzt ausfüllen</button>`;
+    if (r.gp) html += vsContactsHtml();
+    if (!r.offerPhq9) html += `<div class="h-text" style="margin-top:12px">In drei Monaten wieder.</div>`;
+  } else if (t.step === 'phq9') {
+    const r = scorePhq9(t.answers);
+    await saveCheckRecord({ kind: 'selftest', testId: 'phq9', date, answers: t.answers.slice(), score: r.score });
+    document.getElementById('vs-test-title').textContent = 'Ergebnis PHQ-9';
+    html += vsResultHead(r.score, 27, r.label);
+    if (r.crisis) html += vsNoticeHtml('Du hast angegeben, an den Tod oder an Selbstverletzung zu denken. Bitte sprich heute mit jemandem darüber; die Nummern stehen unter „Hilfe sofort“.');
+    html += vsActionsHtml(r.action ? [r.action] : []);
+    if (r.score >= 5) html += vsContactsHtml();
+  } else if (t.step === 'stopbang') {
+    const r = stopBangRisk(t.answers, profile);
+    await saveCheckRecord({ kind: 'selftest', testId: 'stopbang', date, answers: t.answers.slice(), score: r.score, sex: profile.sex || null });
+    document.getElementById('vs-test-title').textContent = 'Ergebnis STOP-Bang';
+    html += vsResultHead(r.score, 8, r.label) + vsActionsHtml(r.action ? [r.action] : ['In einem Jahr wieder.']);
+  } else if (t.step === 'ucla') {
+    const r = scoreUcla(t.answers);
+    await saveCheckRecord({ kind: 'selftest', testId: 'ucla', date, answers: t.answers.slice(), score: r.score });
+    document.getElementById('vs-test-title').textContent = 'Ergebnis UCLA-3';
+    html += vsResultHead(r.score, 9, r.label) + (r.action ? `<div class="h-text">${escapeHtml(r.action)}</div>` : `<div class="h-text">In drei Monaten wieder.</div>`);
+  }
+  _vsTest = { ...t, step: 'result', resultHtml: html + back };
+  renderSelfTest();
+  document.getElementById('vs-test-overlay').scrollTop = 0;
+  renderVorsorge();
+}
+function vsStartPhq9() {
+  _vsTest = { id: 'phq9', step: 'phq9', answers: new Array(9).fill(null), extra: [] };
+  renderSelfTest();
+  document.getElementById('vs-test-overlay').scrollTop = 0;
+}
+
+// Epworth / ISI: Kurzbeschreibung, Link zur offiziellen Quelle, Punktzahl.
+function vsExternalHtml(test, resultHtml = '') {
+  return `<div class="h-text" style="max-width:60ch">${escapeHtml(test.desc)}</div>
+    <div class="h-meta" style="margin-top:8px">Den Fragebogen selbst gibt es hier nicht: er ist lizenziert. Fülle ihn in der offiziellen Fassung aus und trag nur die Punktzahl ein.</div>
+    <div class="h-list" style="margin-top:16px">
+      <a class="h-row" href="${test.url}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none">
+        <div class="h-row-body"><div class="h-row-title">Offizielle Fassung öffnen</div><div class="h-row-meta">${escapeHtml(test.source)}</div></div>
+        <div class="h-row-chevron" aria-hidden="true">›</div>
+      </a>
+    </div>
+    ${vsDateField()}
+    <label class="h-meta" for="vs-ext-score" style="display:block;margin:16px 0 6px">Punktzahl (0 bis ${test.max})</label>
+    <input type="text" inputmode="numeric" maxlength="2" id="vs-ext-score" autocomplete="off" style="${VS_INPUT};max-width:120px">
+    <div class="h-meta" id="vs-ext-error" role="alert" style="margin-top:8px;color:var(--ink)"></div>
+    <button type="button" class="h-pill" style="width:100%;margin-top:16px" onclick="vsSaveExternal()">Ergebnis eintragen</button>
+    <div id="vs-ext-result" aria-live="polite">${resultHtml}</div>
+    ${vsTestHistoryHtml(getSelfTestRecords(), [test.id])}`;
+}
+async function vsSaveExternal() {
+  const test = SELF_TESTS.find(x => x.id === _vsTest.id);
+  const raw = document.getElementById('vs-ext-score').value.trim();
+  const score = parseInt(raw, 10);
+  if (!/^\d+$/.test(raw) || score < 0 || score > test.max) { document.getElementById('vs-ext-error').textContent = `Bitte eine ganze Zahl von 0 bis ${test.max} eintragen.`; return; }
+  await saveCheckRecord({ kind: 'selftest', testId: test.id, date: vsReadDate(), answers: [], score });
+  const r = test.id === 'epworth' ? epworthResult(score) : isiResult(score);
+  const result = `<div style="margin-top:24px">${vsResultHead(score, test.max, r.label)}${vsActionsHtml(r.actions)}</div>`;
+  document.getElementById('vs-test-content').innerHTML = vsExternalHtml(test, result) + vsCrisisLinkHtml();
+  toast('Ergebnis eingetragen');
+}
 
 // ── Erinnerungen: Push-Master-Switch + eine Zeile pro Ziel mit Uhrzeit.
 // notify ist bisher nur ein gespeichertes Flag (kein eigener Scheduler für
