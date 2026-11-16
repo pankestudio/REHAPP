@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rehapp-2026-11-12-pause';
+const CACHE_NAME = 'rehapp-2026-11-16-runde7';
 const ASSETS_REQUIRED = ['./', './index.html', './manifest.webmanifest'];
 const ASSETS_OPTIONAL = [
   './icons/icon-192.png',
