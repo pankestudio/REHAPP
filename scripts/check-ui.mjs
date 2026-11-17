@@ -453,6 +453,11 @@ async function sweep(browser, suffix, consoleErrors, vp, paper = null) {
   await auditState(page, 'heute-wasser-sheet');
   await page.evaluate(() => closeWasserSheet());
 
+  await page.evaluate(() => openSchlafSheet());
+  await page.waitForTimeout(200);
+  await auditState(page, 'heute-schlaf-sheet');
+  await page.evaluate(() => closeSchlafSheet());
+
   await page.evaluate(() => openSupplementeSheet());
   await page.waitForTimeout(200);
   await auditState(page, 'heute-supplemente-sheet');

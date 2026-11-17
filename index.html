@@ -987,6 +987,18 @@ button[aria-pressed]:active { transform: scale(.96); }
     </div>
   </div>
 
+  <div class="h-sheet-overlay" id="schlaf-sheet-overlay" role="dialog" aria-modal="true" aria-label="Schlaf-Fahrplan">
+    <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
+      <div class="h-header">
+        <div class="h-title" style="font-size:24px">Schlaf-Fahrplan</div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeSchlafSheet()" aria-label="Schließen">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        </button>
+      </div>
+      <div id="schlaf-sheet-body"></div>
+    </div>
+  </div>
+
   <!-- SUPPLEMENTE-SHEET (Hybrid Aufräumen): aktuelles Zeitfenster, Abhak-Liste -->
   <div class="h-sheet-overlay" id="supplemente-sheet-overlay" role="dialog" aria-modal="true" aria-label="Supplemente">
     <div class="h-embed" style="max-width:480px;margin:0 auto;padding:calc(16px + var(--safe-top)) 20px calc(32px + var(--safe-bot))">
@@ -4978,6 +4990,16 @@ function renderHeuteModuleList() {
       ${renderBar(Math.min(100, cur / tgt * 100), 'h-bar--row')}
     </div>`;
     }),
+    mods.schlaf ? (() => {
+      const nx = nextSchlafStep();
+      return `
+    <div class="h-row" onclick="openSchlafSheet()" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+        <div><div class="h-text" style="font-size:17px">Schlaf</div><div class="h-meta" style="font-size:13.5px">Als Nächstes: ${nx.title}</div></div>
+        <div class="h-meta" style="font-size:13.5px;color:var(--ink);white-space:nowrap">${nx.at} →</div>
+      </div>
+    </div>`;
+    })() : '',
     mods.supp ? `
     <div class="h-row" onclick="openSupplementeSheet()" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px 0;cursor:pointer">
       <div style="display:flex;align-items:flex-end;justify-content:space-between">
@@ -4989,12 +5011,71 @@ function renderHeuteModuleList() {
 ` : '',
   ].join('');
   const listSec = document.querySelector('.h-section[data-section-key="home:heute-noch"]');
-  if (listSec) listSec.style.display = (mods.fasten || mods.wasser || mods.supp || TALLY_MODULES.some(t => mods[t.key])) ? '' : 'none';
+  if (listSec) listSec.style.display = (mods.fasten || mods.wasser || mods.supp || mods.schlaf || TALLY_MODULES.some(t => mods[t.key])) ? '' : 'none';
   renderNextUp();
 }
 
 function openFastenSheet() { document.getElementById('fasten-sheet-overlay').classList.add('open'); }
 function closeFastenSheet() { document.getElementById('fasten-sheet-overlay').classList.remove('open'); renderHeuteModuleList(); }
+// ══════════════ SCHLAF-FAHRPLAN (Longevity-Spezifikation, Modul 4) ══════════════
+// Zeitpunkte rückwärts ab der Schlafenszeit T aus Mein Tag, Morgenlicht ab
+// Aufstehen. Nur Hinweise, keine Bewertung des Schlafs. Während des
+// 100-h-Fastens entfällt "Letzte Mahlzeit".
+const SCHLAF_PLAN = [
+  { id: 'licht_morgen', from: 'auf', min: 30, title: 'Morgenlicht', text: '15 bis 30 Minuten Tageslicht draußen. Das stellt die innere Uhr, auch bei Wolken.' },
+  { id: 'koffein', from: 'schlaf', min: -530, title: 'Koffein-Stopp', text: 'Ab jetzt kein Kaffee, kein schwarzer oder grüner Tee, keine Energydrinks. Koffein wirkt viele Stunden nach.' },
+  { id: 'alkohol', from: 'schlaf', min: -240, title: 'Kein Alkohol mehr', text: 'Alkohol am Abend macht müde, stört aber den Tiefschlaf und vor allem den REM-Schlaf.' },
+  { id: 'essen', from: 'schlaf', min: -180, title: 'Letzte Mahlzeit', text: 'Danach nichts Großes mehr essen. Der Körper verdaut sonst gegen den Schlaf an.', fastHide: true },
+  { id: 'licht_dimmen', from: 'schlaf', min: -180, title: 'Licht dimmen', text: 'Deckenlicht aus, warme Lampen an, Bildschirme dunkler. Helles Licht bremst das Müdewerden.' },
+  { id: 'training', from: 'schlaf', min: -120, title: 'Training beenden', text: 'Ab jetzt nichts Anstrengendes mehr. Ruhiges Dehnen und ein Spaziergang gehen weiter.' },
+  { id: 'atmen', from: 'schlaf', min: -30, title: 'Fünf Minuten atmen', text: 'Zweimal kurz durch die Nase einatmen, lang durch den Mund ausatmen. Fünf Minuten, im Liegen oder Sitzen.' },
+  { id: 'schlaf', from: 'schlaf', min: 0, title: 'Schlafenszeit', text: 'Licht aus. Ziel sind mindestens sieben Stunden Schlaf, jeden Tag zur ähnlichen Zeit.' },
+];
+function getSchlafPlan() {
+  const r = getTagRhythmus();
+  const aufM = nextUpMinutes(r.auf);
+  // Minuten seit dem Aufstehen, damit die Liste über Mitternacht richtig sortiert
+  return SCHLAF_PLAN.filter(e => !(e.fastHide && suppPausedByFast())).map(e => {
+    const at = hhmmAdd(e.from === 'auf' ? r.auf : r.schlaf, e.min);
+    return { ...e, at, order: (nextUpMinutes(at) - aufM + 1440) % 1440 };
+  }).sort((x, y) => x.order - y.order);
+}
+// Der nächste Punkt ab jetzt (nach der Schlafenszeit: wieder der erste)
+function nextSchlafStep(plan = getSchlafPlan()) {
+  const now = new Date();
+  const aufM = nextUpMinutes(getTagRhythmus().auf);
+  const nowOrder = (now.getHours() * 60 + now.getMinutes() - aufM + 1440) % 1440;
+  return plan.find(e => e.order >= nowOrder) || plan[0];
+}
+function openSchlafSheet() {
+  const plan = getSchlafPlan();
+  const next = nextSchlafStep(plan);
+  document.getElementById('schlaf-sheet-body').innerHTML = `
+    <div class="h-meta" style="margin:4px 0 12px">Aufstehen ${getTagRhythmus().auf} · Schlafen ${getTagRhythmus().schlaf}. Zeiten änderst du in Setup → Mein Tag.</div>
+    <div class="h-list">${plan.map(e => `
+      <div class="h-row" style="cursor:default;align-items:flex-start;gap:14px">
+        <div class="h-text" style="font-size:17px;min-width:52px;font-variant-numeric:tabular-nums;${e === next ? 'font-weight:600' : 'color:var(--muted)'}">${e.at}</div>
+        <div class="h-row-body"><div class="h-row-title"${e === next ? ' style="font-weight:600"' : ''}>${e.title}${e === next ? ' · als Nächstes' : ''}</div><div class="h-row-meta">${e.text}</div></div>
+      </div>`).join('')}
+    </div>
+    <div class="h-meta" style="margin:16px 0 8px">Als tägliche Erinnerungen, 5 Minuten vorher. Nach einer Änderung der Zeiten neu eintragen.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="h-pill h-pill--outline" style="min-height:44px;padding:0 16px;font-size:15px" onclick="exportSchlafPlan('apple')">In den Kalender eintragen</button>
+      <button type="button" class="h-pill h-pill--outline" style="min-height:44px;padding:0 16px;font-size:15px" onclick="exportSchlafPlan('google')">Google Kalender öffnen</button>
+    </div>`;
+  document.getElementById('schlaf-sheet-overlay').classList.add('open');
+}
+function closeSchlafSheet() { document.getElementById('schlaf-sheet-overlay').classList.remove('open'); renderHeuteModuleList(); }
+function exportSchlafPlan(type) {
+  const plan = getSchlafPlan().filter(e => e.id !== 'schlaf');
+  if (type === 'apple') {
+    window.open(calIcsUrl({ name: 'REHAPP Schlaf', events: plan.map(e => ({ title: e.title, local: calAt(e.at), dur: 5, alarm: 5, daily: 90 })) }), '_blank', 'noopener');
+    toast(`${plan.length} Erinnerungen für den Kalender`);
+  } else {
+    plan.forEach((e, i) => setTimeout(() => window.open(calGoogleUrl(e.title, calAt(e.at), calAt(e.at, 5), 'RRULE:FREQ=DAILY;COUNT=90'), '_blank', 'noopener,noreferrer'), i * 400));
+    toast(`Google-Kalender — ${plan.length} Einträge geöffnet`);
+  }
+}
 function openWasserSheet() { buildWater(); document.getElementById('wasser-sheet-overlay').classList.add('open'); }
 function closeWasserSheet() { document.getElementById('wasser-sheet-overlay').classList.remove('open'); renderHeuteModuleList(); }
 function openSupplementeSheet() { initSuppTab(); document.getElementById('supplemente-sheet-overlay').classList.add('open'); }
@@ -7568,6 +7649,7 @@ function getHeuteModules() {
     drei: storageGet('heute_drei') !== '0',
     liegestuetze: storageGet('heute_liegestuetze') !== '0',
     schritte: storageGet('heute_schritte') !== '0',
+    schlaf: storageGet('heute_schlaf') !== '0',
   };
 }
 function hhmmAdd(hhmm, deltaMin) {
@@ -7633,6 +7715,7 @@ function renderMeinTagSettings() {
       <div class="h-row" style="cursor:default;flex-wrap:wrap;gap:8px 12px"><div class="h-row-body"><div class="h-row-title">Fasten</div><div class="h-row-meta">${isFastingActive() ? 'Timer läuft' : 'Kein Timer aktiv'}</div></div>
         <div class="h-seg" role="group" aria-label="Fasten in Heute" style="flex-basis:100%">${seg('auto', 'Wenn aktiv')}${seg('immer', 'Immer')}${seg('aus', 'Aus')}</div></div>
       <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Wasser</div></div>${sw('heute_wasser', mods.wasser, 'Wasser in Heute zeigen')}</div>
+      <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Schlaf-Fahrplan</div><div class="h-row-meta">Koffein-Stopp, Licht dimmen, Atmen – rückwärts ab ${getTagRhythmus().schlaf}</div></div>${sw('heute_schlaf', mods.schlaf, 'Schlaf-Fahrplan in Heute zeigen')}</div>
       ${TALLY_MODULES.map(t => `<div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">${t.title}</div><div class="h-row-meta">${fmtCount(getTallyTarget(t.key))} am Tag, in ${fmtCount(t.step)}er-Schritten</div></div>${sw('heute_' + t.key, mods[t.key], t.title + ' in Heute zeigen')}</div>`).join('')}
       <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Supplemente</div><div class="h-row-meta">Während des 100-h-Fastens ausgeblendet</div></div>${sw('heute_supp', storageGet('heute_supp') !== '0', 'Supplemente in Heute zeigen')}</div>
       <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Drei für heute</div><div class="h-row-meta">Drei eigene Aufgaben pro Tag, je +10 XP</div></div>${sw('heute_drei', mods.drei, 'Drei für heute zeigen')}</div>
