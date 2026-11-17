@@ -1690,8 +1690,19 @@ button[aria-pressed]:active { transform: scale(.96); }
     <div class="h-list" id="set-reminders-list" style="margin-top:12px"></div>
   </div></div></div>
 
+  <div class="h-section" data-section-key="settings:vorsorge"><div class="h-section-row" onclick="toggleSection('settings:vorsorge')"><div class="h-section-title" style="font-size:28px">Vorsorge</div><div class="h-section-count" id="set-vorsorge-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:vorsorge"><div>
+    <div class="h-list" style="margin-top:12px">
+      <button type="button" class="h-row" id="set-vorsorge-row" onclick="openVorsorge()" style="width:100%;background:none;border:0;border-bottom:1px solid var(--line);text-align:left;color:inherit">
+        <div class="h-row-body"><div class="h-row-title">Vorsorge und Selbsttests</div><div class="h-row-meta" id="set-vorsorge-meta">Untersuchungen, Impfungen, Fragebögen</div></div>
+        <div class="h-row-trail" id="set-vorsorge-count"></div>
+        <div class="h-row-chevron" aria-hidden="true">›</div>
+      </button>
+    </div>
+  </div></div></div>
+
   <div class="h-section" data-section-key="settings:app"><div class="h-section-row" onclick="toggleSection('settings:app')"><div class="h-section-title" style="font-size:28px">App</div><div class="h-section-count"></div><button type="button" class="h-section-chevron" aria-expanded="true" aria-label="Ein-/ausklappen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></div><div class="h-section-body" id="sb-settings:app"><div>
     <div class="h-list" style="margin-top:12px">
+      <div id="set-crisis-check"></div>
       <div class="h-row" style="cursor:default">
         <div class="h-row-body"><div class="h-row-title">App-Modus</div><div class="h-row-meta" id="install-status-copy">Wird geprüft …</div></div>
       </div>
@@ -1805,6 +1816,47 @@ button[aria-pressed]:active { transform: scale(.96); }
     </div>
   </div>
 
+<!-- VORSORGE (Runde 7): eigene Ansicht aus Setup, Sheets für Eintrag, Selbsttest
+     und Krisenseite. Kein Gelb, kein XP. Inhalt rendert renderVorsorge() & Co. -->
+  <div class="h-sheet-overlay" id="vorsorge-overlay" role="dialog" aria-modal="true" aria-label="Vorsorge" style="z-index:605" tabindex="-1">
+    <div class="h-sheet-body" style="max-width:720px">
+      <div class="h-sheet-head" style="justify-content:flex-start;gap:16px">
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeVorsorge()" aria-label="Zurück"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <div class="h-title">Vorsorge</div>
+      </div>
+      <div id="vs-content"></div>
+    </div>
+  </div>
+  <div class="h-sheet-overlay" id="vs-check-overlay" role="dialog" aria-modal="true" aria-label="Vorsorge-Eintrag" style="z-index:625" tabindex="-1">
+    <div class="h-sheet-body">
+      <div class="h-sheet-head">
+        <div class="h-title" id="vs-check-title"></div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeCheckSheet()" aria-label="Schließen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg></button>
+      </div>
+      <div id="vs-check-content"></div>
+    </div>
+  </div>
+  <div class="h-sheet-overlay" id="vs-test-overlay" role="dialog" aria-modal="true" aria-label="Selbsttest" style="z-index:630" tabindex="-1">
+    <div class="h-sheet-body">
+      <div class="h-sheet-head">
+        <div class="h-title" id="vs-test-title"></div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeSelfTest()" aria-label="Schließen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg></button>
+      </div>
+      <div id="vs-test-content"></div>
+    </div>
+  </div>
+
+<!-- KRISENSEITE (Runde 7 Punkt 4): über allem, ohne Animation, ohne Gelb, ohne XP. -->
+  <div class="h-sheet-overlay" id="crisis-overlay" role="dialog" aria-modal="true" aria-labelledby="crisis-title" style="z-index:690" tabindex="-1">
+    <div class="h-sheet-body">
+      <div class="h-sheet-head">
+        <div class="h-title" id="crisis-title">Hilfe sofort</div>
+        <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="closeCrisisSheet()" aria-label="Schließen"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg></button>
+      </div>
+      <div id="crisis-content"></div>
+    </div>
+  </div>
+
 <!-- ══ BOTTOM NAV — Inhalt aus NAV_ITEMS via renderNavChrome(), Runde 5 Punkt 1 ══ -->
 <nav class="h-nav" id="h-nav-bottom"></nav>
 
@@ -1812,6 +1864,344 @@ button[aria-pressed]:active { transform: scale(.96); }
 </div>
 </div><!-- /.h-shell -->
 
+<script id="vorsorge-logik">
+// ══════════════ VORSORGE & SELBSTTESTS — reine Logik (Runde 7) ══════════════
+// Grundlage: docs/longevity-spezifikation.md, Modul 6, Modul 7, Warnflaggen.
+// Dieser Block hat KEINEN Zugriff auf DOM, Speicher oder Uhr: alles kommt als
+// Argument herein (today = 'JJJJ-MM-TT'). tests/unit/vorsorge.test.mjs lädt
+// genau diesen Block in eine Node-VM und prüft die Funktionen.
+// Kein XP, keine Abzeichen, keine Serien: Vorsorge ist Fürsorge, kein Spiel.
+
+// ── Datum (reine Kalenderrechnung auf 'JJJJ-MM-TT', ohne Zeitzone) ──
+function vsParse(key) { const [y, m, d] = String(key).split('-').map(Number); return { y, m, d }; }
+function vsKey(y, m, d) { return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`; }
+function vsAddMonths(key, months) {
+  const { y, m, d } = vsParse(key);
+  const total = (y * 12 + (m - 1)) + months;
+  const ny = Math.floor(total / 12), nm = total % 12 + 1;
+  const last = new Date(Date.UTC(ny, nm, 0)).getUTCDate();
+  return vsKey(ny, nm, Math.min(d, last));
+}
+function vsDaysBetween(a, b) {
+  const pa = vsParse(a), pb = vsParse(b);
+  return Math.round((Date.UTC(pb.y, pb.m - 1, pb.d) - Date.UTC(pa.y, pa.m - 1, pa.d)) / 864e5);
+}
+const VS_MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+function vsFormatDate(key) { const { y, m, d } = vsParse(key); return `${d}. ${VS_MONTHS[m - 1]} ${y}`; }
+function vsAge(profile, today) { return profile && profile.birthYear ? vsParse(today).y - Number(profile.birthYear) : null; }
+function vsFormatNumber(v, digits = 1) { return Number(v).toLocaleString('de-DE', { maximumFractionDigits: digits }); }
+
+// ── Hilfen für Bedingungen ──
+const vsLogsOf = (logs, id) => (logs || []).filter(l => l.checkId === id).sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+const vsLast = (logs, id) => { const l = vsLogsOf(logs, id); return l.length ? l[l.length - 1] : null; };
+// Gewählter Darmkrebs-Weg: der jüngste Eintrag aus Stuhltest oder Darmspiegelung.
+function vsCrcMode(logs) {
+  const a = vsLast(logs, 'ifobt'), b = vsLast(logs, 'colo');
+  if (!a && !b) return null;
+  if (!b) return 'ifobt';
+  if (!a) return 'colo';
+  return a.date > b.date ? 'ifobt' : 'colo';
+}
+const vsPsaChosen = logs => vsLogsOf(logs, 'psa_followup').length > 0 || (vsLast(logs, 'psa_decision') || {}).note === 'ja';
+
+// ── PSA: Intervall nach Wert (S3-Leitlinie 2025, Spezifikation Modul 6) ──
+const PSA_HINT_HIGH = 'Kontrolle in 3 Monaten, bei Bestätigung Urologie und MRT vor einer Biopsie';
+function nextPsaDate(value, date) {
+  const v = Number(value);
+  const months = v < 1.5 ? 60 : v < 3 ? 24 : 3;
+  return { months, date: vsAddMonths(date, months), hint: months === 3 ? PSA_HINT_HIGH : null };
+}
+
+// ── Blutdruck-Messwoche ──
+const BP_LIMIT = { sys: 135, dia: 85 };
+function bpMean(readings) {
+  const ok = (readings || []).filter(r => r && Number(r[0]) > 0 && Number(r[1]) > 0);
+  if (!ok.length) return null;
+  const sys = Math.round(ok.reduce((s, r) => s + Number(r[0]), 0) / ok.length);
+  const dia = Math.round(ok.reduce((s, r) => s + Number(r[1]), 0) / ok.length);
+  return { sys, dia, n: ok.length, high: sys >= BP_LIMIT.sys || dia >= BP_LIMIT.dia };
+}
+
+// ── Vorsorge-Kalender (Modul 6). IDs, Intervalle und Bedingungen aus der Tabelle. ──
+// intervalMonths: Zahl, Funktion (age, last) → Zahl, oder null = einmalig.
+// minAge: ab wann relevant; startAge(profile) überschreibt das (crc_family).
+// sex: null = für alle, 'm' = nur Männer. condition(profile, logs) blendet aus.
+// nextDue(last, profile, logs) überschreibt die Intervallrechnung.
+const CHECKS = [
+  { id: 'checkup35', title: 'Gesundheits-Check-up', intervalMonths: 36, minAge: 35, sex: null,
+    info: 'In der Hausarztpraxis: Blutdruck, Blutzucker, Blutfette, Urin, Impfstatus und ein Gespräch über deine Risiken. Ab 35 alle drei Jahre.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'lpa_once', title: 'Lp(a) einmal messen', intervalMonths: null, minAge: 18, sex: null,
+    info: 'Lipoprotein(a) ist ein erblich festgelegter Blutfettwert, der das Herz-Kreislauf-Risiko erhöhen kann. Er ändert sich im Leben kaum, darum reicht eine Messung.',
+    cost: 'Meist Selbstzahler; bei Vorbelastung in der Familie mit der Praxis klären.' },
+  { id: 'skin', title: 'Hautkrebs-Screening', intervalMonths: 24, minAge: 35, sex: null,
+    info: 'Die Haut wird am ganzen Körper angesehen, auch Kopfhaut und Fußsohlen. Ab 35 alle zwei Jahre.',
+    cost: 'Kassenleistung (GKV), Stand 2026. Der G-BA prüft das Screening bis 2027.' },
+  { id: 'psa_decision', title: 'PSA: Entscheidung', intervalMonths: null, minAge: 45, sex: 'm',
+    condition: (p, logs) => !vsPsaChosen(logs),
+    nextDue: last => last && last.note === 'verzicht' ? { due: vsAddMonths(last.date, 24), hideUntilDue: true } : { due: null },
+    info: 'Der PSA-Wert im Blut kann Prostatakrebs früher zeigen; in großen Studien sterben mit regelmäßigem Test etwas weniger Männer daran. Der Test findet aber auch Tumoren, die nie Beschwerden gemacht hätten, und deren Behandlung kann Inkontinenz oder Erektionsprobleme hinterlassen. Die Leitlinie empfiehlt ab 45 ein Beratungsgespräch, danach entscheidest du selbst.',
+    cost: 'Bisher Selbstzahler (IGeL). Über PSA plus MRT als Kassenleistung berät der G-BA bis voraussichtlich 2027.' },
+  { id: 'psa_followup', title: 'PSA-Wert', intervalMonths: null, minAge: 45, sex: 'm',
+    condition: (p, logs) => vsPsaChosen(logs),
+    nextDue: last => last && last.value != null ? { due: nextPsaDate(last.value, last.date).date, hint: nextPsaDate(last.value, last.date).hint } : { due: null },
+    info: 'Wann der nächste PSA-Test sinnvoll ist, hängt vom letzten Wert ab: unter 1,5 ng/ml nach fünf Jahren, von 1,5 bis 2,99 nach zwei Jahren, ab 3 Kontrolle nach drei Monaten.',
+    cost: 'Bisher Selbstzahler (IGeL).' },
+  { id: 'crc_start', title: 'Darmkrebs-Vorsorge: Weg wählen', intervalMonths: null, minAge: 50, sex: null,
+    condition: (p, logs) => !vsCrcMode(logs),
+    info: 'Ab 50 gibt es zwei Wege: einen Stuhltest auf verstecktes Blut (iFOBT) alle zwei Jahre oder eine Darmspiegelung, die bei unauffälligem Befund zehn Jahre reicht. Beide senken das Risiko, an Darmkrebs zu sterben.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'ifobt', title: 'Stuhltest (iFOBT)', intervalMonths: 24, minAge: 50, sex: null,
+    condition: (p, logs) => vsCrcMode(logs) === 'ifobt',
+    info: 'Immunologischer Stuhltest auf verstecktes Blut, alle zwei Jahre. Ist er auffällig, folgt eine Darmspiegelung.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'colo', title: 'Darmspiegelung', intervalMonths: 120, minAge: 50, sex: null,
+    condition: (p, logs) => vsCrcMode(logs) === 'colo',
+    info: 'Bei unauffälligem Befund reicht die nächste Darmspiegelung nach zehn Jahren.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'crc_family', title: 'Darmspiegelung (Familie)', intervalMonths: 120, minAge: 45, sex: null,
+    condition: p => !!p.familyCRC,
+    startAge: p => Math.min(Number(p.familyCRCAge) > 0 ? Number(p.familyCRCAge) - 10 : 45, 45),
+    info: 'Hatten Eltern oder Geschwister Darmkrebs, beginnt die Vorsorge früher: zehn Jahre vor deren Alter bei der Diagnose, spätestens mit 45. Danach meist Darmspiegelung alle zehn Jahre.',
+    cost: 'Mit der Praxis klären, die Kasse zahlt das nicht automatisch.' },
+  { id: 'lung_ldct', title: 'Lungen-CT (Niedrigdosis)', intervalMonths: 12, minAge: 50, maxAge: 75, sex: null,
+    condition: p => !!p.smokerProfile,
+    info: 'Für starke Raucherinnen und Raucher von 50 bis 75: mindestens 25 Jahre geraucht und mindestens 15 Packungsjahre. Jährlich, in spezialisierten Zentren.',
+    cost: 'Seit 2026 als Kassenleistung vorgesehen; die Voraussetzungen klärt die Praxis.' },
+  { id: 'td', title: 'Tetanus und Diphtherie', intervalMonths: 120, minAge: 18, sex: null,
+    info: 'Auffrischung alle zehn Jahre. Die nächste fällige Dosis einmal als Kombination mit Keuchhusten (Tdap).',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'fsme', title: 'FSME-Impfung', intervalMonths: 60, minAge: 18, sex: null,
+    condition: p => !!p.tbeArea,
+    info: 'Schutz vor der von Zecken übertragenen Hirnhautentzündung, wenn du dich in Risikogebieten aufhältst. Auffrischung meist nach fünf Jahren, genau laut Fachinformation des Impfstoffs.',
+    cost: 'Kassenleistung in Risikogebieten (GKV).' },
+  { id: 'flu', title: 'Grippe-Impfung', intervalMonths: 12, minAge: 60, sex: null,
+    info: 'Jedes Jahr im Herbst. Ab 60, mit besonderer Indikation auch früher.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'zoster', title: 'Gürtelrose-Impfung', intervalMonths: null, minAge: 60, sex: null,
+    info: 'Totimpfstoff in zwei Dosen im Abstand von zwei bis sechs Monaten. Ab 60, mit Grunderkrankung auch früher.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'pcv20', title: 'Pneumokokken-Impfung', intervalMonths: null, minAge: 60, sex: null,
+    info: 'Einmalig ab 60, schützt vor schweren Lungenentzündungen durch Pneumokokken.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'covid', title: 'Covid-19-Auffrischung', intervalMonths: 12, minAge: 75, sex: null,
+    info: 'Jährlich, bevorzugt im Herbst. Ab 75, mit besonderer Indikation auch früher.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'dental', title: 'Zahnärztliche Kontrolle', intervalMonths: 6, minAge: 18, sex: null,
+    info: 'Kontrolle alle sechs Monate, dazu alle zwei Jahre ein Parodontitis-Screening. Das Bonusheft sichert Zuschüsse beim Zahnersatz.',
+    cost: 'Kassenleistung (GKV).' },
+  { id: 'eyes', title: 'Augenuntersuchung', intervalMonths: age => age >= 60 ? 30 : 60, minAge: 40, sex: null,
+    info: 'Augeninnendruck und Sehnerv werden angesehen, um ein Glaukom früh zu erkennen. Alle fünf Jahre, ab 60 alle zweieinhalb Jahre, bei Risiko öfter.',
+    cost: 'Selbstzahler (IGeL), außer bei Beschwerden oder bekanntem Risiko.' },
+  { id: 'bp_week', title: 'Blutdruck-Messwoche', intervalMonths: (age, last) => last && (Number(last.value) >= BP_LIMIT.sys || Number(last.value2) >= BP_LIMIT.dia) ? 1 : 12, minAge: 18, sex: null,
+    info: 'Sieben Tage zu Hause messen, morgens und abends je zweimal, im Sitzen nach fünf Minuten Ruhe. Der Mittelwert sagt mehr als eine einzelne Messung in der Praxis.',
+    cost: 'Eigenes Messgerät, Oberarm-Manschette.' },
+  { id: 'hearing', title: 'Hörtest', intervalMonths: 36, minAge: 50, sex: null,
+    info: 'Ab 50 alle drei Jahre, oder früher, sobald dir Gespräche in lauter Umgebung schwerer fallen.',
+    cost: 'Beim Hörakustiker meist kostenlos; HNO-Praxis bei Beschwerden Kassenleistung.' },
+];
+const CHECKS_NOT_OFFERED = 'Ganzkörper-MRT und Krebs-Bluttests sind hier bewusst nicht aufgeführt: ein Nutzen ist nicht belegt.';
+const CHECKS_SEX_PENDING = 'Weitere Vorsorge für dich ist noch nicht hinterlegt.';
+const VS_SOON_DAYS = 60;
+
+// status: 'faellig' | 'bald' | 'aktuell' | 'erledigt' | 'spaeter' | 'hidden'
+// logs: alle checkLogs (Sonderfälle schauen auf Nachbar-Einträge, z. B. PSA).
+function dueStatus(check, logs, profile, today) {
+  logs = (logs || []).filter(l => !l.kind || l.kind === 'log');
+  const age = vsAge(profile, today);
+  if (age == null) return { status: 'hidden' };
+  if (check.sex && profile.sex !== check.sex) return { status: 'hidden' };
+  if (check.condition && !check.condition(profile, logs)) return { status: 'hidden' };
+  if (check.maxAge && age > check.maxAge) return { status: 'hidden' };
+  const own = vsLogsOf(logs, check.id);
+  const last = own.length ? own[own.length - 1] : null;
+  const startAge = check.startAge ? check.startAge(profile) : check.minAge;
+  if (age < startAge) return { status: 'spaeter', startAge, last };
+  let due = null, hint = null;
+  if (check.nextDue) {
+    const r = check.nextDue(last, profile, logs);
+    due = r.due; hint = r.hint || null;
+    if (r.hideUntilDue && due && vsDaysBetween(today, due) > 0) return { status: 'hidden', due, last };
+  } else if (last) {
+    const iv = typeof check.intervalMonths === 'function' ? check.intervalMonths(age, last) : check.intervalMonths;
+    if (iv == null) return { status: 'erledigt', last };
+    due = vsAddMonths(last.date, iv);
+  }
+  if (!due) return { status: 'faellig', due: null, last, hint };
+  const days = vsDaysBetween(today, due);
+  const status = days <= 0 ? 'faellig' : days <= VS_SOON_DAYS ? 'bald' : 'aktuell';
+  return { status, due, last, hint };
+}
+
+const VS_STATUS_RANK = { faellig: 0, bald: 1, aktuell: 2, erledigt: 3, spaeter: 4 };
+function checkList(profile, logs, today) {
+  return CHECKS.map((check, i) => ({ check, i, ...dueStatus(check, logs, profile, today) }))
+    .filter(r => r.status !== 'hidden')
+    .sort((a, b) => (VS_STATUS_RANK[a.status] - VS_STATUS_RANK[b.status])
+      || (a.status === 'spaeter' ? a.startAge - b.startAge : 0) || a.i - b.i);
+}
+function countDueChecks(profile, logs, today) {
+  return checkList(profile, logs, today).filter(r => r.status === 'faellig').length;
+}
+
+// ── Selbsttests (Modul 7) ──
+// PHQ: offizielle deutsche Fassung, Wortlaut unverändert (KBV-Formular,
+// Deutsche Version © Prof. Dr. Bernd Löwe, 2015, UKE Hamburg).
+const PHQ_STEM = 'Wie oft fühlten Sie sich im Verlauf der letzten 2 Wochen durch die folgenden Beschwerden beeinträchtigt?';
+const PHQ_OPTIONS = ['Überhaupt nicht', 'An einzelnen Tagen', 'An mehr als der Hälfte der Tage', 'Beinahe jeden Tag'];
+const PHQ9_ITEMS = [
+  'Wenig Interesse oder Freude an Ihren Tätigkeiten',
+  'Niedergeschlagenheit, Schwermut oder Hoffnungslosigkeit.',
+  'Schwierigkeiten ein- oder durchzuschlafen oder vermehrter Schlaf',
+  'Müdigkeit oder Gefühl, keine Energie zu haben',
+  'Verminderter Appetit oder übermäßiges Bedürfnis zu essen',
+  'Schlechte Meinung von sich selbst; Gefühl, ein Versager zu sein oder die Familie enttäuscht zu haben',
+  'Schwierigkeiten, sich auf etwas zu konzentrieren, z.B. beim Zeitunglesen oder Fernsehen',
+  'Waren Ihre Bewegungen oder Ihre Sprache so verlangsamt, dass es auch anderen auffallen würde? Oder waren Sie im Gegenteil „zappelig“ oder ruhelos und hatten dadurch einen stärkeren Bewegungsdrang als sonst?',
+  'Gedanken, dass Sie lieber tot wären oder sich Leid zufügen möchten',
+];
+const PHQ_SOURCE = 'Englische Version: Patient Health Questionnaire-9 (PHQ-9). Deutsche Version: © Prof. Dr. Bernd Löwe, 2015, Universitätsklinikum Hamburg-Eppendorf.';
+// Zusatzfragen zu typischen Zeichen bei Männern (Stufe 3), nur mit Profil 'm'.
+const MEN_EXTRA_STEM = 'In den letzten 4 Wochen:';
+const MEN_EXTRA_ITEMS = [
+  'Warst du öfter gereizt als sonst?',
+  'Hattest du Wutausbrüche?',
+  'Hast du mehr Alkohol getrunken als sonst?',
+  'Hast du mehr riskiert als sonst, zum Beispiel im Straßenverkehr, beim Sport oder mit Geld?',
+];
+const VS_CONTACT_GP = 'Hausarztpraxis oder ärztlicher Bereitschaftsdienst 116 117.';
+
+function scorePhq2(answers, extra) {
+  const score = (Number(answers[0]) || 0) + (Number(answers[1]) || 0);
+  const extraYes = (extra || []).filter(Boolean).length;
+  const offerPhq9 = score >= 2 || extraYes >= 2;
+  const actions = [];
+  if (offerPhq9) actions.push('Direkt im Anschluss den PHQ-9 ausfüllen.');
+  if (score >= 3) actions.push('Mit der Hausarztpraxis sprechen.');
+  return { score, extraYes, offerPhq9, gp: score >= 3, label: score >= 2 ? 'erhöhter Wert' : 'unauffälliger Wert', actions };
+}
+
+// Frage 9 über 0 → Krisenseite, unabhängig von der Gesamtpunktzahl.
+function scorePhq9(answers) {
+  const a = (answers || []).map(v => Number(v) || 0);
+  const score = a.reduce((s, v) => s + v, 0);
+  const crisis = a[8] > 0;
+  let label, action;
+  if (score >= 20) { label = 'starke Beschwerden'; action = 'Zeitnah abklären lassen.'; }
+  else if (score >= 15) { label = 'deutliche Beschwerden'; action = 'Zeitnah abklären lassen.'; }
+  else if (score >= 10) { label = 'mittlere Beschwerden'; action = 'Ärztlich oder psychotherapeutisch abklären lassen.'; }
+  else if (score >= 5) { label = 'leichte Beschwerden'; action = 'In 4 Wochen noch einmal ausfüllen.'; }
+  else { label = 'kaum Beschwerden'; action = null; }
+  return { score, crisis, label, action, contacts: score >= 10 };
+}
+
+const STOPBANG_ITEMS = [
+  'Schnarchst du laut, lauter als Sprechen oder durch eine geschlossene Tür hörbar?',
+  'Bist du tagsüber oft müde, erschöpft oder schläfrig?',
+  'Hat jemand beobachtet, dass du im Schlaf aufhörst zu atmen, nach Luft schnappst oder würgst?',
+  'Hast du Bluthochdruck oder wirst du dagegen behandelt?',
+  'Liegt dein BMI über 35 kg/m²?',
+  'Bist du älter als 50 Jahre?',
+  'Ist dein Halsumfang größer als 40 cm?',
+  'Bist du männlich?',
+];
+// Alter und Geschlecht aus dem Profil vorbelegen (Frage 6 und 8).
+function stopBangPrefill(profile, today) {
+  const age = vsAge(profile, today);
+  const a = new Array(8).fill(null);
+  if (age != null) a[5] = age > 50 ? 1 : 0;
+  if (profile && ['m', 'w', 'd'].includes(profile.sex)) a[7] = profile.sex === 'm' ? 1 : 0;
+  return a;
+}
+const STOPBANG_ACTION = 'Schlafapnoe ärztlich abklären lassen (Hausarzt, dann Polygraphie).';
+function stopBangRisk(answers, profile) {
+  const a = (answers || []).map(v => v ? 1 : 0);
+  const score = a.reduce((s, v) => s + v, 0);
+  const stop = a.slice(0, 4).reduce((s, v) => s + v, 0);
+  const male = (profile && profile.sex === 'm') || a[7] === 1;
+  const risk = score >= 3 || (stop >= 2 && male);
+  return { score, stop, risk, label: risk ? 'erhöhtes Risiko für Schlafapnoe' : 'geringes Risiko', action: risk ? STOPBANG_ACTION : null };
+}
+
+const UCLA_ITEMS = [
+  'Wie oft hast du das Gefühl, dass dir Gesellschaft fehlt?',
+  'Wie oft hast du das Gefühl, außen vor zu sein?',
+  'Wie oft fühlst du dich von anderen isoliert?',
+];
+const UCLA_OPTIONS = ['Fast nie', 'Manchmal', 'Oft'];
+// Antworten 1–3, Summe 3–9. Ab 6 ein ruhiger Hinweis, keine Diagnose-Sprache.
+function scoreUcla(answers) {
+  const score = (answers || []).reduce((s, v) => s + (Number(v) || 0), 0);
+  const often = score >= 6;
+  return { score, often, label: often ? 'du fühlst dich oft allein' : 'du fühlst dich meist verbunden',
+    action: often ? 'Vielleicht tut gerade ein kleiner Schritt auf andere zu gut: ein Anruf, ein Spaziergang zu zweit oder ein fester Termin in einer Gruppe oder einem Verein.' : null };
+}
+
+// Epworth und ISI werden NICHT nachgebaut (Lizenz): nur Link und Punktzahl.
+function epworthResult(score) {
+  const s = Number(score);
+  const actions = [];
+  if (s >= 11) actions.push('Ärztlich abklären lassen.');
+  if (s >= 16) actions.push('Bis zur Klärung bei Müdigkeit nicht Auto fahren.');
+  return { score: s, label: s >= 16 ? 'starke Tagesmüdigkeit' : s >= 11 ? 'erhöhte Tagesmüdigkeit' : 'im üblichen Bereich', actions };
+}
+function isiResult(score) {
+  const s = Number(score);
+  const actions = [];
+  if (s >= 8) actions.push('Kognitive Verhaltenstherapie für Schlaf (CBT-I) ist die erste Wahl, auch als Selbsthilfe.');
+  if (s >= 15) actions.push('Eine DiGA auf Rezept fragen: HelloBetter Schlafen oder somnio.');
+  return { score: s, label: s >= 22 ? 'starke Schlafprobleme' : s >= 15 ? 'deutliche Schlafprobleme' : s >= 8 ? 'leichte Schlafprobleme' : 'kaum Schlafprobleme', actions };
+}
+
+const SELF_TESTS = [
+  { id: 'phq2', title: 'Stimmung (PHQ-2)', rhythmMonths: 3, desc: 'Zwei Fragen zu den letzten zwei Wochen, bei Bedarf neun.' },
+  { id: 'stopbang', title: 'Schlafapnoe (STOP-Bang)', rhythmMonths: 12, desc: 'Acht Ja-oder-Nein-Fragen zu Schnarchen und Atmung im Schlaf.' },
+  { id: 'ucla', title: 'Verbundenheit (UCLA-3)', rhythmMonths: 3, desc: 'Drei Fragen dazu, wie verbunden du dich fühlst.' },
+  { id: 'epworth', title: 'Tagesmüdigkeit (Epworth)', rhythmMonths: null, external: true, max: 24,
+    desc: 'Acht Alltagssituationen: Wie leicht nickst du ein? Bei Bedarf.',
+    url: 'https://epworthsleepinessscale.com/about-the-ess/', source: 'epworthsleepinessscale.com' },
+  { id: 'isi', title: 'Schlafprobleme (ISI)', rhythmMonths: null, external: true, max: 28,
+    desc: 'Sieben Fragen zu Ein- und Durchschlafen und den Folgen am Tag. Bei Schlafproblemen.',
+    url: 'https://eprovide.mapi-trust.org/isi-insomnia-severity-index', source: 'ePROVIDE, Mapi Research Trust' },
+];
+// Ergebnis in Worten für die Verlaufsliste.
+function selfTestSummary(rec) {
+  if (rec.testId === 'phq2') return scorePhq2(rec.answers, rec.extra).label;
+  if (rec.testId === 'phq9') return scorePhq9(rec.answers).label;
+  if (rec.testId === 'stopbang') return stopBangRisk(rec.answers, { sex: rec.sex }).label;
+  if (rec.testId === 'ucla') return scoreUcla(rec.answers).label;
+  if (rec.testId === 'epworth') return epworthResult(rec.score).label;
+  if (rec.testId === 'isi') return isiResult(rec.score).label;
+  return '';
+}
+function selfTestDue(test, tests, today) {
+  const own = (tests || []).filter(t => t.testId === test.id || (test.id === 'phq2' && t.testId === 'phq9'))
+    .sort((a, b) => a.date < b.date ? -1 : 1);
+  const last = own.length ? own[own.length - 1] : null;
+  if (!test.rhythmMonths) return { status: last ? 'aktuell' : 'offen', last, due: null };
+  if (!last) return { status: 'faellig', last: null, due: null };
+  const due = vsAddMonths(last.date, test.rhythmMonths);
+  const days = vsDaysBetween(today, due);
+  return { status: days <= 0 ? 'faellig' : days <= VS_SOON_DAYS ? 'bald' : 'aktuell', last, due };
+}
+
+// ── Krisenkontakte. checkedAt einmal jährlich prüfen (Modul 7). ──
+const CRISIS_CONTACTS = {
+  checkedAt: '2026-11-16',
+  groups: [
+    { title: 'TelefonSeelsorge', meta: 'Rund um die Uhr, kostenlos, auch per Chat',
+      numbers: [{ label: '0800 111 0 111', tel: '08001110111' }, { label: '0800 111 0 222', tel: '08001110222' }, { label: '116 123', tel: '116123' }],
+      chat: { label: 'Chat der TelefonSeelsorge öffnen', url: 'https://online.telefonseelsorge.de' } },
+    { title: 'Ärztlicher Bereitschaftsdienst', meta: 'Wenn die Praxis zu hat', numbers: [{ label: '116 117', tel: '116117' }] },
+    { title: 'Notruf', meta: 'Bei akuter Gefahr', numbers: [{ label: '112', tel: '112' }] },
+  ],
+};
+const CRISIS_TEXT = [
+  'Wenn gerade alles zu viel ist, musst du das nicht allein tragen.',
+  'Unter diesen Nummern hören dir Menschen zu, rund um die Uhr und kostenlos.',
+];
+function crisisCheckOverdue(today) { return vsDaysBetween(vsAddMonths(CRISIS_CONTACTS.checkedAt, 12), today) > 0; }
+</script>
 <script>
 // ══════════════ NAV ITEMS — eine Liste für BottomNav/Rail/SideNav (Runde 5 Punkt 1) ══════════════
 const NAV_ITEMS = [
@@ -2561,11 +2951,14 @@ const HABIT_BLOCKS = [
 
 const CONTENT_DB_NAME = window.REHAPP_DEMO ? 'rehapp_demo' : 'rehapp_content';
 // v2 (Hybrid Phase 3): + goals/logs/earned Stores für Ziele & Abzeichen.
-const CONTENT_DB_VERSION = 2;
+// v3 (Runde 7): + checks (Vorsorge-Einträge, Selbsttests, Vorsorge-Profil).
+const CONTENT_DB_VERSION = 3;
 const CONTENT_STORE = 'items';
 const GOAL_STORE = 'goals';
 const LOG_STORE = 'logs';
 const EARNED_STORE = 'earned';
+const CHECK_STORE = 'checks';
+const CHECKS_BACKUP_KEY = 'backup_before_checks_v1';
 
 let _contentDB = null;
 let _contentCache = [];
@@ -2579,9 +2972,66 @@ function slugifyId(str) {
     .replace(/^-+|-+$/g, '');
 }
 
-function openContentDB() {
+// Runde 7: Vor dem Upgrade auf v3 die bestehende Datenbank OHNE Versions-
+// angabe öffnen (= kein Upgrade), alle Stores lesen, zählen und unter
+// backup_before_checks_v1 sichern. Erst danach läuft onupgradeneeded, das nur
+// den neuen Store checks anlegt. verifyMigration() vergleicht die Zählung.
+const MIGRATION_STORES = [CONTENT_STORE, GOAL_STORE, LOG_STORE, EARNED_STORE];
+let _checksMigration = null;
+function snapshotBeforeChecksUpgrade() {
+  return new Promise(resolve => {
+    let req;
+    try { req = indexedDB.open(CONTENT_DB_NAME); } catch (err) { resolve(null); return; }
+    req.onerror = () => resolve(null);
+    req.onsuccess = async () => {
+      const db = req.result;
+      try {
+        if (db.version >= 3 || !db.objectStoreNames.contains(CONTENT_STORE)) { resolve(null); return; }
+        const data = {}, counts = {};
+        for (const name of MIGRATION_STORES) {
+          data[name] = db.objectStoreNames.contains(name) ? await idbGetAll(db, name) : [];
+          counts[name] = data[name].length;
+        }
+        if (!storageGet(CHECKS_BACKUP_KEY)) {
+          const full = JSON.stringify({ at: new Date().toISOString(), fromVersion: db.version, counts, data });
+          // Passt der volle Stand nicht in den Speicher, bleibt wenigstens die
+          // Zählung als Beleg; die Daten selbst werden beim Upgrade nicht angefasst.
+          if (!storageSet(CHECKS_BACKUP_KEY, full)) storageSet(CHECKS_BACKUP_KEY, JSON.stringify({ at: new Date().toISOString(), fromVersion: db.version, counts, data: null }));
+        }
+        resolve({ fromVersion: db.version, counts });
+      } catch (err) {
+        console.warn('Backup vor checks-Migration fehlgeschlagen', err);
+        resolve(null);
+      } finally {
+        db.close();
+      }
+    };
+  });
+}
+
+async function verifyMigration(before, db) {
+  const after = {};
+  for (const name of MIGRATION_STORES) after[name] = (await idbGetAll(db, name)).length;
+  const hasChecks = db.objectStoreNames.contains(CHECK_STORE);
+  const backup = !!storageGet(CHECKS_BACKUP_KEY);
+  const sameCounts = MIGRATION_STORES.every(n => before.counts[n] === after[n]);
+  const ok = hasChecks && backup && sameCounts;
+  const result = { ok, at: new Date().toISOString(), fromVersion: before.fromVersion, before: before.counts, after, hasChecks, backup };
+  storageSet('checks_migration_v1', JSON.stringify(result));
+  if (!ok) console.warn('checks-Migration: Abweichung', result, 'Backup unter ' + CHECKS_BACKUP_KEY);
+  return result;
+}
+
+async function openContentDB() {
+  if (!('indexedDB' in window)) throw new Error('IndexedDB nicht verfügbar');
+  const before = await snapshotBeforeChecksUpgrade();
+  const db = await openContentDBRaw();
+  if (before) _checksMigration = await verifyMigration(before, db);
+  return db;
+}
+
+function openContentDBRaw() {
   return new Promise((resolve, reject) => {
-    if (!('indexedDB' in window)) { reject(new Error('IndexedDB nicht verfügbar')); return; }
     const req = indexedDB.open(CONTENT_DB_NAME, CONTENT_DB_VERSION);
     req.onupgradeneeded = () => {
       const db = req.result;
@@ -2597,8 +3047,15 @@ function openContentDB() {
       if (!db.objectStoreNames.contains(EARNED_STORE)) {
         db.createObjectStore(EARNED_STORE, { keyPath: 'id' });
       }
+      if (!db.objectStoreNames.contains(CHECK_STORE)) {
+        db.createObjectStore(CHECK_STORE, { keyPath: 'id' });
+      }
     };
-    req.onsuccess = () => resolve(req.result);
+    req.onsuccess = () => {
+      // Spätere Upgrades aus einem anderen Tab nicht blockieren.
+      req.result.onversionchange = () => req.result.close();
+      resolve(req.result);
+    };
     req.onerror = () => reject(req.error);
   });
 }
@@ -2724,6 +3181,7 @@ async function initContentStore() {
         if (!alreadyMigrated) storageSet('content_migrated_v1', '1');
       }
       _contentCache.sort((a, b) => a.order - b.order);
+      await initChecksStore();
     } catch (err) {
       console.warn('Content-Store nicht verfügbar, Fallback ohne Persistenz', err);
       _contentDB = null;
@@ -2731,6 +3189,37 @@ async function initContentStore() {
     }
   })();
   return _contentReady;
+}
+
+// ── Vorsorge-Store (Runde 7). Ein Store, Datensätze mit kind:
+//   'profile'  { id:'check-profile', kind, birthYear, sex, smokerProfile, familyCRC, familyCRCAge?, tbeArea, flags:{} }
+//   'log'      { id, kind, checkId, date, value?, value2?, note? }   (Vorsorge erledigt, z. B. PSA-Wert)
+//   'selftest' { id, kind, testId, date, answers:number[], score, extra?, sex? }
+//   'bpweek'   { id, kind, start, readings:{ 'T-m1': [sys, dia], … }, done }
+let _checksCache = [];
+async function initChecksStore() {
+  if (!_contentDB || !_contentDB.objectStoreNames.contains(CHECK_STORE)) return;
+  try { _checksCache = await idbGetAll(_contentDB, CHECK_STORE); }
+  catch (err) { console.warn('Vorsorge-Store nicht verfügbar', err); _checksCache = []; }
+}
+function getCheckProfile() { return _checksCache.find(r => r.kind === 'profile') || null; }
+function getCheckLogs() { return _checksCache.filter(r => r.kind === 'log'); }
+function getSelfTestRecords() { return _checksCache.filter(r => r.kind === 'selftest'); }
+function getOpenBpWeek() { return _checksCache.find(r => r.kind === 'bpweek' && !r.done) || null; }
+async function saveCheckRecord(rec) {
+  if (!rec.id) rec.id = `${rec.kind}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+  const idx = _checksCache.findIndex(r => r.id === rec.id);
+  if (idx >= 0) _checksCache[idx] = rec; else _checksCache.push(rec);
+  if (_contentDB) { try { await idbPutAll(_contentDB, [rec], CHECK_STORE); } catch (err) { console.warn('Vorsorge speichern fehlgeschlagen', err); } }
+  return rec;
+}
+async function deleteCheckRecord(id) {
+  _checksCache = _checksCache.filter(r => r.id !== id);
+  if (_contentDB) { try { await idbDelete(_contentDB, id, CHECK_STORE); } catch (err) { console.warn('Vorsorge löschen fehlgeschlagen', err); } }
+}
+async function importChecks(records) {
+  if (!Array.isArray(records) || !records.length) return;
+  for (const r of records) if (r && r.id) await saveCheckRecord({ ...r });
 }
 
 function getItems(filter = {}) {
@@ -7199,6 +7688,8 @@ function buildSettings() {
   renderMeinTagSettings();
   buildSetRoutineList();
   buildReminderList();
+  updateVorsorgeBadge();
+  renderCrisisCheckHint();
   const contentEl = document.getElementById('set-content-editor');
   if (contentEl) contentEl.innerHTML = buildContentEditorPanel();
   const buildDateEl = document.getElementById('set-build-date');
@@ -7217,7 +7708,698 @@ function toggleCountdownPreroll() {
 
 function runMigrationCheck() {
   const ok = verifyGoalsMigrationV2();
-  toast(ok ? 'Migration passt zur ursprünglichen Verteilung (8 aktiv · 8 pausiert · 6 Zähler).' : 'Abweichung von der ursprünglichen Verteilung — seitdem selbst Ziele geändert? Details in der Konsole.');
+  let checksNote = '';
+  try {
+    const m = JSON.parse(storageGet('checks_migration_v1') || 'null');
+    if (m) checksNote = m.ok ? ' Vorsorge-Speicher: Zählung vorher und nachher gleich.' : ' Vorsorge-Speicher: Abweichung, Backup liegt unter ' + CHECKS_BACKUP_KEY + '.';
+  } catch (err) {}
+  toast((ok ? 'Migration passt zur ursprünglichen Verteilung (8 aktiv · 8 pausiert · 6 Zähler).' : 'Abweichung von der ursprünglichen Verteilung — seitdem selbst Ziele geändert? Details in der Konsole.') + checksNote);
+}
+
+// ══════════════ VORSORGE — Ansicht, Profil, Eintrag (Runde 7 Punkt 2) ══════════════
+// Logik liegt im Block vorsorge-logik. Hier nur DOM und Speicher.
+// Bewusst: kein awardXP, keine Abzeichen, kein Gelb (data-gelb fehlt absichtlich),
+// keine Push-Nachricht, kein Eintrag in nextUp().
+const VS_ELLIPSE = '<svg class="h-seg-ellipse" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true"><path d="M44 4C64 3 78 10 77 20S62 37 40 37 3 31 3 20 18 5 46 6"/></svg>';
+const VS_ROW = 'width:100%;background:none;border:0;border-bottom:1px solid var(--line);text-align:left;color:inherit';
+const VS_INPUT = 'width:100%;box-sizing:border-box;background:transparent;border:1px solid var(--line);color:var(--ink);padding:8px 10px;font-size:16px;min-height:44px;font-family:var(--ui)';
+const VS_STATUS_LABEL = { faellig: 'fällig', bald: 'bald', aktuell: 'aktuell', erledigt: 'erledigt' };
+const VS_SEX_LABEL = { m: 'männlich', w: 'weiblich', d: 'divers', 'keine Angabe': 'keine Angabe' };
+
+function vsToday() { return getLocalDateKey(); }
+function vsSegBtn(label, active, onclick) {
+  return `<button type="button" class="h-seg-btn${active ? ' active' : ''}" aria-pressed="${active ? 'true' : 'false'}" onclick="${onclick}">${escapeHtml(label)}${VS_ELLIPSE}</button>`;
+}
+function vsSectionHead(title) {
+  return `<div class="h-section" style="margin-top:32px"><div class="h-section-title" style="font-size:28px">${escapeHtml(title)}</div></div>`;
+}
+function vsParseNumber(v) { const n = parseFloat(String(v).replace(',', '.')); return Number.isFinite(n) ? n : null; }
+
+function vsOpenOverlay(id) {
+  const el = document.getElementById(id);
+  el.classList.add('open');
+  el.scrollTop = 0;
+  el.focus({ preventScroll: true });
+}
+function vsCloseOverlay(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── Setup-Zeile und Punkt in der Navigation ──
+function updateVorsorgeBadge() {
+  const profile = getCheckProfile();
+  const n = profile ? countDueChecks(profile, getCheckLogs(), vsToday()) : 0;
+  const count = document.getElementById('set-vorsorge-count');
+  const meta = document.getElementById('set-vorsorge-meta');
+  if (count) count.textContent = n ? `${n} fällig` : '';
+  // Setup startet zugeklappt: der Zähler steht darum auch im Sektionskopf.
+  const secCount = document.getElementById('set-vorsorge-section-count');
+  if (secCount) secCount.textContent = n ? `· ${n} fällig` : '';
+  if (meta) meta.textContent = !profile ? 'Profil ausfüllen, dann erscheint deine Liste' : n ? 'Untersuchungen, Impfungen, Fragebögen' : 'Nichts fällig';
+  ['nav-settings', 'rail-settings', 'side-settings'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    const icon = btn.querySelector('.h-nav-icon');
+    let dot = btn.querySelector('.h-vs-dot');
+    if (n && icon && !dot) {
+      icon.style.position = 'relative';
+      dot = document.createElement('span');
+      dot.className = 'h-vs-dot';
+      dot.setAttribute('aria-hidden', 'true');
+      // Inline statt Stylesheet-Regel (Grenze < 300 Regeln). Tusche, kein Gelb.
+      dot.style.cssText = 'position:absolute;top:-2px;right:-4px;width:8px;height:8px;border-radius:50%;background:var(--ink);pointer-events:none';
+      icon.appendChild(dot);
+    } else if (!n && dot) dot.remove();
+    if (n) btn.setAttribute('aria-label', `Setup, Vorsorge: ${n} fällig`); else btn.removeAttribute('aria-label');
+  });
+}
+
+// ── Ansicht Vorsorge ──
+let _vsProfileEdit = false;
+let _vsProfileDraft = null;
+function openVorsorge() {
+  _vsProfileEdit = !getCheckProfile();
+  _vsProfileDraft = null;
+  renderVorsorge();
+  vsOpenOverlay('vorsorge-overlay');
+}
+function closeVorsorge() {
+  vsCloseOverlay('vorsorge-overlay');
+  updateVorsorgeBadge();
+  const row = document.getElementById('set-vorsorge-row');
+  if (row && row.offsetParent) row.focus({ preventScroll: true });
+}
+
+function vsProfileSummary(p) {
+  const bits = [
+    p.smokerProfile ? 'Raucherprofil' : null,
+    p.familyCRC ? `Darmkrebs in der Familie${p.familyCRCAge ? ' (mit ' + p.familyCRCAge + ')' : ''}` : null,
+    p.tbeArea ? 'FSME-Gebiet' : null,
+  ].filter(Boolean);
+  return { title: `Jahrgang ${p.birthYear} · ${VS_SEX_LABEL[p.sex] || 'keine Angabe'}`, meta: bits.length ? bits.join(' · ') : 'Keine besonderen Risiken eingetragen' };
+}
+
+function vsProfileFormHtml() {
+  const p = _vsProfileDraft || (_vsProfileDraft = { ...(getCheckProfile() || { id: 'check-profile', kind: 'profile', birthYear: '', sex: 'keine Angabe', smokerProfile: false, familyCRC: false, tbeArea: false, flags: {} }) });
+  const sw = (key, label, meta = '') => `
+    <div class="h-row" style="cursor:default">
+      <div class="h-row-body"><div class="h-row-title">${label}</div>${meta ? `<div class="h-row-meta">${meta}</div>` : ''}</div>
+      <button type="button" class="h-switch${p[key] ? ' on' : ''}" onclick="vsToggleProfile('${key}')" aria-label="${escapeHtml(label.replace(/<[^>]+>/g, ''))}" aria-pressed="${p[key] ? 'true' : 'false'}"></button>
+    </div>`;
+  return `
+    <div style="margin:16px 0 20px">
+      <label class="h-meta" for="vs-birth" style="display:block;margin-bottom:6px">Geburtsjahr</label>
+      <input type="text" inputmode="numeric" id="vs-birth" maxlength="4" autocomplete="off" value="${escapeHtml(p.birthYear || '')}" oninput="_vsProfileDraft.birthYear=this.value.trim()" style="${VS_INPUT};max-width:160px">
+    </div>
+    <div class="h-meta" style="margin-bottom:6px">Geschlecht</div>
+    <div class="h-seg" style="margin-bottom:16px">
+      ${['m', 'w', 'd', 'keine Angabe'].map(v => vsSegBtn({ m: 'Männlich', w: 'Weiblich', d: 'Divers', 'keine Angabe': 'Keine Angabe' }[v], p.sex === v, `vsSetProfileSex('${v}')`)).join('')}
+    </div>
+    <div class="h-list">
+      ${sw('smokerProfile', 'Ich rauche oder habe ≥ 15 Packungsjahre geraucht')}
+      ${sw('familyCRC', 'Darmkrebs bei Eltern oder Geschwistern')}
+      ${p.familyCRC ? `<div class="h-row" style="cursor:default">
+        <div class="h-row-body"><label class="h-row-title" for="vs-crc-age">Alter bei Diagnose</label><div class="h-row-meta">Leer lassen, wenn unbekannt</div></div>
+        <input type="text" inputmode="numeric" id="vs-crc-age" maxlength="3" autocomplete="off" value="${escapeHtml(p.familyCRCAge || '')}" oninput="_vsProfileDraft.familyCRCAge=this.value.trim()" style="${VS_INPUT};width:88px">
+      </div>` : ''}
+      ${sw('tbeArea', 'Ich halte mich in FSME-Gebieten auf')}
+    </div>
+    <div id="vs-profile-error" class="h-meta" role="alert" style="margin-top:12px;color:var(--ink)"></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px">
+      <button type="button" class="h-pill" onclick="saveVorsorgeProfile()">Profil speichern</button>
+      ${getCheckProfile() ? `<button type="button" class="h-pill h-pill--outline" onclick="vsCancelProfile()">Änderung verwerfen</button>` : ''}
+    </div>`;
+}
+function vsToggleProfile(key) { _vsProfileDraft[key] = !_vsProfileDraft[key]; vsRerenderKeepScroll(); }
+function vsSetProfileSex(v) { _vsProfileDraft.sex = v; vsRerenderKeepScroll(); }
+function vsEditProfile() { _vsProfileEdit = true; _vsProfileDraft = null; vsRerenderKeepScroll(); }
+function vsCancelProfile() { _vsProfileEdit = false; _vsProfileDraft = null; vsRerenderKeepScroll(); }
+function vsRerenderKeepScroll() {
+  const ov = document.getElementById('vorsorge-overlay');
+  const y = ov.scrollTop;
+  renderVorsorge();
+  ov.scrollTop = y;
+}
+async function saveVorsorgeProfile() {
+  const d = _vsProfileDraft;
+  const year = parseInt(d.birthYear, 10);
+  const nowY = new Date().getFullYear();
+  const err = document.getElementById('vs-profile-error');
+  if (!(year >= nowY - 110 && year <= nowY - 16)) { err.textContent = 'Bitte ein Geburtsjahr als vierstellige Zahl eintragen.'; return; }
+  const crcAge = parseInt(d.familyCRCAge, 10);
+  const rec = { ...d, id: 'check-profile', kind: 'profile', birthYear: year, familyCRCAge: d.familyCRC && crcAge > 0 ? crcAge : null, flags: d.flags || {} };
+  await saveCheckRecord(rec);
+  _vsProfileEdit = false; _vsProfileDraft = null;
+  renderVorsorge();
+  updateVorsorgeBadge();
+  toast('Profil gespeichert');
+}
+
+function vsCheckRowHtml(r) {
+  const c = r.check;
+  const later = r.status === 'spaeter';
+  let meta = r.last ? `Zuletzt: ${vsFormatDate(r.last.date)}` : 'Noch nicht erfasst';
+  if (c.id === 'psa_followup' && r.last && r.last.value != null) meta += ` · ${vsFormatNumber(r.last.value, 2)} ng/ml`;
+  if (c.id === 'bp_week') {
+    const wk = getOpenBpWeek();
+    if (wk) meta = `Messwoche läuft · Tag ${Math.min(vsDaysBetween(wk.start, vsToday()) + 1, 7)} von 7`;
+    else if (r.last && r.last.value) meta += ` · ${r.last.value}/${r.last.value2}`;
+  }
+  const status = later ? `ab ${r.startAge}` : VS_STATUS_LABEL[r.status];
+  const strong = r.status === 'faellig';
+  return `<button type="button" class="h-row" onclick="openCheckSheet('${c.id}')" style="${VS_ROW}">
+    <div class="h-row-body"><div class="h-row-title"${later ? ' style="color:var(--muted)"' : ''}>${escapeHtml(c.title)}</div><div class="h-row-meta">${escapeHtml(meta)}</div></div>
+    <div class="h-row-trail"${strong ? ' style="font-weight:600"' : later ? ' style="color:var(--muted)"' : ''}>${escapeHtml(status)}</div>
+    <div class="h-row-chevron" aria-hidden="true">›</div>
+  </button>`;
+}
+
+function renderVorsorge() {
+  const el = document.getElementById('vs-content');
+  if (!el) return;
+  const profile = getCheckProfile();
+  let html = `<div class="h-text" style="color:var(--muted);max-width:60ch">Untersuchungen und Impfungen nach Alter und Profil. Ohne Punkte, ohne Serien: einfach im Blick behalten, was ansteht.</div>`;
+  html += vsSectionHead('Profil');
+  if (_vsProfileEdit || !profile) html += vsProfileFormHtml();
+  else {
+    const s = vsProfileSummary(profile);
+    html += `<div class="h-list" style="margin-top:12px"><button type="button" class="h-row" onclick="vsEditProfile()" style="${VS_ROW}">
+      <div class="h-row-body"><div class="h-row-title">${escapeHtml(s.title)}</div><div class="h-row-meta">${escapeHtml(s.meta)}</div></div>
+      <div class="h-row-trail">Profil ändern</div>
+    </button></div>`;
+  }
+  html += vsSectionHead('Vorsorge');
+  if (!profile) {
+    html += `<div class="h-meta" style="margin-top:12px">Trag oben dein Geburtsjahr ein, dann erscheint hier deine Liste.</div>`;
+  } else {
+    const list = checkList(profile, getCheckLogs(), vsToday());
+    html += `<div class="h-list" id="vs-check-list" style="margin-top:12px">${list.map(vsCheckRowHtml).join('')}</div>`;
+    if (profile.sex !== 'm') html += `<div class="h-text" style="margin-top:16px">${escapeHtml(CHECKS_SEX_PENDING)}</div>`;
+  }
+  html += `<div class="h-meta" style="margin-top:16px;max-width:60ch">${escapeHtml(CHECKS_NOT_OFFERED)}</div>`;
+  if (typeof vsSelfTestSectionHtml === 'function') html += vsSelfTestSectionHtml();
+  if (typeof vsCrisisRowHtml === 'function') html += vsCrisisRowHtml();
+  el.innerHTML = html;
+}
+
+// ── Sheet für einen Eintrag ──
+let _vsCheckId = null;
+let _vsCheckMode = null;   // psa_decision: null | 'value'
+let _vsCrcPick = null;     // 'ifobt' | 'colo'
+let _vsBpDay = null;
+function openCheckSheet(id) {
+  _vsCheckId = id; _vsCheckMode = null; _vsCrcPick = null; _vsBpDay = null;
+  renderCheckSheet();
+  vsOpenOverlay('vs-check-overlay');
+}
+function closeCheckSheet() {
+  vsCloseOverlay('vs-check-overlay');
+  renderVorsorge();
+  updateVorsorgeBadge();
+}
+function vsDateField(label = 'Datum') {
+  const t = vsToday();
+  return `<label class="h-meta" for="vs-date" style="display:block;margin:20px 0 6px">${label}</label>
+    <input type="date" id="vs-date" value="${t}" max="${t}" style="${VS_INPUT};max-width:240px">`;
+}
+function vsReadDate() {
+  const v = (document.getElementById('vs-date') || {}).value;
+  const t = vsToday();
+  return /^\d{4}-\d{2}-\d{2}$/.test(v || '') && v <= t ? v : t;
+}
+function vsHistoryHtml(checkId) {
+  const logs = getCheckLogs().filter(l => l.checkId === checkId).sort((a, b) => a.date < b.date ? 1 : -1);
+  if (!logs.length) return '';
+  return `<div class="h-meta" style="margin:28px 0 6px">Bisherige Einträge</div><div class="h-list">${logs.map(l => {
+    let val = '';
+    if (l.value != null && checkId === 'bp_week') val = ` · ${l.value}/${l.value2} mmHg`;
+    else if (l.value != null) val = ` · ${vsFormatNumber(l.value, 2)} ng/ml`;
+    if (l.note === 'verzicht') val = ' · vorerst verzichtet';
+    return `<div class="h-row" style="cursor:default">
+      <div class="h-row-body"><div class="h-row-title">${escapeHtml(vsFormatDate(l.date) + val)}</div></div>
+      <button type="button" class="h-circle-btn h-circle-btn--sm" onclick="vsDeleteLog('${l.id}')" aria-label="Eintrag vom ${escapeHtml(vsFormatDate(l.date))} löschen"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg></button>
+    </div>`;
+  }).join('')}</div>`;
+}
+function vsDeleteLog(id) {
+  const l = _checksCache.find(r => r.id === id);
+  if (!l) return;
+  openConfirmDialog({
+    title: 'Eintrag löschen?', body: `Der Eintrag vom ${vsFormatDate(l.date)} wird entfernt.`, confirmLabel: 'Eintrag löschen',
+    onConfirm: async () => { await deleteCheckRecord(id); renderCheckSheet(); updateVorsorgeBadge(); toast('Eintrag gelöscht'); },
+  });
+}
+
+function renderCheckSheet() {
+  const check = CHECKS.find(c => c.id === _vsCheckId);
+  if (!check) return;
+  const profile = getCheckProfile() || {};
+  const today = vsToday();
+  const r = dueStatus(check, getCheckLogs(), profile, today);
+  document.getElementById('vs-check-title').textContent = check.title;
+  const lines = [];
+  if (r.status === 'spaeter') lines.push(`Relevant ab ${r.startAge}`);
+  lines.push(r.last ? `Zuletzt: ${vsFormatDate(r.last.date)}` : 'Noch nicht erfasst');
+  if (r.due && r.status !== 'spaeter') lines.push(`${vsDaysBetween(today, r.due) <= 0 ? 'Fällig seit' : 'Nächster Termin'}: ${vsFormatDate(r.due)}`);
+  let html = `<div class="h-meta" style="margin-top:-12px;margin-bottom:16px">${lines.map(escapeHtml).join(' · ')}</div>
+    <div class="h-text" style="max-width:60ch">${escapeHtml(check.info)}</div>
+    <div class="h-meta" style="margin-top:10px">Kosten: ${escapeHtml(check.cost)}</div>`;
+  if (r.hint) html += vsNoticeHtml(r.hint);
+  if (check.id === 'bp_week' && r.last && r.last.value && !getOpenBpWeek()) {
+    html += `<div class="h-text" style="margin-top:16px">Letzter Mittelwert: ${r.last.value}/${r.last.value2} mmHg</div>`;
+    if (Number(r.last.value) >= BP_LIMIT.sys || Number(r.last.value2) >= BP_LIMIT.dia) html += vsNoticeHtml('Mit der Hausarztpraxis besprechen. Danach in einem Monat noch einmal eine Messwoche.');
+  }
+  html += vsCheckFormHtml(check, r);
+  html += vsHistoryHtml(check.id === 'crc_start' ? '' : check.id);
+  document.getElementById('vs-check-content').innerHTML = html;
+}
+function vsNoticeHtml(text) {
+  return `<div class="h-notice" style="cursor:default"><div><div class="h-notice-text">${escapeHtml(text)}</div></div></div>`;
+}
+
+function vsCheckFormHtml(check, r) {
+  const id = check.id;
+  if (r.status === 'spaeter') return `<div class="h-meta" style="margin-top:20px">Du kannst trotzdem schon etwas eintragen, zum Beispiel aus ärztlicher Empfehlung.</div>` + vsGenericForm();
+  if (id === 'psa_decision' && _vsCheckMode !== 'value') {
+    return `<div style="display:flex;flex-direction:column;gap:12px;margin-top:24px">
+      <button type="button" class="h-pill" onclick="vsPsaChooseValue()">PSA-Wert eintragen</button>
+      <button type="button" class="h-pill h-pill--outline" onclick="vsPsaDecline()">Ich verzichte vorerst</button>
+    </div>
+    <div class="h-meta" style="margin-top:10px">Bei Verzicht verschwindet der Eintrag für zwei Jahre und kommt dann wieder.</div>`;
+  }
+  if (id === 'psa_decision' || id === 'psa_followup') {
+    return vsDateField('Datum der Blutabnahme') + `
+      <label class="h-meta" for="vs-psa" style="display:block;margin:16px 0 6px">PSA-Wert in ng/ml</label>
+      <input type="text" inputmode="decimal" id="vs-psa" autocomplete="off" oninput="vsPsaPreview()" style="${VS_INPUT};max-width:160px">
+      <div class="h-text" id="vs-psa-preview" aria-live="polite" style="margin-top:12px;min-height:22px"></div>
+      <button type="button" class="h-pill" style="width:100%;margin-top:16px" onclick="vsSavePsa()">PSA-Wert eintragen</button>`;
+  }
+  if (id === 'crc_start' || id === 'ifobt' || id === 'colo') {
+    const pick = _vsCrcPick || (id === 'colo' ? 'colo' : 'ifobt');
+    return `<div class="h-meta" style="margin:20px 0 6px">Was wurde gemacht?</div>
+      <div class="h-seg">${vsSegBtn('Stuhltest (iFOBT)', pick === 'ifobt', "vsPickCrc('ifobt')")}${vsSegBtn('Darmspiegelung', pick === 'colo', "vsPickCrc('colo')")}</div>
+      ${vsDateField()}
+      <button type="button" class="h-pill" style="width:100%;margin-top:20px" onclick="vsSaveCrc()">Als erledigt eintragen</button>`;
+  }
+  if (id === 'bp_week') return vsBpWeekHtml();
+  return vsGenericForm();
+}
+function vsGenericForm() {
+  return vsDateField() + `<button type="button" class="h-pill" style="width:100%;margin-top:20px" onclick="vsSaveGeneric()">Als erledigt eintragen</button>`;
+}
+async function vsSaveGeneric() {
+  await saveCheckRecord({ kind: 'log', checkId: _vsCheckId, date: vsReadDate() });
+  vsAfterSave('Eingetragen');
+}
+function vsAfterSave(msg) {
+  renderCheckSheet();
+  renderVorsorge();
+  updateVorsorgeBadge();
+  toast(msg);
+}
+
+// PSA
+function vsPsaChooseValue() { _vsCheckMode = 'value'; renderCheckSheet(); const i = document.getElementById('vs-psa'); if (i) i.focus(); }
+async function vsPsaDecline() {
+  await saveCheckRecord({ kind: 'log', checkId: 'psa_decision', date: vsToday(), note: 'verzicht' });
+  closeCheckSheet();
+  toast('Eingetragen. Die Frage kommt in zwei Jahren wieder.');
+}
+function vsPsaPreview() {
+  const out = document.getElementById('vs-psa-preview');
+  const v = vsParseNumber(document.getElementById('vs-psa').value);
+  if (v == null || v < 0) { out.textContent = ''; return; }
+  const n = nextPsaDate(v, vsReadDate());
+  out.textContent = `Nächster Test: ${vsFormatDate(n.date)}` + (n.hint ? `. ${n.hint}.` : '');
+}
+async function vsSavePsa() {
+  const v = vsParseNumber(document.getElementById('vs-psa').value);
+  if (v == null || v < 0 || v > 1000) { document.getElementById('vs-psa-preview').textContent = 'Bitte den Wert als Zahl eintragen, zum Beispiel 1,2.'; return; }
+  const date = vsReadDate();
+  if (_vsCheckId === 'psa_decision') await saveCheckRecord({ kind: 'log', checkId: 'psa_decision', date, note: 'ja' });
+  await saveCheckRecord({ kind: 'log', checkId: 'psa_followup', date, value: v });
+  _vsCheckId = 'psa_followup'; _vsCheckMode = null;
+  const n = nextPsaDate(v, date);
+  vsAfterSave(`Eingetragen. Nächster Test: ${vsFormatDate(n.date)}`);
+}
+
+// Darmkrebs
+function vsPickCrc(mode) { _vsCrcPick = mode; renderCheckSheet(); }
+async function vsSaveCrc() {
+  const mode = _vsCrcPick || (_vsCheckId === 'colo' ? 'colo' : 'ifobt');
+  await saveCheckRecord({ kind: 'log', checkId: mode, date: vsReadDate() });
+  _vsCheckId = mode; _vsCrcPick = null;
+  vsAfterSave('Eingetragen');
+}
+
+// Blutdruck-Messwoche: 7 Tage, morgens und abends je zwei Messungen.
+const BP_SLOTS = [['m1', 'Morgens, 1. Messung'], ['m2', 'Morgens, 2. Messung'], ['a1', 'Abends, 1. Messung'], ['a2', 'Abends, 2. Messung']];
+function vsBpWeekReadings(wk) { return Object.values(wk.readings || {}); }
+function vsBpWeekHtml() {
+  const wk = getOpenBpWeek();
+  if (!wk) return `<button type="button" class="h-pill" style="width:100%;margin-top:24px" onclick="vsStartBpWeek()">Messwoche starten</button>`;
+  const todayIdx = Math.max(0, Math.min(vsDaysBetween(wk.start, vsToday()), 6));
+  const day = _vsBpDay == null ? todayIdx : _vsBpDay;
+  const mean = bpMean(vsBpWeekReadings(wk));
+  const n = mean ? mean.n : 0;
+  const dayBtns = Array.from({ length: 7 }, (_, i) => {
+    const p = vsParse(wk.start);
+    const dt = new Date(Date.UTC(p.y, p.m - 1, p.d + i));
+    const dayKey = vsKey(dt.getUTCFullYear(), dt.getUTCMonth() + 1, dt.getUTCDate());
+    return vsSegBtn(`Tag ${i + 1}`, i === day, `vsPickBpDay(${i})`).replace('</button>', `<span class="sr-only"> (${escapeHtml(vsFormatDate(dayKey))})</span></button>`);
+  }).join('');
+  const rows = BP_SLOTS.map(([slot, label]) => {
+    const v = (wk.readings || {})[`${day}-${slot}`] || ['', ''];
+    return `<div class="h-row" style="cursor:default;gap:8px">
+      <div class="h-row-body"><div class="h-row-title" style="font-size:15px">${label}</div></div>
+      <input type="text" inputmode="numeric" maxlength="3" autocomplete="off" aria-label="${label}, oberer Wert" value="${escapeHtml(String(v[0] || ''))}" onchange="vsSetBp(${day},'${slot}',0,this.value)" style="${VS_INPUT};width:64px;text-align:center">
+      <span class="h-meta" aria-hidden="true">/</span>
+      <input type="text" inputmode="numeric" maxlength="3" autocomplete="off" aria-label="${label}, unterer Wert" value="${escapeHtml(String(v[1] || ''))}" onchange="vsSetBp(${day},'${slot}',1,this.value)" style="${VS_INPUT};width:64px;text-align:center">
+    </div>`;
+  }).join('');
+  return `<div class="h-meta" style="margin:24px 0 6px">Messwoche seit ${escapeHtml(vsFormatDate(wk.start))} · Tag ${todayIdx + 1} von 7</div>
+    <div class="h-seg" style="gap:4px 10px;margin-bottom:12px">${dayBtns}</div>
+    <div class="h-meta" style="margin-bottom:6px">Oberer / unterer Wert in mmHg</div>
+    <div class="h-list">${rows}</div>
+    <div id="vs-bp-summary" aria-live="polite">${vsBpSummaryHtml(mean)}</div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:20px">
+      <button type="button" class="h-pill" onclick="vsFinishBpWeek()"${n ? '' : ' disabled'}>Messwoche abschließen</button>
+      <button type="button" class="h-pill h-pill--outline" onclick="vsCancelBpWeek()">Messwoche abbrechen</button>
+    </div>`;
+}
+function vsBpSummaryHtml(mean) {
+  if (!mean) return `<div class="h-text" style="margin-top:16px">Noch keine Messung eingetragen.</div>`;
+  return `<div class="h-text" style="margin-top:16px">${mean.n} von 28 Messungen · Mittelwert ${mean.sys}/${mean.dia} mmHg</div>`
+    + (mean.high ? vsNoticeHtml('Mit der Hausarztpraxis besprechen.') : '');
+}
+function vsPickBpDay(i) { _vsBpDay = i; renderCheckSheet(); }
+async function vsStartBpWeek() {
+  await saveCheckRecord({ kind: 'bpweek', start: vsToday(), readings: {}, done: false });
+  _vsBpDay = 0;
+  vsAfterSave('Messwoche gestartet');
+}
+async function vsSetBp(day, slot, idx, raw) {
+  const wk = getOpenBpWeek();
+  if (!wk) return;
+  const key = `${day}-${slot}`;
+  const cur = (wk.readings[key] || [null, null]).slice();
+  const v = parseInt(raw, 10);
+  cur[idx] = v >= 40 && v <= 300 ? v : null;
+  if (cur[0] == null && cur[1] == null) delete wk.readings[key]; else wk.readings[key] = cur;
+  await saveCheckRecord(wk);
+  document.getElementById('vs-bp-summary').innerHTML = vsBpSummaryHtml(bpMean(vsBpWeekReadings(wk)));
+  const fin = document.querySelector('#vs-check-content button[onclick="vsFinishBpWeek()"]');
+  if (fin) fin.disabled = !bpMean(vsBpWeekReadings(wk));
+}
+async function vsFinishBpWeek() {
+  const wk = getOpenBpWeek();
+  const mean = wk && bpMean(vsBpWeekReadings(wk));
+  if (!mean) return;
+  await saveCheckRecord({ kind: 'log', checkId: 'bp_week', date: vsToday(), value: mean.sys, value2: mean.dia, note: `${mean.n} Messungen` });
+  wk.done = true;
+  await saveCheckRecord(wk);
+  vsAfterSave(`Messwoche abgeschlossen: ${mean.sys}/${mean.dia} mmHg`);
+}
+function vsCancelBpWeek() {
+  const wk = getOpenBpWeek();
+  if (!wk) return;
+  openConfirmDialog({
+    title: 'Messwoche abbrechen?', body: 'Die Werte dieser Messwoche werden gelöscht.', confirmLabel: 'Messwoche löschen',
+    onConfirm: async () => { await deleteCheckRecord(wk.id); vsAfterSave('Messwoche gelöscht'); },
+  });
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || document.getElementById('confirm-dialog-overlay').classList.contains('open')) return;
+  for (const [id, close] of [['crisis-overlay', () => closeCrisisSheet()], ['vs-test-overlay', () => closeSelfTest()], ['vs-check-overlay', closeCheckSheet], ['vorsorge-overlay', closeVorsorge]]) {
+    const el = document.getElementById(id);
+    if (el && el.classList.contains('open')) { close(); return; }
+  }
+});
+
+// ══════════════ SELBSTTESTS (Runde 7 Punkt 3) ══════════════
+// PHQ-2/PHQ-9 im offiziellen Wortlaut, STOP-Bang und UCLA-3 in der App,
+// Epworth und ISI NICHT nachgebaut (Lizenz): nur Link und Punktzahl.
+// Ergebnisse als Verlaufsliste in Worten. Keine Kurve, keine Ampel, kein Gelb, kein XP.
+const VS_TEST_NAMES = { phq2: 'PHQ-2', phq9: 'PHQ-9', stopbang: 'STOP-Bang', ucla: 'UCLA-3', epworth: 'Epworth', isi: 'ISI' };
+const VS_TEST_MAX = { phq2: 6, phq9: 27, stopbang: 8, ucla: 9, epworth: 24, isi: 28 };
+
+function vsSelfTestSectionHtml() {
+  const tests = getSelfTestRecords();
+  const today = vsToday();
+  const rows = SELF_TESTS.map(t => {
+    const d = selfTestDue(t, tests, today);
+    const status = !t.rhythmMonths ? 'bei Bedarf' : VS_STATUS_LABEL[d.status];
+    const meta = d.last ? `Zuletzt: ${vsFormatDate(d.last.date)} · ${VS_TEST_NAMES[d.last.testId]} ${d.last.score} Punkte` : t.desc;
+    return `<button type="button" class="h-row" onclick="openSelfTest('${t.id}')" style="${VS_ROW}">
+      <div class="h-row-body"><div class="h-row-title">${escapeHtml(t.title)}</div><div class="h-row-meta">${escapeHtml(meta)}</div></div>
+      <div class="h-row-trail"${d.status === 'faellig' && t.rhythmMonths ? ' style="font-weight:600"' : ''}>${escapeHtml(status)}</div>
+      <div class="h-row-chevron" aria-hidden="true">›</div>
+    </button>`;
+  }).join('');
+  return vsSectionHead('Selbsttests')
+    + `<div class="h-meta" style="margin-top:12px;max-width:60ch">Fragebögen zur Selbsteinschätzung. Sie ersetzen kein Gespräch in der Praxis und stellen keine Diagnose.</div>`
+    + `<div class="h-list" id="vs-test-list" style="margin-top:12px">${rows}</div>`
+    + vsTestHistoryHtml(tests);
+}
+function vsTestHistoryHtml(tests, onlyIds) {
+  const list = tests.filter(t => !onlyIds || onlyIds.includes(t.testId)).sort((a, b) => a.date < b.date ? 1 : a.date > b.date ? -1 : 0).slice(0, 12);
+  if (!list.length) return '';
+  return `<div class="h-meta" style="margin:24px 0 6px">Verlauf</div><div class="h-list">${list.map(t => `
+    <div class="h-row" style="cursor:default">
+      <div class="h-row-body"><div class="h-row-title">${escapeHtml(vsFormatDate(t.date))} · ${escapeHtml(VS_TEST_NAMES[t.testId] || t.testId)}</div>
+      <div class="h-row-meta">${t.score} von ${VS_TEST_MAX[t.testId]} Punkten · ${escapeHtml(selfTestSummary(t))}</div></div>
+    </div>`).join('')}</div>`;
+}
+
+let _vsTest = null;
+function openSelfTest(id) {
+  const profile = getCheckProfile() || {};
+  const today = vsToday();
+  if (id === 'phq2') _vsTest = { id, step: 'phq2', answers: [null, null], extra: profile.sex === 'm' ? [null, null, null, null] : [] };
+  else if (id === 'phq9') _vsTest = { id, step: 'phq9', answers: new Array(9).fill(null), extra: [] };
+  else if (id === 'stopbang') _vsTest = { id, step: 'stopbang', answers: stopBangPrefill(profile, today) };
+  else if (id === 'ucla') _vsTest = { id, step: 'ucla', answers: [null, null, null] };
+  else _vsTest = { id, step: 'external' };
+  renderSelfTest();
+  vsOpenOverlay('vs-test-overlay');
+}
+function closeSelfTest() {
+  vsCloseOverlay('vs-test-overlay');
+  _vsTest = null;
+  renderVorsorge();
+}
+
+function vsQuestionHtml(group, i, text, options, value, values) {
+  const btns = options.map((label, k) => vsSegBtn(label, value === values[k], `vsAnswer('${group}',${i},${values[k]})`)).join('');
+  return `<div class="h-row" style="cursor:default;flex-direction:column;align-items:stretch;gap:8px" role="group" aria-label="${escapeHtml(text)}">
+    <div class="h-text">${escapeHtml(text)}</div>
+    <div class="h-seg" style="gap:4px 12px">${btns}</div>
+  </div>`;
+}
+function vsAnswer(group, i, v) {
+  _vsTest[group][i] = v;
+  // PHQ-9 Frage 9 über 0: Krisenseite SOFORT, unabhängig von der Gesamtpunktzahl.
+  if (_vsTest.step === 'phq9' && group === 'answers' && i === 8 && v > 0 && typeof openCrisisSheet === 'function') {
+    vsRerenderTestKeepScroll();
+    openCrisisSheet();
+    return;
+  }
+  vsRerenderTestKeepScroll();
+}
+function vsRerenderTestKeepScroll() {
+  const ov = document.getElementById('vs-test-overlay');
+  const y = ov.scrollTop;
+  renderSelfTest();
+  ov.scrollTop = y;
+}
+function vsAllAnswered() {
+  return _vsTest.answers.every(v => v !== null) && (_vsTest.extra || []).every(v => v !== null);
+}
+function vsSubmitHtml(label = 'Antworten auswerten') {
+  return `<button type="button" class="h-pill" style="width:100%;margin-top:24px" onclick="vsEvaluateTest()"${vsAllAnswered() ? '' : ' disabled'}>${label}</button>`;
+}
+function vsContactsHtml() {
+  return `<div class="h-meta" style="margin:24px 0 6px">Kontaktwege</div><div class="h-list">
+    <div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">Hausarztpraxis</div><div class="h-row-meta">Erste Anlaufstelle, auch für eine Überweisung</div></div></div>
+    <a class="h-row" href="tel:116117" style="color:inherit;text-decoration:none"><div class="h-row-body"><div class="h-row-title">116 117</div><div class="h-row-meta">Ärztlicher Bereitschaftsdienst, wenn die Praxis zu hat</div></div><div class="h-row-chevron" aria-hidden="true">›</div></a>
+  </div>`;
+}
+function vsCrisisLinkHtml() {
+  return typeof vsCrisisRowHtml === 'function' ? vsCrisisRowHtml(true) : '';
+}
+
+function renderSelfTest() {
+  const t = _vsTest;
+  const test = SELF_TESTS.find(x => x.id === t.id) || { title: 'Stimmung (PHQ-9)' };
+  const titleEl = document.getElementById('vs-test-title');
+  let html = '';
+  const yesNo = ['Ja', 'Nein'], yn = [1, 0];
+  if (t.step === 'phq2' || t.step === 'phq9') {
+    titleEl.textContent = t.step === 'phq2' ? 'Stimmung (PHQ-2)' : 'Stimmung (PHQ-9)';
+    const n = t.step === 'phq2' ? 2 : 9;
+    html += `<div class="h-text" style="font-weight:500">${escapeHtml(PHQ_STEM)}</div>
+      <div class="h-meta" style="margin:6px 0 12px">Offizielle deutsche Fassung, darum in der Sie-Form.</div><div class="h-list">`;
+    for (let i = 0; i < n; i++) html += vsQuestionHtml('answers', i, `${'abcdefghi'[i]}. ${PHQ9_ITEMS[i]}`, PHQ_OPTIONS, t.answers[i], [0, 1, 2, 3]);
+    html += `</div>`;
+    if (t.step === 'phq2' && t.extra.length) {
+      html += `<div class="h-text" style="font-weight:500;margin-top:28px">${escapeHtml(MEN_EXTRA_STEM)}</div>
+        <div class="h-meta" style="margin:6px 0 12px">Zusatzfragen zu Zeichen, die sich bei Männern oft anders zeigen.</div><div class="h-list">`;
+      MEN_EXTRA_ITEMS.forEach((q, i) => { html += vsQuestionHtml('extra', i, q, yesNo, t.extra[i], yn); });
+      html += `</div>`;
+    }
+    html += vsSubmitHtml() + `<div class="h-meta" style="margin-top:16px">${escapeHtml(PHQ_SOURCE)}</div>`;
+  } else if (t.step === 'stopbang') {
+    titleEl.textContent = test.title;
+    html += `<div class="h-meta" style="margin-bottom:12px">Alter und Geschlecht sind aus deinem Profil vorbelegt.</div><div class="h-list">`;
+    STOPBANG_ITEMS.forEach((q, i) => { html += vsQuestionHtml('answers', i, q, yesNo, t.answers[i], yn); });
+    html += `</div>` + vsSubmitHtml();
+  } else if (t.step === 'ucla') {
+    titleEl.textContent = test.title;
+    html += `<div class="h-list">`;
+    UCLA_ITEMS.forEach((q, i) => { html += vsQuestionHtml('answers', i, q, UCLA_OPTIONS, t.answers[i], [1, 2, 3]); });
+    html += `</div>` + vsSubmitHtml();
+  } else if (t.step === 'external') {
+    titleEl.textContent = test.title;
+    html += vsExternalHtml(test);
+  } else if (t.step === 'result') {
+    html += t.resultHtml;
+  }
+  html += vsCrisisLinkHtml();
+  document.getElementById('vs-test-content').innerHTML = html;
+}
+
+function vsResultHead(score, max, label) {
+  return `<div class="h-num-row" style="margin:8px 0 4px"><div class="h-title" style="font-size:56px">${score}</div><div class="h-num-suffix" style="font-size:22px;margin-top:22px">&nbsp;von ${max}</div></div>
+    <div class="h-text" style="margin-bottom:16px">${escapeHtml(label.charAt(0).toUpperCase() + label.slice(1))}</div>`;
+}
+function vsActionsHtml(actions) {
+  return actions.length ? `<div class="h-list">${actions.map(a => `<div class="h-row" style="cursor:default"><div class="h-row-body"><div class="h-row-title">${escapeHtml(a)}</div></div></div>`).join('')}</div>` : '';
+}
+async function vsEvaluateTest() {
+  const t = _vsTest;
+  if (!vsAllAnswered()) return;
+  const date = vsToday();
+  const profile = getCheckProfile() || {};
+  let html = '';
+  const back = `<button type="button" class="h-pill h-pill--outline" style="width:100%;margin-top:24px" onclick="closeSelfTest()">Zur Übersicht zurück</button>`;
+  if (t.step === 'phq2') {
+    const r = scorePhq2(t.answers, t.extra);
+    await saveCheckRecord({ kind: 'selftest', testId: 'phq2', date, answers: t.answers.slice(), extra: t.extra.slice(), score: r.score });
+    document.getElementById('vs-test-title').textContent = 'Ergebnis PHQ-2';
+    html += vsResultHead(r.score, 6, r.label);
+    if (r.extraYes >= 2 && r.score < 2) html += `<div class="h-text" style="margin-bottom:12px">${r.extraYes} von 4 Zusatzfragen mit Ja. Die neun Fragen des PHQ-9 helfen, das besser einzuordnen.</div>`;
+    html += vsActionsHtml(r.actions);
+    if (r.offerPhq9) html += `<button type="button" class="h-pill" style="width:100%;margin-top:24px" onclick="vsStartPhq9()">PHQ-9 jetzt ausfüllen</button>`;
+    if (r.gp) html += vsContactsHtml();
+    if (!r.offerPhq9) html += `<div class="h-text" style="margin-top:12px">In drei Monaten wieder.</div>`;
+  } else if (t.step === 'phq9') {
+    const r = scorePhq9(t.answers);
+    await saveCheckRecord({ kind: 'selftest', testId: 'phq9', date, answers: t.answers.slice(), score: r.score });
+    document.getElementById('vs-test-title').textContent = 'Ergebnis PHQ-9';
+    html += vsResultHead(r.score, 27, r.label);
+    if (r.crisis) html += vsNoticeHtml('Du hast angegeben, an den Tod oder an Selbstverletzung zu denken. Bitte sprich heute mit jemandem darüber; die Nummern stehen unter „Hilfe sofort“.');
+    html += vsActionsHtml(r.action ? [r.action] : []);
+    if (r.score >= 5) html += vsContactsHtml();
+  } else if (t.step === 'stopbang') {
+    const r = stopBangRisk(t.answers, profile);
+    await saveCheckRecord({ kind: 'selftest', testId: 'stopbang', date, answers: t.answers.slice(), score: r.score, sex: profile.sex || null });
+    document.getElementById('vs-test-title').textContent = 'Ergebnis STOP-Bang';
+    html += vsResultHead(r.score, 8, r.label) + vsActionsHtml(r.action ? [r.action] : ['In einem Jahr wieder.']);
+  } else if (t.step === 'ucla') {
+    const r = scoreUcla(t.answers);
+    await saveCheckRecord({ kind: 'selftest', testId: 'ucla', date, answers: t.answers.slice(), score: r.score });
+    document.getElementById('vs-test-title').textContent = 'Ergebnis UCLA-3';
+    html += vsResultHead(r.score, 9, r.label) + (r.action ? `<div class="h-text">${escapeHtml(r.action)}</div>` : `<div class="h-text">In drei Monaten wieder.</div>`);
+  }
+  _vsTest = { ...t, step: 'result', resultHtml: html + back };
+  renderSelfTest();
+  document.getElementById('vs-test-overlay').scrollTop = 0;
+  renderVorsorge();
+}
+function vsStartPhq9() {
+  _vsTest = { id: 'phq9', step: 'phq9', answers: new Array(9).fill(null), extra: [] };
+  renderSelfTest();
+  document.getElementById('vs-test-overlay').scrollTop = 0;
+}
+
+// Epworth / ISI: Kurzbeschreibung, Link zur offiziellen Quelle, Punktzahl.
+function vsExternalHtml(test, resultHtml = '') {
+  return `<div class="h-text" style="max-width:60ch">${escapeHtml(test.desc)}</div>
+    <div class="h-meta" style="margin-top:8px">Den Fragebogen selbst gibt es hier nicht: er ist lizenziert. Fülle ihn in der offiziellen Fassung aus und trag nur die Punktzahl ein.</div>
+    <div class="h-list" style="margin-top:16px">
+      <a class="h-row" href="${test.url}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none">
+        <div class="h-row-body"><div class="h-row-title">Offizielle Fassung öffnen</div><div class="h-row-meta">${escapeHtml(test.source)}</div></div>
+        <div class="h-row-chevron" aria-hidden="true">›</div>
+      </a>
+    </div>
+    ${vsDateField()}
+    <label class="h-meta" for="vs-ext-score" style="display:block;margin:16px 0 6px">Punktzahl (0 bis ${test.max})</label>
+    <input type="text" inputmode="numeric" maxlength="2" id="vs-ext-score" autocomplete="off" style="${VS_INPUT};max-width:120px">
+    <div class="h-meta" id="vs-ext-error" role="alert" style="margin-top:8px;color:var(--ink)"></div>
+    <button type="button" class="h-pill" style="width:100%;margin-top:16px" onclick="vsSaveExternal()">Ergebnis eintragen</button>
+    <div id="vs-ext-result" aria-live="polite">${resultHtml}</div>
+    ${vsTestHistoryHtml(getSelfTestRecords(), [test.id])}`;
+}
+async function vsSaveExternal() {
+  const test = SELF_TESTS.find(x => x.id === _vsTest.id);
+  const raw = document.getElementById('vs-ext-score').value.trim();
+  const score = parseInt(raw, 10);
+  if (!/^\d+$/.test(raw) || score < 0 || score > test.max) { document.getElementById('vs-ext-error').textContent = `Bitte eine ganze Zahl von 0 bis ${test.max} eintragen.`; return; }
+  await saveCheckRecord({ kind: 'selftest', testId: test.id, date: vsReadDate(), answers: [], score });
+  const r = test.id === 'epworth' ? epworthResult(score) : isiResult(score);
+  const result = `<div style="margin-top:24px">${vsResultHead(score, test.max, r.label)}${vsActionsHtml(r.actions)}</div>`;
+  document.getElementById('vs-test-content').innerHTML = vsExternalHtml(test, result) + vsCrisisLinkHtml();
+  toast('Ergebnis eingetragen');
+}
+
+// ══════════════ KRISENSEITE (Runde 7 Punkt 4) ══════════════
+// Öffnet sofort bei PHQ-9 Frage 9 > 0, außerdem aus jedem Selbsttest und aus
+// Setup → Vorsorge. Kein Fortschrittsbalken, keine Animation, kein XP, kein Gelb.
+let _crisisTriggerEl = null;
+function vsCrisisRowHtml(inTest) {
+  return `<div class="h-list" style="margin-top:${inTest ? 32 : 40}px">
+    <button type="button" class="h-row" onclick="openCrisisSheet()" style="${VS_ROW}">
+      <div class="h-row-body"><div class="h-row-title">Hilfe sofort</div><div class="h-row-meta">Krisennummern, rund um die Uhr und kostenlos</div></div>
+      <div class="h-row-chevron" aria-hidden="true">›</div>
+    </button>
+  </div>`;
+}
+function renderCrisisSheet() {
+  const c = CRISIS_CONTACTS;
+  let html = CRISIS_TEXT.map(t => `<div class="h-text" style="font-size:18px;margin-bottom:8px;max-width:40ch">${escapeHtml(t)}</div>`).join('');
+  c.groups.forEach(g => {
+    html += `<div class="h-meta" style="margin:28px 0 6px">${escapeHtml(g.title)} · ${escapeHtml(g.meta)}</div><div class="h-list">`;
+    g.numbers.forEach(n => {
+      html += `<a class="h-row" href="tel:${n.tel}" style="color:inherit;text-decoration:none" aria-label="${escapeHtml(g.title)} anrufen: ${escapeHtml(n.label)}">
+        <div class="h-row-body"><div class="h-row-title" style="font-size:22px">${escapeHtml(n.label)}</div></div>
+        <div class="h-row-trail">Anrufen</div>
+      </a>`;
+    });
+    if (g.chat) html += `<a class="h-row" href="${g.chat.url}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none">
+        <div class="h-row-body"><div class="h-row-title">${escapeHtml(g.chat.label)}</div></div>
+        <div class="h-row-chevron" aria-hidden="true">›</div>
+      </a>`;
+    html += `</div>`;
+  });
+  html += `<div class="h-meta" style="margin-top:24px">Nummern geprüft am ${escapeHtml(vsFormatDate(c.checkedAt))}.</div>`;
+  document.getElementById('crisis-content').innerHTML = html;
+}
+function openCrisisSheet() {
+  _crisisTriggerEl = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
+  renderCrisisSheet();
+  vsOpenOverlay('crisis-overlay');
+}
+function closeCrisisSheet() {
+  vsCloseOverlay('crisis-overlay');
+  if (_crisisTriggerEl && document.contains(_crisisTriggerEl) && _crisisTriggerEl.offsetParent) _crisisTriggerEl.focus({ preventScroll: true });
+  _crisisTriggerEl = null;
+}
+// Setup → App: Hinweis, wenn die Krisennummern länger als 12 Monate nicht geprüft wurden.
+function renderCrisisCheckHint() {
+  const el = document.getElementById('set-crisis-check');
+  if (!el) return;
+  el.innerHTML = crisisCheckOverdue(vsToday()) ? `<div class="h-row" style="cursor:default">
+      <div class="h-row-body"><div class="h-row-title">Krisennummern prüfen</div><div class="h-row-meta">Zuletzt geprüft am ${escapeHtml(vsFormatDate(CRISIS_CONTACTS.checkedAt))}. Die Nummern unter Vorsorge → Hilfe sofort mit den offiziellen Seiten abgleichen.</div></div>
+    </div>` : '';
 }
 
 // ── Erinnerungen: Push-Master-Switch + eine Zeile pro Ziel mit Uhrzeit.
@@ -8155,7 +9337,7 @@ function exportAppData() {
   const content = getItems({});
   const json = JSON.stringify({
     exportedAt: new Date().toISOString(), app: 'REHAPP', data: payload, content,
-    goals: _goalsCache, logs: _logsCache, earned: _earnedCache,
+    goals: _goalsCache, logs: _logsCache, earned: _earnedCache, checks: _checksCache,
   }, null, 2);
   const name = `rehapp-backup-${getLocalDateKey()}.json`;
   // iPhone/iPad: Teilen-Menü (AirDrop, Dateien, iCloud, Google Drive …).
@@ -8203,6 +9385,7 @@ async function loadDemoFixture() {
   const f = window.REHAPP_DEMO.fixture || {};
   for (const it of f.content || []) await saveItem(it);
   await importGoalsLogsEarned(f);
+  await importChecks(f.checks);
   const band = document.createElement('div');
   band.className = 'h-demo-band';
   // Nur im Demo-Modus, darum inline statt als Regel im Stylesheet (Grenze < 300).
@@ -8238,6 +9421,8 @@ function importAppDataFromFile(file) {
         for (const it of parsed.content) await saveItem(it);
       }
       await importGoalsLogsEarned(parsed);
+      await importChecks(parsed.checks);
+      updateVorsorgeBadge();
       buildWater(); buildSupplements(); buildRecipes();
       buildMasterplan();
       buildCRPSCalendar(); buildBudapestFilter(); renderOedemTrend();
@@ -8340,6 +9525,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await seedExercisesIfNeeded();
   await seedAtmungExercisesV2();
   await seedLegacyProtocolsV3();
+  updateVorsorgeBadge();
   storageSet('theme_auto_default', computeThemeAutoDefault());
   applyTheme(false);
   renderThemeSettings();
@@ -8383,6 +9569,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       initSuppTab();
       buildBudapestFilter();
       buildHeuteScreen();
+      updateVorsorgeBadge();
       toast('Neuer Tag — Protokoll zurückgesetzt');
     }
   }, 30000); // check every 30 seconds

@@ -71,6 +71,10 @@ Medizinisches Rehabilitationsprotokoll, kein Essstörungs-Kontext.
   `details.after` (`pain` | `cooldown` | `vagus`, plus `flag`) für das, was nach dem letzten Schritt passiert.
 - Ziele, Logs und verdiente Abzeichen liegen ebenfalls in `rehapp_content` (`getGoals`, `toggleLog`, `checkNewUnlocks`).
 - XP: `awardXP(key, punkte, label, { scope: 'day'|'ever' })`, Schlüssel nie umbenennen.
+- Vorsorge (Runde 7): Store `checks` (DB v3) mit `kind` = `profile` | `log` | `selftest` | `bpweek`. Logik ohne DOM im
+  Block `vorsorge-logik` (`CHECKS`, `dueStatus`, `nextPsaDate`, `scorePhq9`, `stopBangRisk`, `CRISIS_CONTACTS`).
+  Kein XP, keine Abzeichen, kein Gelb; ein Unit-Test prüft das. Migration: `backup_before_checks_v1`, Ergebnis von
+  `verifyMigration` unter `checks_migration_v1`. Demo-Vorsorgedaten: `node scripts/make-demo-fixture.mjs --nur-vorsorge`.
 
 ## Push-Benachrichtigungen
 - `subscribe.js` speichert pro Gerät Subscription + Fastenstart in Netlify Blobs, `push-check.js` (scheduled)
@@ -81,12 +85,13 @@ Medizinisches Rehabilitationsprotokoll, kein Essstörungs-Kontext.
 - Functions brauchen lokal `npm install` in `netlify/functions/` vor dem Deploy.
 
 ## Prüfen
-- `npm run check` = `validate.js` (Syntax aller Skript-Blöcke) + `scripts/check-ui.mjs`. Das Prüfskript rendert alle
-  Tabs und Sheets im Demo-Modus bei 390 und 1440px, hell und Nacht (52 Zustände), und prüft die Regeln oben:
+- `npm run check` = `validate.js` (Syntax aller Skript-Blöcke) + `npm test` (Unit-Tests in `tests/unit/`, laden den
+  reinen Block `<script id="vorsorge-logik">` in eine Node-VM) + `scripts/check-ui.mjs`. Das Prüfskript rendert alle
+  Tabs und Sheets im Demo-Modus bei 390 und 1440px, hell und Nacht, plus Papiere, und prüft die Regeln oben:
   Tokens, Gelb mit `data-gelb`, Schrift, Touch-Ziele, Stift-Linien, Überlauf, Kontrast, SVG/img, Systemdialoge.
   `--out datei.txt` schreibt die Befunde in eine Datei.
 - `pre-push`-Hook einmal einrichten: `npm run hooks`. Ein roter Check bricht den Push ab.
-- `npm run shots`: 56 Screenshots im Demo-Modus (14 Screens × 390/1440 × hell/Nacht, deviceScaleFactor 2) nach
+- `npm run shots`: 84 Screenshots im Demo-Modus (21 Screens × 390/1440 × hell/Nacht, deviceScaleFactor 2) nach
   `screenshots/aktuell/`, Vergleich gegen `screenshots/basis/` (höchstens 1 % abweichende Pixel) und Vergleichsseite
   `screenshots/report.html` (Referenzbild aus `docs/design/` neben dem aktuellen Stand plus Regel-Meldungen aus
   `screenshots/check.txt`). Zuordnung in `tests/visual/referenzen.json`.

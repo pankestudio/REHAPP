@@ -2824,5 +2824,221 @@
    "tier": "glanz",
    "at": 1793704682070
   }
+ ],
+ "checks": [
+  {
+   "id": "check-profile",
+   "kind": "profile",
+   "birthYear": 1981,
+   "sex": "m",
+   "smokerProfile": false,
+   "familyCRC": false,
+   "tbeArea": false,
+   "flags": {}
+  },
+  {
+   "id": "demo-log-checkup35",
+   "kind": "log",
+   "checkId": "checkup35",
+   "date": "2024-02-12"
+  },
+  {
+   "id": "demo-log-lpa_once",
+   "kind": "log",
+   "checkId": "lpa_once",
+   "date": "2023-06-20"
+  },
+  {
+   "id": "demo-log-skin",
+   "kind": "log",
+   "checkId": "skin",
+   "date": "2025-03-12"
+  },
+  {
+   "id": "demo-log-td",
+   "kind": "log",
+   "checkId": "td",
+   "date": "2017-05-10"
+  },
+  {
+   "id": "demo-log-dental",
+   "kind": "log",
+   "checkId": "dental",
+   "date": "2026-05-20"
+  },
+  {
+   "id": "demo-log-eyes",
+   "kind": "log",
+   "checkId": "eyes",
+   "date": "2024-09-03"
+  },
+  {
+   "id": "demo-log-bp_week",
+   "kind": "log",
+   "checkId": "bp_week",
+   "date": "2025-10-10",
+   "value": 128,
+   "value2": 82,
+   "note": "28 Messungen"
+  },
+  {
+   "id": "demo-bpweek",
+   "kind": "bpweek",
+   "start": "2026-10-28",
+   "readings": {
+    "0-m1": [
+     132,
+     82
+    ],
+    "0-m2": [
+     139,
+     87
+    ],
+    "0-a1": [
+     135,
+     83
+    ],
+    "0-a2": [
+     142,
+     88
+    ],
+    "1-m1": [
+     138,
+     84
+    ],
+    "1-m2": [
+     134,
+     89
+    ],
+    "1-a1": [
+     141,
+     85
+    ],
+    "1-a2": [
+     137,
+     90
+    ],
+    "2-m1": [
+     133,
+     86
+    ],
+    "2-m2": [
+     140,
+     82
+    ],
+    "2-a1": [
+     136,
+     87
+    ],
+    "2-a2": [
+     132,
+     83
+    ],
+    "3-m1": [
+     139,
+     88
+    ],
+    "3-m2": [
+     135,
+     84
+    ],
+    "3-a1": [
+     142,
+     89
+    ],
+    "3-a2": [
+     138,
+     85
+    ],
+    "4-m1": [
+     134,
+     90
+    ],
+    "4-m2": [
+     141,
+     86
+    ],
+    "4-a1": [
+     137,
+     82
+    ],
+    "4-a2": [
+     133,
+     87
+    ],
+    "5-m1": [
+     140,
+     83
+    ],
+    "5-m2": [
+     136,
+     88
+    ],
+    "5-a1": [
+     132,
+     84
+    ],
+    "5-a2": [
+     139,
+     89
+    ],
+    "6-m1": [
+     135,
+     85
+    ],
+    "6-m2": [
+     142,
+     90
+    ]
+   },
+   "done": false
+  },
+  {
+   "id": "demo-test-phq2",
+   "kind": "selftest",
+   "testId": "phq2",
+   "date": "2026-08-12",
+   "answers": [
+    1,
+    0
+   ],
+   "extra": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "score": 1
+  },
+  {
+   "id": "demo-test-ucla",
+   "kind": "selftest",
+   "testId": "ucla",
+   "date": "2026-08-12",
+   "answers": [
+    1,
+    2,
+    1
+   ],
+   "score": 4
+  },
+  {
+   "id": "demo-test-stopbang",
+   "kind": "selftest",
+   "testId": "stopbang",
+   "date": "2026-02-02",
+   "answers": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ],
+   "score": 2,
+   "sex": "m"
+  }
  ]
 }

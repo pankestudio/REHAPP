@@ -55,6 +55,14 @@ const SCREENS = [
   { id: 'setup', run: () => showPage('pg-settings') },
   { id: 'checkin', time: '2026-11-03T21:40', run: () => openAbendCheckin() },
   { id: 'ziel-anlegen', run: () => goToGoalEditor(null) },
+  // Runde 7: Vorsorge und Selbsttests (keine Referenzbilder)
+  { id: 'vorsorge-liste', run: () => { openVorsorge(); document.getElementById('vs-check-list').scrollIntoView(); } },
+  { id: 'vorsorge-sheet', run: () => { openVorsorge(); openCheckSheet('dental'); } },
+  { id: 'vorsorge-psa', run: () => { openVorsorge(); openCheckSheet('psa_decision'); vsPsaChooseValue(); document.getElementById('vs-psa').value = '3,4'; vsPsaPreview(); } },
+  { id: 'vorsorge-messwoche', run: () => { openVorsorge(); openCheckSheet('bp_week'); } },
+  { id: 'selbsttest-phq2', run: () => { openVorsorge(); openSelfTest('phq2'); } },
+  { id: 'selbsttest-ergebnis', run: async () => { openVorsorge(); openSelfTest('phq2'); vsAnswer('answers', 0, 1); vsAnswer('answers', 1, 1); [1, 1, 0, 0].forEach((v, i) => vsAnswer('extra', i, v)); await vsEvaluateTest(); } },
+  { id: 'krisenseite', run: () => { openVorsorge(); openSelfTest('phq9'); vsAnswer('answers', 8, 1); } },
 ];
 const DEFAULT_TIME = '2026-11-03T11:18';
 
